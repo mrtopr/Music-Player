@@ -1,0 +1,198 @@
+/* ===== MEHFIL NOIR GOLD THEME APPLICATION ===== */
+
+/* Apply deep noir background to main areas */
+body {
+    background: var(--mehfil-dark-base);
+    color: var(--mehfil-text-primary);
+}
+
+.screen,
+.main-area {
+    background: var(--mehfil-dark-base);
+}
+
+/* Cards with refined surface color */
+.card,
+.song-card,
+.album-card,
+.artist-card,
+.playlist-card {
+    background: var(--mehfil-surface-card);
+    border: 1px solid var(--mehfil-border);
+}
+
+.card:hover,
+.song-card:hover,
+.album-card:hover,
+.artist-card:hover,
+.playlist-card:hover {
+    background: var(--mehfil-surface-elevated);
+}
+
+/* Sidebar with surface color */
+.sidebar {
+    background: var(--mehfil-surface-card);
+    border-right: 1px solid var(--mehfil-border);
+}
+
+/* Top bar */
+.top-bar {
+    background: var(--mehfil-surface-card);
+    border-bottom: 1px solid var(--mehfil-border);
+}
+
+/* Search bar */
+.search input {
+    background: var(--mehfil-surface-elevated);
+    border: 1px solid var(--mehfil-border);
+    color: var(--mehfil-text-primary);
+}
+
+/* === STRATEGIC GOLD USAGE (ONLY WHERE IT MATTERS) === */
+
+/* 1. Play Button - Primary CTA */
+.play-button,
+.mobile-play-btn,
+#fullscreenPlay,
+#miniPlayButton,
+.primary-cta-btn {
+    background: var(--mehfil-gold-primary) !important;
+    color: var(--mehfil-dark-base) !important;
+    border: none !important;
+}
+
+.play-button:hover,
+.mobile-play-btn:hover,
+#fullscreenPlay:hover,
+#miniPlayButton:hover,
+.primary-cta-btn:hover {
+    background: var(--mehfil-gold-soft) !important;
+    box-shadow: 0 0 30px var(--mehfil-gold-glow);
+}
+
+/* 2. Active Navigation Item */
+.sidebar li.active {
+    background: rgba(230, 184, 115, 0.1);
+    border-left: 3px solid var(--mehfil-gold-primary);
+    color: var(--mehfil-gold-primary);
+}
+
+.sidebar li.active a {
+    color: var(--mehfil-gold-primary);
+}
+
+/* 3. Progress Bar */
+.progress-bar,
+.fullscreen-progress,
+.mini-progress {
+    background: var(--mehfil-gold-primary);
+    box-shadow: 0 0 12px var(--mehfil-gold-glow);
+}
+
+/* Progress bar container */
+.progress-bar-container,
+.fullscreen-progress-bar {
+    background: var(--mehfil-border);
+}
+
+/* 4. Currently Playing Song ONLY */
+.card.playing,
+.song-card.playing,
+.song-item.playing,
+.track-item.playing {
+    border: 1px solid var(--mehfil-gold-primary);
+    background: rgba(230, 184, 115, 0.08);
+}
+
+/* === TEXT HIERARCHY === */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--mehfil-text-primary);
+}
+
+.song-title,
+.track-name {
+    color: var(--mehfil-text-primary);
+}
+
+.artist-name,
+.artist-info {
+    color: var(--mehfil-text-secondary);
+}
+
+.meta-text,
+.song-duration,
+.song-year,
+p {
+    color: var(--mehfil-text-muted);
+}
+
+/* === BORDERS & DIVIDERS === */
+.section,
+.category-scroll,
+.trending-section,
+.new-releases-section {
+    border-bottom: 1px solid var(--mehfil-border);
+}
+
+/* === BUTTONS (Non-Gold) === */
+.secondary-cta-btn,
+.btn-secondary {
+    background: var(--mehfil-surface-elevated);
+    color: var(--mehfil-text-primary);
+    border: 1px solid var(--mehfil-border);
+}
+
+.secondary-cta-btn:hover,
+.btn-secondary:hover {
+    background: var(--mehfil-surface-card);
+    border-color: var(--mehfil-text-secondary);
+}
+
+/* === MINI PLAYER === */
+.mini-player {
+    background: var(--mehfil-surface-card);
+    border-top: 1px solid var(--mehfil-border);
+}
+
+/* === FULLSCREEN PLAYER === */
+.fullscreen-player {
+    background: radial-gradient(circle at center,
+            var(--mehfil-surface-card) 0%,
+            var(--mehfil-dark-base) 70%);
+}
+
+/* === REMOVE GOLD FROM NON-ESSENTIAL ELEMENTS === */
+.category-scroll .btn {
+    background: var(--mehfil-surface-elevated);
+    color: var(--mehfil-text-secondary);
+    border: 1px solid var(--mehfil-border);
+}
+
+.category-scroll .btn.active {
+    background: var(--mehfil-surface-card);
+    color: var(--mehfil-text-primary);
+    border-color: var(--mehfil-text-secondary);
+}
+
+/* Volume slider thumb - subtle, not gold */
+input[type="range"]::-webkit-slider-thumb {
+    background: var(--mehfil-text-primary);
+}
+
+input[type="range"]::-moz-range-thumb {
+    background: var(--mehfil-text-primary);
+}
+
+/* Like button - only gold when liked */
+.like-btn {
+    color: var(--mehfil-text-muted);
+}
+
+.like-btn.liked {
+    color: var(--mehfil-gold-primary);
+}

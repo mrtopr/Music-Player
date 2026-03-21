@@ -1,0 +1,447 @@
+/* ===== PREMIUM FULLSCREEN PLAYER ENHANCEMENTS ===== */
+
+/* ========== 1. MIDNIGHT BACKGROUND (REMOVE EMPTY FEEL) ========== */
+
+/* Midnight Gradient */
+.midnight-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top, #181818 0%, #0c0c0c 45%, #000 100%);
+    z-index: 0;
+}
+
+/* Grain / Noise Texture */
+.midnight-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    opacity: 0.035;
+    pointer-events: none;
+}
+
+/* Soft Vignette - Strengthened for deeper atmosphere */
+.fullscreen-player {
+    box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.85);
+}
+
+/* ========== 2. AMBIENT FLOATING PARTICLES (FILL EMPTY SPACE) ========== */
+
+.ambient-particles {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255, 200, 120, 0.15) 1px, transparent 1px);
+    background-size: 120px 120px;
+    animation: floatParticles 90s linear infinite;
+    opacity: 0.15;
+    z-index: 0;
+    will-change: background-position;
+}
+
+@keyframes floatParticles {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 0 -1200px;
+    }
+}
+
+/* ========== 3. ALBUM ART = HERO (GLOW + VINYL MOTION) ========== */
+
+.artwork-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Don't set width/height here - let it fit content */
+    will-change: transform;
+}
+
+/* Vinyl rotation - only when playing */
+.fullscreen-player.playing .artwork-container {
+    animation: slowRotate 30s linear infinite;
+    /* Slowed from 22s to 30s for premium feel */
+}
+
+@keyframes slowRotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+.circular-artwork img {
+    box-shadow: 0 0 50px var(--mehfil-gold-glow),
+        0 0 120px var(--mehfil-gold-glow);
+}
+
+/* ========== 4. BREATHING PULSE RING VISUALIZER ========== */
+
+.pulse-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid var(--mehfil-gold-glow);
+    animation: pulse 2.4s ease-in-out infinite;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 0;
+    /* Size based on circular-artwork size + 60px margin */
+    width: calc(220px + 60px);
+    /* 280px */
+    height: calc(220px + 60px);
+    will-change: transform, opacity;
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.98);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.03);
+        opacity: 0.85;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(0.98);
+        opacity: 0.5;
+    }
+}
+
+/* Audio-reactive pulse (enhanced when playing) */
+.fullscreen-player.playing .pulse-ring {
+    border-color: rgba(198, 161, 91, 0.4);
+    animation: pulseActive 1.8s ease-in-out infinite;
+}
+
+@keyframes pulseActive {
+    0% {
+        transform: translate(-50%, -50%) scale(0.96);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(0.96);
+        opacity: 0.6;
+    }
+}
+
+/* ========== 5. FLOATING GLASS CONTROLS ========== */
+
+.mobile-main-controls,
+.control-buttons {
+    display: flex;
+    gap: 22px;
+    padding: 18px 30px;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Play button emphasis */
+.mobile-play-btn,
+#fullscreenPlay {
+    width: 64px !important;
+    height: 64px !important;
+    border-radius: 50%;
+    background: radial-gradient(circle, #D6B36A, #C6A15B) !important;
+    box-shadow: 0 0 30px rgba(198, 161, 91, 0.6) !important;
+    border: none !important;
+}
+
+.mobile-play-btn:hover,
+#fullscreenPlay:hover {
+    box-shadow: 0 0 40px rgba(198, 161, 91, 0.8) !important;
+    transform: scale(1.05);
+}
+
+/* ========== 6. LUXURY TYPOGRAPHY ========== */
+
+.song-title,
+#fullscreenSongTitle {
+    font-size: 22px;
+    letter-spacing: 0.12em;
+    font-weight: 500;
+}
+
+.artist-name,
+#fullscreenArtist {
+    font-size: 14px;
+    opacity: 0.6;
+    letter-spacing: 0.08em;
+    margin-top: 6px;
+}
+
+.mobile-playlist-text,
+.playlist-name {
+    font-size: 12px;
+    opacity: 0.45;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+}
+
+/* ========== 7. CINEMATIC FADE-IN ANIMATION ========== */
+
+.fullscreen-player.active {
+    animation: fadeInCinematic 0.6s ease-out;
+}
+
+@keyframes fadeInCinematic {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ========== RESPONSIVE ADJUSTMENTS ========== */
+
+/* Desktop (769px+) - matches circular-artwork: 240px */
+@media (min-width: 769px) {
+    .pulse-ring {
+        width: calc(240px + 60px);
+        /* 300px */
+        height: calc(240px + 60px);
+    }
+}
+
+/* Large Desktop (1200px+) - matches circular-artwork: 260px */
+@media (min-width: 1200px) {
+    .pulse-ring {
+        width: calc(260px + 60px);
+        /* 320px */
+        height: calc(260px + 60px);
+    }
+}
+
+/* Small Mobile (max 480px) - matches circular-artwork: 200px */
+@media (max-width: 480px) {
+    .pulse-ring {
+        width: calc(200px + 60px);
+        /* 260px */
+        height: calc(200px + 60px);
+    }
+
+    .mobile-main-controls {
+        padding: 14px 20px;
+        gap: 16px;
+    }
+}
+
+/* Extra Small Mobile (max 360px) - matches circular-artwork: 180px */
+@media (max-width: 360px) {
+    .pulse-ring {
+        width: calc(180px + 60px);
+        /* 240px */
+        height: calc(180px + 60px);
+    }
+}
+
+/* ========== REDUCED MOTION SUPPORT ========== */
+
+@media (prefers-reduced-motion: reduce) {
+    .artwork-container {
+        animation: none;
+    }
+
+    .pulse-ring {
+        animation: none;
+        opacity: 0.5;
+    }
+
+    .ambient-particles {
+        animation: none;
+    }
+
+    .fullscreen-player.active {
+        animation: none;
+    }
+}
+
+/* ========== AUDIO-REACTIVE GLOW (Enhanced) ========== */
+
+/* Glow intensity increases with audio */
+.fullscreen-player.playing .circular-artwork img {
+    box-shadow: 0 0 60px rgba(198, 161, 91, 0.45),
+        0 0 140px rgba(198, 161, 91, 0.25);
+    transition: box-shadow 0.3s ease;
+}
+
+/* High intensity state (can be triggered via JS) */
+.fullscreen-player.high-intensity .circular-artwork img {
+    box-shadow: 0 0 80px rgba(198, 161, 91, 0.6),
+        0 0 180px rgba(198, 161, 91, 0.35);
+}
+
+.fullscreen-player.high-intensity .pulse-ring {
+    border-color: rgba(198, 161, 91, 0.6);
+    border-width: 3px;
+}/* ===== IMMEDIATELY VISIBLE CHANGES ===== */
+
+/* CHANGE SET 1: HERO GLOW - Moving Golden Aura */
+.hero-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 40%,
+            rgba(230, 184, 115, 0.18),
+            transparent 60%);
+    filter: blur(80px);
+    animation: glowMove 8s ease-in-out infinite alternate;
+    z-index: 0;
+}
+
+@keyframes glowMove {
+    from {
+        transform: translateX(-40px);
+    }
+
+    to {
+        transform: translateX(40px);
+    }
+}
+
+/* Ensure hero-cta is above glow */
+.hero-cta {
+    position: relative;
+    z-index: 1;
+}
+
+/* CHANGE SET 2: BUTTON SHINE - Premium Glass Effect */
+.start-listening-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.start-listening-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg,
+            transparent,
+            rgba(255, 255, 255, 0.25),
+            transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+}
+
+.start-listening-btn:hover::after {
+    transform: translateX(100%);
+}
+
+/* CHANGE SET 3: DRAMATIC CARD HOVER - Lift Off Screen */
+.card {
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px) scale(1.04);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8),
+        0 0 25px rgba(230, 184, 115, 0.25);
+}
+
+/* CHANGE SET 4: PLAYING CARD PULSE - Breathing Effect */
+.card.playing,
+.song-card.playing {
+    border: 1px solid rgba(230, 184, 115, 0.8);
+    animation: playingPulse 2s ease-in-out infinite;
+}
+
+@keyframes playingPulse {
+    0% {
+        box-shadow: 0 0 0 rgba(230, 184, 115, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 25px rgba(230, 184, 115, 0.6);
+    }
+
+    100% {
+        box-shadow: 0 0 0 rgba(230, 184, 115, 0.3);
+    }
+}
+
+/* CHANGE SET 5: FULLSCREEN PLAYER DEPTH - Cinematic Background */
+.fullscreen-player {
+    background: radial-gradient(circle at center,
+            #141414 0%,
+            #050505 70%) !important;
+}
+
+.fullscreen-player::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Ensure content is above noise texture */
+.fullscreen-player>* {
+    position: relative;
+    z-index: 2;
+}
+
+/* CHANGE SET 6: ALBUM ART GLOW - Star Focus */
+.circular-artwork,
+.album-art {
+    box-shadow: 0 0 60px rgba(230, 184, 115, 0.35),
+        0 0 140px rgba(230, 184, 115, 0.15) !important;
+}
+
+/* Additional: Make all interactive elements more obvious */
+button:hover,
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(230, 184, 115, 0.3);
+}
+
+/* Song items in lists */
+.song-item:hover,
+.track-item:hover {
+    background: rgba(230, 184, 115, 0.08);
+    transform: translateX(4px);
+    border-left: 3px solid rgba(230, 184, 115, 0.6);
+}
+
+/* Active navigation items */
+.sidebar li.active {
+    background: rgba(230, 184, 115, 0.15);
+    border-left: 3px solid var(--mehfil-gold-primary);
+}
+
+/* Progress bars glow */
+.progress-bar,
+.fullscreen-progress {
+    box-shadow: 0 0 12px rgba(230, 184, 115, 0.5);
+}
+
+/* Volume slider glow */
+input[type="range"]::-webkit-slider-thumb {
+    box-shadow: 0 0 15px rgba(230, 184, 115, 0.6);
+}
+
+input[type="range"]::-moz-range-thumb {
+    box-shadow: 0 0 15px rgba(230, 184, 115, 0.6);
+}

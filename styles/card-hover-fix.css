@@ -1,0 +1,74 @@
+/* ===== OVERRIDE ANY CONFLICTING CARD HOVER STYLES ===== */
+
+/* Ensure ALL song cards use unified hover behavior */
+.song-card,
+.trending-songs .song-card,
+.new-releases .song-card,
+#trending-page .song-card,
+#new-releases-page .song-card,
+.show-more-page .song-card,
+.category-page .song-card {
+    position: relative;
+    background: var(--mehfil-surface-card);
+    border-radius: 12px;
+    padding: var(--mehfil-space-md);
+    transition: all var(--mehfil-motion-medium) var(--mehfil-ease-smooth);
+    cursor: pointer;
+    box-shadow: var(--mehfil-shadow-sm);
+    border: 1px solid transparent;
+}
+
+/* Unified Hover - Lift + Soft Glow (ALL PAGES) */
+.song-card:hover,
+.trending-songs .song-card:hover,
+.new-releases .song-card:hover,
+#trending-page .song-card:hover,
+#new-releases-page .song-card:hover,
+.show-more-page .song-card:hover,
+.category-page .song-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: var(--mehfil-shadow-md), var(--mehfil-shadow-gold) !important;
+    border-color: rgba(230, 184, 115, 0.2) !important;
+    background: var(--mehfil-surface-elevated) !important;
+}
+
+/* Image Scale on Hover (ALL PAGES) */
+.song-card:hover img,
+.trending-songs .song-card:hover img,
+.new-releases .song-card:hover img,
+#trending-page .song-card:hover img,
+#new-releases-page .song-card:hover img,
+.show-more-page .song-card:hover img,
+.category-page .song-card:hover img {
+    transform: scale(1.05) !important;
+}
+
+/* Playing State (ALL PAGES) */
+.song-card.playing,
+.song-card.active,
+.trending-songs .song-card.playing,
+.new-releases .song-card.playing,
+#trending-page .song-card.playing,
+#new-releases-page .song-card.playing,
+.show-more-page .song-card.playing,
+.category-page .song-card.playing {
+    border-color: var(--mehfil-gold-primary) !important;
+    box-shadow: var(--mehfil-shadow-md), 0 0 24px var(--mehfil-gold-glow) !important;
+    animation: mehfilBreathePulse var(--mehfil-motion-breath) ease-in-out infinite !important;
+}
+
+/* Remove any conflicting transform or scale */
+.song-card:hover {
+    transform: translateY(-4px) !important;
+    scale: 1 !important;
+}
+
+/* Ensure consistency across all card types */
+.album-card:hover,
+.artist-card:hover,
+.playlist-card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: var(--mehfil-shadow-md), var(--mehfil-shadow-gold) !important;
+    border-color: rgba(230, 184, 115, 0.2) !important;
+    background: var(--mehfil-surface-elevated) !important;
+}

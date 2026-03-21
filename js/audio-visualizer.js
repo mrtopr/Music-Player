@@ -300,18 +300,21 @@ document.addEventListener('DOMContentLoaded', () => {
     window.audioVisualizer = visualizer;
     
     // Hook into existing player updates
-    const originalUpdatePlayerUI = window.updatePlayerUI;
-    if (originalUpdatePlayerUI) {
-        window.updatePlayerUI = function(song) {
-            try {
-                originalUpdatePlayerUI(song);
-                if (song && song.image) {
-                    visualizer.updateArtwork(song.image);
+    if (!window.__mehfilVisualizerUIWrapperApplied) {
+        const originalUpdatePlayerUI = window.updatePlayerUI;
+        if (originalUpdatePlayerUI) {
+            window.updatePlayerUI = function(song) {
+                try {
+                    originalUpdatePlayerUI(song);
+                    if (song && song.image) {
+                        visualizer.updateArtwork(song.image);
+                    }
+                } catch (error) {
+                    console.error('Error in updatePlayerUI:', error);
                 }
-            } catch (error) {
-                console.error('Error in updatePlayerUI:', error);
-            }
-        };
+            };
+            window.__mehfilVisualizerUIWrapperApplied = true;
+        }
     }
     
     // Add keyboard shortcut to toggle visualizer

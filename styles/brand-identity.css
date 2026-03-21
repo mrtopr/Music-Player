@@ -1,0 +1,234 @@
+/* ===== MEHFIL BRAND IDENTITY - LOCKED COLOR PALETTE ===== */
+
+:root {
+    /* === PRIMARY GOLD - Emotion + Action === */
+    --mehfil-gold-primary: #E6B873;
+    --mehfil-gold-soft: #CFAE70;
+    --mehfil-gold-glow: rgba(230, 184, 115, 0.4);
+
+    /* === DARK BASE - Calm + Depth === */
+    --mehfil-dark-base: #0B0E14;
+    --mehfil-surface-card: #131722;
+    --mehfil-surface-elevated: #1A1F2E;
+
+    /* === TEXT HIERARCHY === */
+    --mehfil-text-primary: #FFFFFF;
+    --mehfil-text-secondary: #E5E7EB;
+    --mehfil-text-muted: #9CA3AF;
+    --mehfil-text-subtle: #6B7280;
+
+    /* === ACCENT BLUE - Focus (use sparingly) === */
+    --mehfil-accent-blue: #4DA3FF;
+    --mehfil-accent-blue-glow: rgba(77, 163, 255, 0.3);
+
+    /* === BORDERS & STATUS === */
+    --mehfil-border: rgba(255, 255, 255, 0.12);
+    --mehfil-border-strong: rgba(255, 255, 255, 0.2);
+    --mehfil-danger: #EF4444;
+    --mehfil-warning: #D6B36A;
+    --mehfil-info: #4DA3FF;
+
+    /* === MOTION TIMING - Music Breath === */
+    --mehfil-motion-slow: 800ms;
+    --mehfil-motion-medium: 400ms;
+    --mehfil-motion-fast: 200ms;
+    --mehfil-motion-breath: 2000ms;
+
+    /* === EASING CURVES === */
+    --mehfil-ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --mehfil-ease-entrance: cubic-bezier(0, 0, 0.2, 1);
+    --mehfil-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+    /* === SPACING SYSTEM === */
+    --mehfil-space-xs: 4px;
+    --mehfil-space-sm: 8px;
+    --mehfil-space-md: 16px;
+    --mehfil-space-lg: 24px;
+    --mehfil-space-xl: 32px;
+
+    /* === SHADOWS === */
+    --mehfil-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --mehfil-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --mehfil-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --mehfil-shadow-gold: 0 0 20px var(--mehfil-gold-glow);
+
+    /* Compatibility bridge for legacy CSS variables used across files */
+    --accent-primary: var(--mehfil-gold-primary);
+    --accent-hover: var(--mehfil-gold-soft);
+    --accent-secondary: #D6B36A;
+    --bg-main: var(--mehfil-dark-base);
+    --bg-dark: var(--mehfil-surface-card);
+    --bg-darker: var(--mehfil-dark-base);
+    --card-bg: var(--mehfil-surface-card);
+    --border-color: var(--mehfil-border);
+    --text-primary: var(--mehfil-text-primary);
+    --text-secondary: var(--mehfil-text-secondary);
+    --text-muted: var(--mehfil-text-muted);
+}
+
+/* ===== BRAND RULES ===== */
+
+/* Rule 1: Gold = Emotion + Action (clickable, important, playing) */
+.mehfil-gold-action {
+    color: var(--mehfil-gold-primary);
+}
+
+.mehfil-gold-action:hover {
+    color: var(--mehfil-gold-soft);
+    text-shadow: 0 0 12px var(--mehfil-gold-glow);
+}
+
+/* Rule 2: Non-interactive elements must NOT be gold */
+.mehfil-text-muted {
+    color: var(--mehfil-text-muted);
+}
+
+/* Rule 3: Blue for critical focus only */
+.mehfil-focus {
+    color: var(--mehfil-accent-blue);
+    box-shadow: 0 0 0 2px var(--mehfil-accent-blue-glow);
+}
+
+/* ===== TYPOGRAPHY HIERARCHY ===== */
+
+/* Headings - Semi-bold with letter-spacing */
+h1,
+h2,
+h3,
+.mehfil-heading {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--mehfil-text-primary);
+}
+
+/* Song Titles - Medium weight */
+.song-title,
+.track-name {
+    font-weight: 500;
+    color: var(--mehfil-text-secondary);
+}
+
+/* Artist Names - Regular weight */
+.artist-name,
+.artist-info {
+    font-weight: 400;
+    color: var(--mehfil-text-muted);
+}
+
+/* Meta Text - Light with low opacity */
+.meta-text,
+.song-duration,
+.song-year {
+    font-weight: 300;
+    color: var(--mehfil-text-subtle);
+    opacity: 0.6;
+}
+
+/* Descriptions - Reduced contrast */
+.description,
+.bio-text {
+    font-weight: 400;
+    color: var(--mehfil-text-muted);
+    opacity: 0.7;
+    line-height: 1.6;
+}
+
+/* ===== MOTION PHILOSOPHY: "Slow, Smooth, Musical" ===== */
+
+/* All transitions should feel like breathing */
+* {
+    transition-timing-function: var(--mehfil-ease-smooth);
+}
+
+/* Section Entry Animation */
+@keyframes mehfilFadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mehfil-section-enter {
+    animation: mehfilFadeSlideUp var(--mehfil-motion-slow) var(--mehfil-ease-entrance);
+}
+
+/* Breathing Pulse for Active Items */
+@keyframes mehfilBreathePulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.9;
+        transform: scale(1.01);
+    }
+}
+
+.mehfil-active-pulse {
+    animation: mehfilBreathePulse var(--mehfil-motion-breath) ease-in-out infinite;
+}
+
+/* Gentle Glow Animation */
+@keyframes mehfilGentleGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px var(--mehfil-gold-glow);
+    }
+
+    50% {
+        box-shadow: 0 0 30px var(--mehfil-gold-glow);
+    }
+}
+
+.mehfil-glow-pulse {
+    animation: mehfilGentleGlow var(--mehfil-motion-breath) ease-in-out infinite;
+}
+
+/* ===== BRAND MOMENTS ===== */
+
+/* Late Night Picks Styling */
+.late-night-picks {
+    background: linear-gradient(135deg, #1A1F2E 0%, #0B0E14 100%);
+    border-left: 3px solid var(--mehfil-gold-primary);
+}
+
+.late-night-picks::before {
+    content: "🌙";
+    margin-right: var(--mehfil-space-sm);
+}
+
+/* Dil Se Suno Branding */
+.dil-se-suno {
+    color: var(--mehfil-gold-primary);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.dil-se-suno::after {
+    content: " ❤️";
+}
+
+/* Mehfil Recommends */
+.mehfil-recommends {
+    position: relative;
+    padding-left: var(--mehfil-space-lg);
+}
+
+.mehfil-recommends::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--mehfil-gold-primary), var(--mehfil-gold-soft));
+}

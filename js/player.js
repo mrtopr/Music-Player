@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Audio element
     const audio = document.getElementById('audioElement');
-    
+
     // Mini player elements
     const miniPlayer = document.getElementById('miniPlayer');
     const miniPlayButton = document.getElementById('miniPlayButton');
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const miniVolumeSlider = document.getElementById('miniVolumeSlider');
     const currentTimeEl = document.getElementById('currentTime');
     const durationEl = document.getElementById('duration');
-    
+
     // Fullscreen player elements
     const fullscreenPlayer = document.getElementById('fullscreenPlayer');
     const fullscreenPlay = document.getElementById('fullscreenPlay');
@@ -25,103 +25,60 @@ document.addEventListener('DOMContentLoaded', () => {
     const fullscreenDuration = document.getElementById('fullscreenDuration');
     const expandPlayer = document.getElementById('expandPlayer');
     const closeFullscreen = document.getElementById('closeFullscreen');
-    
+
     // Player state
     let isPlaying = false;
     let currentSong = null;
     let previousVolume = 0.8;
-    
+
     // Initialize audio volume
     if (audio) {
         audio.volume = 0.8;
         if (miniVolumeSlider) miniVolumeSlider.value = 80;
     }
-    
+
     // Toggle between play and pause
     function togglePlay() {
-        console.log('Player.js togglePlay called. Audio:', !!audio, 'Audio src:', audio?.src, 'Audio paused:', audio?.paused);
-        
-        if (!audio) {
-            console.warn('No audio element found');
-            return;
-        }
-        
-        if (!audio.src || audio.src === '') {
+        if (!audio || !audio.src) {
             console.warn('No audio source loaded');
-            
-            // Try to get current song from main app
-            if (window.songs && Array.isArray(window.songs) && window.songs.length > 0) {
-                const songIndex = window.currentSongIndex !== undefined ? window.currentSongIndex : 0;
-                const currentSong = window.songs[songIndex];
-                
-                if (currentSong && currentSong.url) {
-                    console.log('Loading current song:', currentSong.title || currentSong.name);
-                    loadAndPlaySong(currentSong.url, currentSong);
-                    return;
-                } else {
-                    console.warn('Current song has no URL');
-                }
-            }
-            
-            // If no songs available, show notification
-            playerShowNotification('No song loaded. Please select a song from the library first.', 'warning');
             return;
         }
-        
+
         if (audio.paused) {
-            console.log('Playing audio...');
             audio.play().then(() => {
                 isPlaying = true;
                 updatePlayButtons(true);
-                console.log('Audio play successful');
             }).catch(error => {
                 console.error('Error playing audio:', error);
-                playerShowNotification('Error playing audio: ' + error.message, 'error');
-                isPlaying = false;
-                updatePlayButtons(false);
+                playerShowNotification('Error playing audio', 'error');
             });
         } else {
-            console.log('Pausing audio...');
             audio.pause();
             isPlaying = false;
             updatePlayButtons(false);
         }
     }
-    
+
     // Update play button icons
     function updatePlayButtons(playing) {
         const playIcon = '<i class="bi bi-play-fill"></i>';
         const pauseIcon = '<i class="bi bi-pause-fill"></i>';
-        
-        // Update mini player play button
+
         if (miniPlayButton) {
             miniPlayButton.innerHTML = playing ? pauseIcon : playIcon;
-            miniPlayButton.setAttribute('aria-label', playing ? 'Pause' : 'Play');
         }
-        
-        // Update fullscreen play button
         if (fullscreenPlay) {
             fullscreenPlay.innerHTML = playing ? pauseIcon : playIcon;
-            fullscreenPlay.setAttribute('aria-label', playing ? 'Pause' : 'Play');
         }
-        
-        // Update any other play buttons
-        const allPlayButtons = document.querySelectorAll('.play-btn, .play-song-btn');
-        allPlayButtons.forEach(btn => {
-            const icon = btn.querySelector('i');
-            if (icon) {
-                icon.className = playing ? 'bi bi-pause-fill' : 'bi bi-play-fill';
-            }
-        });
     }
-    
+
     // Update progress bar and time display
     function updateProgress() {
         if (!audio || !audio.duration) return;
-        
+
         const { currentTime, duration } = audio;
         const progressPercent = (currentTime / duration) * 100;
-        
+
         // Update mini player progress
         if (miniProgressBar) {
             miniProgressBar.style.width = `${progressPercent}%`;
@@ -129,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (miniProgressInput) {
             miniProgressInput.value = progressPercent;
         }
-        
+
         // Update fullscreen player progress
         if (fullscreenProgress) {
             fullscreenProgress.style.width = `${progressPercent}%`;
@@ -137,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (fullscreenProgressInput) {
             fullscreenProgressInput.value = progressPercent;
         }
-        
+
         // Update time displays directly here instead of calling separate function
         // Update mini player time
         if (currentTimeEl) {
@@ -146,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (durationEl && duration) {
             durationEl.textContent = formatTime(duration);
         }
-        
+
         // Update fullscreen player time
         if (fullscreenCurrentTime) {
             fullscreenCurrentTime.textContent = formatTime(currentTime);
@@ -155,32 +112,32 @@ document.addEventListener('DOMContentLoaded', () => {
             fullscreenDuration.textContent = formatTime(duration);
         }
     }
-    
+
     // Set progress when user interacts with progress bar
     function setProgress(e) {
         if (!audio || !audio.duration) return;
-        
+
         const width = this.clientWidth;
         const clickX = e.offsetX;
         const duration = audio.duration;
         audio.currentTime = (clickX / width) * duration;
     }
-    
+
     // Format time in seconds to MM:SS
     function formatTime(seconds) {
         if (isNaN(seconds) || seconds < 0) return '0:00';
-        
+
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = Math.floor(seconds % 60);
         return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
     }
-    
+
     // Update time display
     function updateTimeDisplay() {
         if (!audio) return;
-        
+
         const { currentTime, duration } = audio;
-        
+
         // Update mini player time
         if (currentTimeEl) {
             currentTimeEl.textContent = formatTime(currentTime);
@@ -188,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (durationEl && duration) {
             durationEl.textContent = formatTime(duration);
         }
-        
+
         // Update fullscreen player time
         if (fullscreenCurrentTime) {
             fullscreenCurrentTime.textContent = formatTime(currentTime);
@@ -197,56 +154,54 @@ document.addEventListener('DOMContentLoaded', () => {
             fullscreenDuration.textContent = formatTime(duration);
         }
     }
-    
+
     // Show mini player with animation
     function showMiniPlayer() {
         if (miniPlayer) {
             miniPlayer.classList.add('show');
         }
     }
-    
+
     // Hide mini player
     function hideMiniPlayer() {
         if (miniPlayer) {
             miniPlayer.classList.remove('show');
         }
     }
-    
+
     // Volume control functions
     function updateVolumeIcon(volume) {
         const volumeButtons = [miniVolumeButton, document.getElementById('fullscreenMute')];
-        
+
         volumeButtons.forEach(button => {
             if (!button) return;
-            
+
             if (volume === 0) {
-                button.innerHTML = '<i class="bi bi-volume-mute-fill"></i>';
-            } else if (volume < 0.3) {
-                button.innerHTML = '<i class="bi bi-volume-down-fill"></i>';
-            } else if (volume < 0.7) {
-                button.innerHTML = '<i class="bi bi-volume-up-fill"></i>';
+                button.innerHTML = '<i class="bi bi-volume-mute"></i>';
+            } else if (volume < 0.5) {
+                button.innerHTML = '<i class="bi bi-volume-down"></i>';
             } else {
-                button.innerHTML = '<i class="bi bi-volume-up-fill"></i>';
+                button.innerHTML = '<i class="bi bi-volume-up"></i>';
             }
         });
     }
-    
+
     function setVolume(volume) {
         if (!audio) return;
-        
+
         audio.volume = volume;
         updateVolumeIcon(volume);
-        
+
         // Update volume sliders
         if (miniVolumeSlider) miniVolumeSlider.value = volume * 100;
-        
+
         const fullscreenVolume = document.getElementById('fullscreenVolume');
         if (fullscreenVolume) fullscreenVolume.value = volume * 100;
     }
-    
+
     function toggleMute() {
         if (!audio) return;
-        
+
         if (audio.volume > 0) {
             previousVolume = audio.volume;
             setVolume(0);
@@ -254,21 +209,24 @@ document.addEventListener('DOMContentLoaded', () => {
             setVolume(previousVolume);
         }
     }
-    
+
     // Event Listeners
-    
-    // Play/Pause buttons - Mini player button is handled in index.js to avoid conflicts
-    // if (miniPlayButton) {
-    //     miniPlayButton.addEventListener('click', togglePlay);
-    // }
+
+    // Play/Pause buttons
+    if (miniPlayButton) {
+        miniPlayButton.addEventListener('click', togglePlay);
+    }
     // Note: fullscreen play button is handled by fullscreen-player-enhancements.js
-    
+    // if (fullscreenPlay) {
+    //     fullscreenPlay.addEventListener('click', togglePlay);
+    // }
+
     // Progress bar interactions
     const progressContainer = document.querySelector('.progress-container');
     if (progressContainer) {
         progressContainer.addEventListener('click', setProgress);
     }
-    
+
     // Progress input sliders
     if (miniProgressInput) {
         miniProgressInput.addEventListener('input', () => {
@@ -278,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
+
     if (fullscreenProgressInput) {
         fullscreenProgressInput.addEventListener('input', () => {
             if (audio && audio.duration) {
@@ -287,18 +245,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
+
     // Volume controls
     if (miniVolumeSlider) {
         miniVolumeSlider.addEventListener('input', () => {
             setVolume(miniVolumeSlider.value / 100);
         });
     }
-    
+
     if (miniVolumeButton) {
         miniVolumeButton.addEventListener('click', toggleMute);
     }
-    
+
     // Fullscreen player controls
     if (expandPlayer && fullscreenPlayer) {
         expandPlayer.addEventListener('click', () => {
@@ -306,14 +264,14 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.style.overflow = 'hidden';
         });
     }
-    
+
     if (closeFullscreen && fullscreenPlayer) {
         closeFullscreen.addEventListener('click', () => {
             fullscreenPlayer.classList.remove('active');
             document.body.style.overflow = '';
         });
     }
-    
+
     // Audio event listeners
     if (audio) {
         audio.addEventListener('timeupdate', updateProgress);
@@ -321,19 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateTimeDisplay();
             showMiniPlayer();
         });
-        
-        // Add play event listener to update icons
-        audio.addEventListener('play', () => {
-            isPlaying = true;
-            updatePlayButtons(true);
-        });
-        
-        // Add pause event listener to update icons
-        audio.addEventListener('pause', () => {
-            isPlaying = false;
-            updatePlayButtons(false);
-        });
-        
+
         audio.addEventListener('ended', () => {
             isPlaying = false;
             updatePlayButtons(false);
@@ -342,12 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.playNextSong();
             }
         });
-        
-        // Add volume change event listener to update volume icons
-        audio.addEventListener('volumechange', () => {
-            updateVolumeIcon(audio.volume);
-        });
-        
+
         audio.addEventListener('error', (e) => {
             console.error('Audio error:', e);
             if (typeof playerShowNotification === 'function') {
@@ -356,30 +297,40 @@ document.addEventListener('DOMContentLoaded', () => {
             isPlaying = false;
             updatePlayButtons(false);
         });
-        
+
         audio.addEventListener('canplay', () => {
             console.log('Audio can play');
         });
-        
+
         audio.addEventListener('waiting', () => {
             console.log('Audio buffering...');
         });
+
+        audio.addEventListener('playing', () => {
+            isPlaying = true;
+            updatePlayButtons(true);
+        });
+
+        audio.addEventListener('pause', () => {
+            isPlaying = false;
+            updatePlayButtons(false);
+        });
     }
-    
+
     // Initialize fullscreen volume controls
     const fullscreenVolume = document.getElementById('fullscreenVolume');
     const fullscreenMute = document.getElementById('fullscreenMute');
-    
+
     if (fullscreenVolume) {
         fullscreenVolume.addEventListener('input', () => {
             setVolume(fullscreenVolume.value / 100);
         });
     }
-    
+
     if (fullscreenMute) {
         fullscreenMute.addEventListener('click', toggleMute);
     }
-    
+
     // Next/Previous functionality (placeholder - will be connected to main player logic)
     function playNext() {
         console.log('Playing next track');
@@ -392,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    
+
     function playPrev() {
         console.log('Playing previous track');
         // This will be connected to the main playlist logic in index.js
@@ -404,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    
+
     // Next/Previous button listeners
     if (miniNextButton) {
         miniNextButton.addEventListener('click', playNext);
@@ -418,16 +369,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (fullscreenPrev) {
         fullscreenPrev.addEventListener('click', playPrev);
     }
-    
+
     // Initialize volume icon
     updateVolumeIcon(audio ? audio.volume : 0.8);
-    
+
     // Expose functions globally for external access
     window.playerControls = {
         togglePlay,
         setVolume,
         toggleMute,
-        updateVolumeIcon,
         showMiniPlayer,
         hideMiniPlayer,
         updatePlayButtons,
@@ -443,7 +393,7 @@ function updatePlayerUI(song) {
     const miniPlayerImage = document.getElementById('miniPlayerImage');
     const miniPlayerTitle = document.getElementById('miniPlayerTitle');
     const miniPlayerArtist = document.getElementById('miniPlayerArtist');
-    
+
     // Enhanced image URL handling - use getImageUrl if available, otherwise fallback
     let imageUrl = 'Assets/music.png';
     if (song.cover) {
@@ -453,7 +403,7 @@ function updatePlayerUI(song) {
     } else if (song.image) {
         imageUrl = song.image;
     }
-    
+
     if (miniPlayerImage) {
         miniPlayerImage.src = imageUrl;
         miniPlayerImage.alt = song.title || 'Album Art';
@@ -465,12 +415,12 @@ function updatePlayerUI(song) {
     if (miniPlayerArtist) {
         miniPlayerArtist.textContent = song.artist || song.primaryArtists || 'Unknown Artist';
     }
-    
+
     // Update fullscreen player
     const fullscreenAlbumArt = document.getElementById('fullscreenAlbumArt');
     const fullscreenSongTitle = document.getElementById('fullscreenSongTitle');
     const fullscreenArtist = document.getElementById('fullscreenArtist');
-    
+
     if (fullscreenAlbumArt) {
         fullscreenAlbumArt.src = imageUrl;
         fullscreenAlbumArt.alt = song.title || 'Album Art';
@@ -481,7 +431,7 @@ function updatePlayerUI(song) {
     if (fullscreenArtist) {
         fullscreenArtist.textContent = song.artist || song.primaryArtists || 'Unknown Artist';
     }
-    
+
     // Show the mini player
     if (window.playerControls) {
         window.playerControls.showMiniPlayer();
@@ -492,33 +442,33 @@ function updatePlayerUI(song) {
 // Enhanced function to load and play a song
 function loadAndPlaySong(songUrl, songData) {
     const audio = document.getElementById('audioElement');
-    
+
     if (!audio) {
         console.error('Audio element not found');
         return;
     }
-    
+
     if (!songUrl) {
         console.error('No song URL provided');
         playerShowNotification('No audio URL available', 'error');
         return;
     }
-    
+
     // Reset audio element
     audio.pause();
     audio.currentTime = 0;
-    
+
     // Set new source
     audio.src = songUrl;
-    
+
     // Update the UI with song data
     updatePlayerUI(songData);
-    
+
     // Load and play the song
     audio.load();
-    
+
     const playPromise = audio.play();
-    
+
     if (playPromise !== undefined) {
         playPromise.then(() => {
             console.log('Audio started playing successfully');
@@ -547,7 +497,7 @@ function playerShowNotification(message, type = 'info') {
     } else {
         // Fallback to console logging
         console.log(`${type.toUpperCase()}: ${message}`);
-        
+
         // Try to create a simple notification if possible
         try {
             let notification = document.getElementById('player-notification');
@@ -569,10 +519,10 @@ function playerShowNotification(message, type = 'info') {
                 `;
                 document.body.appendChild(notification);
             }
-            
+
             notification.textContent = message;
             notification.style.transform = 'translateX(0)';
-            
+
             // Auto-hide after 3 seconds
             setTimeout(() => {
                 notification.style.transform = 'translateX(400px)';
@@ -597,11 +547,19 @@ const mobileCurrentTime = document.getElementById('mobileCurrentTime');
 const mobileDuration = document.getElementById('mobileDuration');
 const waveformContainer = document.getElementById('waveformContainer');
 const closeFullscreenDesktop = document.getElementById('closeFullscreenDesktop');
+const fullscreenPlayerElement = document.getElementById('fullscreenPlayer');
+
+function formatMobileTimeValue(seconds) {
+    if (isNaN(seconds) || seconds < 0) return '0:00';
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+}
 
 // Generate waveform bars
 function generateWaveform() {
     if (!waveformContainer) return;
-    
+
     waveformContainer.innerHTML = '';
     for (let i = 0; i < 20; i++) {
         const bar = document.createElement('div');
@@ -616,7 +574,7 @@ function updateCircularProgress(currentTime, duration) {
         const progressAngle = (currentTime / duration) * 360;
         const circularProgress = document.querySelector('.circular-progress');
         const progressDot = document.querySelector('.progress-dot');
-        
+
         if (circularProgress) {
             circularProgress.style.setProperty('--progress-angle', `${progressAngle}deg`);
         }
@@ -662,18 +620,20 @@ function setMobileBackground(imageUrl) {
 
 if (mobilePrevBtn) {
     mobilePrevBtn.addEventListener('click', () => {
-        // Connect to existing previous song functionality
-        if (typeof previousSong === 'function') {
-            previousSong();
+        if (typeof window.prevSong === 'function') {
+            window.prevSong();
+        } else if (typeof window.playPreviousSong === 'function') {
+            window.playPreviousSong();
         }
     });
 }
 
 if (mobileNextBtn) {
     mobileNextBtn.addEventListener('click', () => {
-        // Connect to existing next song functionality
-        if (typeof nextSong === 'function') {
-            nextSong();
+        if (typeof window.nextSong === 'function') {
+            window.nextSong();
+        } else if (typeof window.playNextSong === 'function') {
+            window.playNextSong();
         }
     });
 }
@@ -695,7 +655,9 @@ if (mobileRepeatBtn) {
 // Close fullscreen for desktop
 if (closeFullscreenDesktop) {
     closeFullscreenDesktop.addEventListener('click', () => {
-        fullscreenPlayer.classList.remove('active');
+        if (fullscreenPlayerElement) {
+            fullscreenPlayerElement.classList.remove('active');
+        }
         document.body.classList.remove('fullscreen-active');
     });
 }
@@ -713,51 +675,57 @@ function updateMobilePlayButton(playing) {
 // Update mobile time displays
 function updateMobileTime(currentTime, duration) {
     if (mobileCurrentTime) {
-        mobileCurrentTime.textContent = formatTime(currentTime);
+        mobileCurrentTime.textContent = formatMobileTimeValue(currentTime);
     }
     if (mobileDuration) {
-        mobileDuration.textContent = formatTime(duration);
+        mobileDuration.textContent = formatMobileTimeValue(duration);
     }
 }
 
 // Initialize mobile interface
 function initializeMobileInterface() {
     generateWaveform();
-    
+
+    // Get audio element from DOM
+    const audio = document.getElementById('audioElement');
+
     // Update existing time update function to include mobile
     const originalTimeUpdate = () => {
         if (audio && !isNaN(audio.duration)) {
             const currentTime = audio.currentTime;
             const duration = audio.duration;
-            
+
             // Update mobile displays
             updateMobileTime(currentTime, duration);
             updateCircularProgress(currentTime, duration);
-            updateWaveform(isPlaying);
+            updateWaveform(!audio.paused);
         }
     };
-    
+
     if (audio) {
         audio.addEventListener('timeupdate', originalTimeUpdate);
     }
 }
 
 // Override existing updatePlayButtons function to include mobile
-const originalUpdatePlayButtons = window.updatePlayButtons || function() {};
-window.updatePlayButtons = function(playing) {
-    originalUpdatePlayButtons(playing);
-    updateMobilePlayButton(playing);
-    
-    // Update circular progress animation
-    const circularProgress = document.querySelector('.circular-progress');
-    if (circularProgress) {
-        if (playing) {
-            circularProgress.classList.add('playing');
-        } else {
-            circularProgress.classList.remove('playing');
+if (!window.__mehfilMobilePlayButtonsWrapped) {
+    const originalUpdatePlayButtons = window.updatePlayButtons || function () { };
+    window.updatePlayButtons = function (playing) {
+        originalUpdatePlayButtons(playing);
+        updateMobilePlayButton(playing);
+
+        // Update circular progress animation
+        const circularProgress = document.querySelector('.circular-progress');
+        if (circularProgress) {
+            if (playing) {
+                circularProgress.classList.add('playing');
+            } else {
+                circularProgress.classList.remove('playing');
+            }
         }
-    }
-};
+    };
+    window.__mehfilMobilePlayButtonsWrapped = true;
+}
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -768,17 +736,20 @@ document.addEventListener('DOMContentLoaded', () => {
 function updateMobileSongInfo(title, artist, imageUrl) {
     // Update background
     setMobileBackground(imageUrl);
-    
+
     // The song title and artist are handled by the existing fullscreen update functions
     // but we can add mobile-specific updates here if needed
 }
 
 // Override existing playSong function to include mobile updates
-const originalPlaySong = window.playSong || function() {};
-window.playSong = function(song) {
-    originalPlaySong(song);
-    
-    if (song && song.image) {
-        updateMobileSongInfo(song.title, song.artist, song.image);
-    }
-};
+if (!window.__mehfilPlaySongWrapped) {
+    const originalPlaySong = window.playSong || function () { };
+    window.playSong = function (song) {
+        originalPlaySong(song);
+
+        if (song && song.image) {
+            updateMobileSongInfo(song.title, song.artist, song.image);
+        }
+    };
+    window.__mehfilPlaySongWrapped = true;
+}

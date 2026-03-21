@@ -1,0 +1,158 @@
+/* ===== UNIFIED CARD SYSTEM - ONE BEHAVIOR FOR ALL CARDS ===== */
+
+/* Base Card Styling */
+.card,
+.song-card,
+.album-card,
+.artist-card,
+.playlist-card {
+    position: relative;
+    background: var(--mehfil-surface-card);
+    border-radius: 12px;
+    padding: var(--mehfil-space-md);
+    transition: all var(--mehfil-motion-medium) var(--mehfil-ease-smooth);
+    cursor: pointer;
+    box-shadow: var(--mehfil-shadow-sm);
+    border: 1px solid transparent;
+}
+
+/* Hover State - Lift + Soft Glow */
+.card:hover,
+.song-card:hover,
+.album-card:hover,
+.artist-card:hover,
+.playlist-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--mehfil-shadow-md), var(--mehfil-shadow-gold);
+    border-color: rgba(230, 184, 115, 0.2);
+    background: var(--mehfil-surface-elevated);
+}
+
+/* Active/Playing State - Gold Border + Pulse */
+.card.playing,
+.card.active,
+.song-card.playing,
+.song-card.active,
+.album-card.active,
+.artist-card.active,
+.playlist-card.active {
+    border-color: var(--mehfil-gold-primary);
+    box-shadow: var(--mehfil-shadow-md), 0 0 24px var(--mehfil-gold-glow);
+    animation: mehfilBreathePulse var(--mehfil-motion-breath) ease-in-out infinite;
+}
+
+/* Card Image Container */
+.card img,
+.song-card img,
+.album-card img,
+.artist-card img,
+.playlist-card img {
+    border-radius: 8px;
+    transition: transform var(--mehfil-motion-medium) var(--mehfil-ease-smooth);
+    will-change: transform;
+}
+
+.card:hover img,
+.song-card:hover img,
+.album-card:hover img,
+.artist-card:hover img,
+.playlist-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Card Title - Apply Typography Hierarchy */
+.card h3,
+.card h4,
+.song-card h3,
+.song-card h4,
+.album-card h3,
+.artist-card h3,
+.playlist-card h3 {
+    font-weight: 500;
+    color: var(--mehfil-text-secondary);
+    margin-bottom: var(--mehfil-space-xs);
+}
+
+/* Card Subtitle/Artist */
+.card p,
+.song-card p,
+.album-card p,
+.artist-card p,
+.playlist-card p {
+    font-weight: 400;
+    color: var(--mehfil-text-muted);
+    font-size: 0.9em;
+}
+
+/* Play Button on Card */
+.card .play-btn,
+.song-card .play-btn,
+.album-card .play-btn {
+    position: absolute;
+    bottom: var(--mehfil-space-md);
+    right: var(--mehfil-space-md);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--mehfil-gold-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all var(--mehfil-motion-medium) var(--mehfil-ease-smooth);
+    box-shadow: var(--mehfil-shadow-md);
+}
+
+.card:hover .play-btn,
+.song-card:hover .play-btn,
+.album-card:hover .play-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.card .play-btn:hover,
+.song-card .play-btn:hover,
+.album-card .play-btn:hover {
+    background: var(--mehfil-gold-soft);
+    box-shadow: var(--mehfil-shadow-lg), var(--mehfil-shadow-gold);
+    transform: scale(1.1);
+}
+
+/* Active Song in List - Gentle Pulse */
+.song-item.active,
+.track-item.active {
+    background: rgba(230, 184, 115, 0.1);
+    border-left: 3px solid var(--mehfil-gold-primary);
+    animation: mehfilBreathePulse var(--mehfil-motion-breath) ease-in-out infinite;
+}
+
+/* Trending Badge */
+.trending-badge {
+    position: absolute;
+    top: var(--mehfil-space-sm);
+    right: var(--mehfil-space-sm);
+    background: var(--mehfil-gold-primary);
+    color: var(--mehfil-dark-base);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* New Release Badge */
+.new-badge {
+    position: absolute;
+    top: var(--mehfil-space-sm);
+    right: var(--mehfil-space-sm);
+    background: var(--mehfil-accent-blue);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}

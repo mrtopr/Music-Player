@@ -2,9 +2,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const fullscreenPlayer = document.getElementById('fullscreenPlayer');
     const audio = document.getElementById('audioElement');
-    
+
     if (!fullscreenPlayer || !audio) return;
-    
+
     // Enhanced Fullscreen Player Features
     class FullscreenPlayerEnhancer {
         constructor() {
@@ -14,19 +14,17 @@ document.addEventListener('DOMContentLoaded', () => {
             this.visualizerActive = false;
             this.lyricsVisible = false;
             this.backgroundImageUrl = null;
-            
+
             this.init();
         }
-        
+
         init() {
             this.setupEventListeners();
             this.setupKeyboardShortcuts();
             this.setupGestures();
-            // Don't create visualizer by default to avoid audio context issues
-            // this.createVisualizer();
             this.setupBackgroundEffects();
         }
-        
+
         // Setup event listeners
         setupEventListeners() {
             // Fullscreen activation/deactivation
@@ -35,39 +33,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('closeFullscreen'),
                 document.getElementById('closeFullscreenDesktop')
             ];
-            
+
             if (expandButton) {
                 expandButton.addEventListener('click', () => this.activate());
             }
-            
+
             closeButtons.forEach(button => {
                 if (button) {
                     button.addEventListener('click', () => this.deactivate());
                 }
             });
-            
+
             // Progress bar interactions
             this.setupProgressInteractions();
-            
+
             // Mobile progress bar interactions
             this.setupMobileProgressInteractions();
-            
+
             // Mobile control buttons
             this.setupControls();
-            
+
             // Volume control enhancements
             this.setupVolumeControls();
-            
+
             // Waveform interactions
             this.setupWaveformInteractions();
-            
+
             // Background click to close (desktop only)
             fullscreenPlayer.addEventListener('click', (e) => {
                 if (e.target === fullscreenPlayer && window.innerWidth > 768) {
                     this.deactivate();
                 }
             });
-            
+
             // Prevent content clicks from closing
             const fullscreenContent = fullscreenPlayer.querySelector('.fullscreen-content');
             if (fullscreenContent) {
@@ -76,12 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         }
-        
+
         // Setup keyboard shortcuts
         setupKeyboardShortcuts() {
             document.addEventListener('keydown', (e) => {
                 if (!this.isActive) return;
-                
+
                 switch (e.code) {
                     case 'Escape':
                         e.preventDefault();
@@ -148,19 +146,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-        
+
         // Setup touch gestures
         setupGestures() {
             let startX = 0;
             let startY = 0;
             let startTime = 0;
-            
+
             fullscreenPlayer.addEventListener('touchstart', (e) => {
                 startX = e.touches[0].clientX;
                 startY = e.touches[0].clientY;
                 startTime = Date.now();
-            });
-            
+            }, { passive: true });
+
             fullscreenPlayer.addEventListener('touchend', (e) => {
                 const endX = e.changedTouches[0].clientX;
                 const endY = e.changedTouches[0].clientY;
@@ -168,10 +166,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const diffX = startX - endX;
                 const diffY = startY - endY;
                 const timeDiff = endTime - startTime;
-                
+
                 // Only process quick gestures
                 if (timeDiff > 500) return;
-                
+
                 // Swipe gestures
                 if (Math.abs(diffX) > Math.abs(diffY)) {
                     if (Math.abs(diffX) > 50) {
@@ -196,59 +194,59 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-        
+
         // Setup progress bar interactions
         setupProgressInteractions() {
             const progressBar = fullscreenPlayer.querySelector('.fullscreen-progress-bar');
             const waveformContainer = document.getElementById('waveformContainer');
-            
+
             if (progressBar) {
                 progressBar.addEventListener('mousemove', (e) => {
                     this.showProgressPreview(e);
                 });
-                
+
                 progressBar.addEventListener('mouseleave', () => {
                     this.hideProgressPreview();
                 });
             }
-            
+
             if (waveformContainer) {
                 waveformContainer.addEventListener('click', (e) => {
                     this.seekToPosition(e);
                 });
             }
         }
-        
+
         // Setup volume controls
         setupVolumeControls() {
             const volumeSlider = document.getElementById('fullscreenVolume');
             const volumeButton = document.getElementById('fullscreenMute');
-            
+
             if (volumeSlider) {
                 volumeSlider.addEventListener('input', (e) => {
                     this.setVolume(e.target.value / 100);
                     this.showVolumeIndicator(e.target.value);
                 });
             }
-            
+
             if (volumeButton) {
                 volumeButton.addEventListener('click', () => {
                     this.toggleMute();
                 });
             }
         }
-        
+
         // Setup waveform interactions
         setupWaveformInteractions() {
             this.generateWaveform();
             this.updateWaveformBars();
         }
-        
+
         // Setup mobile progress bar interactions
         setupMobileProgressInteractions() {
             const mobileProgressInput = document.getElementById('mobileProgressInput');
             const progressBarContainer = document.querySelector('.progress-bar-container');
-            
+
             // Progress input slider
             if (mobileProgressInput) {
                 mobileProgressInput.addEventListener('input', (e) => {
@@ -257,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         audio.currentTime = seekTime;
                     }
                 });
-                
+
                 // Update progress fill while dragging
                 mobileProgressInput.addEventListener('input', (e) => {
                     const progressFill = document.getElementById('mobileProgressFill');
@@ -266,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             }
-            
+
             // Progress bar container click
             if (progressBarContainer) {
                 progressBarContainer.addEventListener('click', (e) => {
@@ -275,9 +273,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         const clickX = e.clientX - rect.left;
                         const percent = clickX / rect.width;
                         const seekTime = percent * audio.duration;
-                        
+
                         audio.currentTime = seekTime;
-                        
+
                         // Update visual feedback immediately
                         const progressFill = document.getElementById('mobileProgressFill');
                         if (progressFill) {
@@ -290,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         }
-        
+
         // Setup mobile and desktop control buttons
         setupControls() {
             // Mobile controls
@@ -299,12 +297,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const mobileNextBtn = document.getElementById('mobileNextBtn');
             const mobileShuffleBtn = document.getElementById('mobileShuffleBtn');
             const mobileRepeatBtn = document.getElementById('mobileRepeatBtn');
-            
+
             // Desktop controls
             const fullscreenPlay = document.getElementById('fullscreenPlay');
             const fullscreenPrev = document.getElementById('fullscreenPrev');
             const fullscreenNext = document.getElementById('fullscreenNext');
-            
+
             // Mobile play button
             if (mobilePlayBtn) {
                 mobilePlayBtn.addEventListener('click', (e) => {
@@ -314,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.togglePlay();
                 });
             }
-            
+
             // Desktop play button
             if (fullscreenPlay) {
                 fullscreenPlay.addEventListener('click', (e) => {
@@ -324,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.togglePlay();
                 });
             }
-            
+
             // Previous buttons
             if (mobilePrevBtn) {
                 mobilePrevBtn.addEventListener('click', (e) => {
@@ -340,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.previousTrack();
                 });
             }
-            
+
             // Next buttons
             if (mobileNextBtn) {
                 mobileNextBtn.addEventListener('click', (e) => {
@@ -356,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.nextTrack();
                 });
             }
-            
+
             // Mobile shuffle and repeat
             if (mobileShuffleBtn) {
                 mobileShuffleBtn.addEventListener('click', (e) => {
@@ -365,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Add shuffle functionality here if needed
                 });
             }
-            
+
             if (mobileRepeatBtn) {
                 mobileRepeatBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -374,79 +372,76 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         }
-        
-        // Create audio visualizer
-        createVisualizer() {
-            try {
-                // Check if audio context already exists
-                if (this.audioContext) return;
-                
-                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                this.analyser = this.audioContext.createAnalyser();
-                
-                // Check if source already exists to avoid duplicate connections
-                if (!this.source) {
-                    this.source = this.audioContext.createMediaElementSource(audio);
-                    this.source.connect(this.analyser);
-                    this.analyser.connect(this.audioContext.destination);
-                }
-                
-                this.analyser.fftSize = 256;
-                this.bufferLength = this.analyser.frequencyBinCount;
-                this.dataArray = new Uint8Array(this.bufferLength);
-            } catch (error) {
-                console.warn('Audio visualizer not supported:', error);
-                // Don't break the player if visualizer fails
-                this.visualizerActive = false;
-            }
-        }
-        
+
         // Setup background effects
         setupBackgroundEffects() {
             this.createParticleSystem();
+
+            // Setup vinyl rotation animation sync
+            this.setupVinylRotation();
         }
-        
+
+        // Setup vinyl rotation animation
+        setupVinylRotation() {
+            const artworkContainer = document.querySelector('.artwork-container');
+
+            if (!artworkContainer) return;
+
+            // Sync rotation with play/pause
+            audio.addEventListener('play', () => {
+                document.getElementById('fullscreenPlayer')?.classList.add('playing');
+            });
+
+            audio.addEventListener('pause', () => {
+                document.getElementById('fullscreenPlayer')?.classList.remove('playing');
+            });
+
+            audio.addEventListener('ended', () => {
+                document.getElementById('fullscreenPlayer')?.classList.remove('playing');
+            });
+        }
+
         // Activate fullscreen player
         activate() {
             this.isActive = true;
             fullscreenPlayer.classList.add('active');
             document.body.classList.add('fullscreen-active');
             document.body.style.overflow = 'hidden';
-            
+
             // Update background
             this.updateBackground();
-            
+
             // Update up next queue
             this.updateUpNext();
-            
+
             // Start visualizer if enabled
             if (this.visualizerActive) {
                 this.startVisualizer();
             }
-            
+
             // Animate entrance
             this.animateEntrance();
         }
-        
+
         // Deactivate fullscreen player
         deactivate() {
             this.isActive = false;
             fullscreenPlayer.classList.remove('active');
             document.body.classList.remove('fullscreen-active');
             document.body.style.overflow = '';
-            
+
             // Stop visualizer
             this.stopVisualizer();
-            
+
             // Animate exit
             this.animateExit();
         }
-        
+
         // Generate waveform bars
         generateWaveform() {
             const waveformContainer = document.getElementById('waveformContainer');
             if (!waveformContainer) return;
-            
+
             waveformContainer.innerHTML = '';
             for (let i = 0; i < 30; i++) {
                 const bar = document.createElement('div');
@@ -455,16 +450,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 waveformContainer.appendChild(bar);
             }
         }
-        
+
         // Update waveform bars based on audio
         updateWaveformBars() {
             const bars = document.querySelectorAll('.waveform-bar');
             if (!bars.length || !audio.duration) return;
-            
+
             const currentTime = audio.currentTime;
             const duration = audio.duration;
             const progress = currentTime / duration;
-            
+
             bars.forEach((bar, index) => {
                 const barProgress = index / bars.length;
                 if (barProgress <= progress) {
@@ -478,15 +473,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-        
+
         // Show progress preview
         showProgressPreview(e) {
             if (!audio.duration) return;
-            
+
             const rect = e.currentTarget.getBoundingClientRect();
             const percent = (e.clientX - rect.left) / rect.width;
             const time = percent * audio.duration;
-            
+
             let preview = fullscreenPlayer.querySelector('.progress-preview');
             if (!preview) {
                 preview = document.createElement('div');
@@ -509,13 +504,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 e.currentTarget.appendChild(preview);
             }
-            
+
             preview.textContent = this.formatTime(time);
             preview.style.left = `${percent * 100}%`;
             preview.style.transform = 'translateX(-50%)';
             preview.style.opacity = '1';
         }
-        
+
         // Hide progress preview
         hideProgressPreview() {
             const preview = fullscreenPlayer.querySelector('.progress-preview');
@@ -523,30 +518,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 preview.style.opacity = '0';
             }
         }
-        
+
         // Show volume indicator
         showVolumeIndicator(volume) {
             const indicator = fullscreenPlayer.querySelector('.volume-indicator');
             if (indicator) {
                 indicator.classList.add('show');
                 indicator.innerHTML = `<i class="bi bi-volume-${volume === 0 ? 'mute' : volume < 50 ? 'down' : 'up'}"></i>`;
-                
+
                 clearTimeout(this.volumeTimeout);
                 this.volumeTimeout = setTimeout(() => {
                     indicator.classList.remove('show');
                 }, 2000);
             }
         }
-        
+
         // Seek to position
         seekToPosition(e) {
             if (!audio.duration) return;
-            
+
             const rect = e.currentTarget.getBoundingClientRect();
             const percent = (e.clientX - rect.left) / rect.width;
             audio.currentTime = percent * audio.duration;
         }
-        
+
         // Update background with album art
         updateBackground() {
             if (this.backgroundImageUrl) {
@@ -560,7 +555,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fullscreenPlayer.style.backgroundAttachment = 'fixed';
             }
         }
-        
+
         // Create particle system
         createParticleSystem() {
             const canvas = document.createElement('canvas');
@@ -575,17 +570,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 opacity: 0.3;
                 z-index: 1;
             `;
-            
+
             fullscreenPlayer.appendChild(canvas);
-            
+
             const ctx = canvas.getContext('2d');
             const particles = [];
-            
+
             const resizeCanvas = () => {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
             };
-            
+
             const createParticle = () => ({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
@@ -594,48 +589,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 size: Math.random() * 2 + 1,
                 opacity: Math.random() * 0.5 + 0.2
             });
-            
+
             const animate = () => {
                 if (!this.isActive) return;
-                
+
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
+
                 particles.forEach((particle, index) => {
                     particle.x += particle.vx;
                     particle.y += particle.vy;
-                    
+
                     if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
                     if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
-                    
+
                     ctx.beginPath();
                     ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
                     ctx.fillStyle = `rgba(255, 165, 59, ${particle.opacity})`;
                     ctx.fill();
                 });
-                
+
                 requestAnimationFrame(animate);
             };
-            
+
             // Initialize particles
             for (let i = 0; i < 50; i++) {
                 particles.push(createParticle());
             }
-            
+
             window.addEventListener('resize', resizeCanvas);
             resizeCanvas();
-            
+
             this.particleSystem = { canvas, animate, particles };
         }
-        
+
         // Start visualizer
         startVisualizer() {
             if (!this.analyser) return;
-            
+
             const visualize = () => {
                 if (!this.visualizerActive || !this.isActive) return;
-                
+
                 this.analyser.getByteFrequencyData(this.dataArray);
-                
+
                 // Update waveform based on frequency data
                 const bars = document.querySelectorAll('.waveform-bar');
                 bars.forEach((bar, index) => {
@@ -644,38 +639,38 @@ document.addEventListener('DOMContentLoaded', () => {
                     bar.style.height = `${intensity * 40 + 5}px`;
                     bar.style.opacity = intensity * 0.8 + 0.2;
                 });
-                
+
                 requestAnimationFrame(visualize);
             };
-            
+
             visualize();
         }
-        
+
         // Stop visualizer
         stopVisualizer() {
             this.visualizerActive = false;
         }
-        
+
         // Animate entrance
         animateEntrance() {
             const elements = fullscreenPlayer.querySelectorAll('.fullscreen-content > *');
             elements.forEach((el, index) => {
                 el.style.opacity = '0';
                 el.style.transform = 'translateY(30px)';
-                
+
                 setTimeout(() => {
                     el.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
                     el.style.opacity = '1';
                     el.style.transform = 'translateY(0)';
                 }, index * 100);
             });
-            
+
             // Start particle animation
             if (this.particleSystem) {
                 this.particleSystem.animate();
             }
         }
-        
+
         // Animate exit
         animateExit() {
             const elements = fullscreenPlayer.querySelectorAll('.fullscreen-content > *');
@@ -686,14 +681,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, index * 50);
             });
         }
-        
+
         // Control functions
         togglePlay() {
             console.log('FullscreenPlayerEnhancer: togglePlay called');
             console.log('Audio element:', audio);
             console.log('Audio paused:', audio ? audio.paused : 'no audio');
             console.log('Window.togglePlay exists:', typeof window.togglePlay);
-            
+
             // Use the main app's togglePlay function first
             if (window.togglePlay && typeof window.togglePlay === 'function') {
                 console.log('Calling window.togglePlay');
@@ -717,7 +712,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.warn('No play/pause method available');
             }
         }
-        
+
         nextTrack() {
             if (window.nextSong && typeof window.nextSong === 'function') {
                 window.nextSong();
@@ -725,7 +720,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.playNextSong();
             }
         }
-        
+
         previousTrack() {
             if (window.prevSong && typeof window.prevSong === 'function') {
                 window.prevSong();
@@ -733,29 +728,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.playPreviousSong();
             }
         }
-        
+
         seekForward(seconds) {
             if (audio.currentTime + seconds < audio.duration) {
                 audio.currentTime += seconds;
             }
         }
-        
+
         seekBackward(seconds) {
             if (audio.currentTime - seconds > 0) {
                 audio.currentTime -= seconds;
             }
         }
-        
+
         volumeUp() {
             const newVolume = Math.min(1, audio.volume + 0.1);
             this.setVolume(newVolume);
         }
-        
+
         volumeDown() {
             const newVolume = Math.max(0, audio.volume - 0.1);
             this.setVolume(newVolume);
         }
-        
+
         setVolume(volume) {
             audio.volume = volume;
             const volumeSlider = document.getElementById('fullscreenVolume');
@@ -764,32 +759,32 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             this.showVolumeIndicator(volume * 100);
         }
-        
+
         toggleMute() {
             if (window.playerControls && window.playerControls.toggleMute) {
                 window.playerControls.toggleMute();
             }
         }
-        
+
         toggleShuffle() {
             const shuffleBtn = document.getElementById('fullscreenShuffle');
             if (shuffleBtn) {
                 shuffleBtn.classList.toggle('active');
             }
         }
-        
+
         toggleRepeat() {
             const repeatBtn = document.getElementById('fullscreenRepeat');
             if (repeatBtn) {
                 repeatBtn.classList.toggle('active');
             }
         }
-        
+
         toggleLyrics() {
             this.lyricsVisible = !this.lyricsVisible;
             // Implementation for lyrics display
         }
-        
+
         toggleVisualizer() {
             this.visualizerActive = !this.visualizerActive;
             if (this.visualizerActive) {
@@ -798,7 +793,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.stopVisualizer();
             }
         }
-        
+
         // Update current song
         updateSong(song) {
             this.currentSong = song;
@@ -808,28 +803,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.updateBackground();
                 }
             }
-            
+
             // Update up next queue when song changes
             if (this.isActive) {
                 this.updateUpNext();
             }
         }
-        
+
         // Update up next queue
         updateUpNext() {
             const upNextList = document.getElementById('upNextList');
             if (!upNextList) return;
-            
+
             upNextList.innerHTML = '';
-            
+
             // Get queue from main app if available
             let queueSongs = [];
-            
+
             // Try to get songs from the main app
             if (window.songs && window.currentSongIndex !== undefined) {
                 const currentIndex = window.currentSongIndex;
                 const allSongs = window.songs;
-                
+
                 // Get next 5 songs in the queue
                 for (let i = 1; i <= 5; i++) {
                     const nextIndex = (currentIndex + i) % allSongs.length;
@@ -838,43 +833,43 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
-            
+
             // If no queue found, create sample data
             if (queueSongs.length === 0) {
                 queueSongs = [
-                    { 
-                        title: 'Tum Hi Ho', 
-                        artist: 'Arijit Singh', 
+                    {
+                        title: 'Tum Hi Ho',
+                        artist: 'Arijit Singh',
                         image: 'Assets/music.png',
                         primaryArtists: 'Arijit Singh'
                     },
-                    { 
-                        title: 'Raabta', 
-                        artist: 'Arijit Singh', 
+                    {
+                        title: 'Raabta',
+                        artist: 'Arijit Singh',
                         image: 'Assets/music.png',
                         primaryArtists: 'Arijit Singh'
                     },
-                    { 
-                        title: 'Channa Mereya', 
-                        artist: 'Arijit Singh', 
+                    {
+                        title: 'Channa Mereya',
+                        artist: 'Arijit Singh',
                         image: 'Assets/music.png',
                         primaryArtists: 'Arijit Singh'
                     },
-                    { 
-                        title: 'Tera Ban Jaunga', 
-                        artist: 'Tulsi Kumar, Akhil Sachdeva', 
+                    {
+                        title: 'Tera Ban Jaunga',
+                        artist: 'Tulsi Kumar, Akhil Sachdeva',
                         image: 'Assets/music.png',
                         primaryArtists: 'Tulsi Kumar'
                     },
-                    { 
-                        title: 'Bekhayali', 
-                        artist: 'Sachet Tandon', 
+                    {
+                        title: 'Bekhayali',
+                        artist: 'Sachet Tandon',
                         image: 'Assets/music.png',
                         primaryArtists: 'Sachet Tandon'
                     }
                 ];
             }
-            
+
             queueSongs.forEach((song, index) => {
                 const queueItem = document.createElement('div');
                 queueItem.className = 'up-next-item';
@@ -886,7 +881,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="up-next-item-number">${index + 1}</div>
                 `;
-                
+
                 // Add click handler to play this song
                 queueItem.addEventListener('click', () => {
                     if (window.songs && window.currentSongIndex !== undefined) {
@@ -896,19 +891,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
                 });
-                
+
                 upNextList.appendChild(queueItem);
             });
         }
-        
+
         // Update circular progress
         updateCircularProgress() {
             if (!audio.duration) return;
-            
+
             const progress = (audio.currentTime / audio.duration) * 360;
             const circularProgress = document.querySelector('.circular-progress');
             const progressDot = document.querySelector('.progress-dot');
-            
+
             if (circularProgress) {
                 circularProgress.style.setProperty('--progress-angle', `${progress}deg`);
             }
@@ -916,31 +911,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 progressDot.style.transform = `translateX(-50%) rotate(${progress}deg)`;
             }
         }
-        
+
         // Update mobile progress bar
         updateMobileProgress() {
             if (!audio.duration) return;
-            
+
             const currentTime = audio.currentTime;
             const duration = audio.duration;
             const progressPercent = (currentTime / duration) * 100;
-            
+
             // Update progress bar fill
             const progressFill = document.getElementById('mobileProgressFill');
             if (progressFill) {
                 progressFill.style.width = `${progressPercent}%`;
             }
-            
+
             // Update progress input
             const progressInput = document.getElementById('mobileProgressInput');
             if (progressInput) {
                 progressInput.value = progressPercent;
             }
-            
+
             // Update only the progress bar time displays (not waveform)
             const mobileCurrentTime = document.getElementById('mobileCurrentTime');
             const mobileDuration = document.getElementById('mobileDuration');
-            
+
             if (mobileCurrentTime) {
                 mobileCurrentTime.textContent = this.formatTime(currentTime);
             }
@@ -948,17 +943,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 mobileDuration.textContent = this.formatTime(duration);
             }
         }
-        
+
         // Update mobile play button icon
         updateMobilePlayButton(isPlaying) {
             console.log('updateMobilePlayButton called with isPlaying:', isPlaying);
-            
+
             const mobilePlayBtn = document.getElementById('mobilePlayBtn');
             const fullscreenPlay = document.getElementById('fullscreenPlay');
-            
+
             const playIcon = 'bi bi-play-fill';
             const pauseIcon = 'bi bi-pause-fill';
-            
+
             // Update mobile play button
             if (mobilePlayBtn) {
                 const icon = mobilePlayBtn.querySelector('i');
@@ -968,7 +963,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     icon.className = newClass;
                 }
             }
-            
+
             // Update desktop fullscreen play button
             if (fullscreenPlay) {
                 const icon = fullscreenPlay.querySelector('i');
@@ -979,7 +974,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-        
+
         // Utility function
         formatTime(seconds) {
             if (isNaN(seconds) || seconds < 0) return '0:00';
@@ -988,28 +983,30 @@ document.addEventListener('DOMContentLoaded', () => {
             return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
         }
     }
-    
+
     // Initialize the enhancer
     const fullscreenPlayerEnhancer = new FullscreenPlayerEnhancer();
-    
+
     // Make it globally available
     window.fullscreenPlayerEnhancer = fullscreenPlayerEnhancer;
-    
+
     // Hook into existing functions
-    const originalUpdatePlayerUI = window.updatePlayerUI;
-    if (originalUpdatePlayerUI) {
-        window.updatePlayerUI = function(song) {
-            try {
-                originalUpdatePlayerUI(song);
-                fullscreenPlayerEnhancer.updateSong(song);
-            } catch (error) {
-                console.error('Error in updatePlayerUI:', error);
-                // Fallback to just updating the enhancer
-                fullscreenPlayerEnhancer.updateSong(song);
-            }
-        };
+    if (!window.__mehfilFullscreenUIWrapperApplied) {
+        const originalUpdatePlayerUI = window.updatePlayerUI;
+        if (originalUpdatePlayerUI) {
+            window.updatePlayerUI = function (song) {
+                try {
+                    originalUpdatePlayerUI(song);
+                    fullscreenPlayerEnhancer.updateSong(song);
+                } catch (error) {
+                    console.error('Error in updatePlayerUI:', error);
+                    fullscreenPlayerEnhancer.updateSong(song);
+                }
+            };
+            window.__mehfilFullscreenUIWrapperApplied = true;
+        }
     }
-    
+
     // Update progress and waveform
     if (audio) {
         audio.addEventListener('timeupdate', () => {
@@ -1019,22 +1016,59 @@ document.addEventListener('DOMContentLoaded', () => {
                 fullscreenPlayerEnhancer.updateMobileProgress();
             }
         });
-        
+
         // Update mobile play button on play/pause events
         audio.addEventListener('play', () => {
             console.log('Audio play event - updating mobile button to pause icon');
             fullscreenPlayerEnhancer.updateMobilePlayButton(true);
         });
-        
+
         audio.addEventListener('pause', () => {
             console.log('Audio pause event - updating mobile button to play icon');
             fullscreenPlayerEnhancer.updateMobilePlayButton(false);
         });
-        
+
         // Initialize mobile play button state
         audio.addEventListener('loadedmetadata', () => {
             console.log('Audio loadedmetadata - initializing mobile button state');
             fullscreenPlayerEnhancer.updateMobilePlayButton(!audio.paused);
         });
     }
+
+    // Initialize audio fixes (consolidated from audio-init-fix.js)
+    function initializeAudioFixes() {
+        // Ensure audio is not muted and has proper volume
+        audio.muted = false;
+        audio.volume = 0.8;
+
+        console.log('✅ Audio initialized - Muted:', audio.muted, 'Volume:', audio.volume);
+
+        // Sync volume controls
+        const volumeSliders = document.querySelectorAll('#miniVolumeSlider, #fullscreenVolume');
+        volumeSliders.forEach(slider => {
+            if (slider) {
+                slider.value = audio.volume * 100;
+                slider.addEventListener('input', (e) => {
+                    const volume = e.target.value / 100;
+                    audio.volume = volume;
+                    audio.muted = false;
+                });
+            }
+        });
+
+        // Unmute on first user interaction
+        const unmuteOnInteraction = () => {
+            if (audio.muted) {
+                audio.muted = false;
+                audio.volume = 0.8;
+                console.log('🔊 Audio unmuted on user interaction');
+            }
+        };
+
+        document.addEventListener('click', unmuteOnInteraction, { once: true });
+        document.addEventListener('touchstart', unmuteOnInteraction, { once: true, passive: true });
+    }
+
+    // Initialize audio fixes
+    initializeAudioFixes();
 });

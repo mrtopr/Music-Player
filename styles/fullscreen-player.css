@@ -1,18 +1,5 @@
 /* ===== FULLSCREEN PLAYER STYLES ===== */
-
-/* CSS Variables */
-:root {
-  --fullscreen-bg: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2a2a2a 100%);
-  --fullscreen-overlay: rgba(0, 0, 0, 0.7);
-  --fullscreen-accent: #FFA53B;
-  --fullscreen-accent-secondary: #FF8C42;
-  --fullscreen-text: #ffffff;
-  --fullscreen-text-secondary: rgba(255, 255, 255, 0.8);
-  --fullscreen-text-muted: rgba(255, 255, 255, 0.6);
-  --fullscreen-border: rgba(255, 255, 255, 0.1);
-  --fullscreen-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  --fullscreen-glow: 0 0 30px rgba(255, 165, 59, 0.3);
-}
+/* Note: CSS variables are defined in main styles.css */
 
 /* ===== MAIN CONTAINER ===== */
 .fullscreen-player {
@@ -36,6 +23,44 @@
 .fullscreen-player.active {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
+}
+
+/* Song Info Display - Ensure Visibility */
+#fullscreenSongTitle,
+.fullscreen-player .song-title {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--mehfil-text-primary, #F5F5F5);
+  text-align: center;
+  letter-spacing: 0.02em;
+  margin: 0;
+  padding: 0 20px;
+  max-width: 600px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#fullscreenArtist,
+.fullscreen-player .artist-name {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--mehfil-text-secondary, #A3A7B3);
+  text-align: center;
+  letter-spacing: 0.01em;
+  margin: 0;
+  padding: 0 20px;
+  max-width: 500px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .fullscreen-overlay {
@@ -119,7 +144,7 @@
 }
 
 .playlist-name {
-  color: #6366f1;
+  color: var(--fullscreen-accent-secondary);
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -173,19 +198,25 @@
   width: 240px;
   height: 240px;
   border-radius: 50%;
-  background: conic-gradient(
-    var(--fullscreen-accent) 0deg,
-    var(--fullscreen-accent) var(--progress-angle, 0deg),
-    rgba(255, 255, 255, 0.1) var(--progress-angle, 0deg),
-    rgba(255, 255, 255, 0.1) 360deg
-  );
+  background: conic-gradient(var(--fullscreen-accent) 0deg,
+      var(--fullscreen-accent) var(--progress-angle, 0deg),
+      rgba(255, 255, 255, 0.1) var(--progress-angle, 0deg),
+      rgba(255, 255, 255, 0.1) 360deg);
   padding: 4px;
   animation: circularRotate 20s linear infinite;
+  z-index: 1;
+  /* Above pulse ring, below artwork */
+  will-change: transform;
 }
 
 @keyframes circularRotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .progress-dot {
@@ -211,6 +242,8 @@
   overflow: hidden;
   box-shadow: var(--fullscreen-shadow);
   border: 4px solid rgba(255, 255, 255, 0.1);
+  z-index: 3;
+  /* Above circular-progress and pulse-ring */
 }
 
 .circular-artwork img {
@@ -218,6 +251,8 @@
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .fullscreen-player.playing .circular-artwork img {
@@ -225,8 +260,13 @@
 }
 
 @keyframes albumRotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ===== CONTROLS SECTION (UNIVERSAL) ===== */
@@ -280,9 +320,9 @@
   transform: translateY(-50%);
   width: 12px;
   height: 12px;
-  background: var(--fullscreen-accent);
+  background: var(--mehfil-gold-primary);
   border-radius: 50%;
-  box-shadow: 0 0 8px rgba(255, 165, 59, 0.8);
+  box-shadow: 0 0 8px var(--mehfil-gold-glow);
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -375,8 +415,15 @@
 }
 
 @keyframes waveformPulse {
-  0%, 100% { transform: scaleY(1); }
-  50% { transform: scaleY(1.2); }
+
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  50% {
+    transform: scaleY(1.2);
+  }
 }
 
 .mobile-main-controls {
@@ -497,53 +544,53 @@
     max-width: 450px;
     padding: 25px;
   }
-  
+
   .mobile-top-bar {
     display: flex !important;
     margin-bottom: 20px;
   }
-  
+
   .fullscreen-artwork {
     display: flex !important;
     min-height: 270px;
     max-height: 320px;
   }
-  
+
   .circular-progress {
     display: block !important;
     width: 260px;
     height: 260px;
   }
-  
+
   .circular-artwork {
     display: block !important;
     width: 240px;
     height: 240px;
   }
-  
+
   .progress-dot {
     transform-origin: 50% 128px;
   }
-  
+
   .mobile-controls-section {
     display: block !important;
     margin-top: 20px;
   }
-  
+
   .mobile-waveform {
     display: none !important;
   }
-  
+
   .mobile-main-controls {
     display: flex !important;
   }
-  
+
   .mobile-control-btn {
     width: 48px;
     height: 48px;
     font-size: 19px;
   }
-  
+
   .mobile-play-btn {
     width: 65px;
     height: 65px;
@@ -557,27 +604,27 @@
     max-width: 500px;
     padding: 30px;
   }
-  
+
   .circular-progress {
     width: 280px;
     height: 280px;
   }
-  
+
   .circular-artwork {
     width: 260px;
     height: 260px;
   }
-  
+
   .progress-dot {
     transform-origin: 50% 138px;
   }
-  
+
   .mobile-control-btn {
     width: 50px;
     height: 50px;
     font-size: 20px;
   }
-  
+
   .mobile-play-btn {
     width: 70px;
     height: 70px;
@@ -590,27 +637,27 @@
   .fullscreen-content {
     max-width: 450px;
   }
-  
+
   .circular-progress {
     width: 260px;
     height: 260px;
   }
-  
+
   .circular-artwork {
     width: 240px;
     height: 240px;
   }
-  
+
   .progress-dot {
     transform-origin: 50% 128px;
   }
-  
+
   .mobile-control-btn {
     width: 48px;
     height: 48px;
     font-size: 19px;
   }
-  
+
   .mobile-play-btn {
     width: 65px;
     height: 65px;
@@ -624,65 +671,65 @@
     padding: 15px;
     max-width: 100%;
   }
-  
+
   .mobile-top-bar {
     padding: 10px 0;
     margin-bottom: 15px;
   }
-  
+
   .mobile-collapse-btn,
   .mobile-menu-btn {
     width: 40px;
     height: 40px;
     font-size: 16px;
   }
-  
+
   .circular-progress {
     width: 220px;
     height: 220px;
   }
-  
+
   .circular-artwork {
     width: 200px;
     height: 200px;
   }
-  
+
   .progress-dot {
     transform-origin: 50% 108px;
   }
-  
+
   .progress-section {
     gap: 12px;
     margin-bottom: 20px;
   }
-  
+
   .progress-time {
     font-size: 12px;
     min-width: 40px;
   }
-  
+
   .mobile-waveform {
     display: none;
     gap: 10px;
     margin-bottom: 15px;
   }
-  
+
   .mobile-time {
     font-size: 11px;
     min-width: 35px;
   }
-  
+
   .mobile-main-controls {
     gap: 12px;
     padding: 0 10px;
   }
-  
+
   .mobile-control-btn {
     width: 42px;
     height: 42px;
     font-size: 16px;
   }
-  
+
   .mobile-play-btn {
     width: 60px;
     height: 60px;
@@ -696,26 +743,26 @@
     width: 200px;
     height: 200px;
   }
-  
+
   .circular-artwork {
     width: 180px;
     height: 180px;
   }
-  
+
   .progress-dot {
     transform-origin: 50% 98px;
   }
-  
+
   .mobile-main-controls {
     gap: 10px;
   }
-  
+
   .mobile-control-btn {
     width: 38px;
     height: 38px;
     font-size: 14px;
   }
-  
+
   .mobile-play-btn {
     width: 55px;
     height: 55px;
@@ -729,6 +776,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -740,6 +788,7 @@
     opacity: 0;
     transform: translateY(100%);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -770,11 +819,11 @@
   .fullscreen-player {
     background: #000000;
   }
-  
+
   .fullscreen-overlay {
     background: rgba(0, 0, 0, 0.9);
   }
-  
+
   .mobile-control-btn {
     border-width: 2px;
   }
@@ -782,6 +831,7 @@
 
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
+
   .fullscreen-player,
   .fullscreen-player *,
   .fullscreen-player::before,
@@ -790,11 +840,11 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  
+
   .circular-progress {
     animation: none;
   }
-  
+
   .circular-artwork img {
     animation: none;
   }

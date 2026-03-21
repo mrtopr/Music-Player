@@ -46,7 +46,7 @@
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #FFA53B, #FF8C42);
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
   width: 0%;
   transition: width 0.1s linear;
   position: relative;
@@ -60,7 +60,7 @@
   transform: translateY(-50%);
   width: 12px;
   height: 12px;
-  background: #FFA53B;
+  background: var(--accent-primary);
   border-radius: 50%;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -72,7 +72,7 @@
 }
 
 .mini-player.playing .progress-bar {
-  box-shadow: 0 0 15px rgba(255, 165, 59, 0.8);
+  box-shadow: 0 0 15px var(--mehfil-gold-glow);
 }
 
 #miniProgressInput {
@@ -96,19 +96,19 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #FFA53B;
+  background: var(--mehfil-gold-primary);
   cursor: pointer;
-  box-shadow: 0 0 8px rgba(255, 165, 59, 0.6);
+  box-shadow: 0 0 8px var(--mehfil-gold-glow);
 }
 
 #miniProgressInput::-moz-range-thumb {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #FFA53B;
+  background: var(--mehfil-gold-primary);
   cursor: pointer;
   border: none;
-  box-shadow: 0 0 8px rgba(255, 165, 59, 0.6);
+  box-shadow: 0 0 8px var(--mehfil-gold-glow);
 }
 
 /* Mini Player Content */
@@ -218,7 +218,7 @@
 }
 
 #miniPlayButton {
-  background: linear-gradient(135deg, #FFA53B, #FF8C42);
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   border: none;
   color: white;
   width: 40px;
@@ -228,7 +228,7 @@
 }
 
 #miniPlayButton:hover {
-  background: linear-gradient(135deg, #FF8C42, #FFA53B);
+  background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
   transform: scale(1.1);
   box-shadow: 0 6px 20px rgba(255, 165, 59, 0.4);
 }
@@ -269,26 +269,26 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #FFA53B;
+  background: var(--mehfil-gold-primary);
   cursor: pointer;
-  box-shadow: 0 0 8px rgba(255, 165, 59, 0.6);
+  box-shadow: 0 0 8px var(--mehfil-gold-glow);
   transition: all 0.3s ease;
 }
 
 #miniVolumeSlider:hover::-webkit-slider-thumb {
-  background: #FF8C42;
+  background: var(--mehfil-gold-soft);
   transform: scale(1.2);
-  box-shadow: 0 0 12px rgba(255, 165, 59, 0.8);
+  box-shadow: 0 0 12px var(--mehfil-gold-glow);
 }
 
 #miniVolumeSlider::-moz-range-thumb {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #FFA53B;
+  background: var(--mehfil-gold-primary);
   cursor: pointer;
   border: none;
-  box-shadow: 0 0 8px rgba(255, 165, 59, 0.6);
+  box-shadow: 0 0 8px var(--mehfil-gold-glow);
 }
 
 #expandPlayer {
@@ -329,8 +329,8 @@
   opacity: 0.6;
   transition: opacity 0.3s ease;
   pointer-events: none;
-  z-index: 10;
-  max-width: 80px;
+  background: var(--mehfil-gold-primary);
+  box-shadow: 0 0 8px var(--mehfil-gold-glow);
   text-align: right;
 }
 
@@ -358,7 +358,7 @@
   font-family: "Merienda", cursive;
   font-size: 10px;
   font-weight: 600;
-  color: #FFA53B;
+  color: var(--accent-primary);
   text-shadow: 0 0 3px rgba(255, 165, 59, 0.5);
   line-height: 1;
   margin-bottom: 1px;
@@ -548,11 +548,11 @@
 
 /* Error State */
 .mini-player.error {
-  border-top-color: #ff6b6b;
+  border-top-color: var(--mehfil-danger);
 }
 
 .mini-player.error #miniPlayerTitle {
-  color: #ff6b6b;
+  color: var(--mehfil-danger);
 }
 
 /* Hidden State */
@@ -585,7 +585,7 @@
   position: absolute;
   bottom: 0;
   width: 2px;
-  background: linear-gradient(to top, #FFA53B, #FF8C42);
+  background: linear-gradient(to top, var(--accent-primary), var(--accent-secondary));
   animation: waveform 1.5s ease-in-out infinite;
   border-radius: 1px 1px 0 0;
 }
@@ -624,7 +624,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FFA53B, #FF8C42);
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   border: none;
   color: white;
   font-size: 16px;
@@ -642,7 +642,7 @@
 }
 
 .mini-player-fab:hover {
-  background: linear-gradient(135deg, #FF8C42, #FFA53B);
+  background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
   transform: translateY(-2px) scale(1.1);
   box-shadow: 0 6px 20px rgba(255, 165, 59, 0.6);
 }
@@ -701,7 +701,7 @@
 }
 
 .queue-header {
-  color: #FFA53B;
+  color: var(--accent-primary);
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -771,7 +771,7 @@
   align-items: center;
   justify-content: center;
   font-size: 8px;
-  color: #FFA53B;
+  color: var(--accent-primary);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -809,7 +809,7 @@
 
 .eq-bar {
   width: 2px;
-  background: linear-gradient(to top, #FFA53B, #FF8C42);
+  background: linear-gradient(to top, var(--accent-primary), var(--accent-secondary));
   border-radius: 1px;
   animation: equalizer 1s ease-in-out infinite;
 }
@@ -832,7 +832,7 @@
   right: -8px;
   width: 16px;
   height: 16px;
-  background: #ff6b6b;
+  background: var(--mehfil-danger);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -888,7 +888,7 @@
 
 /* Accessibility Enhancements */
 .mini-player button:focus {
-  outline: 2px solid #FFA53B;
+  outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
 
@@ -899,11 +899,11 @@
 /* High Contrast Mode */
 @media (prefers-contrast: high) {
   .mini-player {
-    border-top: 2px solid #FFA53B;
+    border-top: 2px solid var(--accent-primary);
   }
   
   .progress-bar {
-    background: #FFA53B;
+    background: var(--accent-primary);
   }
   
   #miniPlayerTitle {
@@ -966,8 +966,8 @@
 /* Enhanced Volume Slider Styling */
 #miniVolumeSlider {
   background: linear-gradient(to right, 
-    #FFA53B 0%, 
-    #FFA53B var(--volume-percent, 80%), 
+    var(--accent-primary) 0%, 
+    var(--accent-primary) var(--volume-percent, 80%), 
     rgba(255, 255, 255, 0.2) var(--volume-percent, 80%), 
     rgba(255, 255, 255, 0.2) 100%);
 }
@@ -979,13 +979,13 @@
 
 /* Focus States for Accessibility */
 .mini-player button:focus-visible {
-  outline: 2px solid #FFA53B;
+  outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 .mini-player input:focus-visible {
-  outline: 2px solid #FFA53B;
+  outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
 
@@ -997,7 +997,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #FFA53B, transparent);
+  background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
   animation: loading 1.5s ease-in-out infinite;
 }
 

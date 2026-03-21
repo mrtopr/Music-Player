@@ -1,19 +1,5 @@
 /* ===== MAIN PLAYER STYLES ===== */
-
-/* CSS Variables */
-:root {
-  --accent-primary: #6c5ce7;
-  --accent-secondary: #a29bfe;
-  --accent-tertiary: #FFA53B;
-  --bg-dark: #1e1e2f;
-  --bg-darker: #16213e;
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-muted: rgba(255, 255, 255, 0.6);
-  --card-bg: rgba(255, 255, 255, 0.05);
-  --card-hover: rgba(255, 255, 255, 0.08);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
+/* Note: CSS variables are defined in main styles.css */
 
 /* Main Content Layout */
 .main-content {
@@ -27,24 +13,24 @@
 .hero {
   text-align: center;
   padding: 4rem 1rem;
-  background: linear-gradient(135deg, var(--bg-dark) 0%, #2a2a40 100%);
+  background: linear-gradient(135deg, var(--mehfil-dark-base) 0%, var(--mehfil-surface-elevated) 100%);
   border-radius: 16px;
   margin-bottom: 2rem;
-  color: var(--text-primary);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  color: var(--mehfil-text-primary);
+  box-shadow: var(--mehfil-shadow-lg);
 }
 
 .hero h1 {
   font-size: 2.8rem;
   margin-bottom: 1rem;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  background: linear-gradient(90deg, var(--mehfil-gold-primary), var(--mehfil-gold-soft));
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .hero p {
   font-size: 1.2rem;
-  color: var(--text-secondary);
+  color: var(--mehfil-text-secondary);
   margin-bottom: 2rem;
 }
 
@@ -53,15 +39,15 @@
   display: flex;
   max-width: 600px;
   margin: 0 auto;
-  background: var(--border-color);
+  background: var(--mehfil-border);
   border-radius: 50px;
   overflow: hidden;
   transition: all 0.3s ease;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--mehfil-border);
 }
 
 .search-container:focus-within {
-  box-shadow: 0 5px 20px rgba(108, 92, 231, 0.3);
+  box-shadow: 0 5px 20px var(--mehfil-gold-glow);
   transform: translateY(-2px);
 }
 
@@ -70,18 +56,18 @@
   padding: 1rem 1.5rem;
   border: none;
   background: transparent;
-  color: var(--text-primary);
+  color: var(--mehfil-text-primary);
   font-size: 1rem;
   outline: none;
 }
 
 .search-container input::placeholder {
-  color: var(--text-muted);
+  color: var(--mehfil-text-muted);
 }
 
 .search-container button {
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-  color: var(--text-primary);
+  background: linear-gradient(90deg, var(--mehfil-gold-primary), var(--mehfil-gold-soft));
+  color: var(--mehfil-dark-base);
   border: none;
   padding: 0 2rem;
   cursor: pointer;
@@ -93,12 +79,12 @@
 }
 
 .search-container button:hover {
-  background: linear-gradient(90deg, #5c4bd8, #8e7df7);
+  background: linear-gradient(90deg, var(--mehfil-gold-soft), var(--mehfil-gold-primary));
   transform: translateY(-1px);
 }
 
 .search-container button:focus {
-  outline: 2px solid var(--accent-primary);
+  outline: 2px solid var(--mehfil-gold-primary);
 }
 
 /* Page Sections */
@@ -143,7 +129,7 @@
 }
 
 .back-button:hover {
-  background: rgba(162, 155, 254, 0.2);
+  background: rgba(230, 184, 115, 0.2);
   transform: translateX(-3px);
 }
 
@@ -171,74 +157,7 @@
   border-radius: 3px;
 }
 
-/* Cards */
-.search-results .card,
-.song-card {
-  background: var(--card-bg);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  position: relative;
-}
-
-.search-results .card {
-  flex: 0 0 auto;
-  width: 160px;
-  height: 220px;
-}
-
-.song-card {
-  aspect-ratio: 1;
-  height: 200px;
-}
-
-.search-results .card:hover,
-.song-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  background: var(--card-hover);
-}
-
-.search-results .card img,
-.song-card img {
-  width: 100%;
-  object-fit: cover;
-}
-
-.search-results .card img {
-  height: 140px;
-}
-
-.song-card img {
-  height: 80%;
-  border-radius: 8px 8px 0 0;
-}
-
-/* Card Content */
-.search-results .card-body {
-  padding: 10px;
-}
-
-.search-results .song-name,
-.song-info h3 {
-  color: var(--text-primary);
-  font-weight: 500;
-  margin: 0 0 4px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.search-results .song-artist,
-.song-info p {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+/* Note: Card styles are now in main styles.css */
 
 .song-info {
   padding: 1rem;
@@ -311,6 +230,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

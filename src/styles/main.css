@@ -1,0 +1,38 @@
+/* === Mehfil CSS Entry Point === */
+/* Loaded via: import './styles/main.css' in src/main.js */
+
+/* Design Tokens */
+@import '../../styles/brand-identity.css';
+@import '../../styles/noir-gold-theme.css';
+
+/* Base */
+@import '../../styles.css';
+
+/* Components */
+@import '../../styles/player.css';
+@import '../../styles/mini-player.css';
+@import '../../styles/fullscreen-player.css';
+@import '../../styles/audio-visualizer.css';
+@import '../../styles/premium-fullscreen.css';
+@import '../../styles/unified-cards.css';
+@import '../../styles/card-hover-fix.css';
+@import '../../styles/micro-delights.css';
+@import '../../styles/feedback.css';
+
+/* intentionally omitted: flaticon-icons.css — replaced by Lucide in src/ui/icons.js */
+
+/* === Lucide Icon Defaults === */
+.lucide-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    vertical-align: middle;
+    pointer-events: none;
+}
+
+/* Filled heart for liked songs */
+.liked .lucide-icon path,
+.lucide-icon.liked path {
+    fill: currentColor;
+}

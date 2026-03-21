@@ -8,13 +8,21 @@
   <meta name="description"
     content="Mehfil – a poetic music player where melodies meet emotions. Experience soulful songs, heartfelt playlists, and the true rhythm of love.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="Assets/favicon.ico">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles/brand-identity.css">
+  <link rel="stylesheet" href="styles/noir-gold-theme.css">
   <link rel="stylesheet" href="styles/player.css">
   <link rel="stylesheet" href="styles/mini-player.css">
   <link rel="stylesheet" href="styles/fullscreen-player.css">
   <link rel="stylesheet" href="styles/audio-visualizer.css">
+  <link rel="stylesheet" href="styles/premium-fullscreen.css">
+  <link rel="stylesheet" href="styles/unified-cards.css">
+  <link rel="stylesheet" href="styles/card-hover-fix.css">
+  <link rel="stylesheet" href="styles/micro-delights.css">
+  <!-- flaticon-icons.css removed: replaced by Lucide Icons in src/ui/icons.js -->
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
 </head>
 
 <body>
@@ -22,645 +30,703 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="mlogo">
-        <img src="assets/music.png" alt="Mehfil Logo">
+        <img src="Assets/music.png" alt="Mehfil Logo">
         <span>Mehfil</span>
       </div>
 
       <ul>
-        <li id="nav-home" class="active"><i class="bi bi-house"></i><a href="#">Home</a></li>
-        <li id="nav-playlists"><i class="bi bi-music-note-list"></i><a href="#">Playlists</a></li>
-        <li id="nav-favorites"><i class="bi bi-hearts"></i><a href="#">Favorites</a></li>
-        <li id="nav-settings"><i class="bi bi-gear"></i><a href="#">Settings</a></li>
+        <li id="nav-home" class="active"><img src="Assets/flaticon/home.svg" alt="Home" class="icon-svg"><a
+            href="#">Home</a></li>
+        <li id="nav-playlists"><img src="Assets/flaticon/playlist.svg" alt="Playlists" class="icon-svg"><a
+            href="#">Playlists</a></li>
+        <li id="nav-favorites"><img src="Assets/flaticon/heart.svg" alt="Favorites" class="icon-svg"><a
+            href="#">Favorites</a></li>
+        <li id="nav-settings"><img src="Assets/flaticon/settings.svg" alt="Settings" class="icon-svg"><a
+            href="#">Settings</a></li>
       </ul>
 
       <ul>
-        <li id="logout"><i class="bi bi-box-arrow-left"></i><a href="#">Logout</a></li>
+        <li id="logout"><img src="Assets/flaticon/logout.svg" alt="Logout" class="icon-svg"><a href="#">Logout</a></li>
       </ul>
     </div>
 
-  <div class="main-area">
-    <!-- Top Bar -->
-    <div class="top-bar">
-      <button id="hamburgerToggle" class="hamburger" aria-label="Toggle menu"><i class="bi bi-list"></i></button>
-      <div class="search">
-        <input type="text" id="searchInput" placeholder="Search for songs, artists, or albums...">
-        <button type="button" id="searchButton"><i class="bi bi-search"></i></button>
-      </div>
-      <div class="profile" id="profileEdit">
-        <img src="assets/dp.png" alt="Profile Picture">
-        <span class="profile-name">Sachin Bhardwaj</span>
-      </div>
-    </div>
-
-    <!-- Intro -->
-    <section class="mehfil-intro">
-      <div class="intro-text">
-        <h1>Welcome to Mehfil</h1>
-        <p>
-          Experience the magic of music! From soulful melodies to energetic beats,
-          discover curated playlists and find your next favorite song. दिल से सुनो 🎵
-        </p>
-        <div class="hero-cta">
-          <button class="primary-cta-btn" id="startListeningBtn">
-            <i class="bi bi-play-circle-fill"></i>
-            🎧 Start Listening
-          </button>
-          <button class="secondary-cta-btn" id="playTrendingBtn">
-            <i class="bi bi-fire"></i>
-            Play Trending
-          </button>
+    <div class="main-area">
+      <!-- Top Bar -->
+      <div class="top-bar">
+        <button id="hamburgerToggle" class="hamburger" aria-label="Toggle menu"><img src="Assets/flaticon/list.svg"
+            alt="Menu" class="icon-svg"></button>
+        <div class="search">
+          <input type="text" id="searchInput" placeholder="Search for songs, artists, or albums...">
+          <button type="button" id="searchButton"><img src="Assets/flaticon/search.svg" alt="Search"
+              class="icon-svg"></button>
         </div>
-      </div>
-    </section>
-
-
-    <!-- Category -->
-    <div class="featured-playlists">
-      <h2>Select Category</h2>
-      <div class="category-scroll">
-        <button type="button" class="btn btn-outline-primary active">All Music</button>
-        <button type="button" class="btn btn-outline-primary">Romantic</button>
-        <button type="button" class="btn btn-outline-primary">Dance</button>
-        <button type="button" class="btn btn-outline-primary">Sad</button>
-        <button type="button" class="btn btn-outline-primary">Party</button>
-        <button type="button" class="btn btn-outline-primary">Classical</button>
-        <button type="button" class="btn btn-outline-primary">Rock</button>
-        <button type="button" class="btn btn-outline-primary">Pop</button>
-        <button type="button" class="btn btn-outline-primary">Hip Hop</button>
-        <button type="button" class="btn btn-outline-primary">Electronic</button>
-        <button type="button" class="btn btn-outline-primary">Jazz</button>
-        <button type="button" class="btn btn-outline-primary">Latest 2024</button>
-      </div>
-    </div>
-
-    <!-- Search Results Section -->
-    <div id="search-results" class="search-results">
-      <!-- Search results will be displayed here -->
-    </div>
-
-    <div class="trending">
-      <div class="section-header">
-       <h1><i class="bi bi-lightning-fill"></i> Trending Now</h1>
-        <button class="show-more-header-btn" onclick="showTrendingPage()">
-          <i class="bi bi-arrow-right"></i> Show More
-        </button>
-      </div>
-      <div id="trending-songs-container" class="trendingSongs horizontal-scroll">
-        <!-- Dynamically filled -->
-      </div>
-    </div>
-
-    <div class="nrelease">
-      <div class="section-header">
-       <h1><i class="bi bi-stars"></i> New Releases</h1>
-        <button class="show-more-header-btn" onclick="showLatestPage()">
-          <i class="bi bi-arrow-right"></i> Show More
-        </button>
-      </div>
-      <div id="new-releases-container" class="new-release horizontal-scroll">
-        <!-- Dynamically filled -->
-      </div>
-    </div>
-
-    <div class="artists">
-      <div class="section-header">
-        <h1>🎤 Popular Artists</h1>
-        <button class="show-more-header-btn" onclick="showArtistsPage()">
-          <i class="bi bi-arrow-right"></i> Show More
-        </button>
-      </div>
-      <div id="popular-artists-container" class="popular-artist">
-        <!-- Dynamically filled -->
-      </div>
-    </div>
-
-    <div class="playlist">
-      <div class="section-header">
-        <h1>🎶 Featured Playlists</h1>
-        <button class="show-more-header-btn" onclick="showPlaylistsPage()">
-          <i class="bi bi-arrow-right"></i> Show More
-        </button>
-      </div>
-      <div id="featured-playlists-container" class="top-playlist">
-        <!-- Dynamically filled -->
-      </div>
-    </div>
-
-  </div> <!-- /content -->
-
-  <!-- Trending Songs Page -->
-  <div id="trending-page" class="page-content" style="display: none;">
-    <div class="page-header">
-      <button class="back-to-home" onclick="showHomePage()">
-        <i class="bi bi-arrow-left"></i> Back to Home
-      </button>
-      <h1><i class="bi bi-fire"></i> Bollywood Trending Songs</h1>
-      <p>Discover the hottest Bollywood tracks that everyone's listening to</p>
-    </div>
-
-    <div class="trending-content">
-      <div id="trending-page-container" class="song-grid">
-        <!-- Dynamically filled with trending songs -->
-      </div>
-
-      <div class="pagination-container" id="trending-pagination" style="display: none;">
-        <button class="pagination-btn" id="trending-prev-btn" disabled>
-          <i class="bi bi-chevron-left"></i> Previous
-        </button>
-        <div class="pagination-info">
-          <span id="trending-page-info">Page 1 of 1</span>
-        </div>
-        <button class="pagination-btn" id="trending-next-btn">
-          Next <i class="bi bi-chevron-right"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Latest Songs Page -->
-  <div id="latest-page" class="page-content" style="display: none;">
-    <div class="page-header">
-      <button class="back-to-home" onclick="showHomePage()">
-        <i class="bi bi-arrow-left"></i> Back to Home
-      </button>
-      <h1><i class="bi bi-music-note-beamed"></i> Latest Bollywood Releases</h1>
-      <p>Fresh new albums and singles from the Bollywood music scene</p>
-    </div>
-
-    <div class="latest-content">
-      <div id="latest-page-container" class="song-grid">
-        <!-- Dynamically filled with latest releases -->
-      </div>
-
-      <div class="pagination-container" id="latest-pagination" style="display: none;">
-        <button class="pagination-btn" id="latest-prev-btn" disabled>
-          <i class="bi bi-chevron-left"></i> Previous
-        </button>
-        <div class="pagination-info">
-          <span id="latest-page-info">Page 1 of 1</span>
-        </div>
-        <button class="pagination-btn" id="latest-next-btn">
-          Next <i class="bi bi-chevron-right"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Artists Page -->
-  <div id="artists-page" class="page-content" style="display: none;">
-    <div class="page-header">
-      <button class="back-to-home" onclick="showHomePage()">
-        <i class="bi bi-arrow-left"></i> Back to Home
-      </button>
-      <h1><i class="bi bi-mic"></i> Top Bollywood Artists</h1>
-      <p>Discover songs from trending Bollywood artists, singers, and rappers</p>
-    </div>
-
-    <div class="artists-content">
-      <div id="artists-page-container" class="song-grid">
-        <!-- Dynamically filled with artist songs -->
-      </div>
-
-      <div class="pagination-container" id="artists-pagination" style="display: none;">
-        <button class="pagination-btn" id="artists-prev-btn" disabled>
-          <i class="bi bi-chevron-left"></i> Previous
-        </button>
-        <div class="pagination-info">
-          <span id="artists-page-info">Page 1 of 1</span>
-        </div>
-        <button class="pagination-btn" id="artists-next-btn">
-          Next <i class="bi bi-chevron-right"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Album Details Page -->
-  <div id="album-page" class="page-content" style="display: none;">
-    <div class="page-header">
-      <button class="back-to-previous" onclick="goBackToPreviousPage()">
-        <i class="bi bi-arrow-left"></i> Back
-      </button>
-      <div id="album-info">
-        <h1 id="album-title">Album Title</h1>
-        <p id="album-artist">Artist Name</p>
-      </div>
-    </div>
-
-    <div class="album-content">
-      <div class="album-details">
-        <img id="album-cover" src="Assets/music.png" alt="Album Cover" class="album-cover-large">
-        <div class="album-meta">
-          <h2 id="album-name">Album Name</h2>
-          <p id="album-artist-name">Artist</p>
-          <p id="album-year">Year</p>
-          <p id="album-song-count">Songs</p>
+        <div class="profile" id="profileEdit">
+          <img src="Assets/dp.png" alt="Profile Picture" class="icon-svg">
+          <span class="profile-name">Sachin Bhardwaj</span>
         </div>
       </div>
 
-      <div class="album-songs">
-        <h3>Songs</h3>
-        <div id="album-songs-container" class="song-list">
-          <!-- Album songs will be listed here -->
+      <!-- Intro -->
+      <section class="mehfil-intro">
+        <div class="hero-glow"></div>
+        <div class="intro-text">
+          <h1>Welcome to Mehfil</h1>
+          <p>
+            Experience the magic of music! From soulful melodies to energetic beats,
+            discover curated playlists and find your next favorite song. दिल से सुनो 🎵
+          </p>
+          <div class="hero-cta">
+            <button class="primary-cta-btn" id="startListeningBtn">
+              <i class="bi bi-play-circle-fill"></i>
+              🎧 Start Listening
+            </button>
+            <button class="secondary-cta-btn" id="playTrendingBtn">
+              <i class="bi bi-fire"></i>
+              Play Trending
+            </button>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
+      </section>
 
-  <!-- Favorites Page -->
-  <div id="favorites-page" class="page-content" style="display: none;">
-    <div class="page-header">
-      <button class="back-to-home" onclick="showHomePage()">
-        <i class="bi bi-arrow-left"></i> Back to Home
-      </button>
-      <h1><i class="bi bi-heart-fill"></i> Your Favorites</h1>
-      <p>Songs you love the most, based on your listening history</p>
-    </div>
 
-    <div class="favorites-content">
-      <div id="favorites-container" class="song-grid">
-        <!-- Dynamically filled with most played songs -->
-      </div>
-
-      <div class="empty-favorites" style="display: none;">
-        <div class="empty-state">
-          <i class="bi bi-heart"></i>
-          <h3>No Favorites Yet</h3>
-          <p>Start listening to songs to build your favorites collection!</p>
-          <button class="btn-primary" onclick="showHomePage()">
-            <i class="bi bi-music-note"></i> Discover Music
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Playlists Page -->
-  <div id="playlists-page" class="page-content" style="display: none;">
-    <div class="page-header">
-      <button class="back-to-home" onclick="showHomePage()">
-        <i class="bi bi-arrow-left"></i> Back to Home
-      </button>
-      <h1><i class="bi bi-music-note-list"></i> Your Playlists</h1>
-      <p>Curated playlists and personalized recommendations</p>
-    </div>
-
-    <div class="playlists-content">
-      <!-- Suggested Songs Section -->
-      <div class="suggested-section">
-        <h2><i class="bi bi-magic"></i> Suggested for You</h2>
-        <div id="suggested-container" class="song-grid">
-          <!-- Dynamically filled with recommended songs -->
+      <!-- Category -->
+      <div class="featured-playlists">
+        <h2>Select Category</h2>
+        <div class="category-scroll">
+          <button type="button" class="btn btn-outline-primary active">All Music</button>
+          <button type="button" class="btn btn-outline-primary">Romantic</button>
+          <button type="button" class="btn btn-outline-primary">Dance</button>
+          <button type="button" class="btn btn-outline-primary">Sad</button>
+          <button type="button" class="btn btn-outline-primary">Party</button>
+          <button type="button" class="btn btn-outline-primary">Classical</button>
+          <button type="button" class="btn btn-outline-primary">Rock</button>
+          <button type="button" class="btn btn-outline-primary">Pop</button>
+          <button type="button" class="btn btn-outline-primary">Hip Hop</button>
+          <button type="button" class="btn btn-outline-primary">Electronic</button>
+          <button type="button" class="btn btn-outline-primary">Jazz</button>
+          <button type="button" class="btn btn-outline-primary">Latest 2024</button>
         </div>
       </div>
 
-      <!-- User Playlists Section -->
-      <div class="user-playlists-section">
+      <!-- Search Results Section -->
+      <div id="search-results" class="search-results">
+        <!-- Search results will be displayed here -->
+      </div>
+
+      <div class="trending">
         <div class="section-header">
-          <h2><i class="bi bi-collection-play"></i> My Playlists</h2>
-          <button class="btn-secondary" onclick="createNewPlaylist()">
-            <i class="bi bi-plus-circle"></i> Create Playlist
+          <h1><img src="Assets/flaticon/fire.svg" alt="Trending" class="icon-svg"> Trending Now</h1>
+          <button class="show-more-header-btn" onclick="showTrendingPage()">
+            <img src="Assets/flaticon/arrow-right.svg" alt="Show More" class="icon-svg"> Show More
           </button>
         </div>
-        <div id="user-playlists-container" class="playlist-grid">
-          <!-- User created playlists will go here -->
+        <div id="trending-songs-container" class="trendingSongs horizontal-scroll">
+          <!-- Dynamically filled -->
         </div>
       </div>
 
-      <div class="empty-playlists" style="display: none;">
-        <div class="empty-state">
-          <i class="bi bi-music-note-list"></i>
-          <h3>No Playlists Yet</h3>
-          <p>Create your first playlist or start listening to get personalized suggestions!</p>
-          <button class="btn-primary" onclick="createNewPlaylist()">
-            <i class="bi bi-plus-circle"></i> Create Playlist
+      <div class="nrelease">
+        <div class="section-header">
+          <h1><img src="Assets/flaticon/playlist.svg" alt="New Releases" class="icon-svg"> New Releases</h1>
+          <button class="show-more-header-btn" onclick="showLatestPage()">
+            <img src="Assets/flaticon/arrow-right.svg" alt="Show More" class="icon-svg"> Show More
           </button>
         </div>
-      </div>
-    </div>
-  </div>
-
-
-
-
-  <!-- Audio Player Control Bar (Hidden by default, handled by mini-player) -->
-  <div class="control-bar" style="display: none;">
-    <div class="control-section now-playing">
-      <div class="track-info">
-        <img id="nowPlayingArt" src="Assets/music.png" alt="Now Playing" class="now-playing-art">
-        <div class="track-details">
-          <span class="track-title">Not Playing</span>
-          <span class="track-artist">-</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="control-section playback-controls">
-      <button class="btn-icon" id="prevButton"><i class="bi bi-skip-start-fill"></i></button>
-      <button class="btn-icon play-button" id="playButton"><i class="bi bi-play-fill"></i></button>
-      <button class="btn-icon" id="nextButton"><i class="bi bi-skip-end-fill"></i></button>
-    </div>
-
-    <div class="control-section progress-section">
-      <span class="current-time">0:00</span>
-      <input type="range" id="progressBar" min="0" max="100" value="0">
-      <span class="duration">0:00</span>
-    </div>
-  </div>
-
-
-  <!-- Audio Element -->
-  <audio id="audioElement">
-    <source src="" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
-
-  <!-- Mini Player -->
-  <div class="mini-player" id="miniPlayer">
-    <div class="progress-container">
-      <div class="progress-bar" id="miniProgressBar"></div>
-      <input type="range" id="miniProgressInput" min="0" max="100" value="0">
-    </div>
-
-    <div class="mini-player-content">
-      <div class="mini-player-info" id="miniPlayerInfo">
-        <img id="miniPlayerImage" src="Assets/music.png" alt="Album Art">
-        <div>
-          <div id="miniPlayerTitle">Not Playing</div>
-          <div id="miniPlayerArtist">-</div>
+        <div id="new-releases-container" class="new-release horizontal-scroll">
+          <!-- Dynamically filled -->
         </div>
       </div>
 
-      <div class="mini-player-controls">
-        <button id="miniPrevButton" title="Previous"><i class="bi bi-skip-start-fill"></i></button>
-        <button id="miniPlayButton" title="Play/Pause"><i class="bi bi-play-fill"></i></button>
-        <button id="miniNextButton" title="Next"><i class="bi bi-skip-end-fill"></i></button>
-        <div class="mini-volume-control">
-          <button id="miniVolumeButton" title="Volume"><i class="bi bi-volume-up"></i></button>
-          <input type="range" id="miniVolumeSlider" min="0" max="100" value="80" title="Volume">
+      <div class="artists">
+        <div class="section-header">
+          <h1>🎤 Popular Artists</h1>
+          <button class="show-more-header-btn" onclick="showArtistsPage()">
+            <img src="Assets/flaticon/arrow-right.svg" alt="Show More" class="icon-svg"> Show More
+          </button>
         </div>
-        <button id="expandPlayer" title="Expand"><i class="bi bi-arrows-angle-expand"></i></button>
-      </div>
-
-      <div class="mini-player-expand">
-        <div class="time-display">
-          <span id="currentTime">0:00</span>
-          <span id="duration">0:00</span>
+        <div id="popular-artists-container" class="popular-artist">
+          <!-- Dynamically filled -->
         </div>
       </div>
 
-      <!-- Mini Player Branding -->
-      <div class="mini-player-branding">
-        <span class="brand-text">Mehfil</span>
-        <span class="brand-tagline">दिल से सुनो</span>
+      <div class="playlist">
+        <div class="section-header">
+          <h1>🎶 Featured Playlists</h1>
+          <button class="show-more-header-btn" onclick="showPlaylistsPage()">
+            <img src="Assets/flaticon/arrow-right.svg" alt="Show More" class="icon-svg"> Show More
+          </button>
+        </div>
+        <div id="featured-playlists-container" class="top-playlist">
+          <!-- Dynamically filled -->
+        </div>
       </div>
-    </div>
-  </div>
-  <!-- Fullscreen Player -->
-  <div class="fullscreen-player" id="fullscreenPlayer">
-    <div class="fullscreen-overlay"></div>
 
-    <div class="fullscreen-content">
+    </div> <!-- /content -->
 
-      <!-- Mobile Top Bar (visible only on mobile) -->
-      <div class="mobile-top-bar">
-        <button class="mobile-collapse-btn" id="closeFullscreen" aria-label="Close fullscreen">
-          <i class="bi bi-chevron-down"></i>
+    <!-- Trending Songs Page -->
+    <div id="trending-page" class="page-content" style="display: none;">
+      <div class="page-header">
+        <button class="back-to-home" onclick="showHomePage()">
+          <img src="Assets/flaticon/arrow-left.svg" alt="Back" class="icon-svg"> Back to Home
         </button>
+        <h1><img src="Assets/flaticon/fire.svg" alt="Trending" class="icon-svg"> Bollywood Trending Songs</h1>
+        <p>Discover the hottest Bollywood tracks that everyone's listening to</p>
+      </div>
 
-        <div class="mobile-playlist-info">
-          <div class="mobile-playlist-text">PLAYING FROM PLAYLIST</div>
+      <div class="trending-content">
+        <div id="trending-page-container" class="song-grid">
+          <!-- Dynamically filled with trending songs -->
         </div>
 
-        <button class="mobile-menu-btn" aria-label="Menu">
-          <i class="bi bi-three-dots"></i>
+        <!-- Loading indicator -->
+        <div id="trending-loading" class="loading-container" style="display: none;">
+          <div class="loading-spinner"></div>
+          <p>Loading trending songs...</p>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-container" id="trending-pagination" style="display: none;">
+          <button class="pagination-btn" id="trending-prev-btn" disabled>
+            <img src="Assets/flaticon/chevron-left.svg" alt="Previous" class="icon-svg"> Previous
+          </button>
+          <div class="pagination-info">
+            <span id="trending-page-info">Page 1</span>
+          </div>
+          <button class="pagination-btn" id="trending-next-btn">
+            Next <img src="Assets/flaticon/chevron-right.svg" alt="Next" class="icon-svg">
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Latest Songs Page -->
+    <div id="latest-page" class="page-content" style="display: none;">
+      <div class="page-header">
+        <button class="back-to-home" onclick="showHomePage()">
+          <img src="Assets/flaticon/arrow-left.svg" alt="Back" class="icon-svg"> Back to Home
+        </button>
+        <h1><img src="Assets/flaticon/playlist.svg" alt="Latest Releases" class="icon-svg"> Latest Bollywood Releases
+        </h1>
+        <p>Fresh new albums and singles from the Bollywood music scene</p>
+      </div>
+
+      <div class="latest-content">
+        <div id="latest-page-container" class="song-grid">
+          <!-- Dynamically filled with latest releases -->
+        </div>
+
+        <!-- Loading indicator -->
+        <div id="latest-loading" class="loading-container" style="display: none;">
+          <div class="loading-spinner"></div>
+          <p>Loading latest releases...</p>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-container" id="latest-pagination" style="display: none;">
+          <button class="pagination-btn" id="latest-prev-btn" disabled>
+            <img src="Assets/flaticon/chevron-left.svg" alt="Previous" class="icon-svg"> Previous
+          </button>
+          <div class="pagination-info">
+            <span id="latest-page-info">Page 1</span>
+          </div>
+          <button class="pagination-btn" id="latest-next-btn">
+            Next <img src="Assets/flaticon/chevron-right.svg" alt="Next" class="icon-svg">
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Artists Page -->
+    <div id="artists-page" class="page-content" style="display: none;">
+      <div class="page-header">
+        <button class="back-to-home" onclick="showHomePage()">
+          <img src="Assets/flaticon/arrow-left.svg" alt="Back" class="icon-svg"> Back to Home
+        </button>
+        <h1><img src="Assets/flaticon/mic.svg" alt="Artists" class="icon-svg"> Top Bollywood Artists</h1>
+        <p>Discover songs from trending Bollywood artists, singers, and rappers</p>
+      </div>
+
+      <!-- Category Filter for Artists -->
+      <div class="artist-categories">
+        <button class="artist-category-btn active" data-category="popular">
+          <i class="bi bi-star-fill"></i> Popular Artists
+        </button>
+        <button class="artist-category-btn" data-category="rappers">
+          <i class="bi bi-mic-fill"></i> Popular Rappers
         </button>
       </div>
 
-      <!-- Desktop Header (hidden on mobile) -->
-      <div class="fullscreen-header desktop-only">
-        <button id="closeFullscreenDesktop" aria-label="Close fullscreen">
-          <i class="bi bi-x-lg"></i>
+      <div class="artists-content">
+        <div id="artists-page-container" class="song-grid">
+          <!-- Dynamically filled with artist songs -->
+        </div>
+
+        <!-- Loading indicator -->
+        <div id="artists-loading" class="loading-container" style="display: none;">
+          <div class="loading-spinner"></div>
+          <p>Loading artist songs...</p>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-container" id="artists-pagination" style="display: none;">
+          <button class="pagination-btn" id="artists-prev-btn" disabled>
+            <i class="bi bi-chevron-left"></i> Previous
+          </button>
+          <div class="pagination-info">
+            <span id="artists-page-info">Page 1</span>
+          </div>
+          <button class="pagination-btn" id="artists-next-btn">
+            Next <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Album Details Page -->
+    <div id="album-page" class="page-content" style="display: none;">
+      <div class="page-header">
+        <button class="back-to-previous" onclick="goBackToPreviousPage()">
+          <i class="bi bi-arrow-left"></i> Back
         </button>
-
-        <!-- Fullscreen Player Branding -->
-        <div class="fullscreen-branding">
-          <div class="brand-logo">
-            <img src="Assets/music.png" alt="Mehfil logo" class="brand-icon">
-            <span class="brand-name">Mehfil</span>
-          </div>
-          <div class="brand-tagline">दिल से सुनो</div>
-        </div>
-
-        <div class="song-title" id="fullscreenSongTitle">-</div>
-        <div class="artist-name" id="fullscreenArtist">-</div>
-      </div>
-
-      <!-- Artwork -->
-      <div class="fullscreen-artwork">
-        <!-- Volume Indicator (mobile only) -->
-        <div class="volume-indicator mobile-only">
-          <i class="bi bi-volume-up"></i>
-        </div>
-
-        <div class="artwork-container">
-          <!-- Circular Progress Ring (mobile only) -->
-          <div class="circular-progress mobile-only">
-            <div class="progress-dot"></div>
-          </div>
-
-          <div class="circular-artwork mobile-only">
-            <img id="fullscreenAlbumArt" src="Assets/music.png" alt="Album artwork">
-          </div>
-
-          <!-- Desktop Static Artwork (fallback) -->
-          <div class="desktop-static-artwork desktop-only">
-            <img id="fullscreenAlbumArtStatic" src="Assets/music.png" alt="Album artwork">
-          </div>
+        <div id="album-info">
+          <h1 id="album-title">Album Title</h1>
+          <p id="album-artist">Artist Name</p>
         </div>
       </div>
 
-      <!-- Desktop Visualizer Section (separate from artwork) -->
-      <div class="visualizer-section desktop-only">
-        <div class="audio-visualizer">
-          <!-- Animated Audio Bars -->
-          <div class="visualizer-bars-container">
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
-            <div class="visualizer-bar"></div>
+      <div class="album-content">
+        <div class="album-details">
+          <img id="album-cover" src="Assets/music.png" alt="Album Cover" class="album-cover-large">
+          <div class="album-meta">
+            <h2 id="album-name">Album Name</h2>
+            <p id="album-artist-name">Artist</p>
+            <p id="album-year">Year</p>
+            <p id="album-song-count">Songs</p>
           </div>
-          
-          <!-- Animated Dots -->
-          <div class="visualizer-dots-container">
-            <div class="visualizer-dot"></div>
-            <div class="visualizer-dot"></div>
-            <div class="visualizer-dot"></div>
-            <div class="visualizer-dot"></div>
-            <div class="visualizer-dot"></div>
-            <div class="visualizer-dot"></div>
-            <div class="visualizer-dot"></div>
-            <div class="visualizer-dot"></div>
-            <div class="visualizer-dot"></div>
-            <div class="visualizer-dot"></div>
-            <div class="visualizer-dot"></div>
-            <div class="visualizer-dot"></div>
+        </div>
+
+        <div class="album-songs">
+          <h3>Songs</h3>
+          <div id="album-songs-container" class="song-list">
+            <!-- Album songs will be listed here -->
           </div>
-          
-          <!-- Progress Ring -->
-          <div class="visualizer-progress-ring"></div>
-          
-          <!-- Rotating Album Artwork -->
-          <div class="visualizer-artwork-container">
-            <img id="fullscreenAlbumArtDesktop" src="Assets/music.png" alt="Album artwork" class="visualizer-artwork">
+        </div>
+      </div>
+    </div>
+
+    <!-- Favorites Page -->
+    <div id="favorites-page" class="page-content" style="display: none;">
+      <div class="page-header">
+        <button class="back-to-home" onclick="showHomePage()">
+          <i class="bi bi-arrow-left"></i> Back to Home
+        </button>
+        <h1><i class="bi bi-heart-fill"></i> Your Favorites</h1>
+        <p>Songs you love the most, based on your listening history</p>
+      </div>
+
+      <div class="favorites-content">
+        <div id="favorites-container" class="song-grid">
+          <!-- Dynamically filled with most played songs -->
+        </div>
+
+        <div class="empty-favorites" style="display: none;">
+          <div class="empty-state">
+            <i class="bi bi-heart"></i>
+            <h3>No Favorites Yet</h3>
+            <p>Start listening to songs to build your favorites collection!</p>
+            <button class="btn-primary" onclick="showHomePage()">
+              <i class="bi bi-music-note"></i> Discover Music
+            </button>
           </div>
-          
-          <!-- Time Display Overlay -->
-          <div class="visualizer-time-overlay">
-            <div class="visualizer-time-text" id="visualizerCurrentTime">0:00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Playlists Page -->
+    <div id="playlists-page" class="page-content" style="display: none;">
+      <div class="page-header">
+        <button class="back-to-home" onclick="showHomePage()">
+          <i class="bi bi-arrow-left"></i> Back to Home
+        </button>
+        <h1><i class="bi bi-music-note-list"></i> Your Playlists</h1>
+        <p>Curated playlists and personalized recommendations</p>
+      </div>
+
+      <div class="playlists-content">
+        <!-- Suggested Songs Section -->
+        <div class="suggested-section">
+          <h2><i class="bi bi-magic"></i> Suggested for You</h2>
+          <div id="suggested-container" class="song-grid">
+            <!-- Dynamically filled with recommended songs -->
           </div>
-          
-          <!-- Particle Effects -->
-          <div class="visualizer-particles" id="visualizerParticles"></div>
+        </div>
+
+        <!-- User Playlists Section -->
+        <div class="user-playlists-section">
+          <div class="section-header">
+            <h2><i class="bi bi-collection-play"></i> My Playlists</h2>
+            <button class="btn-secondary" onclick="createNewPlaylist()">
+              <i class="bi bi-plus-circle"></i> Create Playlist
+            </button>
+          </div>
+          <div id="user-playlists-container" class="playlist-grid">
+            <!-- User created playlists will go here -->
+          </div>
+        </div>
+
+        <div class="empty-playlists" style="display: none;">
+          <div class="empty-state">
+            <i class="bi bi-music-note-list"></i>
+            <h3>No Playlists Yet</h3>
+            <p>Create your first playlist or start listening to get personalized suggestions!</p>
+            <button class="btn-primary" onclick="createNewPlaylist()">
+              <i class="bi bi-plus-circle"></i> Create Playlist
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- Audio Player Control Bar (Hidden by default, handled by mini-player) -->
+    <div class="control-bar" style="display: none;">
+      <div class="control-section now-playing">
+        <div class="track-info">
+          <img id="nowPlayingArt" src="Assets/music.png" alt="Now Playing" class="now-playing-art">
+          <div class="track-details">
+            <span class="track-title">Not Playing</span>
+            <span class="track-artist">-</span>
+          </div>
         </div>
       </div>
 
-      <!-- Mobile Controls Section -->
-      <div class="mobile-controls-section mobile-only">
-        <!-- Progress Bar -->
-        <div class="progress-section">
-          <span class="progress-time" id="mobileCurrentTime">0:00</span>
-          <div class="progress-bar-container">
-            <div class="progress-bar-fill" id="mobileProgressFill"></div>
-            <input type="range" class="progress-input" id="mobileProgressInput" min="0" max="100" value="0" aria-label="Seek position">
-          </div>
-          <span class="progress-time" id="mobileDuration">0:00</span>
-        </div>
-
-        <!-- Waveform and Time -->
-        <div class="mobile-waveform">
-          <span class="mobile-time" id="mobileCurrentTimeWave">0:00</span>
-          <div class="waveform-container" id="waveformContainer">
-            <!-- Waveform bars will be generated by JavaScript -->
-          </div>
-          <span class="mobile-time" id="mobileDurationWave">0:00</span>
-        </div>
-
-        <!-- Main Controls -->
-        <div class="mobile-main-controls">
-          <button class="mobile-control-btn" id="mobileShuffleBtn" aria-label="Shuffle">
-            <i class="bi bi-shuffle"></i>
-          </button>
-
-          <button class="mobile-control-btn" id="mobilePrevBtn" aria-label="Previous">
-            <i class="bi bi-skip-start-fill"></i>
-          </button>
-
-          <button class="mobile-play-btn" id="mobilePlayBtn" aria-label="Play or Pause">
-            <i class="bi bi-play-fill"></i>
-          </button>
-
-          <button class="mobile-control-btn" id="mobileNextBtn" aria-label="Next">
-            <i class="bi bi-skip-end-fill"></i>
-          </button>
-
-          <button class="mobile-control-btn" id="mobileRepeatBtn" aria-label="Repeat">
-            <i class="bi bi-arrow-repeat"></i>
-          </button>
-        </div>
+      <div class="control-section playback-controls">
+        <button class="btn-icon" id="prevButton"><i class="bi bi-skip-start-fill"></i></button>
+        <button class="btn-icon play-button" id="playButton"><i class="bi bi-play-fill"></i></button>
+        <button class="btn-icon" id="nextButton"><i class="bi bi-skip-end-fill"></i></button>
       </div>
 
-      <!-- Desktop Controls (hidden on mobile) -->
-      <div class="fullscreen-controls desktop-only">
-        <!-- Progress -->
-        <div class="fullscreen-progress-container">
-          <div class="fullscreen-time-display">
-            <span id="fullscreenCurrentTime">0:00</span>
-            <span id="fullscreenDuration">0:00</span>
-          </div>
+      <div class="control-section progress-section">
+        <span class="current-time">0:00</span>
+        <input type="range" id="progressBar" min="0" max="100" value="0">
+        <span class="duration">0:00</span>
+      </div>
+    </div>
 
-          <div class="fullscreen-progress-bar">
-            <div class="fullscreen-progress" id="fullscreenProgress"></div>
-            <input type="range" id="fullscreenProgressInput" min="0" max="100" value="0" aria-label="Seek position">
+
+    <!-- Audio Element -->
+    <audio id="audioElement">
+      <source src="" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+
+    <!-- Mini Player -->
+    <div class="mini-player" id="miniPlayer">
+      <div class="progress-container">
+        <div class="progress-bar" id="miniProgressBar"></div>
+        <input type="range" id="miniProgressInput" min="0" max="100" value="0">
+      </div>
+
+      <div class="mini-player-content">
+        <div class="mini-player-info" id="miniPlayerInfo">
+          <img id="miniPlayerImage" src="Assets/music.png" alt="Album Art">
+          <div>
+            <div id="miniPlayerTitle">Not Playing</div>
+            <div id="miniPlayerArtist">-</div>
           </div>
         </div>
 
-        <!-- Main Controls -->
-        <div class="control-buttons">
-          <button id="fullscreenShuffle" aria-label="Shuffle">
-            <i class="bi bi-shuffle"></i>
+        <div class="mini-player-controls">
+          <button id="miniPrevButton" title="Previous"><i class="bi bi-skip-start-fill"></i></button>
+          <button id="miniPlayButton" title="Play/Pause"><i class="bi bi-play-fill"></i></button>
+          <button id="miniNextButton" title="Next"><i class="bi bi-skip-end-fill"></i></button>
+          <div class="mini-volume-control">
+            <button id="miniVolumeButton" title="Volume"><i class="bi bi-volume-up"></i></button>
+            <input type="range" id="miniVolumeSlider" min="0" max="100" value="80" title="Volume">
+          </div>
+          <button id="expandPlayer" title="Expand"><i class="bi bi-arrows-angle-expand"></i></button>
+        </div>
+
+        <div class="mini-player-expand">
+          <div class="time-display">
+            <span id="currentTime">0:00</span>
+            <span id="duration">0:00</span>
+          </div>
+        </div>
+
+        <!-- Mini Player Branding -->
+        <div class="mini-player-branding">
+          <span class="brand-text">Mehfil</span>
+          <span class="brand-tagline">दिल से सुनो</span>
+        </div>
+      </div>
+    </div>
+    <!-- Fullscreen Player -->
+    <div class="fullscreen-player" id="fullscreenPlayer">
+      <!-- Midnight Background -->
+      <div class="midnight-bg"></div>
+      <div class="ambient-particles"></div>
+
+      <div class="fullscreen-overlay"></div>
+
+      <div class="fullscreen-content">
+
+        <!-- Mobile Top Bar (visible only on mobile) -->
+        <div class="mobile-top-bar">
+          <button class="mobile-collapse-btn" id="closeFullscreen" aria-label="Close fullscreen">
+            <i class="bi bi-chevron-down"></i>
           </button>
 
-          <button id="fullscreenPrev" aria-label="Previous">
-            <i class="bi bi-skip-start-fill"></i>
-          </button>
+          <div class="mobile-playlist-info">
+            <div class="mobile-playlist-text">PLAYING FROM PLAYLIST</div>
+          </div>
 
-          <button id="fullscreenPlay" aria-label="Play or Pause">
-            <i class="bi bi-play-fill"></i>
-          </button>
-
-          <button id="fullscreenNext" aria-label="Next">
-            <i class="bi bi-skip-end-fill"></i>
-          </button>
-
-          <button id="fullscreenRepeat" aria-label="Repeat">
-            <i class="bi bi-arrow-repeat"></i>
+          <button class="mobile-menu-btn" aria-label="Menu">
+            <i class="bi bi-three-dots"></i>
           </button>
         </div>
 
-        <!-- Secondary Controls -->
-        <div class="fullscreen-secondary-controls">
-          <div class="volume-control">
-            <button id="fullscreenMute" aria-label="Mute">
-              <i class="bi bi-volume-up"></i>
+        <!-- Desktop Header (hidden on mobile) -->
+        <div class="fullscreen-header desktop-only">
+          <button id="closeFullscreenDesktop" aria-label="Close fullscreen">
+            <i class="bi bi-x-lg"></i>
+          </button>
+
+          <!-- Fullscreen Player Branding -->
+          <div class="fullscreen-branding">
+            <div class="brand-logo">
+              <img src="Assets/music.png" alt="Mehfil logo" class="brand-icon">
+              <span class="brand-name">Mehfil</span>
+            </div>
+            <div class="brand-tagline">दिल से सुनो</div>
+          </div>
+
+          <div class="song-title" id="fullscreenSongTitle">-</div>
+          <div class="artist-name" id="fullscreenArtist">-</div>
+        </div>
+
+        <!-- Artwork -->
+        <div class="fullscreen-artwork">
+          <!-- Volume Indicator (mobile only) -->
+          <div class="volume-indicator mobile-only">
+            <i class="bi bi-volume-up"></i>
+          </div>
+
+          <div class="artwork-container">
+            <!-- Breathing Pulse Ring -->
+            <div class="pulse-ring"></div>
+
+            <!-- Circular Progress Ring (mobile only) -->
+            <div class="circular-progress mobile-only">
+              <div class="progress-dot"></div>
+            </div>
+
+            <div class="circular-artwork mobile-only">
+              <img id="fullscreenAlbumArt" src="Assets/music.png" alt="Album artwork">
+            </div>
+
+            <!-- Desktop Static Artwork (fallback) -->
+            <div class="desktop-static-artwork desktop-only">
+              <img id="fullscreenAlbumArtStatic" src="Assets/music.png" alt="Album artwork">
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop Visualizer Section (separate from artwork) -->
+        <div class="visualizer-section desktop-only">
+          <div class="audio-visualizer">
+            <!-- Animated Audio Bars -->
+            <div class="visualizer-bars-container">
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+              <div class="visualizer-bar"></div>
+            </div>
+
+            <!-- Animated Dots -->
+            <div class="visualizer-dots-container">
+              <div class="visualizer-dot"></div>
+              <div class="visualizer-dot"></div>
+              <div class="visualizer-dot"></div>
+              <div class="visualizer-dot"></div>
+              <div class="visualizer-dot"></div>
+              <div class="visualizer-dot"></div>
+              <div class="visualizer-dot"></div>
+              <div class="visualizer-dot"></div>
+              <div class="visualizer-dot"></div>
+              <div class="visualizer-dot"></div>
+              <div class="visualizer-dot"></div>
+              <div class="visualizer-dot"></div>
+            </div>
+
+            <!-- Progress Ring -->
+            <div class="visualizer-progress-ring"></div>
+
+            <!-- Rotating Album Artwork -->
+            <div class="visualizer-artwork-container">
+              <img id="fullscreenAlbumArtDesktop" src="Assets/music.png" alt="Album artwork" class="visualizer-artwork">
+            </div>
+
+            <!-- Time Display Overlay -->
+            <div class="visualizer-time-overlay">
+              <div class="visualizer-time-text" id="visualizerCurrentTime">0:00</div>
+            </div>
+
+            <!-- Particle Effects -->
+            <div class="visualizer-particles" id="visualizerParticles"></div>
+          </div>
+        </div>
+
+        <!-- Mobile Controls Section -->
+        <div class="mobile-controls-section mobile-only">
+          <!-- Progress Bar -->
+          <div class="progress-section">
+            <span class="progress-time" id="mobileCurrentTime">0:00</span>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="mobileProgressFill"></div>
+              <input type="range" class="progress-input" id="mobileProgressInput" min="0" max="100" value="0"
+                aria-label="Seek position">
+            </div>
+            <span class="progress-time" id="mobileDuration">0:00</span>
+          </div>
+
+          <!-- Waveform and Time -->
+          <div class="mobile-waveform">
+            <span class="mobile-time" id="mobileCurrentTimeWave">0:00</span>
+            <div class="waveform-container" id="waveformContainer">
+              <!-- Waveform bars will be generated by JavaScript -->
+            </div>
+            <span class="mobile-time" id="mobileDurationWave">0:00</span>
+          </div>
+
+          <!-- Main Controls -->
+          <div class="mobile-main-controls">
+            <button class="mobile-control-btn" id="mobileShuffleBtn" aria-label="Shuffle">
+              <i class="bi bi-shuffle"></i>
             </button>
 
-            <input type="range" id="fullscreenVolume" class="volume-slider" min="0" max="100" value="80"
-              aria-label="Volume">
+            <button class="mobile-control-btn" id="mobilePrevBtn" aria-label="Previous">
+              <i class="bi bi-skip-start-fill"></i>
+            </button>
+
+            <button class="mobile-play-btn" id="mobilePlayBtn" aria-label="Play or Pause">
+              <i class="bi bi-play-fill"></i>
+            </button>
+
+            <button class="mobile-control-btn" id="mobileNextBtn" aria-label="Next">
+              <i class="bi bi-skip-end-fill"></i>
+            </button>
+
+            <button class="mobile-control-btn" id="mobileRepeatBtn" aria-label="Repeat">
+              <i class="bi bi-arrow-repeat"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Desktop Controls (hidden on mobile) -->
+        <div class="fullscreen-controls desktop-only">
+          <!-- Progress -->
+          <div class="fullscreen-progress-container">
+            <div class="fullscreen-time-display">
+              <span id="fullscreenCurrentTime">0:00</span>
+              <span id="fullscreenDuration">0:00</span>
+            </div>
+
+            <div class="fullscreen-progress-bar">
+              <div class="fullscreen-progress" id="fullscreenProgress"></div>
+              <input type="range" id="fullscreenProgressInput" min="0" max="100" value="0" aria-label="Seek position">
+            </div>
           </div>
 
-          <button id="fullscreenPlaylist" aria-label="Playlist">
-            <i class="bi bi-music-note-list"></i>
-          </button>
+          <!-- Main Controls -->
+          <div class="control-buttons">
+            <button id="fullscreenShuffle" aria-label="Shuffle">
+              <i class="bi bi-shuffle"></i>
+            </button>
+
+            <button id="fullscreenPrev" aria-label="Previous">
+              <i class="bi bi-skip-start-fill"></i>
+            </button>
+
+            <button id="fullscreenPlay" aria-label="Play or Pause">
+              <i class="bi bi-play-fill"></i>
+            </button>
+
+            <button id="fullscreenNext" aria-label="Next">
+              <i class="bi bi-skip-end-fill"></i>
+            </button>
+
+            <button id="fullscreenRepeat" aria-label="Repeat">
+              <i class="bi bi-arrow-repeat"></i>
+            </button>
+          </div>
+
+          <!-- Secondary Controls -->
+          <div class="fullscreen-secondary-controls">
+            <div class="volume-control">
+              <button id="fullscreenMute" aria-label="Mute">
+                <i class="bi bi-volume-up"></i>
+              </button>
+
+              <input type="range" id="fullscreenVolume" class="volume-slider" min="0" max="100" value="80"
+                aria-label="Volume">
+            </div>
+
+            <button id="fullscreenPlaylist" aria-label="Playlist">
+              <i class="bi bi-music-note-list"></i>
+            </button>
+          </div>
         </div>
+
+        <!-- Up Next (desktop only) -->
+        <div class="up-next desktop-only">
+          <h3>Up Next</h3>
+          <div class="up-next-list" id="upNextList">
+            <!-- Up next songs will be listed here -->
+          </div>
+        </div>
+
+
+
       </div>
-
-    
-
-      
-
     </div>
+
+
+
+  </div>
   </div>
 
-
-
   </div> <!-- /main-area -->
+
+  </div> <!-- /screen -->
 
   <div id="mobileOverlay" class="mobile-overlay"></div>
 
@@ -682,7 +748,7 @@
           <label for="profilePicture">Profile Picture (Optional)</label>
           <div class="profile-upload">
             <div class="profile-preview">
-              <img id="profilePreview" src="assets/dp.png" alt="Profile Preview"  >
+              <img id="profilePreview" src="Assets/dp.png" alt="Profile Preview">
               <div class="upload-overlay">
                 <i class="bi bi-camera"></i>
                 <span>Upload Photo</span>
@@ -700,18 +766,8 @@
     </div>
   </div>
 
-
-
-
-
-  <script src="js/audio-fix.js"></script>
-  <script src="index.js"></script>
-  <script src="js/player.js"></script>
-  <script src="js/mini-player-enhancements.js"></script>
-  <script src="js/fullscreen-player-enhancements.js"></script>
-  <script src="js/audio-visualizer.js"></script>
-  <script src="test-play-pause-fix.js"></script>
-  <script src="debug-mini-player.js"></script>
+  <!-- Vite module entry (replaces audio-fix.js, index.js, player.js, enhancements) -->
+  <script type="module" src="/src/main.js"></script>
 
 </body>
 
