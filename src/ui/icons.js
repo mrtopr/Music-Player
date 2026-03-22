@@ -15,7 +15,7 @@ import {
     Plus, Check, Clock, Share2,
     Star, MoreHorizontal, Library,
     History, Radio, Download, Info,
-    Moon, SlidersHorizontal
+    Moon, SlidersHorizontal, createElement
 } from 'lucide';
 
 /**
@@ -24,14 +24,14 @@ import {
  * @param {Object} opts - { size, strokeWidth, className }
  * @returns {SVGElement}
  */
-export function icon(IconFn, opts = {}) {
+export function icon(IconNode, opts = {}) {
     const { size = 24, strokeWidth = 2, className = '' } = opts;
-    return IconFn({
-        width: size,
-        height: size,
-        'stroke-width': strokeWidth,
-        class: `lucide-icon${className ? ' ' + className : ''}`
-    });
+    const svg = createElement(IconNode);
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.setAttribute('stroke-width', strokeWidth);
+    svg.setAttribute('class', `lucide-icon${className ? ' ' + className : ''}`);
+    return svg;
 }
 
 /** Named icon map — import from here anywhere in the app */

@@ -352,9 +352,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Sample queue items - in real app, use actual queue
             const sampleQueue = [
-                { title: 'Next Song 1', artist: 'Artist 1', image: 'Assets/music.png' },
-                { title: 'Next Song 2', artist: 'Artist 2', image: 'Assets/music.png' },
-                { title: 'Next Song 3', artist: 'Artist 3', image: 'Assets/music.png' }
+                { title: 'Next Song 1', artist: 'Artist 1', image: '/music.png' },
+                { title: 'Next Song 2', artist: 'Artist 2', image: '/music.png' },
+                { title: 'Next Song 3', artist: 'Artist 3', image: '/music.png' }
             ];
 
             sampleQueue.forEach(song => {

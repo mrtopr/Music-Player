@@ -26,9 +26,9 @@ export const API_BASE_URL = (() => {
 })();
 
 export const ENDPOINTS = {
-    trendingSongs: '/api/search/songs?query=bollywood%20trending%202024%20hits&language=hindi',
-    newReleasesAlbums: '/api/search/songs?query=new%20hindi%20songs&language=hindi',
-    popularArtists: '/api/search/artists?query=arijit%20singh%20shreya%20ghoshal%20rahat%20fateh&language=hindi',
+    trendingSongs: '/api/trending',
+    newReleasesAlbums: '/api/modules',
+    popularArtists: '/api/search/artists?query=Top%202024%20Hindi%20Bollywood%20Singers%20Rappers&language=hindi',
     featuredPlaylists: '/api/search/playlists?query=bollywood%20hits%20romantic&language=hindi',
     searchSongs: '/api/search/songs',
     searchAlbums: '/api/search/albums',
@@ -48,6 +48,15 @@ export const ENDPOINTS = {
  */
 const apiCache = new Map();
 
+/**
+ * Standardized API error reporting
+ */
+export function handleApiError(err, context = '') {
+    console.error(`API Error [${context}]:`, err);
+    // Future: Add toast/UI notification logic here
+    return { success: false, error: err.message, context };
+}
+
 export async function apiFetch(path, params = {}) {
     try {
         const url = new URL(API_BASE_URL + path, window.location.href);
@@ -62,15 +71,15 @@ export async function apiFetch(path, params = {}) {
         if (!res.ok) throw new Error(`API error ${res.status}: ${res.statusText}`);
 
         const data = await res.json();
+        const finalData = data.data || data;
 
         // Retain standard query topologies for 5 minutes globally
-        apiCache.set(urlString, data);
+        apiCache.set(urlString, finalData);
         setTimeout(() => apiCache.delete(urlString), 5 * 60 * 1000);
 
-        return data;
+        return finalData;
     } catch (err) {
-        console.error('API fetch error:', err);
-        throw err;
+        return handleApiError(err, path);
     }
 }
 

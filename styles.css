@@ -16,11 +16,13 @@
 
   /* Primary Accent - Muted Champagne Gold (MINIMAL USE) */
   --accent-primary: #C6A15B;
+  --accent-primary-rgb: 198, 161, 91;
   --accent-primary-soft: rgba(198, 161, 91, 0.12);
   --accent-hover: #D6B36A;
 
   /* Secondary Accent - Cool Deep Blue (RARE USE) */
   --accent-secondary: #2F80ED;
+  --accent-secondary-rgb: 47, 128, 237;
   --accent-secondary-soft: rgba(47, 128, 237, 0.12);
 
   /* Text */
@@ -184,6 +186,23 @@ body {
   50% {
     transform: scale(1.05);
   }
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
 }
 
 /* ========== LAYOUT ========== */
@@ -421,7 +440,7 @@ body {
 .main-area {
   flex: 1;
   margin-left: 280px;
-  padding: var(--spacing-md);
+  padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
   min-height: 100vh;
   padding-bottom: 100px;
   width: calc(100% - 280px);
@@ -434,7 +453,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 0;
   flex-wrap: wrap;
   width: 100%;
   max-width: 100%;
@@ -445,9 +464,9 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-top: 12px;
+  margin: 0 auto 0 1rem;
   width: 100%;
-  max-width: none;
+  max-width: 600px;
   flex: 1;
   position: relative;
 }
@@ -682,8 +701,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: var(--spacing-xl);
-  margin: var(--spacing-md) 0;
+  padding: 30px var(--spacing-xl);
+  margin: 0;
   width: 100%;
   max-width: 100%;
   color: var(--text-primary);
@@ -1822,11 +1841,11 @@ img:not([src]) {
   opacity: 0;
 }
 
-.card img[src="Assets/music.png"],
-.artist-card img[src="Assets/music.png"],
-.song-cover[src="Assets/music.png"],
-.artist-cover[src="Assets/music.png"],
-.playlist-cover[src="Assets/music.png"],
+.card img[src="/music.png"],
+.artist-card img[src="/music.png"],
+.song-cover[src="/music.png"],
+.artist-cover[src="/music.png"],
+.playlist-cover[src="/music.png"],
 .card img:not([src]),
 .artist-card img:not([src]) {
   background-color: rgba(255, 255, 255, 0.1);
@@ -7228,11 +7247,25 @@ body {
 
 @media (max-width: 768px) {
   .sidebar {
-    display: none !important;
+    display: flex !important;
+    position: fixed;
+    top: 0;
+    left: -280px;
+    height: 100vh;
+    width: 260px;
+    z-index: 2000;
+    transition: transform 0.3s ease;
+    border-radius: 0 20px 20px 0;
+    margin: 0;
+  }
+
+  .sidebar.open {
+    transform: translateX(280px);
   }
 
   .hamburger {
-    display: none !important;
+    display: flex !important;
+    margin-right: var(--space-md);
   }
 
   .main-area {

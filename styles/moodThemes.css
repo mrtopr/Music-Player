@@ -1,0 +1,203 @@
+/**
+ * Dynamic Mood Themes — Variable-based system
+ */
+
+/* Base theme fallback variables */
+:root {
+  --color-primary: #fbbf24;
+  --color-secondary: #f59e0b;
+  --color-accent: #f97316;
+  --color-background: #0a0a0a;
+  --color-surface: #1a1a1a;
+  --color-text: #f5f5f5;
+  --color-glow: rgba(251, 191, 36, 0.3);
+  --gradient-main: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+  --font-family: 'Inter', sans-serif;
+  --letter-spacing: normal;
+  --transition-theme: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Theme transition global lock */
+body.theme-transitioning * {
+  transition: var(--transition-theme) !important;
+}
+
+/* ROMANTIC THEME */
+body[data-mood="romantic"] {
+  --color-primary: #ef4444;
+  --color-secondary: #f472b6;
+  --color-accent: #fb7185;
+  --color-background: #1a0505;
+  --color-surface: #2d0f0f;
+  --color-text: #fecaca;
+  --color-glow: rgba(239, 68, 68, 0.3);
+  --gradient-main: linear-gradient(135deg, #1a0505 0%, #2d0f0f 50%, #1a0505 100%);
+  --font-family: 'Playfair Display', serif;
+  --letter-spacing: 0.05em;
+}
+
+/* SAD THEME */
+body[data-mood="sad"] {
+  --color-primary: #3b82f6;
+  --color-secondary: #64748b;
+  --color-accent: #94a3b8;
+  --color-background: #0f172a;
+  --color-surface: #1e293b;
+  --color-text: #cbd5e1;
+  --color-glow: rgba(59, 130, 246, 0.3);
+  --gradient-main: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  --font-family: 'Inter', sans-serif;
+  --letter-spacing: 0.02em;
+}
+
+/* PARTY THEME */
+body[data-mood="party"] {
+  --color-primary: #a855f7;
+  --color-secondary: #ec4899;
+  --color-accent: #f59e0b;
+  --color-background: #1a0b2e;
+  --color-surface: #2d1b4e;
+  --color-text: #fde68a;
+  --color-glow: rgba(168, 85, 247, 0.4);
+  --gradient-main: linear-gradient(135deg, #1a0b2e 0%, #2d1b4e 33%, #1a0b2e 66%, #2d1b4e 100%);
+  --font-family: 'Outfit', sans-serif;
+  --letter-spacing: 0.1em;
+}
+
+/* DANCE THEME */
+body[data-mood="dance"] {
+  --color-primary: #fbbf24;
+  --color-secondary: #f59e0b;
+  --color-accent: #f97316;
+  --color-background: #1a1200;
+  --color-surface: #2d1f00;
+  --color-text: #fef3c7;
+  --color-glow: rgba(251, 191, 36, 0.4);
+  --gradient-main: linear-gradient(135deg, #1a1200 0%, #2d1f00 50%, #1a1200 100%);
+  --font-family: 'Outfit', sans-serif;
+  --letter-spacing: 0.08em;
+}
+
+/* CLASSICAL THEME */
+body[data-mood="classical"] {
+  --color-primary: #d4af37;
+  --color-secondary: #c9b896;
+  --color-accent: #8b7355;
+  --color-background: #1a1510;
+  --color-surface: #2d2620;
+  --color-text: #f5ebe0;
+  --color-glow: rgba(212, 175, 55, 0.3);
+  --gradient-main: linear-gradient(180deg, #1a1510 0%, #2d2620 50%, #1a1510 100%);
+  --font-family: 'Playfair Display', serif;
+  --letter-spacing: 0.03em;
+}
+
+/* ROCK THEME */
+body[data-mood="rock"] {
+  --color-primary: #dc2626;
+  --color-secondary: #7f1d1d;
+  --color-accent: #000000;
+  --color-background: #0a0a0a;
+  --color-surface: #1a1a1a;
+  --color-text: #fca5a5;
+  --color-glow: rgba(220, 38, 38, 0.4);
+  --gradient-main: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+  --font-family: 'Oswald', sans-serif;
+  --letter-spacing: 0.1em;
+}
+
+/* Global Application of Theme Variables */
+body {
+  background: var(--gradient-main) !important;
+  color: var(--color-text) !important;
+  font-family: var(--font-family) !important;
+  letter-spacing: var(--letter-spacing) !important;
+  transition: var(--transition-theme);
+}
+
+.main-area, .sidebar, .top-bar, .mini-player, .fullscreen-player {
+  transition: var(--transition-theme);
+}
+
+/* Accent overrides */
+h1, h2, h3, .accent-text {
+  color: var(--color-primary);
+}
+
+.primary-cta-btn, .btn-primary {
+  background: var(--color-primary) !important;
+  box-shadow: 0 0 20px var(--color-glow);
+  color: #000 !important;
+}
+
+.card {
+  background: var(--color-surface) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.card:hover {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 25px var(--color-glow);
+}
+
+/* Custom animations for mood elements */
+.mood-effects {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.mood-element {
+  position: absolute;
+  font-size: 24px;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+@keyframes float-up {
+  0% { transform: translateY(100vh) scale(1); opacity: 0; }
+  20% { opacity: 0.4; }
+  80% { opacity: 0.4; }
+  100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+}
+
+@keyframes rain {
+  0% { transform: translateY(-10vh); opacity: 0; }
+  10% { opacity: 0.5; }
+  90% { opacity: 0.5; }
+  100% { transform: translateY(110vh); opacity: 0; }
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.5); opacity: 0.8; }
+}
+
+/* Category pills with theme */
+.category-scroll .btn-outline-primary {
+  background: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+  transition: var(--transition-theme);
+  border-radius: 20px;
+  padding: 0.5rem 1.25rem;
+  white-space: nowrap;
+}
+
+.category-scroll .btn-outline-primary.active {
+  background: var(--color-primary) !important;
+  border-color: var(--color-secondary) !important;
+  box-shadow: 0 0 20px var(--color-glow);
+  color: #000 !important;
+}
+
+/* Animations for fixed elements */
+@keyframes float-heart {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+  50% { transform: translateY(-20px) scale(1.3); opacity: 0.6; }
+}

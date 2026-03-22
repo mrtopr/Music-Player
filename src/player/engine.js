@@ -13,6 +13,7 @@ import { renderQueue } from '../ui/queue.js';
 import { applyDynamicTheme } from '../ui/theme.js';
 import { fetchAndRenderLyrics } from '../features/lyrics.js';
 import { initVisualizer } from '../ui/visualizer.js';
+import { addToHistory } from '../utils/history.js';
 
 let audioA = new Audio();
 let audioB = new Audio();
@@ -196,6 +197,9 @@ export function formatTime(seconds) {
  */
 export async function loadSong(song) {
     if (!song) return;
+
+    // Record to history immediately to avoid UI lag later
+    addToHistory(song);
 
     const audioUrl = getAudioUrl(song.downloadUrl) || getAudioUrl(song.url) || song.audioUrl;
     if (!audioUrl) {
@@ -413,10 +417,11 @@ async function startSongRadio() {
             loadSong(state.songs[state.currentSongIndex]);
         } else {
             // Fallback to trending
-            const trend = await apiFetch(ENDPOINTS.trendingSongs);
-            if (trend.success && trend.data?.results) {
+            const res = await apiFetch(ENDPOINTS.trendingSongs);
+            const trendSongs = res?.songs || res?.results || res?.data?.results || [];
+            if (trendSongs.length > 0) {
                 showNotification('Falling back to Trending Radio...', 'success');
-                state.songs = [...state.songs, ...trend.data.results];
+                state.songs = [...state.songs, ...trendSongs];
                 state.currentSongIndex++;
                 loadSong(state.songs[state.currentSongIndex]);
             }

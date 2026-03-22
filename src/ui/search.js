@@ -23,7 +23,7 @@ export function initSearch() {
     searchInput = document.getElementById('searchInput');
     searchTabs = document.getElementById('searchTabs');
     clearSearchBtn = document.getElementById('clearSearchBtn');
-    searchResultsContainer = document.getElementById('searchResults') || createTempContainer();
+    searchResultsContainer = document.getElementById('search-results') || createTempContainer();
 
     if (searchInput) {
         searchInput.addEventListener('input', () => {
@@ -31,9 +31,9 @@ export function initSearch() {
             const q = searchInput.value.trim();
 
             if (q.length > 0) {
-                clearSearchBtn.style.display = 'block';
+                if (clearSearchBtn) clearSearchBtn.style.display = 'block';
             } else {
-                clearSearchBtn.style.display = 'none';
+                if (clearSearchBtn) clearSearchBtn.style.display = 'none';
                 clearResults();
                 return;
             }
@@ -64,9 +64,9 @@ export function initSearch() {
 }
 
 function createTempContainer() {
-    const page = document.getElementById('searchPage');
+    const page = document.querySelector('.content') || document.body;
     const container = document.createElement('div');
-    container.id = 'searchResults';
+    container.id = 'search-results';
     container.className = 'search-results-grid';
     container.style.marginTop = 'var(--space-md)';
     page.appendChild(container);

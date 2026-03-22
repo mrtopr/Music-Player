@@ -1,0 +1,230 @@
+/* ===== REACT APP POLISH & CONSISTENCY ===== */
+
+/* ── Skeleton Loading Animation ── */
+.skeleton-pulse {
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeletonPulse {
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* ── EQ Bar Animation for Playing Cards ── */
+@keyframes eqBar {
+    from {
+        height: 4px;
+    }
+
+    to {
+        height: 16px;
+    }
+}
+
+/* ── Smooth Scrollbar Styling ── */
+.horizontal-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 3px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 3px;
+}
+
+.horizontal-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Main area scrollable content */
+.main-area {
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.main-area::-webkit-scrollbar {
+    width: 6px;
+}
+
+.main-area::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.main-area::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+/* ── Song Card Playing State Enhancement ── */
+.song-card.playing {
+    border-color: var(--accent-primary, #d4a053) !important;
+    box-shadow: 0 0 20px rgba(212, 160, 83, 0.25) !important;
+}
+
+.song-card.playing img {
+    filter: brightness(0.85);
+}
+
+/* ── Play Button Overlay Fix ── */
+.song-card .play-btn {
+    position: absolute;
+    bottom: 70px;
+    right: 12px;
+    z-index: 5;
+}
+
+/* ── Queue Panel Slide Transition ── */
+.queue-panel {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Modal Overlay Fade ── */
+.modal-overlay {
+    animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ── Search Page Styles ── */
+.search-input-main:focus {
+    border-color: var(--accent-primary, #d4a053) !important;
+    box-shadow: 0 0 0 3px rgba(212, 160, 83, 0.15) !important;
+}
+
+/* ── Settings Sections ── */
+.settings-section {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: border-color 0.3s;
+}
+
+.settings-section:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ── Sidebar Link Styling ── */
+.sidebar li a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ── Category Button Active ── */
+.category-scroll .btn.active {
+    background: var(--accent-primary, #d4a053) !important;
+    color: var(--bg-main, #0a0a0a) !important;
+    border-color: var(--accent-primary, #d4a053) !important;
+}
+
+/* ── Page Transition ── */
+.page-content,
+.main-area>div:not(.top-bar) {
+    animation: pageSlideIn 0.3s ease-out;
+}
+
+@keyframes pageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Tooltip Buttons ── */
+.tooltip-btn {
+    position: relative;
+}
+
+.tooltip-btn:hover::after {
+    content: attr(aria-label);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* ── Artist Card Consistent Size ── */
+.artist-card {
+    min-width: 160px;
+    flex: 0 0 auto;
+}
+
+/* ── Hover effects for interactive elements ── */
+.mini-player-info:hover {
+    cursor: pointer;
+}
+
+/* ── Prevent layout shifts ── */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ── Fix mini player overlapping content ── */
+.screen {
+    padding-bottom: 0;
+}
+
+/* ── Mobile nav highlight ── */
+.mobile-tab-bar .tab-item.active {
+    color: var(--accent-primary, #d4a053);
+}
+
+.mobile-tab-bar .tab-item {
+    transition: color 0.2s, transform 0.2s;
+}
+
+.mobile-tab-bar .tab-item:hover {
+    transform: translateY(-2px);
+}

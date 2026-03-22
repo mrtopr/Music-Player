@@ -988,10 +988,10 @@ function updateQueueDisplay() {
       item.className = 'up-next-item';
       item.dataset.queueIndex = queueIndex;
 
-      const imageUrl = getImageUrl(song.image) || 'Assets/music.png';
+      const imageUrl = getImageUrl(song.image) || '/music.png';
 
       item.innerHTML = `
-        <img src="${imageUrl}" alt="${song.title}" onerror="this.src='Assets/music.png'">
+        <img src="${imageUrl}" alt="${song.title}" onerror="this.src='/music.png'">
         <div class="up-next-item-info">
           <div class="up-next-item-title">${song.title || song.name || 'Unknown Title'}</div>
           <div class="up-next-item-artist">${song.artist || song.more_info?.artistMap?.primary_artists?.[0]?.name || 'Unknown Artist'}</div>
@@ -1716,7 +1716,7 @@ function populateHistoryWithRealSongs() {
           title: card.dataset.title,
           artist: card.dataset.artist || 'Unknown Artist',
           url: card.dataset.url,
-          cover: card.querySelector('img')?.src || 'Assets/music.png'
+          cover: card.querySelector('img')?.src || '/music.png'
         });
       }
     }
@@ -2637,35 +2637,35 @@ function testShuffleRepeat() {
         title: 'Test Song 1',
         artist: 'Test Artist 1',
         url: 'songs/ek-villain.mp3',
-        image: 'Assets/music.png'
+        image: '/music.png'
       },
       {
         id: 'test2',
         title: 'Test Song 2',
         artist: 'Test Artist 2',
         url: 'songs/kabir-singh.mp3',
-        image: 'Assets/music.png'
+        image: '/music.png'
       },
       {
         id: 'test3',
         title: 'Test Song 3',
         artist: 'Test Artist 3',
         url: 'songs/narayan.mp3',
-        image: 'Assets/music.png'
+        image: '/music.png'
       },
       {
         id: 'test4',
         title: 'Test Song 4',
         artist: 'Test Artist 4',
         url: 'songs/pushpa2.mp3',
-        image: 'Assets/music.png'
+        image: '/music.png'
       },
       {
         id: 'test5',
         title: 'Test Song 5',
         artist: 'Test Artist 5',
         url: 'songs/sahiba.mp3',
-        image: 'Assets/music.png'
+        image: '/music.png'
       }
     ];
 
@@ -2823,9 +2823,9 @@ function debugAllIssues() {
   if (songQueue.length === 0) {
     console.log('  Adding test songs to queue...');
     const testSongs = [
-      { id: 'test1', title: 'Test Song 1', artist: 'Test Artist 1', url: '#', image: 'Assets/music.png' },
-      { id: 'test2', title: 'Test Song 2', artist: 'Test Artist 2', url: '#', image: 'Assets/music.png' },
-      { id: 'test3', title: 'Test Song 3', artist: 'Test Artist 3', url: '#', image: 'Assets/music.png' }
+      { id: 'test1', title: 'Test Song 1', artist: 'Test Artist 1', url: '#', image: '/music.png' },
+      { id: 'test2', title: 'Test Song 2', artist: 'Test Artist 2', url: '#', image: '/music.png' },
+      { id: 'test3', title: 'Test Song 3', artist: 'Test Artist 3', url: '#', image: '/music.png' }
     ];
     songQueue = [...testSongs];
     currentQueueIndex = 0;
@@ -3043,7 +3043,7 @@ function setupLoginForm() {
         // Create user object
         currentUser = {
           name: name,
-          profilePicture: profilePreview ? profilePreview.src : 'Assets/dp.png',
+          profilePicture: profilePreview ? profilePreview.src : '/dp.png',
           loginDate: new Date().toISOString(),
           id: Date.now().toString() // Simple ID generation
         };
@@ -3088,7 +3088,7 @@ window.addEventListener('DOMContentLoaded', () => {
       console.warn('Image failed to load:', e.target.src);
       console.log('Image element:', e.target);
       console.log('Image parent:', e.target.parentElement);
-      e.target.src = 'Assets/music.png';
+      e.target.src = '/music.png';
     }
   }, true);
 
@@ -3376,7 +3376,7 @@ const getImageUrl = (imageData, preferredQuality = '500x500') => {
   // If no image data, return default
   if (!imageData) {
     console.log('No image data provided, using default');
-    return 'Assets/music.png';
+    return '/music.png';
   }
 
   // Helper function to convert relative URLs to absolute
@@ -3399,7 +3399,7 @@ const getImageUrl = (imageData, preferredQuality = '500x500') => {
     // If it's just a filename or relative path, try to construct CDN URL
     if (url.includes('.jpg') || url.includes('.jpeg') || url.includes('.png') || url.includes('.webp')) {
       // If it doesn't start with http but contains image extension, assume it's a CDN path
-      if (!url.startsWith('Assets/')) {
+      if (!url.startsWith('/')) {
         return `https://c.saavncdn.com/${url}`;
       }
     }
@@ -3410,13 +3410,13 @@ const getImageUrl = (imageData, preferredQuality = '500x500') => {
   // If it's already a string URL, process it
   if (typeof imageData === 'string') {
     const absoluteUrl = makeAbsoluteUrl(imageData);
-    if (absoluteUrl && (absoluteUrl.startsWith('http') || absoluteUrl.startsWith('Assets/'))) {
+    if (absoluteUrl && (absoluteUrl.startsWith('http') || absoluteUrl.startsWith('/'))) {
       console.log('Using processed string URL:', absoluteUrl);
       return absoluteUrl;
     }
     // If it's a relative path, return default
     console.log('String URL could not be processed, using default');
-    return 'Assets/music.png';
+    return '/music.png';
   }
 
   // If it's an array of image objects
@@ -3441,7 +3441,7 @@ const getImageUrl = (imageData, preferredQuality = '500x500') => {
 
     if (validImages.length === 0) {
       console.warn('No valid images found in array, using default');
-      return 'Assets/music.png';
+      return '/music.png';
     }
 
     // Try to find preferred quality first
@@ -3498,7 +3498,7 @@ const getImageUrl = (imageData, preferredQuality = '500x500') => {
   }
 
   console.warn('No valid image URL found, using default. Image data was:', imageData);
-  return 'Assets/music.png';
+  return '/music.png';
 };
 
 // Make getImageUrl globally available
@@ -4006,7 +4006,7 @@ function createLatestPageSongCard(song, index) {
   const artist = song.primaryArtists || song.artist || 'Unknown Artist';
 
   card.innerHTML = `
-    <img src="${imageUrl}" alt="${title}" onerror="this.src='Assets/music.png'">
+    <img src="${imageUrl}" alt="${title}" onerror="this.src='/music.png'">
     <div class="play-overlay">
       <i class="bi bi-play-circle-fill"></i>
     </div>
@@ -4463,7 +4463,7 @@ async function fetchFamousArtists() {
         name: artistName,
         category: category,
         priority: category === 'rappers' ? topRappers.indexOf(artistName) : famousSingers.indexOf(artistName),
-        image: 'Assets/music.png',
+        image: '/music.png',
         isFallback: true
       };
     } catch (error) {
@@ -4474,7 +4474,7 @@ async function fetchFamousArtists() {
         name: artistName,
         category: category,
         priority: category === 'rappers' ? topRappers.indexOf(artistName) : famousSingers.indexOf(artistName),
-        image: 'Assets/music.png',
+        image: '/music.png',
         isFallback: true
       };
     }
@@ -4507,19 +4507,19 @@ async function fetchFamousArtists() {
 // ======== FALLBACK ARTIST DATA ========
 function createFallbackArtistData() {
   const fallbackRappers = [
-    { id: 'divine-fallback', name: 'Divine', category: 'rappers', image: 'Assets/music.png' },
-    { id: 'raftaar-fallback', name: 'Raftaar', category: 'rappers', image: 'Assets/music.png' },
-    { id: 'badshah-fallback', name: 'Badshah', category: 'rappers', image: 'Assets/music.png' },
-    { id: 'emiway-fallback', name: 'Emiway Bantai', category: 'rappers', image: 'Assets/music.png' },
-    { id: 'krsna-fallback', name: 'KR$NA', category: 'rappers', image: 'Assets/music.png' }
+    { id: 'divine-fallback', name: 'Divine', category: 'rappers', image: '/music.png' },
+    { id: 'raftaar-fallback', name: 'Raftaar', category: 'rappers', image: '/music.png' },
+    { id: 'badshah-fallback', name: 'Badshah', category: 'rappers', image: '/music.png' },
+    { id: 'emiway-fallback', name: 'Emiway Bantai', category: 'rappers', image: '/music.png' },
+    { id: 'krsna-fallback', name: 'KR$NA', category: 'rappers', image: '/music.png' }
   ];
 
   const fallbackSingers = [
-    { id: 'arijit-fallback', name: 'Arijit Singh', category: 'popular', image: 'Assets/music.png' },
-    { id: 'shreya-fallback', name: 'Shreya Ghoshal', category: 'popular', image: 'Assets/music.png' },
-    { id: 'rahman-fallback', name: 'A. R. Rahman', category: 'popular', image: 'Assets/music.png' },
-    { id: 'atif-fallback', name: 'Atif Aslam', category: 'popular', image: 'Assets/music.png' },
-    { id: 'sonu-fallback', name: 'Sonu Nigam', category: 'popular', image: 'Assets/music.png' }
+    { id: 'arijit-fallback', name: 'Arijit Singh', category: 'popular', image: '/music.png' },
+    { id: 'shreya-fallback', name: 'Shreya Ghoshal', category: 'popular', image: '/music.png' },
+    { id: 'rahman-fallback', name: 'A. R. Rahman', category: 'popular', image: '/music.png' },
+    { id: 'atif-fallback', name: 'Atif Aslam', category: 'popular', image: '/music.png' },
+    { id: 'sonu-fallback', name: 'Sonu Nigam', category: 'popular', image: '/music.png' }
   ];
 
   return [...fallbackRappers, ...fallbackSingers];
@@ -5012,7 +5012,7 @@ async function loadSong(songOrIndex) {
     }
 
     // Update UI with enhanced image handling
-    const songCover = song.cover || getImageUrl(song.image) || 'Assets/music.png';
+    const songCover = song.cover || getImageUrl(song.image) || '/music.png';
 
     if (nowPlayingArt) nowPlayingArt.src = songCover;
     if (trackTitle) trackTitle.textContent = song.title || 'Unknown Title';
@@ -5274,7 +5274,7 @@ function updateNowPlaying(song) {
 
   const title = song.title || song.name || 'Unknown Title';
   const artist = song.artist || song.primaryArtists || 'Unknown Artist';
-  const cover = song.cover || getImageUrl(song.image) || 'Assets/music.png';
+  const cover = song.cover || getImageUrl(song.image) || '/music.png';
 
   console.log('updateNowPlaying called with cover:', cover);
 
@@ -6392,7 +6392,7 @@ function showPlaylistsPage() {
             <p>Create New Playlist</p>
           </div>
           <div class="playlist-card">
-            <img src="Assets/music.png" alt="Liked Songs">
+            <img src="/music.png" alt="Liked Songs">
             <div class="card-body">
               <p class="playlist-name">Liked Songs</p>
               <p class="song-artist">Your favorite tracks</p>
@@ -6591,7 +6591,7 @@ function handleLogout() {
 
     const profileImg = document.querySelector('.profile img');
     if (profileImg) {
-      profileImg.src = 'Assets/dp.png';
+      profileImg.src = '/dp.png';
     }
 
     // Reset welcome message
@@ -6789,7 +6789,7 @@ function useFallbackTrendingSongs() {
       updateNowPlaying({
         title: 'Test Song',
         artist: 'Test Artist',
-        cover: 'Assets/music.png'
+        cover: '/music.png'
       });
       showMiniPlayer();
       console.log('Mini player shown with test data');
@@ -7757,7 +7757,7 @@ function createArtistCard(artist, index, category = 'popular') {
 
   // Extract artist information
   const artistName = artist.name || artist.title || 'Unknown Artist';
-  const artistImage = getImageUrl(artist.image) || 'Assets/music.png';
+  const artistImage = getImageUrl(artist.image) || '/music.png';
   const followerCount = artist.followerCount || artist.followers || 0;
   const songCount = artist.songCount || artist.songs?.length || 0;
 
@@ -7770,7 +7770,7 @@ function createArtistCard(artist, index, category = 'popular') {
   card.innerHTML = `
     <div class="circular-artist-container">
       <div class="circular-artist-image">
-        <img src="${artistImage}" alt="${artistName}" loading="lazy" onerror="this.src='Assets/music.png'">
+        <img src="${artistImage}" alt="${artistName}" loading="lazy" onerror="this.src='/music.png'">
         <div class="circular-overlay">
           <i class="bi bi-play-circle-fill"></i>
         </div>
@@ -8571,7 +8571,7 @@ async function playDirect(index) {
 function updatePlayerUI(song) {
   const title = song.title || song.name || 'Unknown Title';
   const artist = extractArtistInfo(song);
-  const cover = song.cover || getImageUrl(song.image) || 'Assets/music.png';
+  const cover = song.cover || getImageUrl(song.image) || '/music.png';
 
   // Update mini player
   if (miniPlayerImage) miniPlayerImage.src = cover;
@@ -8988,7 +8988,7 @@ function testImageExtraction(song) {
 
   const imageUrl = getImageUrl(song.image);
   console.log('Extracted image URL:', imageUrl);
-  console.log('Image URL valid:', imageUrl && typeof imageUrl === 'string' && (imageUrl.startsWith('http') || imageUrl.startsWith('Assets/')));
+  console.log('Image URL valid:', imageUrl && typeof imageUrl === 'string' && (imageUrl.startsWith('http') || imageUrl.startsWith('/')));
 
   return imageUrl;
 }

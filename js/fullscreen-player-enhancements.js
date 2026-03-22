@@ -840,31 +840,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     {
                         title: 'Tum Hi Ho',
                         artist: 'Arijit Singh',
-                        image: 'Assets/music.png',
+                        image: '/music.png',
                         primaryArtists: 'Arijit Singh'
                     },
                     {
                         title: 'Raabta',
                         artist: 'Arijit Singh',
-                        image: 'Assets/music.png',
+                        image: '/music.png',
                         primaryArtists: 'Arijit Singh'
                     },
                     {
                         title: 'Channa Mereya',
                         artist: 'Arijit Singh',
-                        image: 'Assets/music.png',
+                        image: '/music.png',
                         primaryArtists: 'Arijit Singh'
                     },
                     {
                         title: 'Tera Ban Jaunga',
                         artist: 'Tulsi Kumar, Akhil Sachdeva',
-                        image: 'Assets/music.png',
+                        image: '/music.png',
                         primaryArtists: 'Tulsi Kumar'
                     },
                     {
                         title: 'Bekhayali',
                         artist: 'Sachet Tandon',
-                        image: 'Assets/music.png',
+                        image: '/music.png',
                         primaryArtists: 'Sachet Tandon'
                     }
                 ];
@@ -874,7 +874,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const queueItem = document.createElement('div');
                 queueItem.className = 'up-next-item';
                 queueItem.innerHTML = `
-                    <img src="${song.image || 'Assets/music.png'}" alt="${song.title}" loading="lazy">
+                    <img src="${song.image || '/music.png'}" alt="${song.title}" loading="lazy">
                     <div class="up-next-item-info">
                         <div class="up-next-item-title">${song.title || song.name || 'Unknown Title'}</div>
                         <div class="up-next-item-artist">${song.artist || song.primaryArtists || 'Unknown Artist'}</div>

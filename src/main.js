@@ -26,7 +26,8 @@ import { replaceBootstrapIcons, setIcon, Icons } from './ui/icons.js';
 import { loadUserData } from './features/favorites.js';
 import { initMoodFilter } from './features/mood.js';
 import { initLogin } from './features/login.js';
-import { loadHistory, getRecentlyPlayed } from './features/history.js';
+import { getRecentlyPlayed, clearLegacyHistory } from './utils/history.js';
+import { getRecommendations } from './utils/recommendations.js';
 import { loadPlaylists } from './features/playlists.js';
 import { initPremiumModals } from './features/premium.js';
 
@@ -45,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. User data
     loadUserData();
     loadPlaylists();
-    loadHistory();
+    clearLegacyHistory(); // Clean up old storage if it exists
 
     // 3. Login modal
     initLogin();
@@ -71,9 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 8. Wire play/pause buttons
     _wirePlayerControls();
-
-    // 9. Wire search
-    _wireSearch();
 
     // 10. Load home page data
     _loadHomeData();
@@ -120,16 +118,24 @@ function _wirePlayerControls() {
     }
 }
 
-// ─── Home Data ────────────────────────────────────────────
-
 async function _loadHomeData() {
     try {
-        const history = getRecentlyPlayed();
+        // Recently Played
+        const history = getRecentlyPlayed(10);
         if (history && history.length > 0) {
-            // Un-hide the history container if it exists
-            const histContainer = document.getElementById('recently-played-section');
-            if (histContainer) histContainer.style.display = 'block';
+            const histSection = document.getElementById('recently-played-section');
+            if (histSection) histSection.style.display = 'block';
             _renderHomeSection('#recently-played-container', history, 'song-card');
+        }
+
+        // Made For You (Recommendations)
+        const recommendations = await getRecommendations(12);
+        if (recommendations && recommendations.length > 0) {
+            const recSection = document.getElementById('recommendations-section');
+            if (recSection) {
+                recSection.style.display = 'block';
+                _renderHomeSection('#recommendations-container', recommendations, 'song-card');
+            }
         }
 
         const [trending, newReleases, artists] = await Promise.allSettled([
@@ -139,7 +145,7 @@ async function _loadHomeData() {
         ]);
 
         if (trending.status === 'fulfilled') {
-            const songs = trending.value?.data?.results || [];
+            const songs = trending.value?.songs || [];
             state.allTrendingSongs = songs;
             state.filteredTrendingSongs = songs;
             state.songs = songs;
@@ -148,10 +154,10 @@ async function _loadHomeData() {
         }
 
         if (newReleases.status === 'fulfilled') {
-            const songs = newReleases.value?.data?.results || [];
-            state.allNewReleases = songs;
-            state.filteredNewReleases = songs;
-            _renderHomeSection('#new-releases-container', songs, 'song-card');
+            const albums = newReleases.value?.albums || [];
+            state.allNewReleases = albums;
+            state.filteredNewReleases = albums;
+            _renderHomeSection('#new-releases-container', albums, 'song-card');
         }
 
         if (artists.status === 'fulfilled') {

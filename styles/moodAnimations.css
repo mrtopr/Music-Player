@@ -1,0 +1,153 @@
+/**
+ * Professional Mood Animations (Mehfil) - Refactored for Layout Integrity
+ * High-end CSS-only atmospheric effects using pseudo-elements only.
+ */
+
+/* ============================================
+   ANIMATION DEFINITIONS (Moved away from body)
+   ============================================ */
+
+@keyframes romantic-pulse {
+  0%, 100% { background-position: 0% 50%; opacity: 1; }
+  50% { background-position: 100% 50%; opacity: 0.9; }
+}
+
+@keyframes romantic-glow {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+  33% { transform: translate(30px, -30px) scale(1.1); opacity: 0.5; }
+  66% { transform: translate(-20px, 20px) scale(0.9); opacity: 0.4; }
+}
+
+@keyframes sad-drift {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+@keyframes mist-fog {
+  0%, 100% { opacity: 0.2; transform: translateX(0) translateY(0); }
+  25% { opacity: 0.3; transform: translateX(20px) translateY(-10px); }
+  50% { opacity: 0.2; transform: translateX(-10px) translateY(20px); }
+  75% { opacity: 0.3; transform: translateX(-20px) translateY(-10px); }
+}
+
+@keyframes party-cycle {
+  0% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+  50% { background-position: 100% 50%; filter: hue-rotate(30deg); }
+  100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+}
+
+@keyframes disco-lights {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.25; }
+}
+
+@keyframes dance-energy {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes rhythm-pulse {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes classical-elegant {
+  0%, 100% { background-position: 0% 50%; opacity: 1; }
+  50% { background-position: 100% 50%; opacity: 0.8; }
+}
+
+@keyframes rock-intense {
+  0%, 100% { background-position: 0% 50%; filter: brightness(1) contrast(1); }
+  50% { background-position: 100% 50%; filter: brightness(1.2) contrast(1.1); }
+}
+
+@keyframes flicker-flame {
+  0%, 100% { opacity: 0.1; }
+  10%, 30%, 50%, 70%, 90% { opacity: 0.25; }
+  20%, 40%, 60%, 80% { opacity: 0.1; }
+}
+
+/* ============================================
+   THEME APPLICATION (Targeting ::before)
+   ============================================ */
+
+/* Global setup for the atmospheric layer */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: -1; /* Always behind content */
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  background-size: 200% 200%;
+}
+
+/* ROMANTIC */
+body[data-mood="romantic"]::before {
+  animation: romantic-pulse 8s ease-in-out infinite;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(239, 68, 68, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(244, 114, 182, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(251, 113, 133, 0.1) 0%, transparent 50%);
+}
+
+/* SAD */
+body[data-mood="sad"]::before {
+  animation: sad-drift 20s ease-in-out infinite;
+  background: 
+    radial-gradient(ellipse at 30% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(100, 116, 139, 0.1) 0%, transparent 50%);
+}
+
+/* PARTY */
+body[data-mood="party"]::before {
+  animation: party-cycle 10s ease-in-out infinite;
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(168, 85, 247, 0.2) 0%, transparent 40%),
+    radial-gradient(circle at 75% 75%, rgba(236, 72, 153, 0.2) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.15) 0%, transparent 50%);
+}
+
+/* DANCE */
+body[data-mood="dance"]::before {
+  animation: dance-energy 6s ease-in-out infinite;
+  background: 
+    radial-gradient(circle at 30% 60%, rgba(251, 191, 36, 0.2) 0%, transparent 40%),
+    radial-gradient(circle at 70% 40%, rgba(245, 158, 11, 0.15) 0%, transparent 40%);
+}
+
+/* CLASSICAL */
+body[data-mood="classical"]::before {
+  animation: classical-elegant 15s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent 0%, rgba(212, 175, 55, 0.1) 50%, transparent 100%);
+}
+
+/* ROCK */
+body[data-mood="rock"]::before {
+  animation: rock-intense 8s ease-in-out infinite;
+  background: 
+    radial-gradient(circle at 40% 40%, rgba(220, 38, 38, 0.25) 0%, transparent 40%),
+    radial-gradient(circle at 60% 60%, rgba(127, 29, 29, 0.2) 0%, transparent 40%);
+}
+
+/* ============================================
+   SHARED & COMPONENT OVERRIDES
+   ============================================ */
+
+/* Ensure card hovers remain mood-specific */
+body[data-mood="romantic"] .song-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 40px rgba(239, 68, 68, 0.3); }
+body[data-mood="sad"] .song-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(59, 130, 246, 0.2); }
+body[data-mood="party"] .song-card:hover { transform: translateY(-10px) rotate(2deg) scale(1.05); box-shadow: 0 25px 50px rgba(168, 85, 247, 0.4); }
+body[data-mood="dance"] .song-card:hover { transform: translateY(-12px) scale(1.08); box-shadow: 0 30px 60px rgba(251, 191, 36, 0.4); }
+body[data-mood="classical"] .song-card:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 20px 40px rgba(212, 175, 55, 0.25); }
+body[data-mood="rock"] .song-card:hover { transform: translateY(-8px) scale(1.05) rotate(-1deg); box-shadow: 0 25px 50px rgba(220, 38, 38, 0.5); }
+
+/* Progress bar & Buttons */
+body.theme-transitioning, body.theme-transitioning * { transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+
+body[data-mood="party"] .progress-bar-fill { animation: progress-party 2s ease-in-out infinite; }
+@keyframes progress-party { 0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.6); } 50% { box-shadow: 0 0 30px rgba(236, 72, 153, 0.8); } }
+
+body[data-mood="rock"] .progress-bar-fill { animation: progress-rock 0.5s ease-in-out infinite; }
+@keyframes progress-rock { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }

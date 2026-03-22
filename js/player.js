@@ -395,7 +395,7 @@ function updatePlayerUI(song) {
     const miniPlayerArtist = document.getElementById('miniPlayerArtist');
 
     // Enhanced image URL handling - use getImageUrl if available, otherwise fallback
-    let imageUrl = 'Assets/music.png';
+    let imageUrl = '/music.png';
     if (song.cover) {
         imageUrl = song.cover;
     } else if (song.image && typeof window.getImageUrl === 'function') {
