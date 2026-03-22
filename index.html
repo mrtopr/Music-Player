@@ -9,6 +9,12 @@
     content="Mehfil – a poetic music player where melodies meet emotions. Experience soulful songs, heartfelt playlists, and the true rhythm of love.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="Assets/favicon.ico">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="styles/brand-identity.css">
   <link rel="stylesheet" href="styles/noir-gold-theme.css">
@@ -55,10 +61,23 @@
       <div class="top-bar">
         <button id="hamburgerToggle" class="hamburger" aria-label="Toggle menu"><img src="Assets/flaticon/list.svg"
             alt="Menu" class="icon-svg"></button>
-        <div class="search">
+        <div class="search" style="margin-right: auto;">
           <input type="text" id="searchInput" placeholder="Search for songs, artists, or albums...">
           <button type="button" id="searchButton"><img src="Assets/flaticon/search.svg" alt="Search"
               class="icon-svg"></button>
+        </div>
+
+        <div class="premium-tools"
+          style="display:flex; gap: var(--space-md); margin-right: var(--space-xl); position: relative;">
+          <button id="openEqBtn" class="icon-btn tooltip-btn" aria-label="Audio Equalizer"
+            style="background:none; border:none; color:var(--text-secondary); cursor:pointer;"><i
+              data-lucide="sliders-horizontal"></i></button>
+          <button id="openSleepBtn" class="icon-btn tooltip-btn" aria-label="Sleep Timer"
+            style="background:none; border:none; color:var(--text-secondary); cursor:pointer; position:relative;">
+            <i data-lucide="moon"></i>
+            <span id="sleepTimerBadge" class="badge"
+              style="display:none; position:absolute; top:-5px; right:-10px; background:var(--accent-primary); color:var(--bg-main); font-size:10px; padding:2px 4px; border-radius:10px; font-weight:bold;"></span>
+          </button>
         </div>
         <div class="profile" id="profileEdit">
           <img src="Assets/dp.png" alt="Profile Picture" class="icon-svg">
@@ -361,6 +380,13 @@
           </div>
         </div>
 
+        <!-- Liked Songs Quick Callout -->
+        <div class="liked-songs-hero" id="likedSongsHero"
+          style="cursor: pointer; background: linear-gradient(135deg, rgba(80,50,150,0.8), rgba(40,20,100,0.8)); padding: var(--space-xl); border-radius: var(--radius-md); margin-bottom: var(--space-xl);">
+          <h3 style="color: white; font-size: var(--text-2xl); margin:0;">Liked Songs</h3>
+          <p id="likedSongsCount" style="color: rgba(255,255,255,0.8); margin-top: var(--space-xs);">0 songs</p>
+        </div>
+
         <!-- User Playlists Section -->
         <div class="user-playlists-section">
           <div class="section-header">
@@ -384,6 +410,27 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Liked Songs Detail Page -->
+    <div id="likedSongsPage" class="page-content" style="display: none;">
+      <button class="back-btn" onclick="showLibraryPage()"><i data-lucide="arrow-left" class="lucide-icon"></i>
+        Back</button>
+      <div class="detail-header" style="background: linear-gradient(to bottom, rgba(80, 50, 150, 0.4), transparent);">
+        <img src="https://misc.scdn.co/liked-songs/liked-songs-300.png" alt="Liked Songs"
+          style="border-radius: var(--radius-sm);">
+        <div class="detail-info">
+          <p>Playlist</p>
+          <h1>Liked Songs</h1>
+        </div>
+      </div>
+      <div class="detail-controls">
+        <button id="playLikedBtn" class="btn-primary"><i data-lucide="play" class="lucide-icon"></i> Play
+          Collection</button>
+      </div>
+      <div id="likedSongsBody" class="detail-body">
+        <!-- Renders as standard detail table/list -->
       </div>
     </div>
 
@@ -442,6 +489,7 @@
           <button id="miniPrevButton" title="Previous"><i class="bi bi-skip-start-fill"></i></button>
           <button id="miniPlayButton" title="Play/Pause"><i class="bi bi-play-fill"></i></button>
           <button id="miniNextButton" title="Next"><i class="bi bi-skip-end-fill"></i></button>
+          <button id="miniQueueBtn" title="Queue"><i data-lucide="list-video" class="lucide-icon"></i></button>
           <div class="mini-volume-control">
             <button id="miniVolumeButton" title="Volume"><i class="bi bi-volume-up"></i></button>
             <input type="range" id="miniVolumeSlider" min="0" max="100" value="80" title="Volume">
@@ -465,256 +513,114 @@
     </div>
     <!-- Fullscreen Player -->
     <div class="fullscreen-player" id="fullscreenPlayer">
-      <!-- Midnight Background -->
-      <div class="midnight-bg"></div>
-      <div class="ambient-particles"></div>
+      <div class="midnight-bg"
+        style="background: linear-gradient(to bottom, var(--accent-glow-strong), var(--bg-main));"></div>
 
-      <div class="fullscreen-overlay"></div>
+      <!-- Visualizer Canvas injected at absolute bottom behind controls -->
+      <canvas id="audioVisualizer" class="fs-visualizer-canvas"></canvas>
 
-      <div class="fullscreen-content">
+      <div class="fs-layout-grid">
 
-        <!-- Mobile Top Bar (visible only on mobile) -->
-        <div class="mobile-top-bar">
-          <button class="mobile-collapse-btn" id="closeFullscreen" aria-label="Close fullscreen">
-            <i class="bi bi-chevron-down"></i>
-          </button>
-
-          <div class="mobile-playlist-info">
-            <div class="mobile-playlist-text">PLAYING FROM PLAYLIST</div>
-          </div>
-
-          <button class="mobile-menu-btn" aria-label="Menu">
-            <i class="bi bi-three-dots"></i>
-          </button>
-        </div>
-
-        <!-- Desktop Header (hidden on mobile) -->
-        <div class="fullscreen-header desktop-only">
-          <button id="closeFullscreenDesktop" aria-label="Close fullscreen">
-            <i class="bi bi-x-lg"></i>
-          </button>
-
-          <!-- Fullscreen Player Branding -->
-          <div class="fullscreen-branding">
-            <div class="brand-logo">
-              <img src="Assets/music.png" alt="Mehfil logo" class="brand-icon">
-              <span class="brand-name">Mehfil</span>
-            </div>
-            <div class="brand-tagline">दिल से सुनो</div>
-          </div>
-
-          <div class="song-title" id="fullscreenSongTitle">-</div>
-          <div class="artist-name" id="fullscreenArtist">-</div>
-        </div>
-
-        <!-- Artwork -->
-        <div class="fullscreen-artwork">
-          <!-- Volume Indicator (mobile only) -->
-          <div class="volume-indicator mobile-only">
-            <i class="bi bi-volume-up"></i>
-          </div>
-
-          <div class="artwork-container">
-            <!-- Breathing Pulse Ring -->
-            <div class="pulse-ring"></div>
-
-            <!-- Circular Progress Ring (mobile only) -->
-            <div class="circular-progress mobile-only">
-              <div class="progress-dot"></div>
-            </div>
-
-            <div class="circular-artwork mobile-only">
-              <img id="fullscreenAlbumArt" src="Assets/music.png" alt="Album artwork">
-            </div>
-
-            <!-- Desktop Static Artwork (fallback) -->
-            <div class="desktop-static-artwork desktop-only">
-              <img id="fullscreenAlbumArtStatic" src="Assets/music.png" alt="Album artwork">
-            </div>
-          </div>
-        </div>
-
-        <!-- Desktop Visualizer Section (separate from artwork) -->
-        <div class="visualizer-section desktop-only">
-          <div class="audio-visualizer">
-            <!-- Animated Audio Bars -->
-            <div class="visualizer-bars-container">
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-              <div class="visualizer-bar"></div>
-            </div>
-
-            <!-- Animated Dots -->
-            <div class="visualizer-dots-container">
-              <div class="visualizer-dot"></div>
-              <div class="visualizer-dot"></div>
-              <div class="visualizer-dot"></div>
-              <div class="visualizer-dot"></div>
-              <div class="visualizer-dot"></div>
-              <div class="visualizer-dot"></div>
-              <div class="visualizer-dot"></div>
-              <div class="visualizer-dot"></div>
-              <div class="visualizer-dot"></div>
-              <div class="visualizer-dot"></div>
-              <div class="visualizer-dot"></div>
-              <div class="visualizer-dot"></div>
-            </div>
-
-            <!-- Progress Ring -->
-            <div class="visualizer-progress-ring"></div>
-
-            <!-- Rotating Album Artwork -->
-            <div class="visualizer-artwork-container">
-              <img id="fullscreenAlbumArtDesktop" src="Assets/music.png" alt="Album artwork" class="visualizer-artwork">
-            </div>
-
-            <!-- Time Display Overlay -->
-            <div class="visualizer-time-overlay">
-              <div class="visualizer-time-text" id="visualizerCurrentTime">0:00</div>
-            </div>
-
-            <!-- Particle Effects -->
-            <div class="visualizer-particles" id="visualizerParticles"></div>
-          </div>
-        </div>
-
-        <!-- Mobile Controls Section -->
-        <div class="mobile-controls-section mobile-only">
-          <!-- Progress Bar -->
-          <div class="progress-section">
-            <span class="progress-time" id="mobileCurrentTime">0:00</span>
-            <div class="progress-bar-container">
-              <div class="progress-bar-fill" id="mobileProgressFill"></div>
-              <input type="range" class="progress-input" id="mobileProgressInput" min="0" max="100" value="0"
-                aria-label="Seek position">
-            </div>
-            <span class="progress-time" id="mobileDuration">0:00</span>
-          </div>
-
-          <!-- Waveform and Time -->
-          <div class="mobile-waveform">
-            <span class="mobile-time" id="mobileCurrentTimeWave">0:00</span>
-            <div class="waveform-container" id="waveformContainer">
-              <!-- Waveform bars will be generated by JavaScript -->
-            </div>
-            <span class="mobile-time" id="mobileDurationWave">0:00</span>
-          </div>
-
-          <!-- Main Controls -->
-          <div class="mobile-main-controls">
-            <button class="mobile-control-btn" id="mobileShuffleBtn" aria-label="Shuffle">
-              <i class="bi bi-shuffle"></i>
+        <!-- LEFT PANEL -->
+        <div class="fs-left-panel">
+          <div class="fs-top-bar"
+            style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: var(--space-2xl);">
+            <button id="closeFullscreenDesktop" class="icon-btn tooltip-btn" aria-label="Minimize"
+              style="background: none; border: none; color: var(--text-secondary); cursor: pointer;">
+              <i data-lucide="chevron-down" class="lucide-icon"></i>
             </button>
-
-            <button class="mobile-control-btn" id="mobilePrevBtn" aria-label="Previous">
-              <i class="bi bi-skip-start-fill"></i>
-            </button>
-
-            <button class="mobile-play-btn" id="mobilePlayBtn" aria-label="Play or Pause">
-              <i class="bi bi-play-fill"></i>
-            </button>
-
-            <button class="mobile-control-btn" id="mobileNextBtn" aria-label="Next">
-              <i class="bi bi-skip-end-fill"></i>
-            </button>
-
-            <button class="mobile-control-btn" id="mobileRepeatBtn" aria-label="Repeat">
-              <i class="bi bi-arrow-repeat"></i>
-            </button>
+            <div class="fs-now-playing-text"
+              style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; font-weight: 500; color: var(--text-secondary);">
+              Now Playing</div>
+            <!-- Duplicate ID for mobile handler fallback -->
+            <button id="closeFullscreen" class="icon-btn mobile-only" style="display: none;"><i
+                data-lucide="chevron-down"></i></button>
+            <div style="width: 24px;"></div>
           </div>
-        </div>
 
-        <!-- Desktop Controls (hidden on mobile) -->
-        <div class="fullscreen-controls desktop-only">
-          <!-- Progress -->
-          <div class="fullscreen-progress-container">
-            <div class="fullscreen-time-display">
+          <div class="fs-art-container"
+            style="display: flex; justify-content: center; align-items: center; width: 100%; aspect-ratio: 1/1; max-width: 400px; margin: 0 auto var(--space-2xl) auto;">
+            <img id="fullscreenAlbumArt" src="Assets/music.png" alt="Album Art" class="fs-album-art">
+          </div>
+
+          <div class="fs-info-group"
+            style="text-align: left; width: 100%; max-width: 500px; margin: 0 auto var(--space-xl) auto;">
+            <h1 id="fullscreenSongTitle" class="fs-title"
+              style="font-size: var(--text-3xl); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary);">
+              Song Title</h1>
+            <p id="fullscreenArtist" class="fs-artist"
+              style="font-size: var(--text-lg); color: var(--text-secondary); margin: var(--space-xs) 0 0 0;">Artist
+              Name</p>
+          </div>
+
+          <div class="fs-progress-group" style="width: 100%; max-width: 500px; margin: 0 auto var(--space-xl) auto;">
+            <div class="time-readout"
+              style="display: flex; justify-content: space-between; font-size: var(--text-sm); color: var(--text-muted); margin-bottom: var(--space-xs); font-variant-numeric: tabular-nums;">
               <span id="fullscreenCurrentTime">0:00</span>
               <span id="fullscreenDuration">0:00</span>
             </div>
-
-            <div class="fullscreen-progress-bar">
-              <div class="fullscreen-progress" id="fullscreenProgress"></div>
-              <input type="range" id="fullscreenProgressInput" min="0" max="100" value="0" aria-label="Seek position">
+            <div class="progress-bar-container"
+              style="position: relative; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+              <div class="progress-filled" id="fullscreenProgress"
+                style="position: absolute; left: 0; top: 0; height: 100%; background: var(--accent-primary); width: 0%;">
+              </div>
+              <input type="range" id="fullscreenProgressInput" min="0" max="100" value="0"
+                style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
             </div>
           </div>
 
-          <!-- Main Controls -->
-          <div class="control-buttons">
-            <button id="fullscreenShuffle" aria-label="Shuffle">
-              <i class="bi bi-shuffle"></i>
-            </button>
-
-            <button id="fullscreenPrev" aria-label="Previous">
-              <i class="bi bi-skip-start-fill"></i>
-            </button>
-
-            <button id="fullscreenPlay" aria-label="Play or Pause">
-              <i class="bi bi-play-fill"></i>
-            </button>
-
-            <button id="fullscreenNext" aria-label="Next">
-              <i class="bi bi-skip-end-fill"></i>
-            </button>
-
-            <button id="fullscreenRepeat" aria-label="Repeat">
-              <i class="bi bi-arrow-repeat"></i>
-            </button>
+          <div class="fs-controls-primary"
+            style="display: flex; justify-content: center; align-items: center; gap: var(--space-xl); width: 100%; margin-bottom: var(--space-2xl);">
+            <button class="icon-btn fs-control-btn" id="fullscreenShuffle"
+              style="background:none; border:none; color:var(--text-secondary); cursor:pointer;"><i
+                data-lucide="shuffle"></i></button>
+            <button class="icon-btn fs-control-btn" id="fullscreenPrev"
+              style="background:none; border:none; color:var(--text-primary); cursor:pointer;"><i
+                data-lucide="skip-back" fill="currentColor"></i></button>
+            <button class="icon-btn fs-play-btn" id="fullscreenPlay"
+              style="background:var(--accent-primary); border:none; color:var(--bg-main); width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i
+                data-lucide="play" fill="currentColor" style="width:28px; height:28px;"></i></button>
+            <button class="icon-btn fs-control-btn" id="fullscreenNext"
+              style="background:none; border:none; color:var(--text-primary); cursor:pointer;"><i
+                data-lucide="skip-forward" fill="currentColor"></i></button>
+            <button class="icon-btn fs-control-btn" id="fullscreenRepeat"
+              style="background:none; border:none; color:var(--text-secondary); cursor:pointer;"><i
+                data-lucide="repeat"></i></button>
           </div>
 
-          <!-- Secondary Controls -->
-          <div class="fullscreen-secondary-controls">
-            <div class="volume-control">
-              <button id="fullscreenMute" aria-label="Mute">
-                <i class="bi bi-volume-up"></i>
-              </button>
-
-              <input type="range" id="fullscreenVolume" class="volume-slider" min="0" max="100" value="80"
-                aria-label="Volume">
+          <div class="fs-footer-tools"
+            style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 500px; margin: 0 auto; padding-top: var(--space-xl); border-top: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: flex; gap: var(--space-md); align-items: center;">
+              <button id="fullscreenMute"
+                style="background:none; border:none; color:var(--text-secondary); cursor:pointer;"><i
+                  data-lucide="volume-2"></i></button>
+              <input type="range" id="fullscreenVolume" min="0" max="100" value="80" style="width: 100px;">
             </div>
-
-            <button id="fullscreenPlaylist" aria-label="Playlist">
-              <i class="bi bi-music-note-list"></i>
-            </button>
+            <div style="display: flex; gap: var(--space-md);">
+              <button id="fsLyricsToggle" class="icon-btn"
+                style="background:none; border:none; color:var(--text-secondary); cursor:pointer; width:32px; height:32px;"><i
+                  data-lucide="mic-2"></i></button>
+              <button id="fsQueueToggle" class="icon-btn"
+                style="background:none; border:none; color:var(--text-secondary); cursor:pointer; width:32px; height:32px;"><i
+                  data-lucide="list-video"></i></button>
+            </div>
           </div>
         </div>
 
-        <!-- Up Next (desktop only) -->
-        <div class="up-next desktop-only">
-          <h3>Up Next</h3>
-          <div class="up-next-list" id="upNextList">
-            <!-- Up next songs will be listed here -->
+        <!-- RIGHT PANEL -->
+        <div class="fs-right-panel" id="fsRightPanel">
+          <div id="fsLyricsPane" class="fs-pane">
+            <h2 style="font-size: 1.5rem; margin-bottom: 2rem; color: var(--text-primary);">Lyrics</h2>
+            <div id="lyricsContainer" class="lyrics-scroll-area">
+              <p class="text-muted" style="margin-top:2rem;">Loading lyrics...</p>
+            </div>
+          </div>
+
+          <div id="fsQueuePane" class="fs-pane" style="display: none;">
+            <h2>Up Next</h2>
+            <div id="fsQueueContainer" class="queue-scroll-area"></div>
           </div>
         </div>
-
-
 
       </div>
     </div>
@@ -727,6 +633,107 @@
   </div> <!-- /main-area -->
 
   </div> <!-- /screen -->
+
+  <!-- Sleep Timer Modal -->
+  <div id="sleepTimerModal" class="modal-overlay"
+    style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
+    <div class="modal-content"
+      style="background:var(--bg-card); padding:var(--space-2xl); border-radius:var(--radius-lg); width:350px; border:1px solid var(--border-medium);">
+      <div class="modal-header" style="display:flex; justify-content:space-between; margin-bottom:var(--space-xl);">
+        <h3 style="margin:0;">Sleep Timer</h3>
+        <button class="close-modal" id="closeSleepModal"
+          style="background:none;border:none;color:var(--text-secondary);cursor:pointer;"><i
+            data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body sleep-options" style="display:flex; flex-direction:column; gap:var(--space-md);">
+        <button class="btn-outline-primary sleep-opt" data-time="15">15 Minutes</button>
+        <button class="btn-outline-primary sleep-opt" data-time="30">30 Minutes</button>
+        <button class="btn-outline-primary sleep-opt" data-time="60">1 Hour</button>
+        <button class="btn-outline-primary sleep-opt" data-time="end">End of Track</button>
+        <button class="btn-primary" id="turnOffSleepBtn" style="margin-top:1rem;">Turn Off Timer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Equalizer Modal -->
+  <div id="eqModal" class="modal-overlay"
+    style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
+    <div class="modal-content"
+      style="background:var(--bg-card); padding:var(--space-2xl); border-radius:var(--radius-lg); width:400px; border:1px solid var(--border-medium);">
+      <div class="modal-header" style="display:flex; justify-content:space-between; margin-bottom:var(--space-xl);">
+        <h3 style="margin:0;"><i data-lucide="sliders-horizontal" style="vertical-align:middle;margin-right:8px;"></i>
+          Equalizer</h3>
+        <button class="close-modal" id="closeEqModal"
+          style="background:none;border:none;color:var(--text-secondary);cursor:pointer;"><i
+            data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body eq-sliders"
+        style="display:flex; gap:2rem; justify-content:space-around; align-items:center;">
+        <div class="eq-band" style="display:flex; flex-direction:column; align-items:center; gap:1rem;">
+          <input type="range" id="eqBass" min="-12" max="12" value="0" orient="vertical"
+            style="appearance:slider-vertical; -webkit-appearance:slider-vertical; height:150px; cursor:pointer;">
+          <label style="color:var(--text-secondary); font-size:0.9rem;">Bass</label>
+        </div>
+        <div class="eq-band" style="display:flex; flex-direction:column; align-items:center; gap:1rem;">
+          <input type="range" id="eqMid" min="-12" max="12" value="0" orient="vertical"
+            style="appearance:slider-vertical; -webkit-appearance:slider-vertical; height:150px; cursor:pointer;">
+          <label style="color:var(--text-secondary); font-size:0.9rem;">Mid</label>
+        </div>
+        <div class="eq-band" style="display:flex; flex-direction:column; align-items:center; gap:1rem;">
+          <input type="range" id="eqTreble" min="-12" max="12" value="0" orient="vertical"
+            style="appearance:slider-vertical; -webkit-appearance:slider-vertical; height:150px; cursor:pointer;">
+          <label style="color:var(--text-secondary); font-size:0.9rem;">Treble</label>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:2rem;">
+        <button class="btn-outline-primary" id="resetEqBtn" style="padding:0.5rem 2rem;">Reset Flat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Queue Panel -->
+  <div id="queuePanel" class="queue-panel">
+    <div class="queue-header">
+      <h3>Queue</h3>
+      <button id="closeQueueBtn"><i data-lucide="x" class="lucide-icon"></i></button>
+    </div>
+    <div class="queue-content">
+      <div class="queue-section" id="nowPlayingQueue">
+        <h4>Now Playing</h4>
+        <div id="nowPlayingContainer"></div>
+      </div>
+      <div class="queue-section" id="upNextQueue">
+        <div class="queue-section-header">
+          <h4>Next In Queue</h4>
+          <button id="clearQueueBtn" class="text-button text-xs">Clear</button>
+        </div>
+        <div id="upNextContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Context Menu -->
+  <div id="contextMenu" class="context-menu" style="display: none;">
+    <button id="cmAddToQueue"><i data-lucide="list-plus" class="lucide-icon"></i> Add to Queue</button>
+    <button id="cmLike"><i data-lucide="heart" class="lucide-icon"></i> Save to Liked</button>
+    <button id="cmAddToPlaylist"><i data-lucide="folder-plus" class="lucide-icon"></i> Add to Playlist</button>
+  </div>
+
+  <!-- Mobile Bottom Tab Bar -->
+  <nav id="mobileTabBar" class="mobile-tab-bar">
+    <div class="tab-item active" onclick="showHomePage()">
+      <i data-lucide="home" class="lucide-icon"></i>
+      <span>Home</span>
+    </div>
+    <div class="tab-item" onclick="document.getElementById('searchInput').focus()">
+      <i data-lucide="search" class="lucide-icon"></i>
+      <span>Search</span>
+    </div>
+    <div class="tab-item" onclick="showPlaylistsPage()">
+      <i data-lucide="library" class="lucide-icon"></i>
+      <span>Library</span>
+    </div>
+  </nav>
 
   <div id="mobileOverlay" class="mobile-overlay"></div>
 

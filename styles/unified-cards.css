@@ -45,11 +45,20 @@
 .card img,
 .song-card img,
 .album-card img,
-.artist-card img,
 .playlist-card img {
     border-radius: 8px;
     transition: transform var(--mehfil-motion-medium) var(--mehfil-ease-smooth);
     will-change: transform;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+.artist-card img {
+    border-radius: 50%;
+    transition: transform var(--mehfil-motion-medium) var(--mehfil-ease-smooth);
+    will-change: transform;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
 }
 
 .card:hover img,
@@ -82,6 +91,12 @@
     font-weight: 400;
     color: var(--mehfil-text-muted);
     font-size: 0.9em;
+}
+
+/* Artist Text Alignment */
+.artist-card h3,
+.artist-card p {
+    text-align: center;
 }
 
 /* Play Button on Card */

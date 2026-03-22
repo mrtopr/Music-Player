@@ -46,13 +46,28 @@ export const ENDPOINTS = {
  * @param {Object} params - Query params to append
  * @returns {Promise<Object>}
  */
+const apiCache = new Map();
+
 export async function apiFetch(path, params = {}) {
     try {
         const url = new URL(API_BASE_URL + path, window.location.href);
         Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-        const res = await fetch(url.toString());
+        const urlString = url.toString();
+
+        if (apiCache.has(urlString)) {
+            return apiCache.get(urlString);
+        }
+
+        const res = await fetch(urlString);
         if (!res.ok) throw new Error(`API error ${res.status}: ${res.statusText}`);
-        return await res.json();
+
+        const data = await res.json();
+
+        // Retain standard query topologies for 5 minutes globally
+        apiCache.set(urlString, data);
+        setTimeout(() => apiCache.delete(urlString), 5 * 60 * 1000);
+
+        return data;
     } catch (err) {
         console.error('API fetch error:', err);
         throw err;

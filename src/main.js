@@ -13,6 +13,12 @@ import { initAudioEngine, togglePlay, playNext, playPrev, toggleShuffle, cycleRe
 import { initNavigation } from './ui/navigation.js';
 import { initMiniPlayer, updateMiniPlayer } from './ui/miniPlayer.js';
 import { initFullscreen, updateFullscreenPlayer } from './ui/fullscreen.js';
+import { initQueue } from './ui/queue.js';
+import { initContextMenu, showContextMenu } from './ui/contextMenu.js';
+import { initSearch } from './ui/search.js';
+import { initLibrary } from './ui/library.js';
+import { initLyrics } from './features/lyrics.js';
+import { showAlbumDetail, showArtistDetail, showPlaylistDetail } from './ui/pages/details.js';
 import { showNotification } from './ui/notifications.js';
 import { replaceBootstrapIcons, setIcon, Icons } from './ui/icons.js';
 
@@ -20,8 +26,9 @@ import { replaceBootstrapIcons, setIcon, Icons } from './ui/icons.js';
 import { loadUserData } from './features/favorites.js';
 import { initMoodFilter } from './features/mood.js';
 import { initLogin } from './features/login.js';
-import { loadHistory } from './features/history.js';
+import { loadHistory, getRecentlyPlayed } from './features/history.js';
 import { loadPlaylists } from './features/playlists.js';
+import { initPremiumModals } from './features/premium.js';
 
 // State
 import { state } from './player/state.js';
@@ -49,6 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Player UI
     initMiniPlayer();
     initFullscreen();
+    initQueue();
+    initContextMenu();
+    initSearch();
+    initLibrary();
+    initLyrics();
+    initPremiumModals();
 
     // 6. Mood filters
     initMoodFilter();
@@ -107,42 +120,18 @@ function _wirePlayerControls() {
     }
 }
 
-// ─── Search ───────────────────────────────────────────────
-
-function _wireSearch() {
-    const searchInput = document.getElementById('searchInput');
-    let searchTimeout = null;
-
-    if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            const q = searchInput.value.trim();
-            if (q.length < 2) return;
-            searchTimeout = setTimeout(() => _runSearch(q), 400);
-        });
-    }
-}
-
-async function _runSearch(query) {
-    try {
-        const data = await apiFetch(ENDPOINTS.searchSongs + '&query=' + encodeURIComponent(query));
-        const songs = data?.data?.results || [];
-        _renderSearchResults(songs);
-    } catch (err) {
-        console.error('Search error:', err);
-    }
-}
-
-function _renderSearchResults(songs) {
-    // Delegate to cards module (will be implemented in Phase 2/4)
-    window._searchResults = songs;
-    console.log('Search results:', songs.length, 'songs');
-}
-
 // ─── Home Data ────────────────────────────────────────────
 
 async function _loadHomeData() {
     try {
+        const history = getRecentlyPlayed();
+        if (history && history.length > 0) {
+            // Un-hide the history container if it exists
+            const histContainer = document.getElementById('recently-played-section');
+            if (histContainer) histContainer.style.display = 'block';
+            _renderHomeSection('#recently-played-container', history, 'song-card');
+        }
+
         const [trending, newReleases, artists] = await Promise.allSettled([
             apiFetch(ENDPOINTS.trendingSongs),
             apiFetch(ENDPOINTS.newReleasesAlbums),
@@ -155,14 +144,19 @@ async function _loadHomeData() {
             state.filteredTrendingSongs = songs;
             state.songs = songs;
             window.songs = songs;
-            _renderHomeSection('#trending-songs-container', songs);
+            _renderHomeSection('#trending-songs-container', songs, 'song-card');
         }
 
         if (newReleases.status === 'fulfilled') {
             const songs = newReleases.value?.data?.results || [];
             state.allNewReleases = songs;
             state.filteredNewReleases = songs;
-            _renderHomeSection('#new-releases-container', songs);
+            _renderHomeSection('#new-releases-container', songs, 'song-card');
+        }
+
+        if (artists.status === 'fulfilled') {
+            const artistList = artists.value?.data?.results || [];
+            _renderHomeSection('#popular-artists-container', artistList, 'artist-card');
         }
 
     } catch (err) {
@@ -172,34 +166,79 @@ async function _loadHomeData() {
 }
 
 /**
- * Render a basic song card list into a container selector
- * Full card design will be replaced in Phase 2
+ * Render a basic media card list into a container selector
  */
-function _renderHomeSection(selector, songs) {
+function _renderHomeSection(selector, items, cardClass = 'song-card') {
     const container = document.querySelector(selector);
-    if (!container || !songs.length) return;
+    if (!container || !items.length) return;
 
-    container.innerHTML = songs.slice(0, 12).map((song, i) => {
-        const img = getImageUrl(song.image);
-        const title = song.name || song.title || 'Unknown';
-        const artist = song.primaryArtists || song.artist || 'Unknown Artist';
+    container.innerHTML = items.slice(0, 12).map((item, i) => {
+        const img = getImageUrl(item.image);
+        const title = item.name || item.title || 'Unknown';
+        const subtitle = item.primaryArtists ? item.primaryArtists : (item.role || 'Artist');
+
         return `
-      <div class="song-card" data-song-index="${i}" onclick="window._playSongByIndex(${i})">
+      <div class="${cardClass}" data-index="${i}">
         <div class="song-card-img">
           <img src="${img}" alt="${title}" loading="lazy" onerror="this.src='favicon.ico'">
-          <button class="card-play-btn" onclick="event.stopPropagation(); window._playSongByIndex(${i})">
-            <i class="bi bi-play-fill"></i>
+          ${cardClass === 'song-card' ? `
+          <button class="play-btn" title="Play">
+            <i data-lucide="play" class="lucide-icon"></i>
           </button>
+          <button class="more-btn" title="More options">
+            <i data-lucide="more-vertical" class="lucide-icon"></i>
+          </button>` : ''}
         </div>
         <div class="song-card-info">
-          <p class="song-title">${title}</p>
-          <p class="song-artist">${artist}</p>
+          <h3 class="song-title" title="${title}">${title}</h3>
+          <p class="song-artist" title="${subtitle}">${subtitle}</p>
         </div>
       </div>
     `.trim();
     }).join('');
 
-    replaceBootstrapIcons(container);
+    // Attach event listeners safely using closures
+    container.querySelectorAll(`.${cardClass}`).forEach((card, i) => {
+        const item = items[i];
+
+        card.addEventListener('click', () => {
+            if (cardClass === 'song-card') {
+                state.songs = items;
+                state.currentSongIndex = i;
+                loadSong(item);
+            } else if (cardClass === 'artist-card') {
+                if (window.showArtistDetail) window.showArtistDetail(item.id);
+            } else if (cardClass === 'album-card') {
+                if (window.showAlbumDetail) window.showAlbumDetail(item.id);
+            } else if (cardClass === 'playlist-card') {
+                if (window.showPlaylistDetail) window.showPlaylistDetail(item.id);
+            }
+        });
+
+        const playBtn = card.querySelector('.play-btn');
+        if (playBtn) {
+            playBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                state.songs = items;
+                state.currentSongIndex = i;
+                loadSong(item);
+            });
+        }
+
+        const moreBtn = card.querySelector('.more-btn');
+        if (moreBtn) {
+            moreBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showContextMenu(e, item);
+            });
+        }
+    });
+
+    if (window.lucide) {
+        window.lucide.createIcons({ root: container });
+    } else {
+        replaceBootstrapIcons(container);
+    }
 }
 
 // ─── Global play bridge ───────────────────────────────────
@@ -221,6 +260,9 @@ window._playSongByIndex = async (index) => {
 };
 
 window.loadSong = loadSong;
+window.showArtistDetail = showArtistDetail;
+window.showAlbumDetail = showAlbumDetail;
+window.showPlaylistDetail = showPlaylistDetail;
 
 // ─── Async init fix for top-level await ──────────────────
 // We use a self-invoking async inside DOMContentLoaded via Promise chaining

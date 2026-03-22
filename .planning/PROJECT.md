@@ -8,7 +8,21 @@ Mehfil is a premium Bollywood-focused web music player that streams music via th
 
 **Mehfil must play any song instantly with a beautiful, consistent, night-mode UI** — everything else is polish on top of this.
 
-## Requirements
+## Current State (v1.0 Shipped)
+
+The platform has successfully graduated from a prototype monolith into a modular Vite application supporting:
+- Dual-pane desktop and fluid mobile UI grids tied strictly to a Night Mode CSS design system.
+- Cross-origin audio cross-fading and hardware Biquad Equalization matrices.
+- Dynamic DOM and `<canvas>` generation extracting dominant color arrays from the active vinyl art.
+- JioSaavn API caching and robust data lazy-loading using intersection thresholds.
+- Premium features: Sleep timers, Lyrics API bypasses, Clipboard Native Sharing.
+
+## Next Milestone Goals (v2.x)
+
+- **Advanced Audio Constructs:** Gapless playback, native volume normalization algorithms (ReplayGain equivalents).
+- **Social & Discovery AI:** "Made for You" regional inferences and dynamic Artist radio stations.
+
+## Legacy Requirements
 
 ### Validated
 

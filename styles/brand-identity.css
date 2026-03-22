@@ -2,14 +2,14 @@
 
 :root {
     /* === PRIMARY GOLD - Emotion + Action === */
-    --mehfil-gold-primary: #E6B873;
-    --mehfil-gold-soft: #CFAE70;
-    --mehfil-gold-glow: rgba(230, 184, 115, 0.4);
+    --mehfil-gold-primary: #D4AF37;
+    --mehfil-gold-soft: #F3E5AB;
+    --mehfil-gold-glow: rgba(212, 175, 55, 0.2);
 
     /* === DARK BASE - Calm + Depth === */
-    --mehfil-dark-base: #0B0E14;
-    --mehfil-surface-card: #131722;
-    --mehfil-surface-elevated: #1A1F2E;
+    --mehfil-dark-base: #12121c;
+    --mehfil-surface-card: #1A1A24;
+    --mehfil-surface-elevated: #242430;
 
     /* === TEXT HIERARCHY === */
     --mehfil-text-primary: #FFFFFF;
@@ -64,6 +64,16 @@
     --text-primary: var(--mehfil-text-primary);
     --text-secondary: var(--mehfil-text-secondary);
     --text-muted: var(--mehfil-text-muted);
+
+    /* === TYPOGRAPHY SCALE === */
+    --font-sans: 'Outfit', sans-serif;
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
 }
 
 /* ===== BRAND RULES ===== */
