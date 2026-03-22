@@ -1,34 +1,25 @@
-# Dependencies
+# Dependencies and Environment
 node_modules/
-
-# Build output
-dist/
-.vite/
-
-# Python environment (not used in this project)
+.env
+.env.*.local
 .venv/
 __pycache__/
-*.pyc
-
-# OS files
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Editor
-.idea/
-.vscode/settings.json
-*.swp
-*.swo
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Logs
 *.log
-npm-debug.log*
 
-# Planning docs (local only)
+# Sub-project specific exclusions
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+backend/node_modules/
+backend/dist/
+backend/.env
+
+# OS and Editor files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Planning and Metadata
 .planning/
+.vite/
