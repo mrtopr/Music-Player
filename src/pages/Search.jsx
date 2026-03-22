@@ -146,7 +146,7 @@ export default function SearchPage() {
                             style={{
                                 display: 'flex', alignItems: 'center', gap: '6px',
                                 padding: '0.6rem 1.4rem', fontSize: '0.95rem', fontWeight: 600,
-                                border: 'none', cursor: 'pointer', whiteSpace: 'nowrap',
+                                cursor: 'pointer', whiteSpace: 'nowrap',
                                 borderRadius: '50px', transition: 'all 0.3s ease',
                                 background: searchType === type ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)',
                                 color: searchType === type ? '#fff' : 'rgba(255,255,255,0.7)',

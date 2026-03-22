@@ -3,6 +3,11 @@
  */
 
 export const API_BASE_URL = (() => {
+    // 1. Check for Environment Variable (Production-ready VITE approach)
+    const envUrl = import.meta.env.VITE_API_BASE_URL;
+    if (envUrl) return envUrl.replace(/\/$/, '');
+
+    // 2. Fallbacks for specific overrides (stored or query param)
     const params = new URLSearchParams(window.location.search);
     const queryOverride = params.get('apiBase');
     if (queryOverride) return queryOverride.replace(/\/$/, '');
@@ -14,6 +19,7 @@ export const API_BASE_URL = (() => {
         console.warn('Unable to read API base from localStorage:', storageError);
     }
 
+    // 3. Auto-detection fallback (safe for development)
     if (window.location.protocol === 'file:') return 'http://localhost:3000';
 
     const host = window.location.hostname;
@@ -22,7 +28,7 @@ export const API_BASE_URL = (() => {
 
     if (isLocalHost || isPrivateIp) return `${window.location.protocol}//${host}:3000`;
 
-    return ''; // Production: same-origin, reverse proxy handles /api
+    return ''; // Production fallback: same-origin
 })();
 
 export const ENDPOINTS = {
