@@ -1,5 +1,5 @@
-import React from 'react';
-import { Home, ListMusic, Heart, Settings, LogOut, Mic2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Home, ListMusic, Heart, Settings, LogOut, Mic2, Download } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 export default function Sidebar() {
@@ -10,6 +10,24 @@ export default function Sidebar() {
     const handleLogout = () => {
         localStorage.removeItem('mehfilUser');
         window.location.reload();
+    };
+
+    const [canInstall, setCanInstall] = useState(!!window.__deferredPrompt);
+
+    useEffect(() => {
+        const handler = () => setCanInstall(true);
+        window.addEventListener('pwa-can-install', handler);
+        return () => window.removeEventListener('pwa-can-install', handler);
+    }, []);
+
+    const handleInstall = async () => {
+        const promptEvent = window.__deferredPrompt;
+        if (!promptEvent) return;
+        promptEvent.prompt();
+        const { outcome } = await promptEvent.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        window.__deferredPrompt = null;
+        setCanInstall(false);
     };
 
     const handleNavigate = (path) => {
@@ -48,6 +66,26 @@ export default function Sidebar() {
                     <Link to="/settings" onClick={(e) => e.preventDefault()} style={{ pointerEvents: 'none' }}>Settings</Link>
                 </li>
             </ul>
+
+            {canInstall && (
+                <div style={{ padding: '0 1rem', marginTop: '1rem' }}>
+                    <button 
+                        onClick={handleInstall}
+                        style={{
+                            width: '100%', padding: '0.8rem', borderRadius: '12px',
+                            background: 'var(--accent-primary)', color: '#000',
+                            border: 'none', fontWeight: 700, fontSize: '0.85rem',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                            cursor: 'pointer', boxShadow: '0 4px 15px rgba(var(--accent-primary-rgb), 0.3)',
+                            transition: 'transform 0.2s'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                        onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                    >
+                        <Download size={16} /> Install App
+                    </button>
+                </div>
+            )}
 
             <div style={{ marginTop: 'auto', padding: 'var(--space-lg, 1rem) var(--space-lg, 1rem)' }}>
                 <button onClick={handleLogout} style={{
