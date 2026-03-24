@@ -2,10 +2,14 @@ import { create } from 'zustand';
 import { getAudioUrl, getImageUrl } from '../api/client.js';
 import { addToHistory } from '../utils/history.js';
 
-// Singleton audio element shared across the app
-const audio = new Audio();
-audio.preload = 'auto';
-audio.crossOrigin = 'anonymous';
+// Singleton audio element shared across the app, 
+// preserved across HMR reloads via global window attachment.
+if (!window.__mehfilAudio) {
+    window.__mehfilAudio = new Audio();
+    window.__mehfilAudio.preload = 'auto';
+    window.__mehfilAudio.crossOrigin = 'anonymous';
+}
+const audio = window.__mehfilAudio;
 
 export const usePlayerStore = create((set, get) => ({
     // ── State ──
@@ -194,30 +198,34 @@ export const usePlayerStore = create((set, get) => ({
 }));
 
 // ── Audio event listeners (run once) ──
-audio.addEventListener('timeupdate', () => {
-    const store = usePlayerStore.getState();
-    const progress = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
-    usePlayerStore.setState({ progress, currentTime: audio.currentTime, duration: audio.duration || 0 });
-});
+if (!window.__mehfilListenersAttached) {
+    audio.addEventListener('timeupdate', () => {
+        const store = usePlayerStore.getState();
+        const progress = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+        usePlayerStore.setState({ progress, currentTime: audio.currentTime, duration: audio.duration || 0 });
+    });
 
-audio.addEventListener('ended', () => {
-    const { repeat } = usePlayerStore.getState();
-    if (repeat === 'one') {
-        audio.currentTime = 0;
-        audio.play();
-    } else {
-        usePlayerStore.getState().nextSong();
+    audio.addEventListener('ended', () => {
+        const { repeat } = usePlayerStore.getState();
+        if (repeat === 'one') {
+            audio.currentTime = 0;
+            audio.play();
+        } else {
+            usePlayerStore.getState().nextSong();
+        }
+    });
+
+    audio.addEventListener('pause', () => usePlayerStore.setState({ isPlaying: false }));
+    audio.addEventListener('play', () => usePlayerStore.setState({ isPlaying: true }));
+
+    // ── MediaSession action handlers (keyboard media keys) ──
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.setActionHandler('play', () => usePlayerStore.getState().togglePlay());
+        navigator.mediaSession.setActionHandler('pause', () => usePlayerStore.getState().togglePlay());
+        navigator.mediaSession.setActionHandler('previoustrack', () => usePlayerStore.getState().prevSong());
+        navigator.mediaSession.setActionHandler('nexttrack', () => usePlayerStore.getState().nextSong());
     }
-});
-
-audio.addEventListener('pause', () => usePlayerStore.setState({ isPlaying: false }));
-audio.addEventListener('play', () => usePlayerStore.setState({ isPlaying: true }));
-
-// ── MediaSession action handlers (keyboard media keys) ──
-if ('mediaSession' in navigator) {
-    navigator.mediaSession.setActionHandler('play', () => usePlayerStore.getState().togglePlay());
-    navigator.mediaSession.setActionHandler('pause', () => usePlayerStore.getState().togglePlay());
-    navigator.mediaSession.setActionHandler('previoustrack', () => usePlayerStore.getState().prevSong());
-    navigator.mediaSession.setActionHandler('nexttrack', () => usePlayerStore.getState().nextSong());
+    
+    window.__mehfilListenersAttached = true;
 }
 

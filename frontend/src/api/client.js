@@ -32,10 +32,10 @@ export const API_BASE_URL = (() => {
 })();
 
 export const ENDPOINTS = {
-    trendingSongs: '/api/trending',
+    trendingSongs: '/api/trending2026',
     newReleasesAlbums: '/api/modules',
     popularArtists: '/api/search/artists?query=Top%202024%20Hindi%20Bollywood%20Singers%20Rappers&language=hindi',
-    featuredPlaylists: '/api/search/playlists?query=bollywood%20hits%20romantic&language=hindi',
+    featuredPlaylists: '/api/search/playlists?query=Bollywood%20hits%20romantic&language=hindi',
     searchSongs: '/api/search/songs',
     searchAlbums: '/api/search/albums',
     searchArtists: '/api/search/artists',

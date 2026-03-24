@@ -19,7 +19,7 @@ export async function extractAlbumColors(imageUrl, trackTitle = '') {
 
     try {
         // Use an anonymous crossorigin request to avoid silent failures in the browser
-        const palette = await Vibrant.from(imageUrl).useImageValue(true).getPalette();
+        const palette = await Vibrant.from(imageUrl).getPalette();
         
         // Pick the most vibrant available color for the 'dominant' role
         const v = palette.Vibrant || palette.Muted || palette.DarkVibrant || palette.LightVibrant;
