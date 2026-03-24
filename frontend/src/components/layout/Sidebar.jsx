@@ -30,8 +30,7 @@ export default function Sidebar() {
         setCanInstall(false);
     };
 
-    const handleNavigate = (path) => {
-        navigate(path);
+    const handleLinkClick = () => {
         // Close sidebar on mobile after navigation
         document.querySelector('.sidebar')?.classList.remove('open');
         document.querySelector('.mobile-overlay')?.classList.remove('visible');
@@ -45,27 +44,38 @@ export default function Sidebar() {
             </div>
 
             <ul>
-                <li className={isActive('/')} onClick={() => handleNavigate('/')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Home className="icon-svg" size={20} />
-                    <Link to="/" onClick={(e) => e.preventDefault()} style={{ pointerEvents: 'none' }}>Home</Link>
+                <li>
+                    <Link to="/" className={`sidebar-link ${isActive('/')}`} onClick={handleLinkClick}>
+                        <Home className="icon-svg" size={20} />
+                        <span>Home</span>
+                    </Link>
                 </li>
-                <li className={isActive('/playlists')} onClick={() => handleNavigate('/playlists')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <ListMusic className="icon-svg" size={20} />
-                    <Link to="/playlists" onClick={(e) => e.preventDefault()} style={{ pointerEvents: 'none' }}>Playlists</Link>
+                <li>
+                    <Link to="/playlists" className={`sidebar-link ${isActive('/playlists')}`} onClick={handleLinkClick}>
+                        <ListMusic className="icon-svg" size={20} />
+                        <span>Playlists</span>
+                    </Link>
                 </li>
-                <li className={isActive('/favorites')} onClick={() => handleNavigate('/favorites')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Heart className="icon-svg" size={20} />
-                    <Link to="/favorites" onClick={(e) => e.preventDefault()} style={{ pointerEvents: 'none' }}>Favorites</Link>
+                <li>
+                    <Link to="/favorites" className={`sidebar-link ${isActive('/favorites')}`} onClick={handleLinkClick}>
+                        <Heart className="icon-svg" size={20} />
+                        <span>Favorites</span>
+                    </Link>
                 </li>
-                <li className={isActive('/artists')} onClick={() => handleNavigate('/artists')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Mic2 className="icon-svg" size={20} />
-                    <Link to="/artists" onClick={(e) => e.preventDefault()} style={{ pointerEvents: 'none' }}>Artists</Link>
+                <li>
+                    <Link to="/artists" className={`sidebar-link ${isActive('/artists')}`} onClick={handleLinkClick}>
+                        <Mic2 className="icon-svg" size={20} />
+                        <span>Artists</span>
+                    </Link>
                 </li>
-                <li className={isActive('/settings')} onClick={() => handleNavigate('/settings')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Settings className="icon-svg" size={20} />
-                    <Link to="/settings" onClick={(e) => e.preventDefault()} style={{ pointerEvents: 'none' }}>Settings</Link>
+                <li>
+                    <Link to="/settings" className={`sidebar-link ${isActive('/settings')}`} onClick={handleLinkClick}>
+                        <Settings className="icon-svg" size={20} />
+                        <span>Settings</span>
+                    </Link>
                 </li>
             </ul>
+
 
             {canInstall && (
                 <div style={{ padding: '0 1rem', marginTop: '1rem' }}>

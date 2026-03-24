@@ -10,7 +10,8 @@
   backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
-  z-index: 1000;
+  z-index: 9999;
+
   transform: translateY(100%);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;
@@ -21,10 +22,12 @@
 }
 
 .mini-player.visible {
-  transform: translateY(0);
-  opacity: 1;
-  visibility: visible;
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: flex !important;
 }
+
 
 .mini-player.playing {
   box-shadow: 0 -8px 32px rgba(255, 165, 59, 0.2);

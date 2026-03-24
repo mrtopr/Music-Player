@@ -26,10 +26,14 @@ export const API_BASE_URL = (() => {
     const isLocalHost = host === 'localhost' || host === '127.0.0.1' || host === '::1';
     const isPrivateIp = /^(10\.|172\.(1[6-9]|2\d|3[0-1])\.|192\.168\.)/.test(host);
 
-    if (isLocalHost || isPrivateIp) return `${window.location.protocol}//${host}:3000`;
+    // If local/private, force HTTP to avoid Mixed Content blocks on many browsers
+    if (isLocalHost || isPrivateIp) {
+        return `http://${host}:3000`;
+    }
 
     return ''; // Production fallback: same-origin
 })();
+
 
 export const ENDPOINTS = {
     trendingSongs: '/api/trending2026',
@@ -97,16 +101,18 @@ export async function apiFetch(path, params = {}) {
 export function getImageUrl(imageData) {
     if (!imageData) return 'favicon.ico';
     if (typeof imageData === 'string') {
-        return imageData.replace('150x150', '500x500').replace('50x50', '500x500');
+        return imageData.replace(/[\d]+x[\d]+/g, '500x500');
     }
+
     if (Array.isArray(imageData)) {
         const high = imageData.find(q => q.quality === '500x500') ||
             imageData.find(q => q.quality === '150x150') ||
             imageData[imageData.length - 1];
         return high?.url || imageData[0]?.url || 'favicon.ico';
     }
-    return 'favicon.ico';
+    return '/mehfil-logo.png';
 }
+
 
 /**
  * Get a download URL from the JioSaavn download URL array

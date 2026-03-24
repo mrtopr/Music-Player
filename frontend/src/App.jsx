@@ -22,9 +22,22 @@ function AppContent() {
     const [user, setUser] = useState(null);
     const fsVisible = usePlayerStore(state => state.isFullScreen);
     const setFsVisible = usePlayerStore(state => state.setFullScreen);
+    const queueVisible = usePlayerStore(state => state.isQueueOpen);
+    const setQueueVisible = usePlayerStore(state => state.setQueueOpen);
     const [eqVisible, setEqVisible] = useState(false);
     const [sleepVisible, setSleepVisible] = useState(false);
-    const [queueVisible, setQueueVisible] = useState(false);
+
+
+    const colors = usePlayerStore(state => state.albumColors);
+
+    useEffect(() => {
+        const root = document.documentElement;
+        root.style.setProperty('--album-dominant', colors.dominant);
+        root.style.setProperty('--album-dominant-rgb', colors.dominantRGB);
+        root.style.setProperty('--album-accent', colors.accent);
+        root.style.setProperty('--album-accent-rgb', colors.accentRGB);
+        root.style.setProperty('--album-secondary', colors.secondary);
+    }, [colors]);
 
     useEffect(() => {
         const saved = localStorage.getItem('mehfilUser');
@@ -71,10 +84,13 @@ function AppContent() {
                 </div>
             </div>
 
-            <MiniPlayer
-                onExpand={() => setFsVisible(true)}
-                onQueue={() => setQueueVisible(true)}
-            />
+            {!fsVisible && (
+                <MiniPlayer
+                    onExpand={() => setFsVisible(true)}
+                    onQueue={() => setQueueVisible(true)}
+                />
+            )}
+
             <FullscreenPlayer visible={fsVisible} onClose={() => setFsVisible(false)} />
             <EqualizerModal visible={eqVisible} onClose={() => setEqVisible(false)} />
             <SleepTimerModal visible={sleepVisible} onClose={() => setSleepVisible(false)} />

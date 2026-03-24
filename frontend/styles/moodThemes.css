@@ -108,10 +108,10 @@ body[data-mood="rock"] {
 
 /* Global Application of Theme Variables */
 body {
-  background: var(--gradient-main) !important;
-  color: var(--color-text) !important;
-  font-family: var(--font-family) !important;
-  letter-spacing: var(--letter-spacing) !important;
+  background: var(--gradient-main, radial-gradient(circle at 50% 0%, rgba(var(--album-dominant-rgb, 26, 26, 26), 0.12) 0%, #09090b 70%));
+  color: var(--color-text);
+  font-family: var(--font-family);
+  letter-spacing: var(--letter-spacing);
   transition: var(--transition-theme);
 }
 

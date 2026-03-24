@@ -20,18 +20,28 @@ export const usePlaylistStore = create((set, get) => ({
         
         set(state => {
             const updated = [...state.playlists, newPlaylist];
-            localStorage.setItem('mehfilPlaylists', JSON.stringify(updated));
+            try {
+                localStorage.setItem('mehfilPlaylists', JSON.stringify(updated));
+            } catch (e) {
+                console.error('Failed to save playlists to localStorage:', e);
+            }
             return { playlists: updated };
         });
+
         console.log('Playlist created:', name);
     },
 
     deletePlaylist: (id) => {
         set(state => {
             const updated = state.playlists.filter(p => p.id !== id);
-            localStorage.setItem('mehfilPlaylists', JSON.stringify(updated));
+            try {
+                localStorage.setItem('mehfilPlaylists', JSON.stringify(updated));
+            } catch (e) {
+                console.error('Failed to save playlists to localStorage:', e);
+            }
             return { playlists: updated };
         });
+
     },
 
     addSongToPlaylist: (playlistId, song) => {
@@ -45,9 +55,14 @@ export const usePlaylistStore = create((set, get) => ({
                 }
                 return p;
             });
-            localStorage.setItem('mehfilPlaylists', JSON.stringify(updated));
+            try {
+                localStorage.setItem('mehfilPlaylists', JSON.stringify(updated));
+            } catch (e) {
+                console.error('Failed to save playlists to localStorage:', e);
+            }
             return { playlists: updated };
         });
+
     },
 
     removeSongFromPlaylist: (playlistId, songId) => {
@@ -58,8 +73,13 @@ export const usePlaylistStore = create((set, get) => ({
                 }
                 return p;
             });
-            localStorage.setItem('mehfilPlaylists', JSON.stringify(updated));
+            try {
+                localStorage.setItem('mehfilPlaylists', JSON.stringify(updated));
+            } catch (e) {
+                console.error('Failed to save playlists to localStorage:', e);
+            }
             return { playlists: updated };
         });
+
     }
 }));

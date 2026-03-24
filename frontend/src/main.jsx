@@ -12,11 +12,12 @@ import '../styles/fullscreen-player.css';
 import '../styles/audio-visualizer.css';
 import '../styles/premium-fullscreen.css';
 import '../styles/unified-cards.css';
-import '../styles/card-hover-fix.css';
 import '../styles/micro-delights.css';
 import '../styles/moodThemes.css';
 import '../styles/moodAnimations.css';
 import '../styles/react-polish.css';
+
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>

@@ -26,8 +26,14 @@ export default function LoginModal() {
         e.preventDefault();
         if (!name.trim()) return;
         const userData = { name: name.trim(), profilePicture: pic, loginDate: new Date().toISOString() };
-        localStorage.setItem('mehfilUser', JSON.stringify(userData));
+        try {
+            localStorage.setItem('mehfilUser', JSON.stringify(userData));
+        } catch (e) {
+            console.warn('Profile picture too large for storage, saving name only.', e);
+            localStorage.setItem('mehfilUser', JSON.stringify({ ...userData, profilePicture: null }));
+        }
         setVisible(false);
+
         window.dispatchEvent(new Event('mehfil-login'));
     };
 

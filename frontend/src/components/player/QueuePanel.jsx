@@ -22,7 +22,8 @@ export default function QueuePanel({ visible, onClose }) {
     const upNext = queue.slice(queueIndex + 1);
 
     return (
-        <div className="queue-panel" style={{ position: 'fixed', top: 0, right: 0, width: '350px', maxWidth: '90vw', height: '100vh', background: 'var(--bg-card, #1a1a1a)', borderLeft: '1px solid var(--border-medium, rgba(255,255,255,0.1))', zIndex: 1500, display: 'flex', flexDirection: 'column', boxShadow: '-8px 0 32px rgba(0,0,0,0.4)', transform: visible ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 0.3s ease' }}>
+        <div className="queue-panel" style={{ position: 'fixed', top: 0, right: 0, width: '350px', maxWidth: '90vw', height: '100vh', background: 'var(--bg-card, #1a1a1a)', borderLeft: '1px solid var(--border-medium, rgba(255,255,255,0.1))', zIndex: 5000, display: 'flex', flexDirection: 'column', boxShadow: '-8px 0 32px rgba(0,0,0,0.4)', transform: visible ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 0.3s ease' }}>
+
             {/* Header */}
             <div className="queue-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.2rem 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                 <h3 style={{ margin: 0 }}>Queue</h3>

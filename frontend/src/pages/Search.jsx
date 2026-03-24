@@ -61,7 +61,8 @@ export default function SearchPage() {
                 return [...prev, ...newResults.filter(i => !existIds.has(i.id))];
             });
 
-            setHasMore(newResults.length > 0);
+            setHasMore(newResults.length === 20); // Limit is 20
+
         } catch (err) {
             console.error(`Search ${type} failed:`, err);
         } finally {

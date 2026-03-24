@@ -1,5 +1,5 @@
 import { serve } from '@hono/node-server'
-import { AlbumController, ArtistController, ModulesController, SearchController, SongController } from '#modules/index'
+import { AlbumController, ArtistController, ModulesController, RecognitionController, SearchController, SongController } from '#modules/index'
 import { PlaylistController } from '#modules/playlists/controllers'
 import { App } from './app'
 
@@ -9,6 +9,7 @@ const app = new App([
   new AlbumController(),
   new ArtistController(),
   new PlaylistController(),
+  new RecognitionController(),
   new ModulesController()
 ]).getApp()
 

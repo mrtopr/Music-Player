@@ -2,13 +2,12 @@
 
 /* Apply deep noir background to main areas */
 body {
-    background: var(--mehfil-dark-base);
     color: var(--mehfil-text-primary);
 }
 
 .screen,
 .main-area {
-    background: var(--mehfil-dark-base);
+    background: transparent !important;
 }
 
 /* Cards with refined surface color */
@@ -155,7 +154,8 @@ p {
 
 /* === MINI PLAYER === */
 .mini-player {
-    background: var(--mehfil-surface-card);
+    background: rgba(var(--mehfil-surface-card-rgb, 26, 26, 36), 0.7);
+    backdrop-filter: blur(20px);
     border-top: 1px solid var(--mehfil-border);
 }
 
