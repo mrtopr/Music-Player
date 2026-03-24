@@ -105,11 +105,16 @@
   padding: 0;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
-:focus-visible {
-  outline: 2px solid var(--accent-primary) !important;
-  outline-offset: 2px;
+button, a, .clickable {
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+input, textarea {
+  user-select: text;
 }
 
 ::-webkit-scrollbar {
@@ -143,7 +148,7 @@ body {
   width: 100%;
   max-width: 100vw;
   margin: 0 auto;
-  padding: var(--spacing-md) 0;
+  padding: 0;
   position: relative;
   min-height: 100vh;
   background: var(--bg-main);
@@ -6778,6 +6783,13 @@ body {
     height: calc(100vh - 140px);
     /* Tab bar + miniplayer */
   }
+
+  .main-area {
+    width: 100vw;
+    height: 100vh;
+    padding: 20px var(--spacing-md) 100px var(--spacing-md) !important;
+    overflow-x: hidden;
+  }
 }
 
 .queue-header {
@@ -7247,32 +7259,117 @@ body {
 
 @media (max-width: 768px) {
   .sidebar {
-    display: flex !important;
-    position: fixed;
+    display: none !important;
+  }
+
+  /* Optimize TopBar for Mobile */
+  .top-bar {
+    padding: 8px 12px !important;
+    gap: 8px !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    background: rgba(11, 13, 18, 0.95);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    position: sticky;
     top: 0;
-    left: -280px;
-    height: 100vh;
-    width: 260px;
-    z-index: 2000;
-    transition: transform 0.3s ease;
-    border-radius: 0 20px 20px 0;
-    margin: 0;
+    z-index: 1001;
   }
 
-  .sidebar.open {
-    transform: translateX(280px);
-  }
-
-  .hamburger {
+  .search {
+    margin: 0 !important;
+    flex: 1;
     display: flex !important;
-    margin-right: var(--space-md);
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  .search input[type="text"] {
+    flex: 1;
+    padding-left: 36px !important;
+    padding-right: 12px !important;
+    font-size: 13px !important;
+    height: 38px !important;
+    border-radius: 19px !important;
+    background: rgba(255,255,255,0.05) !important;
+  }
+
+  .search::before {
+    left: 12px !important;
+    font-size: 14px !important;
+    opacity: 0.7;
+  }
+  
+  .search::after { display: none !important; }
+
+  #searchButton {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: var(--accent-primary) !important;
+    box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.3) !important;
+  }
+
+  .premium-tools {
+    display: flex !important;
+    gap: 6px !important;
+    margin-right: 0 !important;
+  }
+  
+  .premium-tools button {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    background: rgba(255,255,255,0.08) !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .profile {
+    margin-top: 0 !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .profile img {
+    width: 36px !important;
+    height: 36px !important;
+    border: 2px solid var(--accent-primary) !important;
+  }
+
+  .btn, .btn-primary, .btn-outline-primary, .control-btn, .tab-item {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar { 
+    pointer-events: none; 
+    opacity: 0;
+    visibility: hidden;
+  }
+  
+  .sidebar.open {
+    pointer-events: auto;
+    opacity: 1;
+    visibility: visible;
   }
 
   .main-area {
     margin-left: 0 !important;
     width: 100% !important;
-    padding-bottom: 140px !important;
-    /* Space for mini-player + tab bar */
+    padding: 0 var(--spacing-sm) 140px var(--spacing-sm) !important;
   }
 
   .mobile-tab-bar {
@@ -7281,7 +7378,6 @@ body {
 
   .mini-player {
     bottom: 60px !important;
-    /* Tab bar height */
   }
 
   /* Reflow grid */

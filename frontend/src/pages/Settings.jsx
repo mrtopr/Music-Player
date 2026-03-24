@@ -43,14 +43,14 @@ export default function Settings() {
     };
 
     return (
-        <div style={{ display: 'block', paddingBottom: '120px', animation: 'fadeIn 0.5s ease' }}>
+        <div style={{ display: 'block', paddingBottom: '160px', animation: 'fadeIn 0.5s ease' }}>
             <div style={{ padding: '2rem 1rem', maxWidth: '800px', margin: '0 auto' }}>
                 
-                <header style={{ marginBottom: '2.5rem' }}>
-                    <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '1rem', color: '#fff' }}>
+                <header className="settings-header">
+                    <h1 className="settings-title">
                         <SettingsIcon size={32} className="spin-slow" /> Settings
                     </h1>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Customize your listening experience</p>
+                    <p className="settings-subtitle">Customize your listening experience</p>
                 </header>
 
                 {successMsg && (
@@ -82,23 +82,23 @@ export default function Settings() {
                                     padding: '0.5rem 1rem', borderRadius: '12px', cursor: 'pointer',
                                     display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', fontWeight: 500,
                                     transition: 'all 0.2s'
-                                }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,107,107,0.1)'} onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}>
+                                }}>
                                     <LogOut size={16} /> Logout
                                 </button>
                             )}
                         </div>
                         
                         {user ? (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                            <div className="profile-info-row">
                                 <div style={{ position: 'relative' }}>
-                                    <img src={user.profilePicture || '/dp.png'} alt="Profile" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--accent-primary)' }} />
-                                    <div style={{ position: 'absolute', bottom: 0, right: 0, background: 'var(--accent-primary)', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', border: '3px solid var(--bg-card)' }}>
+                                    <img src={user.profilePicture || '/dp.png'} alt="Profile" className="profile-image" />
+                                    <div className="profile-verified-badge">
                                         <Check size={14} strokeWidth={3} />
                                     </div>
                                 </div>
-                                <div>
-                                    <div style={{ fontWeight: 700, fontSize: '1.4rem', color: '#fff' }}>{user.name}</div>
-                                    <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '4px' }}>
+                                <div className="profile-text">
+                                    <div className="profile-name-text">{user.name}</div>
+                                    <div className="profile-meta-text">
                                         Premium Listener &bull; Joined {new Date(user.loginDate).toLocaleDateString()}
                                     </div>
                                 </div>
@@ -119,7 +119,7 @@ export default function Settings() {
                         </h3>
                         <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '1.5rem' }}>Select a mood-based theme to transform the entire interface.</p>
                         
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '1rem' }}>
                             {Object.entries(moodThemes).map(([key, theme]) => (
                                 <button
                                     key={key}
@@ -131,10 +131,7 @@ export default function Settings() {
                                         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                                         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px'
                                     }}
-                                    onMouseEnter={e => { if(currentTheme !== key) e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.transform = 'translateY(-4px)'; }}
-                                    onMouseLeave={e => { if(currentTheme !== key) e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                                 >
-                                    {/* Color Swatch */}
                                     <div style={{ display: 'flex', width: '100%', height: '40px', borderRadius: '8px', overflow: 'hidden' }}>
                                         <div style={{ flex: 1, background: theme.colors.primary }} />
                                         <div style={{ flex: 1, background: theme.colors.background }} />
@@ -155,7 +152,7 @@ export default function Settings() {
 
                     {/* Audio & Performance */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-                        <section style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,255,255,0.08)' }}>
+                        <section className="settings-card" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,255,255,0.08)' }}>
                             <h3 style={{ margin: '0 0 1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>
                                 <Volume2 size={20} /> Audio Quality
                             </h3>
@@ -165,26 +162,21 @@ export default function Settings() {
                                     <span style={{ color: 'var(--accent-primary)', fontWeight: 700, background: 'rgba(255,165,0,0.1)', padding: '4px 12px', borderRadius: '30px' }}>320kbps</span>
                                 </div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <span style={{ color: '#fff' }}>Crossfade</span>
-                                    <span style={{ color: 'var(--text-muted)' }}>12s (Default)</span>
-                                </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <span style={{ color: '#fff' }}>Equalizer</span>
-                                    <span style={{ color: 'var(--text-muted)' }}>Dolby Atmos</span>
+                                    <span style={{ color: '#fff' }}>Optimizer</span>
+                                    <span style={{ color: 'var(--text-muted)' }}>Enabled</span>
                                 </div>
                             </div>
                         </section>
 
-                        <section style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,255,255,0.08)' }}>
+                        <section className="settings-card" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,255,255,0.08)' }}>
                             <h3 style={{ margin: '0 0 1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>
-                                <Info size={20} /> About Mehfil
+                                <Info size={20} /> About
                             </h3>
                             <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                                <div style={{ color: '#fff', fontWeight: 700, fontSize: '1.1rem', marginBottom: '8px' }}>Mehfil — दिल से सुनो</div>
-                                <div>Professional Build v3.4.0-pro</div>
-                                <div>Powered by JioSaavn Enterprise API</div>
+                                <div style={{ color: '#fff', fontWeight: 700, fontSize: '1.1rem', marginBottom: '8px' }}>Mehfil Pro</div>
+                                <div>Version 3.4.0</div>
                                 <div style={{ marginTop: '12px', display: 'flex', gap: '8px' }}>
-                                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px' }}>OSS</span>
+                                    <span style={{ background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px' }}>Stable</span>
                                     <span style={{ background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px' }}>React 18</span>
                                 </div>
                             </div>
@@ -192,30 +184,25 @@ export default function Settings() {
                     </div>
 
                     {/* Danger Zone */}
-                    <section style={{ 
+                    <section className="settings-card" style={{ 
                         background: 'rgba(255,50,50,0.02)', borderRadius: '24px', padding: '2rem', 
-                        border: '1px solid rgba(255,50,50,0.1)', marginTop: '1rem'
+                        border: '1px solid rgba(255,50,50,0.1)'
                     }}>
                         <h3 style={{ margin: '0 0 1.5rem 0', color: '#ff6b6b', display: 'flex', alignItems: 'center', gap: '0.8rem', fontSize: '1.2rem' }}>
-                            <ShieldAlert size={20} /> Storage & Data
+                            <ShieldAlert size={20} /> Storage
                         </h3>
-                        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-                            Managing local data will affect your playlists, favorites, and listening history.
-                        </p>
-                        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                            <button onClick={clearData} style={{ 
-                                padding: '0.8rem 1.5rem', borderRadius: '16px', 
-                                background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', 
-                                color: '#ff6b6b', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px'
-                            }}>
-                                <Trash2 size={18} /> Wipe Local Cache
-                            </button>
-                        </div>
+                        <button onClick={clearData} style={{ 
+                            padding: '0.8rem 1.5rem', borderRadius: '16px', 
+                            background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.2)', 
+                            color: '#ff6b6b', cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px'
+                        }}>
+                            <Trash2 size={18} /> Wipe Cache
+                        </button>
                     </section>
                 </div>
                 
                 <footer style={{ textAlign: 'center', marginTop: '4rem', opacity: 0.3, fontSize: '0.8rem' }}>
-                    &copy; 2024 Mehfil Music. Made with ❤️ for Indian Music Lovers.
+                    &copy; 2024 Mehfil Music.
                 </footer>
             </div>
             
@@ -226,6 +213,26 @@ export default function Settings() {
                 }
                 .spin-slow { animation: spin-slow 12s linear infinite; }
                 
+                .settings-header { margin-bottom: 2.5rem; }
+                .settings-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem; color: #fff; }
+                .settings-subtitle { color: var(--text-muted); font-size: 1.1rem; }
+                .profile-info-row { display: flex; align-items: center; gap: 1.5rem; }
+                .profile-image { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent-primary); box-shadow: 0 0 20px rgba(var(--accent-primary-rgb), 0.2); }
+                .profile-verified-badge { position: absolute; bottom: 0; right: 0; background: var(--accent-primary); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: #000; border: 3px solid var(--bg-card); }
+                .profile-name-text { font-weight: 700; font-size: 1.4rem; color: #fff; }
+                .profile-meta-text { color: var(--text-muted); font-size: 0.95rem; margin-top: 4px; }
+
+                @media (max-width: 768px) {
+                    .settings-title { font-size: 2rem; }
+                    .settings-subtitle { font-size: 1rem; }
+                    .profile-info-row { flex-direction: column; text-align: center; gap: 1rem; }
+                    .profile-image { width: 100px; height: 100px; }
+                    .settings-card { padding: 1.5rem !important; }
+                    .profile-name-text { font-size: 1.6rem; }
+                    .settings-header { text-align: center; }
+                    .settings-title { justify-content: center; }
+                }
+
                 @keyframes fadeIn {
                     from { opacity: 0; transform: translateY(10px); }
                     to { opacity: 1; transform: translateY(0); }
@@ -236,8 +243,8 @@ export default function Settings() {
                     to { opacity: 1; transform: translate(-50%, 0); }
                 }
 
-                .settings-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-                .settings-card:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+                .settings-card { transition: all 0.3s ease; }
+                .settings-card:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.15) !important; }
             `}</style>
         </div>
     );

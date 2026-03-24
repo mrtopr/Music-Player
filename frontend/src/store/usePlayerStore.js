@@ -11,6 +11,41 @@ if (!window.__mehfilAudio) {
 }
 const audio = window.__mehfilAudio;
 
+// ── Audio Engine Internals (Equalizer) ──
+let audioCtx = null;
+let source = null;
+let filters = { bass: null, mid: null, treble: null };
+
+const initAudioEngine = () => {
+    if (audioCtx) return;
+    try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        source = audioCtx.createMediaElementSource(audio);
+        
+        const bass = audioCtx.createBiquadFilter();
+        bass.type = 'lowshelf';
+        bass.frequency.value = 200;
+        
+        const mid = audioCtx.createBiquadFilter();
+        mid.type = 'peaking';
+        mid.frequency.value = 1000;
+        mid.Q.value = 1;
+        
+        const treble = audioCtx.createBiquadFilter();
+        treble.type = 'highshelf';
+        treble.frequency.value = 3000;
+
+        source.connect(bass);
+        bass.connect(mid);
+        mid.connect(treble);
+        treble.connect(audioCtx.destination);
+
+        filters = { bass, mid, treble };
+    } catch (e) {
+        console.warn('Audio Context initialization failed:', e);
+    }
+};
+
 export const usePlayerStore = create((set, get) => ({
     // ── State ──
     isPlaying: false,
@@ -26,6 +61,16 @@ export const usePlayerStore = create((set, get) => ({
     shuffle: false,
     repeat: 'off',  // 'off' | 'all' | 'one'
     likedSongs: (() => { try { return JSON.parse(localStorage.getItem('likedSongs') || '[]'); } catch { return []; } })(),
+
+    // Equalizer State
+    equalizer: { bass: 0, mid: 0, treble: 0 },
+    
+    // Sleep Timer State
+    sleepTimer: {
+        active: false,
+        remaining: 0, // seconds
+        label: ''
+    },
 
     // ── Internals ──
     audio,
@@ -51,6 +96,7 @@ export const usePlayerStore = create((set, get) => ({
     }),
 
     playSong: async (rawSong, autoOpen = true) => {
+        initAudioEngine();
         const state = get();
         if (!rawSong) return;
 
@@ -90,6 +136,7 @@ export const usePlayerStore = create((set, get) => ({
         }
 
         audio.src = url;
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
         audio.play().catch(e => console.warn('Playback blocked:', e));
 
         // Update media session
@@ -195,7 +242,59 @@ export const usePlayerStore = create((set, get) => ({
         audio.loop = next === 'one';
         return { repeat: next };
     }),
+
+    // ── Equalizer Actions ──
+    setEqualizer: (key, val) => {
+        initAudioEngine();
+        if (filters[key]) {
+            filters[key].gain.value = val;
+        }
+        set(state => ({ equalizer: { ...state.equalizer, [key]: val } }));
+    },
+
+    setEqualizerAll: (vals) => {
+        initAudioEngine();
+        Object.entries(vals).forEach(([key, val]) => {
+            if (filters[key]) filters[key].gain.value = val;
+        });
+        set({ equalizer: vals });
+    },
+
+    // ── Sleep Timer Actions ──
+    startSleepTimer: (minutes) => {
+        const seconds = minutes * 60;
+        set({ 
+            sleepTimer: { 
+                active: true, 
+                remaining: seconds,
+                label: minutes >= 60 ? `${minutes/60} Hour${minutes>60?'s':''}` : `${minutes} Mins`
+            } 
+        });
+    },
+
+    stopSleepTimer: () => {
+        set({ sleepTimer: { active: false, remaining: 0, label: '' } });
+    },
 }));
+
+// ── Global Intervals ──
+setInterval(() => {
+    const state = usePlayerStore.getState();
+    if (state.sleepTimer.active && state.sleepTimer.remaining > 0) {
+        const nextRem = state.sleepTimer.remaining - 1;
+        if (nextRem <= 0) {
+            audio.pause();
+            usePlayerStore.setState({ 
+                isPlaying: false, 
+                sleepTimer: { active: false, remaining: 0, label: '' } 
+            });
+        } else {
+            usePlayerStore.setState({ 
+                sleepTimer: { ...state.sleepTimer, remaining: nextRem } 
+            });
+        }
+    }
+}, 1000);
 
 // ── Audio event listeners (run once) ──
 if (!window.__mehfilListenersAttached) {

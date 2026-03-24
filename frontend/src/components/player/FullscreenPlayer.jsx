@@ -15,6 +15,17 @@ function formatTime(seconds) {
     return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
+function decodeEntities(text) {
+    if (!text) return '';
+    return text
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, '&')
+        .replace(/&#039;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&apos;/g, "'");
+}
+
 export default function FullscreenPlayer({ visible, onClose }) {
     const {
         currentSong, isPlaying, progress, currentTime, duration,
@@ -54,8 +65,9 @@ export default function FullscreenPlayer({ visible, onClose }) {
     if (!currentSong) return null;
 
     const imageUrl = getImageUrl(currentSong.image) || '/mehfil-logo.png';
-    const title = currentSong.title?.replace(/&quot;/g, '"') || 'Unknown';
-    const artist = currentSong.primaryArtists || currentSong.subtitle || 'Unknown';
+    const title = decodeEntities(currentSong.title) || 'Unknown';
+    const artist = decodeEntities(currentSong.primaryArtists || currentSong.subtitle) || 'Unknown';
+    const albumName = decodeEntities(currentSong.album?.name || '');
 
     const handleShare = () => {
         setShowMenu(false);
@@ -101,7 +113,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
             </div>
 
             {/* Main Layout */}
-            <div className="fs-desktop-container" style={{ display: 'flex', flexDirection: 'column', height: '100dvh', padding: 'clamp(1rem, 4vh, 2rem) 2rem', boxSizing: 'border-box', margin: '0 auto', justifyContent: 'center', width: '100%' }}>
+            <div className="fs-desktop-container" style={{ display: 'flex', flexDirection: 'column', height: '100dvh', padding: '1rem', boxSizing: 'border-box', margin: '0 auto', width: '100%' }}>
 
                 {/* Top Navigation Bar */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#fff', paddingBottom: '1rem', width: '100%', zIndex: 10 }}>
@@ -159,22 +171,25 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                         </button>
                                     </div>
                                     <p className="premium-artist">{artist}</p>
-                                    {currentSong.album?.name && <p className="premium-album">{currentSong.album.name}</p>}
+                                    {albumName && <p className="premium-album">{albumName}</p>}
                                 </div>
                             </div>
 
-                            {/* Waveform Progress Bar */}
                             <div className="fs-progress-zone" style={{ width: '100%' }}>
                                 <div className="premium-progress-container">
                                     <span style={{ minWidth: '40px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>{formatTime(currentTime)}</span>
-                                    <div className="fs-progress-bar" onClick={(e) => {
-                                        const rect = e.currentTarget.getBoundingClientRect();
-                                        seek(((e.clientX - rect.left) / rect.width) * 100);
-                                    }}>
-                                        <div className="fs-progress-bg"></div>
-                                        <div className="fs-progress-fill" style={{ width: `${progress}%` }}>
-                                            <div className="fs-progress-handle"></div>
+                                    <div className="fs-progress-bar" style={{ position: 'relative', flex: 1, height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px' }}>
+                                        <div className="fs-progress-fill" style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${progress}%`, background: '#fff', borderRadius: '4px', boxShadow: '0 0 10px rgba(255,255,255,0.5)' }}>
+                                            <div className="fs-progress-handle" style={{ position: 'absolute', right: '-6px', top: '50%', transform: 'translateY(-50%)', width: '12px', height: '12px', background: '#fff', borderRadius: '50%' }}></div>
                                         </div>
+                                        <input 
+                                            type="range" 
+                                            min="0" 
+                                            max="100" 
+                                            value={progress || 0} 
+                                            onChange={(e) => seek(Number(e.target.value))}
+                                            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer', zIndex: 2 }} 
+                                        />
                                     </div>
                                     <span style={{ minWidth: '40px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600, textAlign: 'right' }}>{formatTime(duration)}</span>
                                 </div>
@@ -221,44 +236,42 @@ export default function FullscreenPlayer({ visible, onClose }) {
                 </div>
             </div>
 
-            {/* Queue Overlay Sidebar */}
+            {/* Enhanced Queue Overlay Sidebar */}
             {showQueue && (
-                <div style={{
-                    position: 'absolute', right: 0, top: 0, bottom: 0, width: 'min(400px, 90%)',
-                    background: 'rgba(10,10,12,0.85)', backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)',
-                    zIndex: 1000, borderLeft: '1px solid rgba(255,255,255,0.1)',
-                    padding: '2rem 1.5rem', boxSizing: 'border-box',
-                    animation: 'slideLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                    display: 'flex', flexDirection: 'column'
-                }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                        <h3 style={{ margin: 0, color: '#fff', fontSize: '1.5rem', fontWeight: 700 }}>Next Up</h3>
-                        <button onClick={() => setShowQueue(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', opacity: 0.7 }}>
+                <div className="fs-queue-overlay">
+                    <div className="fs-queue-header">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <h3 style={{ margin: 0, color: '#fff', fontSize: '1.4rem', fontWeight: 800 }}>Up Next</h3>
+                            <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', fontWeight: 600 }}>{queue?.length || 0} tracks in queue</span>
+                        </div>
+                        <button onClick={() => setShowQueue(false)} className="fs-close-queue">
                             <X size={24} />
                         </button>
                     </div>
 
-                    <div style={{ flex: 1, overflowY: 'auto', paddingRight: '8px' }}>
+                    <div className="fs-queue-list">
                         {queue && queue.length > 0 ? queue.map((song, i) => (
                             <div
                                 key={`${song.id}-${i}`}
-                                className={`queue-item ${i === queueIndex ? 'active' : ''}`}
+                                className={`fs-queue-item ${i === queueIndex ? 'active' : ''}`}
                                 onClick={() => { playSong(song, false); }}
-                                style={{
-                                    display: 'flex', gap: '12px', alignItems: 'center', padding: '10px', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.2s',
-                                    border: '1px solid transparent', marginBottom: '8px',
-                                    background: i === queueIndex ? 'rgba(var(--album-accent-rgb), 0.15)' : 'transparent',
-                                    borderColor: i === queueIndex ? 'rgba(var(--album-accent-rgb), 0.3)' : 'transparent'
-                                }}
                             >
-                                <img src={getImageUrl(song.image)} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover' }} alt="" />
-                                <div style={{ overflow: 'hidden' }}>
-                                    <div style={{ color: i === queueIndex ? 'var(--album-accent)' : '#fff', fontWeight: 600, fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{song.title?.replace(/&quot;/g, '"')}</div>
-                                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{song.primaryArtists || song.subtitle}</div>
+                                <div className="queue-art-box">
+                                    <img src={getImageUrl(song.image)} alt="" />
+                                    {i === queueIndex && isPlaying && (
+                                        <div className="playing-bars">
+                                            <span></span><span></span><span></span>
+                                        </div>
+                                    )}
                                 </div>
+                                <div className="queue-song-info">
+                                    <div className="queue-song-title">{decodeEntities(song.title || song.name)}</div>
+                                    <div className="queue-song-artist">{decodeEntities(song.primaryArtists || song.subtitle || 'Various Artists')}</div>
+                                </div>
+                                {i === queueIndex && <div className="now-playing-dot"></div>}
                             </div>
                         )) : (
-                            <div style={{ color: 'rgba(255,255,255,0.3)', padding: '2rem', textAlign: 'center' }}>Queue is empty</div>
+                            <div className="empty-queue">Your queue is empty</div>
                         )}
                     </div>
                 </div>
@@ -362,134 +375,105 @@ export default function FullscreenPlayer({ visible, onClose }) {
                 }
 
                 .premium-title { 
-                    font-size: clamp(2.5rem, 6vw, 4.2rem); font-weight: 900; margin: 0; line-height: 1; letter-spacing: -3px; 
-                    text-shadow: 0 15px 40px rgba(0,0,0,0.4); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
-                    background: linear-gradient(to bottom, #ffffff 30%, rgba(255,255,255,0.7) 100%);
-                    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-                    animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+                    font-size: clamp(1.6rem, 5vw, 2.5rem); font-weight: 800; color: #fff; margin: 0; 
+                    line-height: 1.1; letter-spacing: -0.5px;
+                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
                 }
                 .premium-artist { 
-                    font-size: clamp(1.2rem, 3.5vw, 1.8rem); font-weight: 600; color: rgba(255,255,255,0.9); margin: 0.6rem 0 0 0; 
-                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 5px 15px rgba(0,0,0,0.3);
-                    opacity: 0.8; animation: slideUp 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+                    font-size: clamp(0.95rem, 4vw, 1.4rem); font-weight: 500; color: rgba(255,255,255,0.6); margin: 0.5rem 0 0 0; 
+                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
                 }
-                .premium-album { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 4px; color: var(--album-accent); margin-top: 15px; opacity: 0.6; }
+                .premium-album { 
+                    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--album-accent); margin-top: 8px; opacity: 1; line-height: 1.4; filter: drop-shadow(0 0 5px rgba(var(--album-accent-rgb), 0.3));
+                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+                }
 
                 .premium-action-btn-inline {
                     background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
                     color: rgba(255,255,255,0.4); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-                    cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); flex-shrink: 0;
+                    cursor: pointer; transition: all 0.3s ease; flex-shrink: 0;
                 }
-                .premium-action-btn-inline:hover { background: rgba(255,255,255,0.12); transform: scale(1.15); color: #fff; }
-                .premium-action-btn-inline.liked { color: var(--album-accent); background: rgba(var(--album-accent-rgb), 0.1); border-color: rgba(var(--album-accent-rgb), 0.2); animation: heartBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+                .premium-action-btn-inline.liked { color: #ff3b3b; background: rgba(255, 59, 59, 0.1); border-color: rgba(255, 59, 59, 0.2); }
 
-                .premium-action-btn {
-                    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
-                    color: #fff; width: 64px; height: 64px; border-radius: 20px; display: flex; align-items: center; justify-content: center;
-                    cursor: pointer; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); backdrop-filter: blur(10px);
-                }
-                .premium-action-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.1) rotate(5deg); border-color: rgba(255,255,255,0.3); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-                .premium-action-btn.liked { color: var(--album-accent); background: rgba(var(--album-accent-rgb), 0.1); border-color: rgba(var(--album-accent-rgb), 0.2); animation: heartBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
-                
-                @keyframes heartBounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
-
-                .premium-progress-container { width: 100%; display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.5); font-variant-numeric: tabular-nums; }
-                .fs-progress-bar { flex: 1; height: 32px; position: relative; cursor: pointer; display: flex; align-items: center; }
-                .fs-progress-bg { width: 100%; height: 2px; background: rgba(255,255,255,0.08); border-radius: 1px; }
+                .fs-progress-zone { margin: 1vh 0; }
+                .premium-progress-container { width: 100%; display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.4); font-size: 0.75rem; font-weight: 700; }
+                .fs-progress-bar { flex: 1; height: 16px; position: relative; cursor: pointer; display: flex; align-items: center; }
+                .fs-progress-bg { width: 100%; height: 3px; background: rgba(255,255,255,0.1); border-radius: 4px; }
                 .fs-progress-fill { 
-                    position: absolute; left: 0; top: 50%; height: 2.5px; background: var(--album-accent); 
-                    border-radius: 1px; transform: translateY(-50%); 
-                    box-shadow: 0 0 10px rgba(var(--album-accent-rgb), 0.3);
+                    position: absolute; left: 0; top: 50%; height: 3px; background: #fff; 
+                    border-radius: 4px; transform: translateY(-50%); 
+                    box-shadow: 0 0 10px rgba(255,255,255,0.5);
                     transition: width 0.1s linear;
                 }
                 .fs-progress-handle {
-                    position: absolute; right: -6px; top: 50%; width: 12px; height: 12px; background: #fff; border-radius: 50%;
-                    transform: translateY(-50%); box-shadow: 0 0 10px rgba(255,255,255,0.8); opacity: 0; transition: opacity 0.2s, transform 0.2s;
+                    position: absolute; right: -6px; top: 50%; width: 10px; height: 10px; background: #fff; border-radius: 50%;
+                    transform: translateY(-50%); opacity: 0; transition: opacity 0.2s;
                 }
-                .fs-progress-bar:hover .fs-progress-handle { opacity: 1; transform: translateY(-50%) scale(1.2); }
-                .fs-progress-bar:hover .fs-progress-bg { height: 6px; background: rgba(255,255,255,0.15); }
+                .fs-progress-bar:hover .fs-progress-handle { opacity: 1; }
 
                 .fs-control-hub {
-                    width: 100%; max-width: 650px; display: flex; align-items: center; justify-content: space-between;
-                    background: rgba(var(--album-dominant-rgb), 0.12); padding: 2rem 3rem; border-radius: 45px;
-                    border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(30px);
-                    box-shadow: 0 25px 50px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.1);
+                    width: 100%; display: flex; align-items: center; justify-content: space-between;
+                    background: rgba(255,255,255,0.03); padding: 1.4rem 2.5rem; border-radius: 40px;
+                    border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(20px);
                 }
-                .fs-main-btns { display: flex; align-items: center; gap: clamp(1.5rem, 4vw, 3rem); }
+                .fs-main-btns { display: flex; align-items: center; gap: 2.5rem; }
                 .ctrl-btn-small { 
-                    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.5); 
-                    width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-                    cursor: pointer; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+                    background: none; border: none; color: rgba(255,255,255,0.3); 
+                    padding: 8px; display: flex; align-items: center; justify-content: center; 
+                    cursor: pointer; transition: all 0.2s; position: relative;
+                    outline: none !important;
                 }
-                .ctrl-btn-small:hover { background: rgba(255,255,255,0.15); transform: scale(1.1) translateY(-3px); color: #fff; border-color: rgba(255,255,255,0.15); }
-                .ctrl-btn-small.active { color: var(--album-accent); background: rgba(var(--album-accent-rgb), 0.1); border-color: rgba(var(--album-accent-rgb), 0.2); box-shadow: 0 0 20px rgba(var(--album-accent-rgb), 0.2); }
+                .ctrl-btn-small.active { color: var(--album-accent); }
+                .ctrl-btn-small.active::after { content: ''; position: absolute; bottom: -2px; width: 4px; height: 4px; background: currentColor; border-radius: 50%; }
                 
-                .ctrl-btn-med { background: none; border: none; color: #fff; opacity: 0.7; cursor: pointer; transition: all 0.3s; }
-                .ctrl-btn-med:hover { transform: scale(1.25); opacity: 1; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
+                .ctrl-btn-med { background: none; border: none; color: #fff; cursor: pointer; transition: transform 0.2s; outline: none !important; }
+                .ctrl-btn-med:active { transform: scale(0.9); }
                 
                 .ctrl-btn-mega {
-                    width: 100px; height: 100px; border-radius: 50%; background: #fff; color: #000;
+                    width: 80px; height: 80px; border-radius: 50%; background: #fff; color: #000;
                     border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
-                    box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 50px rgba(255,255,255,0.2); 
-                    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                    box-shadow: 0 10px 30px rgba(255,255,255,0.2); transition: transform 0.2s; outline: none !important;
                 }
-                .ctrl-btn-mega:hover { transform: scale(1.1); box-shadow: 0 25px 60px rgba(255,255,255,0.3); }
-                .ctrl-btn-mega:active { transform: scale(0.9); }
+                .ctrl-btn-mega:active { transform: scale(0.95); }
 
-                @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-                @keyframes slideLeft { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-                
-                .fs-desktop-columns {
-                    flex: 1; 
-                    display: flex; 
-                    flex-direction: row !important; 
-                    align-items: center; 
-                    justify-content: space-between; 
-                    gap: 3vw; 
-                    width: 100%; 
-                    min-height: 80vh;
-                    padding: 2vh 0;
-                    box-sizing: border-box;
-                    overflow: visible;
+                /* Queue Styling */
+                .fs-queue-overlay {
+                    position: absolute; inset: 0; background: rgba(0,0,0,0.92); backdrop-filter: blur(60px);
+                    z-index: 1000; display: flex; flex-direction: column; padding: 2.5rem 2rem;
+                    animation: fadeIn 0.3s ease;
                 }
-                .fs-left-col {
-                    flex: 1;
-                    max-width: 48%;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                }
-                .fs-right-col {
-                    flex: 1;
-                    max-width: 52%;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: flex-start;
-                    justify-content: center;
-                    text-align: left;
-                    padding-left: 3vw;
-                    box-sizing: border-box;
-                }
-                .album-art-perspective {
-                    width: 100%;
-                    max-width: 600px;
-                }
-                
+                .fs-queue-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
+                .fs-close-queue { background: rgba(255,255,255,0.1); border: none; color: #fff; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; outline: none !important; }
+                .fs-queue-list { flex: 1; overflow-y: auto; padding-right: 4px; }
+                .fs-queue-item { display: flex; gap: 15px; align-items: center; padding: 14px; border-radius: 18px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+                .fs-queue-item:hover { background: rgba(255,255,255,0.05); }
+                .fs-queue-item.active { background: rgba(var(--album-accent-rgb), 0.1); border-color: rgba(var(--album-accent-rgb), 0.2); }
+                .queue-art-box { position: relative; width: 56px; height: 56px; border-radius: 12px; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+                .queue-art-box img { width: 100%; height: 100%; object-fit: cover; }
+                .playing-bars { position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; justify-content: center; gap: 3px; padding-bottom: 12px; }
+                .playing-bars span { width: 3px; height: 12px; background: var(--album-accent); animation: barBounce 0.6s infinite alternate; }
+                .playing-bars span:nth-child(2) { animation-delay: 0.2s; }
+                .playing-bars span:nth-child(3) { animation-delay: 0.4s; }
+                @keyframes barBounce { from { height: 4px; } to { height: 18px; } }
+                .queue-song-info { flex: 1; overflow: hidden; }
+                .queue-song-title { color: #fff; font-weight: 700; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                .queue-song-artist { color: rgba(255,255,255,0.4); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; }
+                .now-playing-dot { width: 8px; height: 8px; background: var(--album-accent); border-radius: 50%; box-shadow: 0 0 12px var(--album-accent); margin-left: auto; }
+
                 @media (max-width: 800px) {
-                    .fs-desktop-columns { 
-                        flex-direction: column !important; 
-                        justify-content: flex-start;
-                        gap: 2vh;
-                        min-height: auto;
-                    }
-                    .fs-left-col, .fs-right-col {
-                        max-width: 100%;
-                        width: 100%;
-                        align-items: center;
-                        text-align: center;
-                        padding: 0;
-                    }
+                    .fs-desktop-container { padding: 1.2rem 1.2rem 2.5rem 1.2rem !important; }
+                    .fs-desktop-columns { flex-direction: column !important; gap: 1.5vh; flex: none !important; padding: 0 !important; }
+                    .fs-left-col { flex: 0 0 auto; margin-bottom: 1.5vh; }
+                    .fs-right-col { flex: 0 0 auto; gap: 1vh !important; }
+                    .album-art-perspective { width: min(75vw, 300px); height: min(75vw, 300px); margin: 0 auto; }
+                    .premium-title { font-size: 1.2rem !important; margin-bottom: 2px !important; }
+                    .premium-artist { font-size: 0.95rem !important; }
+                    .fs-control-hub { padding: 0.8rem 1.2rem !important; border-radius: 30px !important; }
+                    .fs-main-btns { gap: 1.2rem; }
+                    .ctrl-btn-mega { width: 64px; height: 64px; }
+                    .ctrl-btn-med svg { width: 30px; height: 30px; }
+                    .ctrl-btn-small { width: 40px; height: 40px; }
+                    .fs-footer { margin-top: 2vh; padding-bottom: 1.5vh; }
                 }
             `}</style>
         </div>

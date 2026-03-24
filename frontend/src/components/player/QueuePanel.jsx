@@ -3,6 +3,17 @@ import { X, Play, Trash2 } from 'lucide-react';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { getImageUrl } from '../../api/client.js';
 
+function decodeEntities(text) {
+    if (!text) return '';
+    return text
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, '&')
+        .replace(/&#039;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&apos;/g, "'");
+}
+
 export default function QueuePanel({ visible, onClose }) {
     const { queue, queueIndex, currentSong, playSong } = usePlayerStore();
 
@@ -28,10 +39,10 @@ export default function QueuePanel({ visible, onClose }) {
                         <img src={getImageUrl(currentSong.image) || '/music.png'} alt="" style={{ width: '48px', height: '48px', borderRadius: '6px', objectFit: 'cover' }} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--accent-primary)' }}>
-                                {currentSong.title?.replace(/&quot;/g, '"')}
+                                {decodeEntities(currentSong.title || currentSong.name)}
                             </div>
                             <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                {currentSong.primaryArtists || currentSong.subtitle}
+                                {decodeEntities(currentSong.primaryArtists || currentSong.subtitle || 'Various Artists')}
                             </div>
                         </div>
                     </div>
@@ -67,10 +78,10 @@ export default function QueuePanel({ visible, onClose }) {
                             <img src={getImageUrl(song.image) || '/music.png'} alt="" style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover' }} loading="lazy" />
                             <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ fontSize: '0.9rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                    {song.title?.replace(/&quot;/g, '"')}
+                                    {decodeEntities(song.title || song.name)}
                                 </div>
                                 <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                    {song.primaryArtists || song.subtitle}
+                                    {decodeEntities(song.primaryArtists || song.subtitle || 'Various Artists')}
                                 </div>
                             </div>
                         </div>

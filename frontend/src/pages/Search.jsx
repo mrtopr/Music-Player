@@ -10,6 +10,17 @@ const TRENDING_SEARCHES = [
     'Dil Diyaan Gallan', 'Chaleya', 'Apna Bana Le', 'Phir Aur Kya Chahiye'
 ];
 
+const decodeEntities = (text) => {
+    if (!text) return '';
+    return text
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, '&')
+        .replace(/&#039;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&apos;/g, "'");
+};
+
 export default function SearchPage() {
     const location = useLocation();
     const query = new URLSearchParams(location.search).get('q') || '';
@@ -138,23 +149,25 @@ export default function SearchPage() {
 
             <div style={{ padding: 'var(--space-2xl, 2rem) 1rem' }}>
                 {/* Context Tabs */}
-                <div className="search-tabs-container" style={{ display: 'flex', gap: '0.8rem', marginBottom: 'var(--space-2xl, 2rem)', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none' }}>
+                <div className="search-tabs-container" style={{ 
+                    display: 'flex', gap: '0.6rem', marginBottom: '1.5rem', 
+                    overflowX: 'auto', padding: '0.2rem 0.2rem 0.8rem 0.2rem', 
+                    scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch'
+                }}>
                     {['songs', 'albums', 'playlists', 'artists'].map(type => (
                         <button
                             key={type}
                             onClick={() => handleTabChange(type)}
                             style={{
                                 display: 'flex', alignItems: 'center', gap: '6px',
-                                padding: '0.6rem 1.4rem', fontSize: '0.95rem', fontWeight: 600,
+                                padding: '0.6rem 1.2rem', fontSize: '0.9rem', fontWeight: 600,
                                 cursor: 'pointer', whiteSpace: 'nowrap',
                                 borderRadius: '50px', transition: 'all 0.3s ease',
-                                background: searchType === type ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)',
-                                color: searchType === type ? '#fff' : 'rgba(255,255,255,0.7)',
-                                boxShadow: searchType === type ? '0 4px 15px rgba(255, 165, 0, 0.4)' : 'none',
-                                border: `1px solid ${searchType === type ? 'var(--accent-primary)' : 'rgba(255,255,255,0.1)'}`
+                                background: searchType === type ? 'var(--accent-primary)' : 'rgba(255,255,255,0.06)',
+                                color: searchType === type ? '#000' : 'rgba(255,255,255,0.6)',
+                                border: 'none',
+                                flexShrink: 0
                             }}
-                            onMouseEnter={e => { if (searchType !== type) e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
-                            onMouseLeave={e => { if (searchType !== type) e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
                         >
                             {getIconForTab(type)} {type.charAt(0).toUpperCase() + type.slice(1)}
                         </button>
@@ -222,10 +235,35 @@ export default function SearchPage() {
 
                 {results.length > 0 && (
                     <>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1.25rem' }}>
+                        <div className={searchType === 'songs' ? 'song-list-view' : 'results-grid'}>
                             {results.map((item, i) => {
-                                const isCurrent = searchType === 'songs' && currentSong?.id === item.id;
+                                const isSong = searchType === 'songs';
+                                const isCurrent = isSong && currentSong?.id === item.id;
                                 const isArtist = searchType === 'artists';
+
+                                if (isSong) {
+                                    return (
+                                        <div 
+                                            key={item.id + '-' + i} 
+                                            className={`song-list-item ${isCurrent ? 'playing' : ''}`} 
+                                            onClick={() => handleContextClick(item)}
+                                        >
+                                            <div className="song-art-container">
+                                                <img src={getImageUrl(item.image) || '/mehfil-logo.png'} alt="" />
+                                                <div className="song-play-overlay">
+                                                    {isCurrent && isPlaying ? <Pause size={16} fill="#fff" /> : <Play size={16} fill="#fff" />}
+                                                </div>
+                                            </div>
+                                            <div className="song-details">
+                                                <div className="song-name">{decodeEntities(item.title || item.name)}</div>
+                                                <div className="song-meta">{decodeEntities(item.primaryArtists || item.subtitle || (isSong ? 'Various' : ''))}</div>
+                                            </div>
+                                            <div className="song-actions">
+                                                <AddToPlaylist song={item} />
+                                            </div>
+                                        </div>
+                                    );
+                                }
 
                                 return (
                                     <div key={item.id + '-' + i} className={`card ${isArtist ? 'artist-card' : 'song-card'} ${isCurrent ? 'playing' : ''}`} onClick={() => handleContextClick(item)} style={{ cursor: 'pointer', textAlign: isArtist ? 'center' : 'left' }}>
@@ -240,16 +278,16 @@ export default function SearchPage() {
                                             )}
                                         </div>
                                         <h3 style={{ marginTop: '0.75rem', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--text-primary)', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
-                                            {item.title?.replace(/&quot;/g, '"') || item.name?.replace(/&quot;/g, '"')}
+                                            {decodeEntities(item.title || item.name)}
                                         </h3>
                                         <p style={{ fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--text-muted)' }}>
-                                            {item.subtitle || item.primaryArtists || item.role || (isArtist ? 'Artist' : 'Various')}
+                                            {decodeEntities(item.subtitle || item.primaryArtists || item.role || (isArtist ? 'Artist' : 'Various'))}
                                         </p>
                                         <div className="card-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: 'auto' }}>
                                             <button className="play-btn" onClick={(e) => { e.stopPropagation(); handleContextClick(item); }} style={{ boxShadow: '0 4px 12px rgba(255,165,0,0.3)', position: 'relative', bottom: 'auto', right: 'auto', left: 'auto' }}>
                                                 {isCurrent && isPlaying ? <Pause size={22} fill="var(--mehfil-dark-base)" color="var(--mehfil-dark-base)" /> : <Play size={22} fill="var(--mehfil-dark-base)" color="var(--mehfil-dark-base)" style={{ transform: 'translateX(1px)' }} />}
                                             </button>
-                                            {searchType === 'songs' && <AddToPlaylist song={item} />}
+                                            {!isArtist && <AddToPlaylist song={item} />}
                                         </div>
                                     </div>
                                 );
@@ -276,6 +314,38 @@ export default function SearchPage() {
                 @keyframes spin { 100% { transform: rotate(360deg); } }
                 .spin { animation: spin 1s linear infinite; }
                 .search-tabs-container::-webkit-scrollbar { display: none; }
+                
+                .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.25rem; }
+                .song-list-view { display: flex; flex-direction: column; gap: 8px; }
+                
+                .song-list-item { 
+                    display: flex; align-items: center; gap: 12px; padding: 10px 14px; 
+                    background: rgba(255,255,255,0.03); border-radius: 12px; cursor: pointer; 
+                    transition: all 0.2s ease; border: 1px solid transparent;
+                }
+                .song-list-item:hover { background: rgba(255,255,255,0.08); transform: translateX(5px); }
+                .song-list-item.playing { background: rgba(var(--accent-primary-rgb), 0.1); border-color: rgba(var(--accent-primary-rgb), 0.2); }
+                
+                .song-art-container { width: 48px; height: 48px; border-radius: 8px; overflow: hidden; position: relative; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+                .song-art-container img { width: 100%; height: 100%; object-fit: cover; }
+                .song-play-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+                .song-list-item:hover .song-play-overlay { display: flex; }
+                .song-list-item.playing .song-play-overlay { display: flex; background: rgba(var(--accent-primary-rgb), 0.3); }
+                
+                .song-details { flex: 1; min-width: 0; }
+                .song-name { color: #fff; font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                .song-meta { color: rgba(255,255,255,0.5); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+                
+                .song-actions { opacity: 0.5; transition: opacity 0.2s; }
+                .song-list-item:hover .song-actions { opacity: 1; }
+                
+                @media (max-width: 768px) {
+                    .results-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+                    .song-list-item { padding: 8px 10px; }
+                    .song-art-container { width: 44px; height: 44px; }
+                    .song-name { font-size: 0.95rem; }
+                    .song-meta { font-size: 0.8rem; }
+                }
             `}</style>
         </div>
     );

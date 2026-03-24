@@ -1,42 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { Moon, X, Clock } from 'lucide-react';
 import { usePlayerStore } from '../../store/usePlayerStore';
 
 export default function SleepTimerModal({ visible, onClose }) {
-    const [activeTimer, setActiveTimer] = useState(null);
-    const [remaining, setRemaining] = useState(0);
-    const intervalRef = useRef(null);
+    const { sleepTimer, startSleepTimer, stopSleepTimer } = usePlayerStore();
+    const { active: activeTimer, remaining } = sleepTimer;
 
     const startTimer = (minutes) => {
-        clearInterval(intervalRef.current);
-        const ms = minutes * 60 * 1000;
-        const endTime = Date.now() + ms;
-        setActiveTimer(minutes);
-
-        intervalRef.current = setInterval(() => {
-            const left = Math.max(0, endTime - Date.now());
-            setRemaining(Math.ceil(left / 1000));
-            if (left <= 0) {
-                clearInterval(intervalRef.current);
-                const audio = usePlayerStore.getState().audio;
-                if (audio) { audio.pause(); }
-                usePlayerStore.setState({ isPlaying: false });
-                setActiveTimer(null);
-                setRemaining(0);
-            }
-        }, 1000);
+        startSleepTimer(minutes);
         onClose();
     };
 
     const cancelTimer = () => {
-        clearInterval(intervalRef.current);
-        setActiveTimer(null);
-        setRemaining(0);
+        stopSleepTimer();
     };
-
-    useEffect(() => {
-        return () => clearInterval(intervalRef.current);
-    }, []);
 
     const formatRemaining = (s) => {
         const m = Math.floor(s / 60);
@@ -47,27 +24,27 @@ export default function SleepTimerModal({ visible, onClose }) {
     if (!visible) return null;
 
     return (
-        <div className="modal-overlay" style={{ display: 'flex', position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', zIndex: 9999, justifyContent: 'center', alignItems: 'center' }} onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ background: 'var(--bg-card, #1a1a1a)', padding: 'var(--space-2xl, 2rem)', borderRadius: 'var(--radius-lg, 16px)', width: '350px', maxWidth: '90vw', border: '1px solid var(--border-medium, rgba(255,255,255,0.1))' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-xl, 1.5rem)' }}>
-                    <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <Moon size={20} /> Sleep Timer
+        <div className="modal-overlay" style={{ display: 'flex', position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(5, 5, 8, 0.85)', backdropFilter: 'blur(10px)', zIndex: 9999, justifyContent: 'center', alignItems: 'center' }} onClick={onClose}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ background: '#12141C', padding: '2rem', borderRadius: '24px', width: '360px', maxWidth: '92vw', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                    <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '1.4rem', color: '#fff' }}>
+                        <Moon size={24} color="#fff" /> Sleep Timer
                     </h3>
-                    <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-                        <X size={20} />
+                    <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', cursor: 'pointer', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <X size={18} />
                     </button>
                 </div>
 
                 {activeTimer && (
-                    <div style={{ background: 'rgba(255,165,59,0.1)', border: '1px solid rgba(255,165,59,0.3)', borderRadius: '8px', padding: '1rem', marginBottom: '1rem', textAlign: 'center' }}>
+                    <div style={{ background: 'rgba(255,165,59,0.1)', border: '1px solid rgba(255,165,59,0.2)', borderRadius: '15px', padding: '1rem', marginBottom: '1.5rem', textAlign: 'center', color: '#FFA53B' }}>
                         <Clock size={16} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
-                        <span style={{ fontVariantNumeric: 'tabular-nums' }}>
-                            Timer active: {formatRemaining(remaining)} remaining
+                        <span style={{ fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
+                            {formatRemaining(remaining)} remaining
                         </span>
                     </div>
                 )}
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md, 0.8rem)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                     {[
                         { label: '15 Minutes', time: 15 },
                         { label: '30 Minutes', time: 30 },
@@ -77,16 +54,26 @@ export default function SleepTimerModal({ visible, onClose }) {
                     ].map(({ label, time }) => (
                         <button
                             key={time}
-                            className={`btn-outline-primary ${activeTimer === time ? 'active' : ''}`}
                             onClick={() => startTimer(time)}
-                            style={{ padding: '0.7rem', borderRadius: '8px', textAlign: 'center' }}
+                            style={{ 
+                                padding: '1rem', borderRadius: '15px', textAlign: 'center',
+                                background: remaining / 60 === time ? '#fff' : 'rgba(255,255,255,0.05)',
+                                color: remaining / 60 === time ? '#12141C' : '#fff',
+                                border: 'none', fontWeight: 600, cursor: 'pointer',
+                                transition: 'all 0.3s ease',
+                                fontSize: '1rem'
+                            }}
                         >
                             {label}
                         </button>
                     ))}
 
                     {activeTimer && (
-                        <button className="btn-primary" onClick={cancelTimer} style={{ marginTop: '0.5rem', padding: '0.7rem' }}>
+                        <button onClick={cancelTimer} style={{ 
+                            marginTop: '0.5rem', padding: '1rem', borderRadius: '15px',
+                            background: '#EF4444', color: '#fff', border: 'none',
+                            fontWeight: 700, cursor: 'pointer', fontSize: '1rem'
+                        }}>
                             Turn Off Timer
                         </button>
                     )}
