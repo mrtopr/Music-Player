@@ -28,32 +28,61 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
         try {
 
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const mimeType = MediaRecorder.isTypeSupported('audio/ogg; codecs=opus') ? 'audio/ogg' : 'audio/webm';
-            const mediaRecorder = new MediaRecorder(stream, { mimeType });
+            
+            // Fix for iOS Safari: Safely detect supported mimeType or fallback to default
+            const supportedTypes = ['audio/webm', 'audio/ogg', 'audio/mp4', 'audio/aac'];
+            const mimeType = supportedTypes.find(type => MediaRecorder.isTypeSupported(type)) || '';
+            const options = mimeType ? { mimeType } : {};
+            const mediaRecorder = new MediaRecorder(stream, options);
 
             const chunks = [];
 
-            mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) chunks.push(e.data);
+            };
+
             mediaRecorder.onstop = async () => {
-                const blob = new Blob(chunks, { type: mimeType });
+                if (chunks.length === 0) {
+                    alert("No audio data captured. Please check your microphone permissions.");
+                    setIsListening(false);
+                    return;
+                }
+
+                const blob = new Blob(chunks, mimeType ? { type: mimeType } : undefined);
+                
+                if (blob.size < 1000) { // Less than 1KB is likely silence or error
+                    alert("Recording too short or silent. Please try again.");
+                    setIsListening(false);
+                    return;
+                }
+
+                const fileExt = mimeType ? mimeType.split('/')[1].split(';')[0] : 'm4a';
                 const formData = new FormData();
-                formData.append('file', blob, `recognize.${mimeType.split('/')[1]}`);
-                formData.append('api_token', 'test'); 
+                formData.append('file', blob, `recognize.${fileExt}`);
+                
+                // Use custom AudD token if provided in Settings
+                const customToken = localStorage.getItem('audd_api_token');
+                if (customToken) {
+                    formData.append('api_token', customToken);
+                } else {
+                    formData.append('api_token', 'test'); 
+                }
 
                 console.info('[Shazam] Uploading sample for identification...');
 
                 try {
-                    // Use relative URL to leverage Vite's proxy
-                    console.info('[Shazam] Uploading sample for identification...');
                     const res = await fetch('/api/recognize', {
                         method: 'POST',
                         body: formData
                     });
 
-                    
-                    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+                    if (!res.ok) {
+                        const errData = await res.json().catch(() => ({}));
+                        throw new Error(errData.message || `Server returned ${res.status}`);
+                    }
                     
                     const data = await res.json();
+                    
                     if (data.status === 'success' && data.result) {
                         const songTitle = `${data.result.title} ${data.result.artist}`;
                         console.info(`[Shazam] Result: ${songTitle}`);
@@ -63,23 +92,26 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                         if (searchRes.results?.length > 0) {
                             playSong(searchRes.results[0]);
                         } else {
-                            alert(`Identified as: "${songTitle}", but it's not available for streaming.`);
+                            alert(`Identified as: "${songTitle}", but it's not available in our library.`);
                         }
+                    } else if (data.status === 'error') {
+                        const msg = data.error?.error_message || "Recognition service error. Please check your API token.";
+                        alert(msg);
                     } else {
                         alert("Couldn't identify that song. Make sure the music is loud enough!");
                     }
                 } catch (err) {
                     console.error('[Shazam] Identification failed:', err);
-                    alert("Music recognition temporary unavailable. Please try again later.");
+                    alert(`Music recognition error: ${err.message || "Please try again later."}`);
                 } finally {
                     setIsListening(false);
                     stream.getTracks().forEach(t => t.stop());
                 }
             };
 
-
-
-            mediaRecorder.start();
+            // Start recording with timeslice to ensure data is periodically emitted
+            mediaRecorder.start(1000); 
+            
             setTimeout(() => {
                 if (mediaRecorder.state === 'recording') mediaRecorder.stop();
             }, 7000); // 7 sec recording
@@ -115,23 +147,22 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
     };
 
     return (
-        <div className="top-bar">
+        <div className="top-bar glass-morphism">
             <div className="search">
-                <Search className="search-field-icon" size={16} style={{ color: 'rgba(255,255,255,0.3)', pointerEvents: 'none' }} />
-                <input
-                    type="text"
-                    id="searchInput"
-                    value={localQuery}
-                    onChange={handleSearchChange}
-                    placeholder={isMobile ? "Search..." : "Search for songs, favorite artists, or albums..."}
-                    onFocus={handleSearchFocus}
-
-
-                />
-
-                <button type="button" id="searchButton" onClick={handleSearchFocus}>
-                    <Search className="icon-svg" size={18} />
-                </button>
+                <div className="search-box">
+                    <Search className="search-icon" size={18} />
+                    <input
+                        type="text"
+                        id="searchInput"
+                        value={localQuery}
+                        onChange={handleSearchChange}
+                        placeholder={isMobile ? "Search..." : "Search for songs, favorite artists, or albums..."}
+                        onFocus={handleSearchFocus}
+                    />
+                    <button type="button" id="searchButton" className="search-action-btn" onClick={handleSearchFocus}>
+                        <Search size={20} />
+                    </button>
+                </div>
             </div>
 
 

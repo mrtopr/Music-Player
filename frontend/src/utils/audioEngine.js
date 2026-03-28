@@ -12,6 +12,7 @@ class ProAudioEngine {
         this.gainB = null;
         this.filters = null;
         this.initialized = false;
+        this.currentFadeId = 0;
     }
 
     init(audioA, audioB) {
@@ -24,7 +25,7 @@ class ProAudioEngine {
             // Create Gain Nodes
             this.gainA = this.ctx.createGain();
             this.gainB = this.ctx.createGain();
-            
+
             this.gainA.gain.value = 1;
             this.gainB.gain.value = 0;
 
@@ -36,11 +37,11 @@ class ProAudioEngine {
             const bass = this.ctx.createBiquadFilter();
             bass.type = 'lowshelf';
             bass.frequency.value = 200;
-            
+
             const mid = this.ctx.createBiquadFilter();
             mid.type = 'peaking';
             mid.frequency.value = 1000;
-            
+
             const treble = this.ctx.createBiquadFilter();
             treble.type = 'highshelf';
             treble.frequency.value = 3000;
@@ -48,10 +49,10 @@ class ProAudioEngine {
             // Chain: Source -> Gain -> EQ -> Destination
             this.sourceA.connect(this.gainA);
             this.sourceB.connect(this.gainB);
-            
+
             this.gainA.connect(bass);
             this.gainB.connect(bass);
-            
+
             bass.connect(mid);
             mid.connect(treble);
             treble.connect(this.ctx.destination);
@@ -98,9 +99,11 @@ class ProAudioEngine {
         toGain.gain.cancelScheduledValues(now);
         toGain.gain.setValueCurveAtTime(inCurve, now, durationSec);
         
+        const fadeId = ++this.currentFadeId;
+
         // Final Hard Snap
         setTimeout(() => {
-            if (this.initialized) {
+            if (this.initialized && this.currentFadeId === fadeId) {
                 fromGain.gain.value = 0;
                 toGain.gain.value = target;
             }
@@ -112,7 +115,7 @@ class ProAudioEngine {
     sync(activeChannel, volume) {
         if (!this.initialized) return;
         const now = this.ctx.currentTime;
-        
+
         const active = activeChannel === 'A' ? this.gainA : this.gainB;
         const idle = activeChannel === 'A' ? this.gainB : this.gainA;
 

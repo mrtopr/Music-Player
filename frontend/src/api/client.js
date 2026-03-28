@@ -36,7 +36,7 @@ export const API_BASE_URL = (() => {
 
 
 export const ENDPOINTS = {
-    trendingSongs: '/api/trending2026',
+    trendingSongs: '/api/modules',
     newReleasesAlbums: '/api/modules',
     popularArtists: '/api/search/artists?query=Top%202024%20Hindi%20Bollywood%20Singers%20Rappers&language=hindi',
     featuredPlaylists: '/api/search/playlists?query=Bollywood%20hits%20romantic&language=hindi',
@@ -81,7 +81,7 @@ export async function apiFetch(path, params = {}) {
         if (!res.ok) throw new Error(`API error ${res.status}: ${res.statusText}`);
 
         const data = await res.json();
-        const finalData = data.data || data;
+        const finalData = (data && typeof data === 'object' && Object.prototype.hasOwnProperty.call(data, 'data')) ? data.data : data;
 
         // Retain standard query topologies for 5 minutes globally
         apiCache.set(urlString, finalData);

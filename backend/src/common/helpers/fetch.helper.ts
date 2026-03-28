@@ -31,7 +31,36 @@ export const useFetch = async <T>({ endpoint, params, context }: FetchParams): P
     headers: { 'Content-Type': 'application/json', 'User-Agent': randomUserAgent }
   })
 
-  const data = await response.json()
+  let rawData = await response.text()
+  
+  // Clean up any garbage before first brace
+  if (rawData.includes('{')) {
+      rawData = rawData.substring(rawData.indexOf('{'))
+  }
+  
+  // Clean up typical JioSaavn JSON errors:
+  // Sometimes HTML or unescaped characters leak into the JSON
+  let data
+  try {
+    data = JSON.parse(rawData)
+  } catch (err: any) {
+    console.warn('JSON Parse error encountered. Attempting basic cleanup...', err.message)
+    try {
+        // Attempt to fix common issues (e.g., unescaped quotes matching text)
+        // or just strip out the offending parts if it's minor... 
+        // For JioSaavn, typically there's just tailing garbage:
+        if (rawData.lastIndexOf('}') !== -1) {
+            const truncated = rawData.substring(0, rawData.lastIndexOf('}') + 1)
+            data = JSON.parse(truncated)
+        } else {
+            throw err
+        }
+    } catch (rescueErr: any) {
+        console.error('JSON recovery failed, returning fallback empty object', rescueErr.message)
+        // Return a mock object to prevent breaking the flow so images/titles have a fallback
+        data = { success: false, data: {} }
+    }
+  }
 
   return { data: data as T, ok: response.ok }
 }

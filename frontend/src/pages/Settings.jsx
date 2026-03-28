@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, User, Palette, Volume2, Info, Trash2, LogOut, ShieldAlert, Check, CheckCircle2 } from 'lucide-react';
+import { Settings as SettingsIcon, User, Palette, Volume2, Info, Trash2, LogOut, ShieldAlert, Check, CheckCircle2, Mic, ExternalLink, Sparkles } from 'lucide-react';
 import { themeManager } from '../utils/themeManager';
 import { moodThemes } from '../utils/moodThemes';
+import { getPreferredGenres, savePreferredGenres, getGenreCounts } from '../utils/history.js';
+import { ALL_GENRES, GENRE_PROFILES } from '../utils/genreProfiles.js';
 
 export default function Settings() {
     const [user, setUser] = useState(null);
     const [currentTheme, setCurrentTheme] = useState(localStorage.getItem('mehfil_current_mood') || 'default');
     const [successMsg, setSuccessMsg] = useState('');
+    const [auddToken, setAuddToken] = useState(localStorage.getItem('audd_api_token') || '');
+    const [preferredGenres, setPreferredGenres] = useState(getPreferredGenres());
+    const [genreCounts, setGenreCounts] = useState(getGenreCounts());
+    const [editingGenres, setEditingGenres] = useState(false);
+    const [tempGenres, setTempGenres] = useState([]);
 
     useEffect(() => {
         const saved = localStorage.getItem('mehfilUser');
@@ -40,6 +47,12 @@ export default function Settings() {
             localStorage.removeItem('mehfilUser');
             window.location.reload();
         }
+    };
+
+    const handleAuddTokenChange = (e) => {
+        const val = e.target.value;
+        setAuddToken(val);
+        localStorage.setItem('audd_api_token', val);
     };
 
     return (
@@ -150,8 +163,112 @@ export default function Settings() {
                         </div>
                     </section>
 
+                    {/* Music Preferences Card */}
+                    <section className="settings-card" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,255,255,0.08)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                            <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>
+                                <Sparkles size={20} /> Music Preferences
+                            </h3>
+                            <button
+                                onClick={() => { setEditingGenres(!editingGenres); setTempGenres([...preferredGenres]); }}
+                                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '6px 14px', borderRadius: '20px', cursor: 'pointer', fontSize: '0.85rem' }}
+                            >
+                                {editingGenres ? 'Cancel' : 'Edit'}
+                            </button>
+                        </div>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.2rem' }}>
+                            Genres that power your personalized home page. Your listening habits also tune these automatically.
+                        </p>
+
+                        {!editingGenres ? (
+                            <div>
+                                {preferredGenres.length > 0 ? (
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '1rem' }}>
+                                        {preferredGenres.map(g => {
+                                            const p = GENRE_PROFILES[g] || {};
+                                            return (
+                                                <span key={g} style={{ padding: '6px 14px', borderRadius: '50px', background: `${p.color || '#C6A15B'}22`, border: `1.5px solid ${p.color || '#C6A15B'}`, color: p.color || '#C6A15B', fontSize: '0.85rem', fontWeight: 600 }}>
+                                                    {p.emoji} {g}
+                                                </span>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', textAlign: 'center', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                                        No genre preferences set yet. Go to Home and pick your vibes!
+                                    </div>
+                                )}
+                                {Object.keys(genreCounts).length > 0 && (
+                                    <div>
+                                        <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '0.6rem' }}>Passively tracked from your listening:</p>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                            {Object.entries(genreCounts).sort(([,a],[,b]) => b-a).slice(0, 6).map(([g, c]) => (
+                                                <span key={g} style={{ padding: '4px 10px', borderRadius: '50px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>
+                                                    {g} · {c} {c === 1 ? 'play' : 'plays'}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '1.2rem' }}>
+                                    {ALL_GENRES.map(genre => {
+                                        const profile = GENRE_PROFILES[genre] || {};
+                                        const sel = tempGenres.includes(genre);
+                                        return (
+                                            <button key={genre} onClick={() => setTempGenres(prev => sel ? prev.filter(g => g !== genre) : [...prev, genre])} style={{
+                                                padding: '6px 14px', borderRadius: '50px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600,
+                                                border: `2px solid ${sel ? profile.color : 'rgba(255,255,255,0.1)'}`,
+                                                background: sel ? `${profile.color}22` : 'rgba(255,255,255,0.03)',
+                                                color: sel ? profile.color : 'rgba(255,255,255,0.5)',
+                                                transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '4px'
+                                            }}>
+                                                {profile.emoji} {genre} {sel && <Check size={12} />}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                <button onClick={() => { savePreferredGenres(tempGenres); setPreferredGenres(tempGenres); setEditingGenres(false); setSuccessMsg('Genre preferences saved! Your home feed will update.'); setTimeout(() => setSuccessMsg(''), 3000); }}
+                                    style={{ padding: '10px 24px', borderRadius: '50px', background: 'var(--accent-primary)', color: '#000', border: 'none', fontWeight: 700, cursor: 'pointer', fontSize: '0.9rem' }}>
+                                    Save Preferences
+                                </button>
+                            </div>
+                        )}
+                    </section>
+
                     {/* Audio & Performance */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                        <section className="settings-card" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,255,255,0.08)' }}>
+                            <h3 style={{ margin: '0 0 1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>
+                                <Mic size={20} /> Music Recognition
+                            </h3>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+                                Identify songs playing around you. Get your token at <a href="https://audd.io" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-primary)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>audd.io <ExternalLink size={12} /></a>
+                            </p>
+                            <div style={{ display: 'grid', gap: '0.8rem' }}>
+                                <label style={{ color: '#fff', fontSize: '0.85rem' }}>AudD API Token</label>
+                                <input 
+                                    type="password"
+                                    value={auddToken}
+                                    onChange={handleAuddTokenChange}
+                                    placeholder="Enter your API token..."
+                                    style={{
+                                        background: 'rgba(255,255,255,0.05)',
+                                        border: '1px solid rgba(255,255,255,0.1)',
+                                        borderRadius: '12px',
+                                        padding: '0.8rem 1rem',
+                                        color: '#fff',
+                                        fontSize: '0.9rem',
+                                        outline: 'none',
+                                        width: '100%'
+                                    }}
+                                />
+                                <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Leave empty to use the default server token.</span>
+                            </div>
+                        </section>
+
                         <section className="settings-card" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,255,255,0.08)' }}>
                             <h3 style={{ margin: '0 0 1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>
                                 <Volume2 size={20} /> Audio Quality

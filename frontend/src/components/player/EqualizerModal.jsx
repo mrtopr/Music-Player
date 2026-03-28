@@ -29,8 +29,17 @@ export default function EqualizerModal({ visible, onClose }) {
     if (!visible) return null;
 
     return (
-        <div className="modal-overlay" style={{ display: 'flex', position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(5, 5, 8, 0.85)', backdropFilter: 'blur(10px)', zIndex: 9999, justifyContent: 'center', alignItems: 'center' }} onClick={onClose}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ background: '#12141C', padding: '2rem', borderRadius: '24px', width: '400px', maxWidth: '92vw', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
+        <div className="modal-overlay" style={{ 
+            display: 'flex', position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', 
+            background: 'rgba(5, 5, 10, 0.4)', backdropFilter: 'blur(20px)', zIndex: 9999, 
+            justifyContent: 'center', alignItems: 'center', animation: 'fadeIn 0.3s ease' 
+        }} onClick={onClose}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ 
+                background: 'rgba(25, 25, 35, 0.35)', backdropFilter: 'blur(40px) saturate(200%)',
+                padding: '2.5rem', borderRadius: '32px', width: '420px', maxWidth: '92vw', 
+                border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 30px 60px rgba(0,0,0,0.6)',
+                animation: 'modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)'
+            }}>
                 {/* Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                     <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '1.4rem', color: '#fff' }}>

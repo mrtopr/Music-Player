@@ -63,7 +63,13 @@ export class RecognitionController implements Routes {
       async (ctx) => {
         const formData = await ctx.req.formData()
         const file = formData.get('file') as File
-        const apiToken = formData.get('api_token') as string || 'test'
+        let apiToken = formData.get('api_token') as string
+        
+        // Use environment variable if provided, or fallback to 'test'
+        const envToken = process.env.AUDD_API_TOKEN
+        if (!apiToken || apiToken === 'test') {
+          apiToken = envToken || 'test'
+        }
 
         if (!file) {
           return ctx.json({ status: 'error', message: 'No file uploaded' }, 400)

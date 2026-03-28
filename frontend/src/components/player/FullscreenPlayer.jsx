@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { 
-    ChevronDown, Play, Pause, SkipBack, SkipForward, 
-    Shuffle, Repeat, Repeat1, Volume2, VolumeX, Heart, 
+import {
+    ChevronDown, Play, Pause, SkipBack, SkipForward,
+    Shuffle, Repeat, Repeat1, Volume2, VolumeX, Heart,
     MoreHorizontal, Monitor, ListMusic, Sparkles,
-    User, Disc, Share2, Download, Plus, Check, Loader2
+    User, Disc, Share2, Download, Plus, Check, Loader2,
+    SlidersHorizontal
 } from 'lucide-react';
 
 
@@ -13,31 +14,12 @@ import {
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { getImageUrl, getAudioUrl } from '../../api/client.js';
 import { useNavigate } from 'react-router-dom';
+import { formatTime, decodeEntities, getSafeImage } from '../../utils/helpers.js';
 import '../../../styles/premium-fullscreen.css';
-
-
-
-
-function formatTime(seconds) {
-    if (!seconds || isNaN(seconds)) return '0:00';
-    const m = Math.floor(seconds / 60);
-    const s = Math.floor(seconds % 60);
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
-}
-
-function decodeEntities(text) {
-    if (!text) return '';
-    return text
-        .replace(/&quot;/g, '"')
-        .replace(/&amp;/g, '&')
-        .replace(/&#039;/g, "'")
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>');
-}
 
 function OptionItem({ icon, label, onClick }) {
     return (
-        <div 
+        <div
             onClick={onClick}
             style={{
                 display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px',
@@ -58,10 +40,10 @@ export default function FullscreenPlayer({ visible, onClose }) {
     const navigate = useNavigate();
 
     const {
-        currentSong, isPlaying, togglePlay, nextSong, prevSong, 
+        currentSong, isPlaying, togglePlay, nextSong, prevSong,
         volume, setVolume, progress, seek, currentTime, duration,
         shuffle, toggleShuffle, repeat, cycleRepeat, albumColors,
-        isAutoMixEnabled, isPrepared, setQueueOpen,
+        isAutoMixEnabled, isPrepared, setQueueOpen, setEqualizerOpen,
         setFullScreen,
         likedSongs, toggleLike
     } = usePlayerStore();
@@ -80,7 +62,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
             const response = await fetch(url);
             const blob = await response.blob();
             const blobUrl = window.URL.createObjectURL(blob);
-            
+
             const link = document.createElement('a');
             link.href = blobUrl;
             link.download = `${decodeEntities(currentSong.title)}.mp3`;
@@ -134,7 +116,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
             style={{
-                position: 'fixed', inset: 0, zIndex: 2000, 
+                position: 'fixed', inset: 0, zIndex: 2000,
                 background: `linear-gradient(135deg, ${albumColors.dominant} 0%, #050505 100%)`,
                 display: 'flex', flexDirection: 'column',
                 transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -143,21 +125,21 @@ export default function FullscreenPlayer({ visible, onClose }) {
                 color: '#fff', overflow: 'hidden'
             }}>
 
-            
+
             {/* High-density atmospheric overlay */}
-            <div style={{ 
-                position: 'absolute', inset: 0, 
+            <div style={{
+                position: 'absolute', inset: 0,
                 background: `radial-gradient(circle at 20% 30%, rgba(${albumColors.accentRGB}, 0.15) 0%, transparent 50%)`,
                 zIndex: 1, pointerEvents: 'none'
             }}></div>
 
             {/* Header Area */}
-            <header style={{ 
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
+            <header style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 padding: '2rem 4rem', position: 'relative', zIndex: 100
             }}>
-                <button onClick={onClose} style={{ 
-                    background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', 
+                <button onClick={onClose} style={{
+                    background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff',
                     width: '44px', height: '44px', borderRadius: '50%', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto'
                 }}>
@@ -169,12 +151,12 @@ export default function FullscreenPlayer({ visible, onClose }) {
                 </div>
 
                 <div style={{ position: 'relative' }}>
-                    <button 
+                    <button
                         onClick={() => setOptionsOpen(!optionsOpen)}
-                        style={{ 
-                            background: optionsOpen ? 'rgba(198, 161, 91, 0.2)' : 'rgba(255,255,255,0.1)', 
-                            border: optionsOpen ? '1px solid var(--accent-primary)' : 'none', 
-                            color: optionsOpen ? 'var(--accent-primary)' : '#fff', 
+                        style={{
+                            background: optionsOpen ? 'rgba(198, 161, 91, 0.2)' : 'rgba(255,255,255,0.1)',
+                            border: optionsOpen ? '1px solid var(--accent-primary)' : 'none',
+                            color: optionsOpen ? 'var(--accent-primary)' : '#fff',
                             width: '44px', height: '44px', borderRadius: '50%', cursor: 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto',
                             transition: 'all 0.3s ease'
@@ -192,26 +174,26 @@ export default function FullscreenPlayer({ visible, onClose }) {
                             animation: 'fadeIn 0.2s ease-out'
                         }}>
                             <OptionItem icon={<Plus size={18} />} label="Add to Library" onClick={() => { toggleLike(currentSong); setOptionsOpen(false); }} />
-                            
+
                             {currentSong.album?.id && (
                                 <OptionItem icon={<Disc size={18} />} label="Go to Album" onClick={() => handleNavigate(`/album/${currentSong.album.id}`)} />
                             )}
-                            
+
                             {currentSong.artists?.primary?.[0]?.id && (
                                 <OptionItem icon={<User size={18} />} label="Go to Artist" onClick={() => handleNavigate(`/artist/${currentSong.artists.primary[0].id}`)} />
                             )}
 
                             <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '8px 0' }}></div>
-                            
-                            <OptionItem 
-                                icon={downloading ? <Loader2 className="spin" size={18} /> : <Download size={18} />} 
-                                label={downloading ? "Downloading..." : "Download Original"} 
-                                onClick={handleDownload} 
+
+                            <OptionItem
+                                icon={downloading ? <Loader2 className="spin" size={18} /> : <Download size={18} />}
+                                label={downloading ? "Downloading..." : "Download Original"}
+                                onClick={handleDownload}
                             />
-                            
-                            <OptionItem icon={<Share2 size={18} />} label="Copy Share Link" onClick={() => { 
-                                navigator.clipboard.writeText(window.location.origin + `/song/${currentSong.id}`); 
-                                setOptionsOpen(false); 
+
+                            <OptionItem icon={<Share2 size={18} />} label="Copy Share Link" onClick={() => {
+                                navigator.clipboard.writeText(window.location.origin + `/song/${currentSong.id}`);
+                                setOptionsOpen(false);
                                 alert('Link copied!');
                             }} />
 
@@ -226,7 +208,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                 {/* Left: Artwork */}
                 <div className="fs-artwork-section">
                     <div className="fs-artwork-wrapper">
-                        <img src={getImageUrl(currentSong.image)} alt={title} className="fs-artwork-img" />
+                        <img src={getSafeImage(currentSong.image, getImageUrl)} alt={title} className="fs-artwork-img" />
                     </div>
                 </div>
 
@@ -255,8 +237,8 @@ export default function FullscreenPlayer({ visible, onClose }) {
                             <h1 className="fs-title" title={title}>{title}</h1>
                             <p className="fs-artist">{artist}</p>
                         </div>
-                        <button 
-                            onClick={(e) => { e.stopPropagation(); toggleLike(currentSong); }} 
+                        <button
+                            onClick={(e) => { e.stopPropagation(); toggleLike(currentSong); }}
                             className={`fs-like-btn ${liked ? 'liked' : ''}`}
                             style={{ cursor: 'pointer', pointerEvents: 'auto', padding: '10px' }}
                         >
@@ -303,13 +285,20 @@ export default function FullscreenPlayer({ visible, onClose }) {
 
                     {/* Bottom Utility Bar */}
                     <div className="fs-utility-bar" style={{ position: 'relative', zIndex: 90, marginTop: '3.5rem' }}>
-                        <div className="fs-utility-left">
-                            <button 
-                                onClick={() => setQueueOpen(true)} 
+                        <div className="fs-utility-left" style={{ display: 'flex', gap: '10px' }}>
+                            <button
+                                onClick={() => setQueueOpen(true)}
                                 className="fs-util-btn"
                                 style={{ cursor: 'pointer', pointerEvents: 'auto', padding: '12px' }}
                             >
                                 <ListMusic size={22} /> <span>Queue</span>
+                            </button>
+                            <button
+                                onClick={() => setEqualizerOpen(true)}
+                                className="fs-util-btn"
+                                style={{ cursor: 'pointer', pointerEvents: 'auto', padding: '12px' }}
+                            >
+                                <SlidersHorizontal size={22} /> <span>EQ</span>
                             </button>
                         </div>
 
@@ -317,10 +306,10 @@ export default function FullscreenPlayer({ visible, onClose }) {
                             <Volume2 size={20} opacity={0.6} />
                             <div className="fs-volume-track" style={{ pointerEvents: 'auto', marginLeft: '10px' }}>
                                 <div className="fs-volume-fill" style={{ width: `${volume * 100}%` }}></div>
-                                <input 
-                                    type="range" min="0" max="1" step="0.01" 
-                                    value={volume} 
-                                    onChange={(e) => setVolume(parseFloat(e.target.value))} 
+                                <input
+                                    type="range" min="0" max="1" step="0.01"
+                                    value={volume}
+                                    onChange={(e) => setVolume(parseFloat(e.target.value))}
                                     style={{ cursor: 'pointer', width: '160px' }}
                                 />
                             </div>

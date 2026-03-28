@@ -22,7 +22,7 @@ export async function extractAlbumColors(imageUrl, trackTitle = '') {
         // Typically image servers for music (saavn) have CORS headers.
         const vBuilder = Vibrant.from(imageUrl);
         const palette = await vBuilder.getPalette();
-        
+
         console.log('Extracted Palette:', palette);
 
         const safeHex = (swatch, d) => (swatch && typeof swatch.getHex === 'function' ? swatch.getHex() : d);
@@ -46,29 +46,18 @@ export async function extractAlbumColors(imageUrl, trackTitle = '') {
             accentRGB: safeRGB(a, '245,158,11')
         };
 
-        // Mood-based biasing
-        const title = (trackTitle || '').toLowerCase();
-        let moodColor = null;
-        let moodRGB = null;
+        // Mood-based biasing from Unified Config
+        const { detectMood, MOOD_CATEGORIES } = await import('./moodConfig.js');
+        const mood = detectMood(trackTitle);
+        const config = mood ? MOOD_CATEGORIES[mood] : null;
 
-        if (title.includes('romantic') || title.includes('love') || title.includes('ishq') || title.includes('heart')) {
-            moodColor = '#ff3b30'; 
-            moodRGB = '255,59,48';
-        } else if (title.includes('sad') || title.includes('dard') || title.includes('broken') || title.includes('alone')) {
-            moodColor = '#007aff';
-            moodRGB = '0,122,255';
-        } else if (title.includes('party') || title.includes('dance') || title.includes('remix') || title.includes('club')) {
-            moodColor = '#af52de'; 
-            moodRGB = '175,82,222';
-        }
-
-        if (moodColor) {
-            console.log('Applying mood color:', moodColor);
-            colors.accent = moodColor;
-            colors.accentRGB = moodRGB;
+        if (config) {
+            console.log(`[ColorExtractor] Applying biased theme from mood: ${mood}`);
+            colors.accent = config.colorFallback;
+            colors.accentRGB = config.rgbFallback;
             if (colors.dominant === '#1a1a1a') {
-                colors.dominant = moodColor;
-                colors.dominantRGB = moodRGB;
+                colors.dominant = config.colorFallback;
+                colors.dominantRGB = config.rgbFallback;
             }
         }
 

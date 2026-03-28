@@ -32,7 +32,7 @@ export const moodThemes = {
       letterSpacing: '0.05em'
     }
   },
-  
+
   sad: {
     name: 'Sad',
     colors: {
@@ -61,7 +61,7 @@ export const moodThemes = {
       letterSpacing: '0.02em'
     }
   },
-  
+
   party: {
     name: 'Party',
     colors: {
@@ -90,7 +90,7 @@ export const moodThemes = {
       letterSpacing: '0.1em'
     }
   },
-  
+
   dance: {
     name: 'Dance',
     colors: {
@@ -119,7 +119,7 @@ export const moodThemes = {
       letterSpacing: '0.08em'
     }
   },
-  
+
   classical: {
     name: 'Classical',
     colors: {
@@ -148,7 +148,7 @@ export const moodThemes = {
       letterSpacing: '0.03em'
     }
   },
-  
+
   rock: {
     name: 'Rock',
     colors: {
@@ -177,58 +177,41 @@ export const moodThemes = {
       letterSpacing: '0.1em'
     }
   },
-  
-  // Default theme
+
+  // Default theme (Midnight Aurora)
   default: {
-    name: 'Default',
+    name: 'Midnight Aurora',
     colors: {
-      primary: '#fbbf24',
-      secondary: '#f59e0b',
-      accent: '#f97316',
-      background: '#0a0a0a',
-      surface: '#1a1a1a',
-      text: '#f5f5f5',
-      gradient: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%)',
-      glow: 'rgba(251, 191, 36, 0.3)'
+      primary: '#00F2FE',        // Electric Cyan
+      secondary: '#4FACFE',      // Soft Cyan
+      accent: '#764BA2',         // Neon Purple
+      background: '#09090E',     // Ultra Deep Midnight
+      surface: '#131420',        // Elevated Card
+      text: '#FFFFFF',           // White
+      gradient: 'linear-gradient(135deg, #09090E 0%, #131420 50%, #09090E 100%)',
+      glow: 'rgba(0, 242, 254, 0.4)'
     },
     icons: {
-      decoration: 'music',
-      pattern: 'default',
-      playerIcon: 'music'
+      decoration: 'sparkles',
+      pattern: 'aurora',
+      playerIcon: 'disc'
     },
     effects: {
       floatingElements: 'none',
-      particleColor: '#fbbf24',
-      backgroundAnimation: 'none',
-      buttonGlow: false
+      particleColor: '#00F2FE',
+      backgroundAnimation: 'auroraFloat',
+      buttonGlow: true
     },
     typography: {
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
       letterSpacing: 'normal'
     }
   }
 };
 
-// Map categories to themes
-export const categoryToTheme = {
-  'romantic': 'romantic',
-  'love': 'romantic',
-  'sad': 'sad',
-  'melancholy': 'sad',
-  'party': 'party',
-  'dance': 'dance',
-  'energetic': 'dance',
-  'classical': 'classical',
-  'instrumental': 'classical',
-  'rock': 'rock',
-  'metal': 'rock',
-  'pop': 'default',
-  'hip hop': 'default',
-  'all music': 'default'
-};
+import { detectMood } from './moodConfig.js';
 
 export function getThemeForCategory(category = '') {
-  if (!category) return moodThemes.default;
-  const themeKey = categoryToTheme[category.toLowerCase()] || 'default';
-  return moodThemes[themeKey];
+  const moodKey = detectMood(category) || 'default';
+  return moodThemes[moodKey] || moodThemes.default;
 }

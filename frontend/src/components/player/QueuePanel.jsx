@@ -2,20 +2,10 @@ import React from 'react';
 import { X, Play, Trash2 } from 'lucide-react';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { getImageUrl } from '../../api/client.js';
-
-function decodeEntities(text) {
-    if (!text) return '';
-    return text
-        .replace(/&quot;/g, '"')
-        .replace(/&amp;/g, '&')
-        .replace(/&#039;/g, "'")
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&apos;/g, "'");
-}
+import { decodeEntities, getSafeImage } from '../../utils/helpers.js';
 
 export default function QueuePanel({ visible, onClose }) {
-    const { queue, queueIndex, currentSong, playSong } = usePlayerStore();
+    const { queue, queueIndex, currentSong, jumpInQueue, playSong } = usePlayerStore();
 
     if (!visible) return null;
 
@@ -37,7 +27,7 @@ export default function QueuePanel({ visible, onClose }) {
                 <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                     <h4 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--accent-primary)', marginBottom: '0.8rem' }}>Now Playing</h4>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                        <img src={getImageUrl(currentSong.image) || '/music.png'} alt="" style={{ width: '48px', height: '48px', borderRadius: '6px', objectFit: 'cover' }} />
+                        <img src={getSafeImage(currentSong.image, getImageUrl)} alt="" style={{ width: '48px', height: '48px', borderRadius: '6px', objectFit: 'cover' }} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--accent-primary)' }}>
                                 {decodeEntities(currentSong.title || currentSong.name)}
@@ -67,7 +57,13 @@ export default function QueuePanel({ visible, onClose }) {
                     upNext.map((song, i) => (
                         <div
                             key={`${song.id}-${i}`}
-                            onClick={() => playSong(song)}
+                            onClick={() => {
+                                if (jumpInQueue) {
+                                    jumpInQueue(queueIndex + 1 + i);
+                                } else {
+                                    playSong(song, true, true);
+                                }
+                            }}
                             style={{
                                 display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '0.6rem 0',
                                 cursor: 'pointer', borderRadius: '6px', transition: 'background 0.2s'
@@ -76,7 +72,7 @@ export default function QueuePanel({ visible, onClose }) {
                             onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                         >
                             <span style={{ color: 'var(--text-muted)', width: '24px', textAlign: 'center', fontSize: '0.8rem' }}>{i + 1}</span>
-                            <img src={getImageUrl(song.image) || '/music.png'} alt="" style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover' }} loading="lazy" />
+                            <img src={getSafeImage(song.image, getImageUrl)} alt="" style={{ width: '40px', height: '40px', borderRadius: '4px', objectFit: 'cover' }} loading="lazy" />
                             <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ fontSize: '0.9rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                     {decodeEntities(song.title || song.name)}

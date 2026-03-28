@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { getAudioUrl, getImageUrl, apiFetch } from '../api/client.js';
-import { addToHistory } from '../utils/history.js';
+import { addToHistory, addGenrePlay } from '../utils/history.js';
 import { pickBestNext } from '../utils/autoMix.js';
 import { audioEngine } from '../utils/audioEngine.js';
 
@@ -26,6 +26,8 @@ export const usePlayerStore = create((set, get) => ({
     currentSong: null,
     isFullScreen: false,
     isQueueOpen: false,
+    isEqualizerOpen: false,
+    isSleepTimerOpen: false,
     queue: [],
     queueIndex: -1,
 
@@ -46,7 +48,7 @@ export const usePlayerStore = create((set, get) => ({
 
     // Equalizer State
     equalizer: { bass: 0, mid: 0, treble: 0 },
-    
+
     // Sleep Timer State
     sleepTimer: {
         active: false,
@@ -56,9 +58,9 @@ export const usePlayerStore = create((set, get) => ({
 
     // Dynamic Branding State
     albumColors: {
-        dominant: '#1a1a1a', 
+        dominant: '#1a1a1a',
         dominantRGB: '26,26,26',
-        accent: '#f59e0b', 
+        accent: '#f59e0b',
         accentRGB: '245,158,11',
         secondary: '#0a0a0a'
     },
@@ -81,22 +83,74 @@ export const usePlayerStore = create((set, get) => ({
 
     setFullScreen: (val) => set({ isFullScreen: val }),
     setQueueOpen: (val) => set({ isQueueOpen: val }),
+    setEqualizerOpen: (val) => set({ isEqualizerOpen: val }),
+    setSleepTimerOpen: (val) => set({ isSleepTimerOpen: val }),
 
+
+    injectIntoQueue: (songsToAdd, playIndex = 0) => {
+        const state = get();
+        let currentQueue = [...state.queue];
+        let currentIndex = state.queueIndex;
+        
+        if (playIndex < 0 || playIndex >= songsToAdd.length) playIndex = 0;
+
+        const selectedSong = songsToAdd[playIndex];
+        const restSongs = songsToAdd.slice(playIndex + 1);
+        const orderedToAdd = [selectedSong, ...restSongs];
+
+        let newQueue = [];
+        let newCurrentIndex = currentIndex;
+        const addIds = new Set(orderedToAdd.map(s => s.id));
+
+        for (let i = 0; i < currentQueue.length; i++) {
+            const song = currentQueue[i];
+            if (addIds.has(song.id)) {
+                if (i < currentIndex) {
+                    newCurrentIndex--;
+                } 
+                else if (i === currentIndex) {
+                    newCurrentIndex--;
+                }
+            } else {
+                newQueue.push(song);
+            }
+        }
+
+        const insertPos = newCurrentIndex >= 0 ? newCurrentIndex + 1 : 0;
+        newQueue.splice(insertPos, 0, ...orderedToAdd);
+        
+        return { newQueue, targetIndex: insertPos };
+    },
 
     addToQueue: (song) => set(state => {
         if (!song) return state;
-        const exists = state.queue.some(s => s.id === song.id);
-        if (exists) return state;
-        return { queue: [...state.queue, song] };
+        
+        let currentQueue = [...state.queue];
+        let currentIndex = state.queueIndex;
+        
+        let newQueue = [];
+        let newCurrentIndex = currentIndex;
+        
+        for (let i = 0; i < currentQueue.length; i++) {
+            const s = currentQueue[i];
+            if (s.id === song.id) {
+                if (i < currentIndex) newCurrentIndex--;
+                else if (i === currentIndex) return state; 
+            } else {
+                newQueue.push(s);
+            }
+        }
+        
+        const insertPos = newCurrentIndex >= 0 ? newCurrentIndex + 1 : 0;
+        newQueue.splice(insertPos, 0, song);
+        
+        return { queue: newQueue, queueIndex: newCurrentIndex };
     }),
 
-    playSong: async (rawSong, autoOpen = true) => {
+    playSong: async (rawSong, autoOpen = true, isFromQueue = false) => {
 
         const state = get();
         if (!rawSong) return;
-
-        // Record to history
-        addToHistory(rawSong);
 
         // Normalize song data
         let song = { ...rawSong };
@@ -107,17 +161,32 @@ export const usePlayerStore = create((set, get) => ({
         if (!song.primaryArtists && song.artist) song.primaryArtists = song.artist;
         if (!song.subtitle && song.primaryArtists) song.subtitle = song.primaryArtists;
 
+        if (!isFromQueue) {
+            const { newQueue, targetIndex } = get().injectIntoQueue([song], 0);
+            set({ queue: newQueue, queueIndex: targetIndex });
+        }
+
+        const freshState = get();
+
+        // Record to history
+        addToHistory(rawSong);
+        // Collect genre signal for personalization
+        const songGenre = rawSong.language
+            ? (rawSong.language.includes('hindi') ? 'Hindi' : rawSong.language)
+            : (rawSong.genre || rawSong.type || null);
+        if (songGenre) addGenrePlay(songGenre);
+
         // Prep Channel
-        const nextChannel = state.activeChannel === 'A' ? 'B' : 'A';
+        const nextChannel = freshState.activeChannel === 'A' ? 'B' : 'A';
         const nextAudio = nextChannel === 'A' ? audioA : audioB;
 
         // [CRITICAL] Immediate state commit with the NEW channel
         // Otherwise onTimeUpdate will reject the updates until this finishes
-        set({ 
+        set({
             currentSong: song,
             isPlaying: true,
-            isFullScreen: autoOpen ? true : state.isFullScreen,
-            activeChannel: nextChannel, 
+            isFullScreen: autoOpen ? true : freshState.isFullScreen,
+            activeChannel: nextChannel,
             progress: 0,
             currentTime: 0,
             duration: song.duration || 0, // Pre-populating from metadata if available
@@ -146,21 +215,26 @@ export const usePlayerStore = create((set, get) => ({
         nextAudio.src = url;
         nextAudio.load();
 
-        const CROSSFADE_TIME = state.currentSong ? 5000 : 400;
+        // 🎯 Manual clicks (autoOpen=true) use 800ms fade. Auto-mix uses 5s fade.
+        const CROSSFADE_TIME = autoOpen ? 800 : 5000;
+
         if (state.currentSong) {
-            setTimeout(() => audioEngine.crossfade(state.activeChannel, nextChannel, CROSSFADE_TIME, state.volume), 300);
-        } else {
             audioEngine.crossfade(state.activeChannel, nextChannel, CROSSFADE_TIME, state.volume);
+        } else {
+            audioEngine.sync(nextChannel, state.volume);
         }
 
         await nextAudio.play().catch(e => console.warn('Play blocked:', e));
         audioEngine.sync(nextChannel, state.volume);
 
         setTimeout(() => {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-            audioEngine.sync(nextChannel, state.volume);
-        }, CROSSFADE_TIME + 500);
+            const freshState = usePlayerStore.getState();
+            // ONLY pause previous if we are still on the expected channel (prevents racing)
+            if (freshState.activeChannel === nextChannel) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+        }, CROSSFADE_TIME + 200);
 
         // Update Media Session
         if ('mediaSession' in navigator) {
@@ -170,18 +244,6 @@ export const usePlayerStore = create((set, get) => ({
                 artwork: [{ src: getImageUrl(song.image), sizes: '500x500' }]
             });
         }
-
-        // Final Core state commit (Queue Sync)
-        let newQueue = [...state.queue];
-        let newIndex = state.queueIndex;
-        const existingIdx = newQueue.findIndex(s => s.id === song.id);
-        if (existingIdx >= 0) newIndex = existingIdx;
-        else {
-            newQueue.splice(state.queueIndex + 1, 0, song);
-            newIndex = state.queueIndex + 1;
-        }
-
-        set({ queue: newQueue, queueIndex: newIndex, currentSong: song });
 
         // Dynamic Colors
         if (song.image) {
@@ -196,14 +258,22 @@ export const usePlayerStore = create((set, get) => ({
 
     playQueue: (songs, startIndex = 0, autoOpen = true) => {
         if (!songs.length) return;
-        set({ queue: songs, queueIndex: startIndex });
-        get().playSong(songs[startIndex], autoOpen);
+        const { newQueue, targetIndex } = get().injectIntoQueue(songs, startIndex);
+        set({ queue: newQueue, queueIndex: targetIndex });
+        get().playSong(newQueue[targetIndex], autoOpen, true);
+    },
+
+    jumpInQueue: (index) => {
+        const { queue } = get();
+        if (index < 0 || index >= queue.length) return;
+        set({ queueIndex: index });
+        get().playSong(queue[index], true, true);
     },
 
     togglePlay: () => {
         const { isPlaying, currentSong } = get();
         if (!currentSong) return;
-        
+
         if (isPlaying) {
             audioA.pause();
             audioB.pause();
@@ -239,7 +309,7 @@ export const usePlayerStore = create((set, get) => ({
             return;
         }
         set({ queueIndex: next });
-        get().playSong(queue[next], false);
+        get().playSong(queue[next], false, true);
     },
 
     prevSong: () => {
@@ -252,7 +322,7 @@ export const usePlayerStore = create((set, get) => ({
         }
         const prev = Math.max(0, queueIndex - 1);
         set({ queueIndex: prev });
-        get().playSong(queue[prev], false);
+        get().playSong(queue[prev], false, true);
     },
 
     seek: (pct) => {
@@ -268,11 +338,11 @@ export const usePlayerStore = create((set, get) => ({
     prepareNextSong: async () => {
         const state = get();
         if (state.isPrepared || !state.currentSong) return;
-        
+
         console.log('[AutoMix] Analyzing for best match (10s mark)...');
-        
+
         let pool = state.queue.filter(s => s.id !== state.currentSong.id);
-        
+
         if (pool.length < 5) {
             try {
                 const { getRecommendations } = await import('../utils/recommendations.js');
@@ -284,6 +354,10 @@ export const usePlayerStore = create((set, get) => ({
         const next = pickBestNext(pool, state.currentSong);
         if (next) {
             console.log('[AutoMix] Preloading:', next.title);
+            const inQueue = state.queue.some(s => s.id === next.id);
+            if (!inQueue) {
+                set(s => ({ queue: [...s.queue, next] }));
+            }
             set({ isPrepared: true });
         }
     },
@@ -293,9 +367,9 @@ export const usePlayerStore = create((set, get) => ({
     setVolume: (vol) => {
         const { activeChannel } = get();
         audioEngine.setVolume(activeChannel, vol);
-        
+
         // Backup physical volume
-        audioA.volume = 1; 
+        audioA.volume = 1;
         audioB.volume = 1;
         set({ volume: vol, isMuted: vol === 0 });
     },
@@ -328,8 +402,9 @@ export const usePlayerStore = create((set, get) => ({
 
 
     setEqualizerAll: (vals) => {
-        initAudioEngine();
-        const filters = getFilters();
+        if (!audioEngine.initialized) audioEngine.init(audioA, audioB);
+        const filters = audioEngine.filters;
+        if (!filters) return;
         Object.entries(vals).forEach(([key, val]) => {
             if (filters[key]) filters[key].gain.value = val;
         });
@@ -340,12 +415,12 @@ export const usePlayerStore = create((set, get) => ({
     // ── Sleep Timer Actions ──
     startSleepTimer: (minutes) => {
         const seconds = minutes * 60;
-        set({ 
-            sleepTimer: { 
-                active: true, 
+        set({
+            sleepTimer: {
+                active: true,
                 remaining: seconds,
-                label: minutes >= 60 ? `${minutes/60} Hour${minutes>60?'s':''}` : `${minutes} Mins`
-            } 
+                label: minutes >= 60 ? `${minutes / 60} Hour${minutes > 60 ? 's' : ''}` : `${minutes} Mins`
+            }
         });
     },
 
@@ -367,13 +442,13 @@ setInterval(() => {
         if (nextRem <= 0) {
             audioA.pause();
             audioB.pause();
-            usePlayerStore.setState({ 
-                isPlaying: false, 
-                sleepTimer: { active: false, remaining: 0, label: '' } 
+            usePlayerStore.setState({
+                isPlaying: false,
+                sleepTimer: { active: false, remaining: 0, label: '' }
             });
         } else {
-            usePlayerStore.setState({ 
-                sleepTimer: { ...state.sleepTimer, remaining: nextRem } 
+            usePlayerStore.setState({
+                sleepTimer: { ...state.sleepTimer, remaining: nextRem }
             });
         }
     }
@@ -397,14 +472,14 @@ const attachAudioListeners = () => {
 
         // 🎯 STEP 2: START NEXT SONG (overlap at 6s)
         if (store.isAutoMixEnabled && audio.duration && remaining < 6 && !store.isTransitioning && store.isPlaying) {
-             usePlayerStore.setState({ isTransitioning: true });
-             store.nextSong();
+            usePlayerStore.setState({ isTransitioning: true });
+            store.nextSong();
         }
 
-        usePlayerStore.setState({ 
-            progress, 
-            currentTime: audio.currentTime, 
-            duration: audio.duration || 0 
+        usePlayerStore.setState({
+            progress,
+            currentTime: audio.currentTime,
+            duration: audio.duration || 0
         });
     };
 
@@ -416,7 +491,7 @@ const attachAudioListeners = () => {
 
         if (store.repeat === 'one') {
             audio.currentTime = 0;
-            audio.play().catch(() => {});
+            audio.play().catch(() => { });
         } else {
             // Only nextSong if we haven't already transitioned
             if (!store.isTransitioning) {

@@ -36,7 +36,7 @@ export class SongController implements Routes {
               .string()
               .url()
               .optional()
-              .transform((value) => value?.match(/jiosaavn\.com\/song\/[^/]+\/([^/]+)$/)?.[1])
+              .transform((value) => value?.match(/jiosaavn\.com\/song\/[^/]+\/([^/]+)\/?$/)?.[1])
               .openapi({
                 title: 'Song Link',
                 description: 'A direct link to the song on JioSaavn',

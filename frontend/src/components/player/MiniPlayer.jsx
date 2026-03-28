@@ -2,13 +2,7 @@ import React from 'react';
 import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, ChevronUp, ListMusic } from 'lucide-react';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { getImageUrl } from '../../api/client.js';
-
-function formatTime(seconds) {
-    if (!seconds || isNaN(seconds)) return '0:00';
-    const m = Math.floor(seconds / 60);
-    const s = Math.floor(seconds % 60);
-    return `${m}:${s.toString().padStart(2, '0')}`;
-}
+import { formatTime, decodeEntities, getSafeImage } from '../../utils/helpers.js';
 
 export default function MiniPlayer({ onExpand, onQueue }) {
     const { currentSong, isPlaying, progress, currentTime, duration, volume, isMuted,
@@ -16,9 +10,9 @@ export default function MiniPlayer({ onExpand, onQueue }) {
 
     if (!currentSong) return null;
 
-    const imageUrl = getImageUrl(currentSong.image) || '/music.png';
-    const title = currentSong.title?.replace(/&quot;/g, '"') || 'Unknown';
-    const artist = currentSong.primaryArtists || currentSong.subtitle || 'Unknown';
+    const imageUrl = getSafeImage(currentSong.image, getImageUrl);
+    const title = decodeEntities(currentSong.title || 'Unknown');
+    const artist = decodeEntities(currentSong.primaryArtists || currentSong.subtitle || 'Unknown');
 
     return (
         <div className={`mini-player visible ${isPlaying ? 'playing' : ''}`} id="miniPlayer">

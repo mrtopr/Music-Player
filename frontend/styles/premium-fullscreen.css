@@ -516,6 +516,9 @@ input[type="range"]::-moz-range-thumb {
     font-size: 1.4rem;
     opacity: 0.6;
     margin-top: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .fs-like-btn {
@@ -762,14 +765,14 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* MOBILE OVERRIDES (STACKED LAYOUT) */
-@media (max-width: 768px) {
+@media (max-width: 768px) and (orientation: portrait), (max-width: 600px) {
     .fs-content-body {
         flex-direction: column;
         justify-content: space-between;
         padding: 0 1.2rem 1.2rem 1.2rem;
         gap: 0.5rem;
-        height: calc(100% - 140px);
-        /* Allow room for header */
+        flex: 1; /* Match header space dynamically */
+        overflow: hidden;
     }
 
     .fs-artwork-section {

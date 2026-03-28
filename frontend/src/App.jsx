@@ -24,8 +24,10 @@ function AppContent() {
     const setFsVisible = usePlayerStore(state => state.setFullScreen);
     const queueVisible = usePlayerStore(state => state.isQueueOpen);
     const setQueueVisible = usePlayerStore(state => state.setQueueOpen);
-    const [eqVisible, setEqVisible] = useState(false);
-    const [sleepVisible, setSleepVisible] = useState(false);
+    const eqVisible = usePlayerStore(state => state.isEqualizerOpen);
+    const setEqVisible = usePlayerStore(state => state.setEqualizerOpen);
+    const sleepVisible = usePlayerStore(state => state.isSleepTimerOpen);
+    const setSleepVisible = usePlayerStore(state => state.setSleepTimerOpen);
 
 
     const colors = usePlayerStore(state => state.albumColors);
@@ -48,10 +50,10 @@ function AppContent() {
             if (data) setUser(JSON.parse(data));
         };
         window.addEventListener('mehfil-login', handleLogin);
-        
+
         // Initialize Theme Manager
         themeManager.init();
-        
+
         return () => window.removeEventListener('mehfil-login', handleLogin);
     }, []);
 

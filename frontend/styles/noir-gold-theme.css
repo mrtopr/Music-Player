@@ -1,8 +1,45 @@
-/* ===== MEHFIL NOIR GOLD THEME APPLICATION ===== */
+/* ===== MEHFIL MIDNIGHT AURORA APPLICATION THEME ===== */
+/* Note: File name kept as noir-gold-theme.css for legacy import compatibility */
 
-/* Apply deep noir background to main areas */
 body {
     color: var(--mehfil-text-primary);
+    position: relative;
+    background-color: var(--mehfil-dark-base);
+}
+
+/* Ambient Deep Space Aurora Glows */
+body::before, body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(150px);
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.15;
+    animation: auroraFloat 30s ease-in-out infinite alternate;
+}
+
+body::before {
+    top: -20%;
+    left: -10%;
+    width: 60vw;
+    height: 60vh;
+    background: var(--mehfil-accent-blue); /* Neon Purple */
+}
+
+body::after {
+    bottom: -20%;
+    right: -10%;
+    width: 70vw;
+    height: 70vh;
+    background: var(--mehfil-info); /* Electric Cyan */
+    animation-delay: -15s;
+}
+
+@keyframes auroraFloat {
+    0% { transform: translate(0, 0) scale(1); opacity: 0.15; }
+    50% { transform: translate(5%, 5%) scale(1.1); opacity: 0.25; }
+    100% { transform: translate(-5%, -5%) scale(0.9); opacity: 0.15; }
 }
 
 .screen,
@@ -10,14 +47,17 @@ body {
     background: transparent !important;
 }
 
-/* Cards with refined surface color */
+/* Glassmorphic Cards */
 .card,
 .song-card,
 .album-card,
 .artist-card,
 .playlist-card {
-    background: var(--mehfil-surface-card);
+    background: rgba(19, 20, 32, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--mehfil-border);
+    transition: all 0.3s var(--mehfil-ease-smooth);
 }
 
 .card:hover,
@@ -25,39 +65,115 @@ body {
 .album-card:hover,
 .artist-card:hover,
 .playlist-card:hover {
-    background: var(--mehfil-surface-elevated);
+    background: rgba(29, 30, 48, 0.6);
+    border-color: rgba(0, 242, 254, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4), 0 0 15px rgba(0, 242, 254, 0.1);
 }
 
-/* Sidebar with surface color */
+/* Sidebar with Hyper-Glassmorphism */
 .sidebar {
-    background: var(--mehfil-surface-card);
+    background: rgba(9, 9, 14, 0.4) !important;
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
     border-right: 1px solid var(--mehfil-border);
 }
 
-/* Top bar */
-.top-bar {
-    background: var(--mehfil-surface-card);
+/* Top bar with Hyper-Glassmorphism */
+.top-bar.glass-morphism {
+    background: rgba(9, 9, 14, 0.5) !important;
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
     border-bottom: 1px solid var(--mehfil-border);
+    height: 85px;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-/* Search bar */
-.search input {
-    background: var(--mehfil-surface-elevated);
+/* Pill Search Container */
+.search-container {
+    flex: 1;
+    max-width: 600px;
+    margin: 0 2rem;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--mehfil-border);
-    color: var(--mehfil-text-primary);
+    border-radius: 50px;
+    padding: 4px 6px 4px 20px;
+    transition: all 0.3s var(--mehfil-ease-smooth);
+    width: 100%;
 }
 
-/* === STRATEGIC GOLD USAGE (ONLY WHERE IT MATTERS) === */
+.search-box:focus-within {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--mehfil-gold-primary);
+    box-shadow: 0 0 0 4px var(--mehfil-gold-glow), 0 4px 12px rgba(0,0,0,0.3);
+    transform: translateY(-1px);
+}
 
-/* 1. Play Button - Primary CTA */
+.search-icon {
+    color: rgba(255, 255, 255, 0.4);
+    margin-right: 12px;
+}
+
+.search-box input {
+    background: transparent !important;
+    border: none !important;
+    color: #fff !important;
+    font-size: 0.95rem;
+    font-weight: 500;
+    width: 100%;
+    outline: none !important;
+    padding: 8px 0;
+}
+
+.search-box input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* Action Search Button */
+.search-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--mehfil-gold-primary), var(--mehfil-accent-blue)) !important;
+    color: #fff !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 12px var(--mehfil-gold-glow);
+}
+
+.search-action-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px var(--mehfil-gold-glow);
+}
+
+.search-action-btn:active {
+    transform: scale(0.95);
+}
+
+/* === PRIME ACTIONS === */
+
 .play-button,
 .mobile-play-btn,
 #fullscreenPlay,
 #miniPlayButton,
 .primary-cta-btn {
-    background: var(--mehfil-gold-primary) !important;
-    color: var(--mehfil-dark-base) !important;
+    background: linear-gradient(135deg, var(--mehfil-gold-primary), var(--mehfil-accent-blue)) !important;
+    color: #fff !important;
     border: none !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .play-button:hover,
@@ -65,72 +181,55 @@ body {
 #fullscreenPlay:hover,
 #miniPlayButton:hover,
 .primary-cta-btn:hover {
-    background: var(--mehfil-gold-soft) !important;
-    box-shadow: 0 0 30px var(--mehfil-gold-glow);
+    box-shadow: 0 0 25px var(--mehfil-gold-glow);
+    transform: scale(1.05);
 }
 
-/* 2. Active Navigation Item */
+/* Active Navigation Item */
 .sidebar li.active {
-    background: rgba(230, 184, 115, 0.1);
+    background: rgba(0, 242, 254, 0.1);
     border-left: 3px solid var(--mehfil-gold-primary);
     color: var(--mehfil-gold-primary);
+    border-radius: 0 8px 8px 0;
 }
 
 .sidebar li.active a {
     color: var(--mehfil-gold-primary);
+    font-weight: 600;
+    text-shadow: 0 0 10px var(--mehfil-gold-glow);
 }
 
-/* 3. Progress Bar */
+/* Progress Bar */
 .progress-bar,
 .fullscreen-progress,
 .mini-progress {
-    background: var(--mehfil-gold-primary);
+    background: linear-gradient(90deg, var(--mehfil-gold-primary), var(--mehfil-accent-blue));
     box-shadow: 0 0 12px var(--mehfil-gold-glow);
 }
 
-/* Progress bar container */
 .progress-bar-container,
 .fullscreen-progress-bar {
-    background: var(--mehfil-border);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
 }
 
-/* 4. Currently Playing Song ONLY */
+/* Currently Playing Song Highlights */
 .card.playing,
 .song-card.playing,
 .song-item.playing,
 .track-item.playing {
     border: 1px solid var(--mehfil-gold-primary);
-    background: rgba(230, 184, 115, 0.08);
+    background: rgba(0, 242, 254, 0.08);
+    box-shadow: 0 0 20px var(--mehfil-gold-glow);
 }
 
-/* === TEXT HIERARCHY === */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    color: var(--mehfil-text-primary);
-}
+/* === TEXT COLOR OVERRIDES === */
+h1, h2, h3, h4, h5, h6 { color: var(--mehfil-text-primary); }
+.song-title, .track-name { color: var(--mehfil-text-primary); }
+.artist-name, .artist-info { color: var(--mehfil-text-secondary); }
+.meta-text, .song-duration, .song-year { color: var(--mehfil-text-muted); }
 
-.song-title,
-.track-name {
-    color: var(--mehfil-text-primary);
-}
-
-.artist-name,
-.artist-info {
-    color: var(--mehfil-text-secondary);
-}
-
-.meta-text,
-.song-duration,
-.song-year,
-p {
-    color: var(--mehfil-text-muted);
-}
-
-/* === BORDERS & DIVIDERS === */
+/* BORDERS & DIVIDERS */
 .section,
 .category-scroll,
 .trending-section,
@@ -138,61 +237,66 @@ p {
     border-bottom: 1px solid var(--mehfil-border);
 }
 
-/* === BUTTONS (Non-Gold) === */
+/* BUTTONS (Secondary) */
 .secondary-cta-btn,
 .btn-secondary {
-    background: var(--mehfil-surface-elevated);
+    background: rgba(255,255,255,0.05);
     color: var(--mehfil-text-primary);
     border: 1px solid var(--mehfil-border);
+    backdrop-filter: blur(10px);
 }
 
 .secondary-cta-btn:hover,
 .btn-secondary:hover {
-    background: var(--mehfil-surface-card);
-    border-color: var(--mehfil-text-secondary);
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
 }
 
 /* === MINI PLAYER === */
 .mini-player {
-    background: rgba(var(--mehfil-surface-card-rgb, 26, 26, 36), 0.7);
-    backdrop-filter: blur(20px);
+    background: rgba(14, 15, 22, 0.7) !important;
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
     border-top: 1px solid var(--mehfil-border);
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
 }
 
 /* === FULLSCREEN PLAYER === */
 .fullscreen-player {
     background: radial-gradient(circle at center,
-            var(--mehfil-surface-card) 0%,
-            var(--mehfil-dark-base) 70%);
+            var(--mehfil-surface-elevated) 0%,
+            var(--mehfil-dark-base) 80%);
 }
 
-/* === REMOVE GOLD FROM NON-ESSENTIAL ELEMENTS === */
 .category-scroll .btn {
-    background: var(--mehfil-surface-elevated);
+    background: rgba(255,255,255,0.05);
     color: var(--mehfil-text-secondary);
     border: 1px solid var(--mehfil-border);
 }
 
 .category-scroll .btn.active {
-    background: var(--mehfil-surface-card);
-    color: var(--mehfil-text-primary);
-    border-color: var(--mehfil-text-secondary);
+    background: var(--mehfil-gold-primary);
+    color: #000;
+    border-color: var(--mehfil-gold-primary);
+    box-shadow: 0 0 15px var(--mehfil-gold-glow);
 }
 
-/* Volume slider thumb - subtle, not gold */
 input[type="range"]::-webkit-slider-thumb {
-    background: var(--mehfil-text-primary);
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 input[type="range"]::-moz-range-thumb {
-    background: var(--mehfil-text-primary);
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
-/* Like button - only gold when liked */
 .like-btn {
     color: var(--mehfil-text-muted);
+    transition: all 0.2s var(--mehfil-ease-smooth);
 }
 
 .like-btn.liked {
-    color: var(--mehfil-gold-primary);
+    color: var(--mehfil-danger); /* Heart should be red/pink */
+    filter: drop-shadow(0 0 8px rgba(255, 42, 95, 0.5));
 }
