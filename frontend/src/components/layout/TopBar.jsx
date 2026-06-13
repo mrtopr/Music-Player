@@ -7,6 +7,8 @@ import { apiFetch } from '../../api/client.js';
 
 
 function ListenTogetherPanel({ sessionCode, sessionRole, createSession, joinSession, leaveSession, onClose }) {
+    const participants = usePlayerStore(state => state.participants);
+    const kickUser = usePlayerStore(state => state.kickUser);
     const [joinCode, setJoinCode] = useState('');
 
     const handleCreate = () => {
@@ -70,47 +72,78 @@ function ListenTogetherPanel({ sessionCode, sessionRole, createSession, joinSess
                         </p>
                     </div>
 
-                    <button 
-                        onClick={handleCopyLink} 
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            borderRadius: '12px',
-                            background: 'rgba(255,255,255,0.06)',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            color: '#fff',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            transition: 'background 0.2s'
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                        onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
-                    >
-                        Copy Invite Link
-                    </button>
+                    {/* Participants List */}
+                    {participants && participants.length > 0 && (
+                        <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '12px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1px' }}>Connected Users ({participants.length})</span>
+                            <div style={{ maxHeight: '120px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                {participants.map(p => (
+                                    <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.03)', padding: '6px 8px', borderRadius: '8px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <img src={p.profilePicture || '/dp.png'} alt={p.name} style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }} />
+                                            <span style={{ fontSize: '0.85rem', color: '#fff' }}>{p.name || 'Guest'}</span>
+                                        </div>
+                                        {sessionRole === 'host' && (
+                                            <button 
+                                                onClick={() => { if(window.confirm(`Remove ${p.name || 'this user'} from the room?`)) kickUser(p.id); }}
+                                                style={{ background: 'rgba(239, 68, 68, 0.2)', border: 'none', color: '#ef4444', borderRadius: '6px', padding: '4px 8px', fontSize: '0.7rem', cursor: 'pointer', transition: 'background 0.2s' }}
+                                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.4)'}
+                                                onMouseLeave={e => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'}
+                                            >
+                                                Kick
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
-                    <button 
-                        onClick={leaveSession} 
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            borderRadius: '12px',
-                            background: 'rgba(239, 68, 68, 0.15)',
-                            border: '1px solid rgba(239, 68, 68, 0.3)',
-                            color: '#ef4444',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            transition: 'background 0.2s'
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)'}
-                        onMouseLeave={e => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)'}
-                    >
-                        Leave Session
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        <button 
+                            onClick={handleCopyLink} 
+                            style={{
+                                flex: 1,
+                                padding: '10px',
+                                borderRadius: '12px',
+                                background: 'rgba(255,255,255,0.06)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                color: '#fff',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                transition: 'background 0.2s',
+                                fontSize: '0.85rem'
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+                        >
+                            Copy Link
+                        </button>
+
+                        <button 
+                            onClick={leaveSession} 
+                            style={{
+                                flex: 1,
+                                padding: '10px',
+                                borderRadius: '12px',
+                                background: 'rgba(239, 68, 68, 0.15)',
+                                border: '1px solid rgba(239, 68, 68, 0.3)',
+                                color: '#ef4444',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                transition: 'background 0.2s',
+                                fontSize: '0.85rem'
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)'}
+                        >
+                            Leave Room
+                        </button>
+                    </div>
                 </div>
             ) : (
                 // Offline State

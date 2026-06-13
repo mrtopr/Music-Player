@@ -19,6 +19,8 @@ import Artists from './pages/Artists';
 import Settings from './pages/Settings';
 import CollectionDetails from './pages/CollectionDetails';
 import SectionPage from './pages/SectionPage';
+import Legal from './pages/Legal';
+import About from './pages/About';
 
 function AppContent() {
     const [user, setUser] = useState(null);
@@ -120,6 +122,8 @@ function AppContent() {
                         <Route path="/playlist/:id" element={<CollectionDetails type="playlist" />} />
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/section/:type" element={<SectionPage />} />
+                        <Route path="/legal/:type" element={<Legal />} />
+                        <Route path="/about" element={<About />} />
                     </Routes>
                 </div>
             </div>

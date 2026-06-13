@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { PlayCircle, Flame, ChevronRight, ListMusic, Mic2, Play, Pause, Music, History, Sparkles, Heart, Compass, Check } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { PlayCircle, Flame, ChevronRight, ListMusic, Mic2, Play, Pause, Music, History, Sparkles, Heart, Compass, Check, Users, SlidersHorizontal } from 'lucide-react';
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { themeManager } from '../utils/themeManager.js';
@@ -234,6 +234,32 @@ function GenreOnboarding({ onComplete }) {
                 </button>
             </div>
         </div>
+    );
+}
+
+function Footer() {
+    return (
+        <footer style={{ marginTop: '4rem', padding: '2rem 1rem', borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', color: 'rgba(255,255,255,0.6)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '2rem', fontSize: '0.9rem', fontWeight: 500, flexWrap: 'wrap', justifyContent: 'center' }}>
+                    <Link to="/about" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.5)'}>About</Link>
+                    <Link to="/legal/terms" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.5)'}>Terms & Conditions</Link>
+                    <Link to="/legal/privacy" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.5)'}>Privacy Policy</Link>
+                    <Link to="/legal/contact" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.5)'}>Contact Us</Link>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px 16px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>
+                        Crafted with <Heart size={14} color="#ef4444" fill="#ef4444" style={{ verticalAlign: 'middle', margin: '0 4px' }} /> by <span style={{ color: '#fff' }}>h3y.Sam</span>
+                    </p>
+                </div>
+                <p style={{ margin: 0, fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', maxWidth: '500px', lineHeight: 1.5 }}>
+                    Mehfil is an educational, non-commercial project. Audio streaming is powered by third-party APIs. We do not host any copyrighted media files. By using this platform, you agree to our terms of service.
+                </p>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)' }}>
+                    &copy; {new Date().getFullYear()} Mehfil Music Player. All rights reserved.
+                </p>
+            </div>
+        </footer>
     );
 }
 
@@ -490,6 +516,8 @@ export default function Home() {
                     </div>
                 </>
             )}
+
+            <Footer />
         </div>
     );
 }

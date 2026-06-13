@@ -22,6 +22,15 @@ if (!window.__mehfilLocalClientId) {
 }
 const localClientId = window.__mehfilLocalClientId;
 
+const getLocalUser = () => {
+    try {
+        const u = JSON.parse(localStorage.getItem('mehfilUser'));
+        return u || { name: 'Guest', profilePicture: '/dp.png' };
+    } catch {
+        return { name: 'Guest', profilePicture: '/dp.png' };
+    }
+};
+
 if (!window.__mehfilSyncChannel) {
     window.__mehfilSyncChannel = new BroadcastChannel('mehfil_sync_channel');
 }
@@ -61,6 +70,13 @@ const connectWebSocket = (code, role) => {
         
         ws.onopen = () => {
             console.log(`[Sync] WebSocket ${role} connection established:`, code);
+            
+            sendSyncMessage({
+                type: 'user_joined',
+                sessionCode: code,
+                user: getLocalUser()
+            });
+
             if (role === 'host') {
                 broadcastHostState(true);
             } else {
@@ -124,12 +140,37 @@ const broadcastHostState = (force = false) => {
 };
 
 const handleIncomingSyncMessage = (data) => {
-    const { type, sessionCode, senderId, payload } = data;
+    const { type, sessionCode, senderId, payload, user, targetId } = data;
     if (senderId === localClientId) return; // Ignore our own messages!
     const store = usePlayerStore.getState();
     if (!store.sessionCode || store.sessionCode !== sessionCode) return;
 
-    if (type === 'request_sync') {
+    if (type === 'kick_user' && targetId === localClientId) {
+        alert("You have been removed from the session by the host.");
+        usePlayerStore.getState().leaveSession();
+        return;
+    }
+
+    if (type === 'user_joined' || type === 'user_present') {
+        if (user) {
+            usePlayerStore.setState(state => {
+                const exists = state.participants.find(p => p.id === senderId);
+                if (exists) {
+                    return {
+                        participants: state.participants.map(p => p.id === senderId ? { ...p, lastSeen: Date.now() } : p)
+                    };
+                }
+                return { participants: [...state.participants, { id: senderId, ...user, lastSeen: Date.now() }] };
+            });
+            if (type === 'user_joined') {
+                sendSyncMessage({ type: 'user_present', sessionCode, user: getLocalUser() });
+            }
+        }
+    } else if (type === 'user_left') {
+        usePlayerStore.setState(state => ({
+            participants: state.participants.filter(p => p.id !== senderId)
+        }));
+    } else if (type === 'request_sync') {
         if (store.isCoordinator || store.sessionRole === 'host') {
             broadcastHostState(true);
         }
@@ -218,6 +259,7 @@ export const usePlayerStore = create((set, get) => ({
     sessionCode: null,
     sessionRole: null, // 'host' | 'listener'
     isCoordinator: false,
+    participants: [],
     lyrics: null,
     lyricsLoading: false,
 
@@ -318,8 +360,26 @@ export const usePlayerStore = create((set, get) => ({
     },
 
     leaveSession: () => {
+        const state = get();
+        if (state.sessionCode) {
+            sendSyncMessage({ type: 'user_left', sessionCode: state.sessionCode });
+            if (syncChannel) {
+                try { syncChannel.postMessage({ type: 'user_left', sessionCode: state.sessionCode, senderId: localClientId }); } catch(e){}
+            }
+        }
         closeSyncSocket();
-        set({ sessionCode: null, sessionRole: null });
+        set({ sessionCode: null, sessionRole: null, participants: [] });
+    },
+    
+    kickUser: (targetId) => {
+        const state = get();
+        if (state.sessionRole !== 'host' || !state.sessionCode) return;
+        const msg = { type: 'kick_user', sessionCode: state.sessionCode, targetId };
+        sendSyncMessage(msg);
+        if (syncChannel) {
+            try { syncChannel.postMessage({ ...msg, senderId: localClientId }); } catch(e){}
+        }
+        set(s => ({ participants: s.participants.filter(p => p.id !== targetId) }));
     },
 
     fetchLyricsForSong: async (song) => {
