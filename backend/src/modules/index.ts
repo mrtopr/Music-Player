@@ -1,0 +1,6 @@
+export * from './recognition/controllers'
+export * from './albums/controllers'
+export * from './search/controllers'
+export * from './songs/controllers'
+export * from './artists/controllers'
+export * from './modules'

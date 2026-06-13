@@ -1,0 +1,26 @@
+# Dependencies and Environment
+node_modules/
+.env
+.env.*.local
+.venv/
+__pycache__/
+*.log
+
+# Sub-project specific exclusions
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+backend/node_modules/
+backend/dist/
+backend/.env
+
+# OS and Editor files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Planning and Metadata
+.planning/
+.vite/
+.github/

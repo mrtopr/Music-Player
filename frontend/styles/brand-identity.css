@@ -1,0 +1,196 @@
+/* ===== MEHFIL BRAND IDENTITY - MIDNIGHT AURORA ===== */
+
+:root {
+    /* === PRIMARY ACCENT - Electric Cyan === */
+    --mehfil-gold-primary: #00F2FE; /* Re-using variable name so we don't break existing CSS */
+    --mehfil-gold-soft: #4FACFE;
+    --mehfil-gold-glow: rgba(0, 242, 254, 0.4);
+
+    /* === DARK BASE - Ultra Deep Midnight === */
+    --mehfil-dark-base: #09090E;
+    --mehfil-surface-card: #131420;
+    --mehfil-surface-elevated: #1D1E30;
+
+    /* === TEXT HIERARCHY === */
+    --mehfil-text-primary: #FFFFFF;
+    --mehfil-text-secondary: #E2E8F0;
+    --mehfil-text-muted: #94A3B8;
+    --mehfil-text-subtle: #64748B;
+
+    /* === SECONDARY ACCENT - Neon Purple === */
+    --mehfil-accent-blue: #764BA2;
+    --mehfil-accent-blue-glow: rgba(118, 75, 162, 0.5);
+
+    /* === BORDERS & STATUS === */
+    --mehfil-border: rgba(255, 255, 255, 0.08);
+    --mehfil-border-strong: rgba(255, 255, 255, 0.15);
+    --mehfil-danger: #FF2A5F;
+    --mehfil-warning: #FFB020;
+    --mehfil-info: #00F2FE;
+
+    /* === MOTION TIMING - Fluid & Dynamic === */
+    --mehfil-motion-slow: 600ms;
+    --mehfil-motion-medium: 300ms;
+    --mehfil-motion-fast: 150ms;
+    --mehfil-motion-breath: 3000ms;
+
+    /* === EASING CURVES === */
+    --mehfil-ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+    --mehfil-ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+    --mehfil-ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
+
+    /* === SPACING SYSTEM === */
+    --mehfil-space-xs: 4px;
+    --mehfil-space-sm: 8px;
+    --mehfil-space-md: 16px;
+    --mehfil-space-lg: 24px;
+    --mehfil-space-xl: 32px;
+
+    /* === SHADOWS === */
+    --mehfil-shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --mehfil-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --mehfil-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
+    --mehfil-shadow-gold: 0 0 24px var(--mehfil-gold-glow);
+
+    /* Compatibility bridge for legacy CSS variables used across files */
+    --accent-primary: var(--mehfil-gold-primary);
+    --accent-hover: var(--mehfil-gold-soft);
+    --accent-secondary: var(--mehfil-accent-blue);
+    --bg-main: var(--mehfil-dark-base);
+    --bg-dark: var(--mehfil-surface-card);
+    --bg-darker: var(--mehfil-dark-base);
+    --card-bg: var(--mehfil-surface-card);
+    --border-color: var(--mehfil-border);
+    --text-primary: var(--mehfil-text-primary);
+    --text-secondary: var(--mehfil-text-secondary);
+    --text-muted: var(--mehfil-text-muted);
+
+    /* === TYPOGRAPHY SCALE === */
+    --font-sans: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+}
+
+/* ===== BRAND RULES ===== */
+
+/* Rule 1: Action Color = Cyan */
+.mehfil-gold-action {
+    color: var(--mehfil-gold-primary);
+}
+
+.mehfil-gold-action:hover {
+    color: var(--mehfil-text-primary);
+    text-shadow: 0 0 16px var(--mehfil-gold-glow);
+}
+
+/* Rule 2: Non-interactive elements must NOT be action colored */
+.mehfil-text-muted {
+    color: var(--mehfil-text-muted);
+}
+
+/* Rule 3: Purple for critical focus only */
+.mehfil-focus {
+    color: var(--mehfil-accent-blue);
+    box-shadow: 0 0 0 2px var(--mehfil-accent-blue-glow);
+}
+
+/* ===== TYPOGRAPHY HIERARCHY ===== */
+
+h1, h2, h3, .mehfil-heading {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--mehfil-text-primary);
+}
+
+.song-title, .track-name {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--mehfil-text-primary);
+}
+
+.artist-name, .artist-info {
+    font-weight: 500;
+    color: var(--mehfil-text-muted);
+}
+
+.meta-text, .song-duration, .song-year {
+    font-weight: 400;
+    color: var(--mehfil-text-subtle);
+}
+
+.description, .bio-text {
+    font-weight: 400;
+    color: var(--mehfil-text-muted);
+    line-height: 1.7;
+}
+
+/* ===== MOTION & ANIMATION ===== */
+
+* {
+    transition-timing-function: var(--mehfil-ease-smooth);
+}
+
+@keyframes mehfilFadeSlideUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.mehfil-section-enter {
+    animation: mehfilFadeSlideUp var(--mehfil-motion-slow) var(--mehfil-ease-entrance) both;
+}
+
+@keyframes mehfilBreathePulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.02); opacity: 0.95; }
+}
+
+.mehfil-active-pulse {
+    animation: mehfilBreathePulse var(--mehfil-motion-breath) ease-in-out infinite;
+}
+
+@keyframes mehfilGentleGlow {
+    0%, 100% { box-shadow: 0 0 15px var(--mehfil-gold-glow); }
+    50% { box-shadow: 0 0 35px var(--mehfil-gold-glow), 0 0 10px rgba(0, 242, 254, 0.8) inset; }
+}
+
+.mehfil-glow-pulse {
+    animation: mehfilGentleGlow var(--mehfil-motion-breath) ease-in-out infinite;
+}
+
+/* ===== BRAND MOMENTS ===== */
+
+.dil-se-suno {
+    background: linear-gradient(135deg, var(--mehfil-gold-primary), var(--mehfil-accent-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.dil-se-suno::after {
+    content: " 🌌";
+    -webkit-text-fill-color: initial;
+}
+
+.mehfil-recommends {
+    position: relative;
+    padding-left: var(--mehfil-space-lg);
+}
+
+.mehfil-recommends::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 4px;
+    background: linear-gradient(to bottom, var(--mehfil-gold-primary), var(--mehfil-accent-blue));
+    box-shadow: 0 0 10px var(--mehfil-gold-glow);
+}

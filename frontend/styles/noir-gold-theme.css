@@ -1,0 +1,315 @@
+/* ===== MEHFIL MIDNIGHT AURORA APPLICATION THEME ===== */
+/* Note: File name kept as noir-gold-theme.css for legacy import compatibility */
+
+body {
+    color: var(--mehfil-text-primary);
+    position: relative;
+    background-color: var(--mehfil-dark-base);
+}
+
+/* Ambient background orbs — static radial gradients, no filter, no animation.
+   filter:blur on body::before/after + infinite animation = full-page repaint every frame.
+   Static radial-gradient achieves the same visual for zero ongoing GPU cost. */
+body::before, body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    z-index: -1;
+    pointer-events: none;
+    /* Use translate3d to ensure own compositor layer */
+    transform: translate3d(0, 0, 0);
+    will-change: auto;
+}
+
+body::before {
+    top: -15%;
+    left: -8%;
+    width: 55vw;
+    height: 55vh;
+    background: radial-gradient(circle, rgba(109, 40, 217, 0.14) 0%, transparent 65%);
+}
+
+body::after {
+    bottom: -15%;
+    right: -8%;
+    width: 60vw;
+    height: 60vh;
+    background: radial-gradient(circle, rgba(79, 70, 229, 0.10) 0%, transparent 65%);
+}
+
+.screen,
+.main-area {
+    background: transparent !important;
+}
+
+/* Sidebar with Hyper-Glassmorphism */
+.sidebar {
+    background: rgba(9, 9, 14, 0.4) !important;
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border-right: 1px solid var(--mehfil-border);
+}
+
+/* Top bar with Hyper-Glassmorphism */
+.top-bar.glass-morphism {
+    background: rgba(9, 9, 14, 0.5) !important;
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border-bottom: 1px solid var(--mehfil-border);
+    height: 85px;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--mehfil-border);
+    border-radius: 10px !important;
+    padding: 6px 14px 6px 16px;
+    transition: all 0.3s var(--mehfil-ease-smooth);
+    width: 100%;
+}
+
+.search-box:focus-within {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #7c6ff7 !important;
+    box-shadow: 0 0 0 3px rgba(124, 111, 247, 0.2), 0 4px 12px rgba(0,0,0,0.3) !important;
+    transform: none !important;
+}
+
+.search-icon {
+    color: rgba(255, 255, 255, 0.4);
+    margin-right: 12px;
+}
+
+.search-box input {
+    background: transparent !important;
+    border: none !important;
+    color: #fff !important;
+    font-size: 0.95rem;
+    font-weight: 500;
+    width: 100%;
+    outline: none !important;
+    padding: 8px 0;
+}
+
+.search-box input::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+/* Action Search Button - Hidden */
+.search-action-btn {
+    display: none !important;
+}
+
+/* === PRIME ACTIONS === */
+
+.play-button,
+.mobile-play-btn,
+#fullscreenPlay,
+#miniPlayButton {
+    background: linear-gradient(135deg, var(--mehfil-gold-primary), var(--mehfil-accent-blue)) !important;
+    color: #fff !important;
+    border: none !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.play-button:hover,
+.mobile-play-btn:hover,
+#fullscreenPlay:hover,
+#miniPlayButton:hover {
+    box-shadow: 0 0 25px var(--mehfil-gold-glow);
+    transform: scale(1.05);
+}
+
+.primary-cta-btn {
+    background: #7c6ff7 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 15px rgba(124, 111, 247, 0.3) !important;
+    transition: all 0.2s ease !important;
+    transform: none !important;
+}
+
+.primary-cta-btn:hover {
+    background: #6d5df4 !important;
+    box-shadow: 0 6px 20px rgba(124, 111, 247, 0.45) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Active Navigation Item */
+.sidebar li.active {
+    background: rgba(124, 111, 247, 0.08) !important;
+    border-left: 2px solid #7c6ff7 !important;
+    color: #7c6ff7 !important;
+    border-radius: 0 8px 8px 0 !important;
+}
+
+.sidebar li.active a,
+.sidebar li.active i,
+.sidebar li.active .icon-svg {
+    color: #7c6ff7 !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
+}
+
+.sidebar ul li.active::before,
+.sidebar ul li.active::after {
+    display: none !important;
+}
+
+/* Progress Bar */
+.progress-bar,
+.fullscreen-progress,
+.mini-progress {
+    background: linear-gradient(90deg, var(--mehfil-gold-primary), var(--mehfil-accent-blue));
+    box-shadow: 0 0 12px var(--mehfil-gold-glow);
+}
+
+.progress-bar-container,
+.fullscreen-progress-bar {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+}
+
+/* Currently Playing Song Highlights */
+.card.playing,
+.song-card.playing,
+.song-item.playing,
+.track-item.playing {
+    border: 1px solid var(--mehfil-gold-primary);
+    background: rgba(0, 242, 254, 0.08);
+    box-shadow: 0 0 20px var(--mehfil-gold-glow);
+}
+
+/* === TEXT COLOR OVERRIDES === */
+h1, h2, h3, h4, h5, h6 { color: var(--mehfil-text-primary); }
+.song-title, .track-name { color: var(--mehfil-text-primary); }
+.artist-name, .artist-info { color: var(--mehfil-text-secondary); }
+.meta-text, .song-duration, .song-year { color: var(--mehfil-text-muted); }
+
+/* BORDERS & DIVIDERS */
+.section,
+.category-scroll,
+.trending-section,
+.new-releases-section {
+    border-bottom: 1px solid var(--mehfil-border);
+}
+
+/* BUTTONS (Secondary) */
+.btn-secondary {
+    background: rgba(255,255,255,0.05);
+    color: var(--mehfil-text-primary);
+    border: 1px solid var(--mehfil-border);
+    backdrop-filter: blur(10px);
+}
+
+.btn-secondary:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+}
+
+.secondary-cta-btn {
+    background: rgba(124, 111, 247, 0.08) !important;
+    color: white !important;
+    border: 1px solid rgba(124, 111, 247, 0.3) !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    backdrop-filter: blur(10px) !important;
+    transition: all 0.2s ease !important;
+    transform: none !important;
+}
+
+.secondary-cta-btn:hover {
+    background: rgba(124, 111, 247, 0.15) !important;
+    border-color: rgba(124, 111, 247, 0.6) !important;
+    color: #c084fc !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(124, 111, 247, 0.15) !important;
+}
+
+/* === MINI PLAYER === */
+.mini-player {
+    background: rgba(14, 15, 22, 0.7) !important;
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border-top: 1px solid var(--mehfil-border);
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+}
+
+/* === FULLSCREEN PLAYER === */
+.fullscreen-player {
+    background: radial-gradient(circle at center,
+            var(--mehfil-surface-elevated) 0%,
+            var(--mehfil-dark-base) 80%);
+}
+
+.category-scroll button,
+.category-scroll .btn {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--mehfil-text-secondary) !important;
+    border: 1px solid var(--mehfil-border) !important;
+    border-radius: 6px !important;
+    padding: 8px 16px !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.category-scroll button::before,
+.category-scroll .btn::before,
+.category-scroll button::after,
+.category-scroll .btn::after {
+    display: none !important;
+}
+
+.category-scroll button:hover,
+.category-scroll .btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.category-scroll button.active,
+.category-scroll .btn.active {
+    background: #7c6ff7 !important;
+    color: #fff !important;
+    border-color: #7c6ff7 !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+input[type="range"]::-moz-range-thumb {
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.like-btn {
+    color: var(--mehfil-text-muted);
+    transition: all 0.2s var(--mehfil-ease-smooth);
+}
+
+.like-btn.liked {
+    color: var(--mehfil-danger); /* Heart should be red/pink */
+    filter: drop-shadow(0 0 8px rgba(255, 42, 95, 0.5));
+}
+
+/* Fix transparent greeting text in hero */
+.intro-text h1 {
+    -webkit-text-fill-color: #fff !important;
+    background: none !important;
+}
