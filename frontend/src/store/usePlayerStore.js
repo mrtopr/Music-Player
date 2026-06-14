@@ -65,7 +65,7 @@ const connectWebSocket = (code, role) => {
     closeSyncSocket();
     
     try {
-        const ws = new WebSocket(`wss://demo.piesocket.com/v3/${code}?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV`);
+        const ws = new WebSocket(`wss://free.blr2.piesocket.com/v3/${code}?api_key=az7W14MabuOslb5Pf6Wibho2A3zN5P1GRut26JL5&notify_self=1`);
         setSyncSocket(ws);
         
         ws.onopen = () => {
@@ -118,13 +118,14 @@ const connectWebSocket = (code, role) => {
 const broadcastHostState = (force = false) => {
     const store = usePlayerStore.getState();
     if (store.sessionCode && (store.isCoordinator || force)) {
+        const audio = store.activeChannel === 'A' ? audioA : audioB;
         const payload = {
             type: 'sync_state',
             sessionCode: store.sessionCode,
             payload: {
                 song: store.currentSong,
                 isPlaying: store.isPlaying,
-                currentTime: store.currentTime,
+                currentTime: audio.currentTime,
                 queue: store.queue,
                 queueIndex: store.queueIndex,
                 shuffle: store.shuffle,
@@ -139,7 +140,7 @@ const broadcastHostState = (force = false) => {
     }
 };
 
-const handleIncomingSyncMessage = (data) => {
+const handleIncomingSyncMessage = async (data) => {
     const { type, sessionCode, senderId, payload, user, targetId } = data;
     if (senderId === localClientId) return; // Ignore our own messages!
     const store = usePlayerStore.getState();
@@ -200,7 +201,7 @@ const handleIncomingSyncMessage = (data) => {
         // Sync current song
         if (!store.currentSong || store.currentSong.id !== song?.id) {
             if (song) {
-                store.playSong(song, false, true, true); // autoOpen=false, isFromQueue=true, isSync=true
+                await store.playSong(song, false, true, true); // autoOpen=false, isFromQueue=true, isSync=true
             } else {
                 usePlayerStore.setState({ currentSong: null, isPlaying: false });
             }

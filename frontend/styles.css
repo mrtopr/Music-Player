@@ -615,10 +615,7 @@ body {
   .premium-tools {
     gap: 4px;
   }
-  /* Hide EQ and Sleep on mobile header for space */
-  .premium-tools .icon-btn:not(.mic-btn) {
-    display: none !important;
-  }
+  /* Tools are now visible on mobile header */
   .mic-btn {
     width: 32px !important;
     height: 32px !important;
