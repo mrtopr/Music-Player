@@ -12,7 +12,9 @@ const PRESETS = {
 };
 
 export default function EqualizerModal({ visible, onClose }) {
-    const { equalizer, setEqualizer, setEqualizerAll } = usePlayerStore();
+    const equalizer = usePlayerStore(state => state.equalizer);
+    const setEqualizer = usePlayerStore(state => state.setEqualizer);
+    const setEqualizerAll = usePlayerStore(state => state.setEqualizerAll);
     const { bass, mid, treble } = equalizer;
     
     // Determine active preset by comparing current values

@@ -5,8 +5,19 @@ import { getImageUrl } from '../../api/client.js';
 import { formatTime, decodeEntities, getSafeImage } from '../../utils/helpers.js';
 
 export default function MiniPlayer({ onExpand, onQueue }) {
-    const { currentSong, isPlaying, progress, currentTime, duration, volume, isMuted,
-        togglePlay, nextSong, prevSong, seek, setVolume, toggleMute } = usePlayerStore();
+    const currentSong = usePlayerStore(state => state.currentSong);
+    const isPlaying = usePlayerStore(state => state.isPlaying);
+    const progress = usePlayerStore(state => state.progress);
+    const currentTime = usePlayerStore(state => state.currentTime);
+    const duration = usePlayerStore(state => state.duration);
+    const volume = usePlayerStore(state => state.volume);
+    const isMuted = usePlayerStore(state => state.isMuted);
+    const togglePlay = usePlayerStore(state => state.togglePlay);
+    const nextSong = usePlayerStore(state => state.nextSong);
+    const prevSong = usePlayerStore(state => state.prevSong);
+    const seek = usePlayerStore(state => state.seek);
+    const setVolume = usePlayerStore(state => state.setVolume);
+    const toggleMute = usePlayerStore(state => state.toggleMute);
 
     if (!currentSong) return null;
 

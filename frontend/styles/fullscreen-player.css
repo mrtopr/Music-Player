@@ -113,7 +113,7 @@
     margin-top: 12px;
 }
 
-.fs-main-control.fs-badge-row {
+.fs-badge-row {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -129,24 +129,26 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 1.5px;
+    letter-spacing: 1px;
     color: var(--text-primary);
     text-transform: uppercase;
 }
 
 .fs-automix-badge {
-    background: rgba(139, 92, 246, 0.1);
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    background: rgba(139, 92, 246, 0.08);
+    border: 1px solid rgba(139, 92, 246, 0.15);
     color: #a78bfa;
     padding: 6px 14px;
     border-radius: 50px;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -183,9 +185,17 @@
     align-items: center;
     gap: 6px;
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
+}
+
+.source-dot {
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+    border-radius: 50%;
+    display: inline-block;
 }
 
 .fs-main-controls {
@@ -409,4 +419,11 @@
     .fs-volume-track {
         width: 80px !important;
     }
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: scale(0.8); }
+    15% { opacity: 1; transform: scale(1); }
+    80% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.9); }
 }

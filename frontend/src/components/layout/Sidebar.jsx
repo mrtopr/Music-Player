@@ -12,10 +12,18 @@ export default function Sidebar() {
         window.location.reload();
     };
 
-    const [canInstall, setCanInstall] = useState(!!window.__deferredPrompt);
+    const checkStandalone = () => {
+        return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    };
+
+    const [canInstall, setCanInstall] = useState(!!window.__deferredPrompt && !checkStandalone());
 
     useEffect(() => {
-        const handler = () => setCanInstall(true);
+        const handler = () => {
+            if (!checkStandalone()) {
+                setCanInstall(true);
+            }
+        };
         window.addEventListener('pwa-can-install', handler);
         return () => window.removeEventListener('pwa-can-install', handler);
     }, []);

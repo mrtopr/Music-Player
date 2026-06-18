@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, User, Palette, Volume2, Info, Trash2, LogOut, ShieldAlert, Check, CheckCircle2, Mic, ExternalLink, Sparkles } from 'lucide-react';
+import { Settings as SettingsIcon, User, Palette, Volume2, Info, Trash2, LogOut, ShieldAlert, Check, CheckCircle2, Mic, ExternalLink, Sparkles, Download, Smartphone } from 'lucide-react';
 import { getPreferredGenres, savePreferredGenres, getGenreCounts } from '../utils/history.js';
 import { ALL_GENRES, GENRE_PROFILES } from '../utils/genreProfiles.js';
 import { usePlayerStore } from '../store/usePlayerStore.js';
 
 export default function Settings() {
-    const { isAutoMixEnabled, toggleAutoMix } = usePlayerStore();
+    const isAutoMixEnabled = usePlayerStore(state => state.isAutoMixEnabled);
+    const toggleAutoMix = usePlayerStore(state => state.toggleAutoMix);
     const [user, setUser] = useState(null);
     const [successMsg, setSuccessMsg] = useState('');
     const [auddToken, setAuddToken] = useState(localStorage.getItem('audd_api_token') || '');
@@ -14,10 +15,37 @@ export default function Settings() {
     const [editingGenres, setEditingGenres] = useState(false);
     const [tempGenres, setTempGenres] = useState([]);
 
+    const [canInstall, setCanInstall] = useState(!!window.__deferredPrompt);
+    const [isStandalone, setIsStandalone] = useState(false);
+    const [isIOS, setIsIOS] = useState(false);
+
     useEffect(() => {
         const saved = localStorage.getItem('mehfilUser');
         if (saved) setUser(JSON.parse(saved));
+
+        const checkInstallState = () => {
+            const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            setIsStandalone(standalone);
+            
+            const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            setIsIOS(ios);
+        };
+        checkInstallState();
+
+        const handler = () => setCanInstall(true);
+        window.addEventListener('pwa-can-install', handler);
+        return () => window.removeEventListener('pwa-can-install', handler);
     }, []);
+
+    const handleInstallApp = async () => {
+        const promptEvent = window.__deferredPrompt;
+        if (!promptEvent) return;
+        promptEvent.prompt();
+        const { outcome } = await promptEvent.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        window.__deferredPrompt = null;
+        setCanInstall(false);
+    };
 
     const clearData = () => {
         if (confirm('Are you sure? This will permanently delete all your liked songs, playlists, and history. This cannot be undone.')) {
@@ -288,6 +316,108 @@ export default function Settings() {
                                 </label>
                             </div>
                         </section>
+
+                        {!isStandalone && (
+                            <section className="settings-card" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                <h3 style={{ margin: '0 0 1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>
+                                    <Smartphone size={20} /> App Installation
+                                </h3>
+                                
+                                {canInstall ? (
+                                    <div>
+                                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.2rem', lineHeight: 1.5 }}>
+                                            Install Mehfil on your home screen for quick access, full screen playback, and an immersive native experience.
+                                        </p>
+                                        <button 
+                                            onClick={handleInstallApp}
+                                            style={{
+                                                padding: '10px 24px', borderRadius: '50px', 
+                                                background: 'var(--accent-primary)', color: '#000', 
+                                                border: 'none', fontWeight: 700, cursor: 'pointer', 
+                                                fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px',
+                                                boxShadow: '0 4px 15px rgba(var(--accent-primary-rgb), 0.3)',
+                                                transition: 'transform 0.2s'
+                                            }}
+                                            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                                        >
+                                            <Download size={16} /> Install Mehfil App
+                                        </button>
+                                    </div>
+                                ) : isIOS ? (
+                                    <div>
+                                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem', lineHeight: 1.5 }}>
+                                            Install Mehfil on your iPhone or iPad for an app-like fullscreen experience:
+                                        </p>
+                                        <div style={{ 
+                                            background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+                                            borderRadius: '16px', padding: '1.2rem', display: 'flex', flexDirection: 'column', gap: '10px'
+                                        }}>
+                                            <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontSize: '0.85rem' }}>
+                                                <span style={{ background: 'var(--accent-primary-soft)', color: 'var(--accent-primary)', width: '20px', height: '20px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 700, fontSize: '0.75rem' }}>1</span>
+                                                <span style={{ color: '#fff' }}>Open Mehfil in the <strong>Safari</strong> browser.</span>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontSize: '0.85rem' }}>
+                                                <span style={{ background: 'var(--accent-primary-soft)', color: 'var(--accent-primary)', width: '20px', height: '20px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 700, fontSize: '0.75rem' }}>2</span>
+                                                <span style={{ color: '#fff' }}>Tap the <strong>Share</strong> button <span style={{ fontSize: '1.1rem', verticalAlign: 'middle' }}>⎋</span> (at the bottom or top of the screen).</span>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', fontSize: '0.85rem' }}>
+                                                <span style={{ background: 'var(--accent-primary-soft)', color: 'var(--accent-primary)', width: '20px', height: '20px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 700, fontSize: '0.75rem' }}>3</span>
+                                                <span style={{ color: '#fff' }}>Scroll down and select <strong>Add to Home Screen</strong>.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '0.5rem', lineHeight: 1.5 }}>
+                                            To download and install Mehfil as an app:
+                                        </p>
+                                        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', lineHeight: 1.5 }}>
+                                            Open this site in a compatible mobile browser like <strong>Google Chrome</strong> or <strong>Safari</strong>, open the browser options menu, and select <strong>Install App</strong> or <strong>Add to Home Screen</strong>.
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Android APK Download Option */}
+                                <div style={{ 
+                                    marginTop: '1.5rem', 
+                                    paddingTop: '1.5rem', 
+                                    borderTop: '1px solid rgba(255,255,255,0.06)',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '10px'
+                                }}>
+                                    <h4 style={{ margin: 0, color: '#fff', fontSize: '1rem', fontWeight: 600 }}>Android APK</h4>
+                                    <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0, lineHeight: 1.4 }}>
+                                        Alternatively, you can directly download the Android package (APK) file to install Mehfil on your Android device.
+                                    </p>
+                                    <a 
+                                        href="/mehfil.apk" 
+                                        download="mehfil.apk"
+                                        style={{
+                                            alignSelf: 'flex-start',
+                                            padding: '8px 18px', 
+                                            borderRadius: '50px', 
+                                            background: 'rgba(255,255,255,0.06)', 
+                                            color: '#fff', 
+                                            border: '1px solid rgba(255,255,255,0.1)', 
+                                            fontWeight: 600, 
+                                            cursor: 'pointer', 
+                                            fontSize: '0.85rem', 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            gap: '6px',
+                                            textDecoration: 'none',
+                                            transition: 'background 0.2s'
+                                        }}
+                                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
+                                        onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+                                    >
+                                        <Download size={14} /> Download APK
+                                    </a>
+                                </div>
+                            </section>
+                        )}
 
                         <section className="settings-card" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,255,255,0.08)' }}>
                             <h3 style={{ margin: '0 0 1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>

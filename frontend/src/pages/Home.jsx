@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { PlayCircle, Flame, ChevronRight, ListMusic, Mic2, Play, Pause, Music, History, Sparkles, Heart, Compass, Check, Users, SlidersHorizontal } from 'lucide-react';
+import { PlayCircle, Flame, ChevronRight, ListMusic, Mic2, Play, Pause, Music, History, Sparkles, Heart, Compass, Check, Users, SlidersHorizontal, Download, X, Smartphone } from 'lucide-react';
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { themeManager } from '../utils/themeManager.js';
@@ -279,6 +279,12 @@ export default function Home() {
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [userProfile, setUserProfile] = useState(null);
 
+    const [canInstall, setCanInstall] = useState(!!window.__deferredPrompt);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [isStandalone, setIsStandalone] = useState(false);
+    const [isIOS, setIsIOS] = useState(false);
+    const [showBanner, setShowBanner] = useState(false);
+
     const navigate = useNavigate();
 
     const playSong = usePlayerStore(s => s.playSong);
@@ -293,6 +299,44 @@ export default function Home() {
         if (profile.isNewUser) {
             setShowOnboarding(true);
         }
+
+        const checkInstallState = () => {
+            const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            setIsStandalone(standalone);
+
+            const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            setIsIOS(ios);
+
+            const dismissed = localStorage.getItem('mehfil-pwa-banner-dismissed') === 'true';
+            if (window.innerWidth < 768 && !standalone && !dismissed) {
+                setShowBanner(true);
+            }
+        };
+        checkInstallState();
+
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+            if (window.innerWidth >= 768) {
+                setShowBanner(false);
+            } else {
+                const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+                const dismissed = localStorage.getItem('mehfil-pwa-banner-dismissed') === 'true';
+                if (!standalone && !dismissed) {
+                    setShowBanner(true);
+                }
+            }
+        };
+        window.addEventListener('resize', handleResize);
+
+        const handler = () => {
+            setCanInstall(true);
+            const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            const dismissed = localStorage.getItem('mehfil-pwa-banner-dismissed') === 'true';
+            if (window.innerWidth < 768 && !standalone && !dismissed) {
+                setShowBanner(true);
+            }
+        };
+        window.addEventListener('pwa-can-install', handler);
 
         async function fetchHome() {
             setLoading(true);
@@ -331,6 +375,11 @@ export default function Home() {
             }
         }
         fetchHome();
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('pwa-can-install', handler);
+        };
     }, []);
 
 
@@ -340,6 +389,22 @@ export default function Home() {
         const [sections] = await Promise.all([getPersonalizedSections()]);
         setPersonalizedSections(sections);
         setLoading(false);
+    };
+
+    const handleDismissBanner = () => {
+        localStorage.setItem('mehfil-pwa-banner-dismissed', 'true');
+        setShowBanner(false);
+    };
+
+    const handleInstallApp = async () => {
+        const promptEvent = window.__deferredPrompt;
+        if (!promptEvent) return;
+        promptEvent.prompt();
+        const { outcome } = await promptEvent.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        window.__deferredPrompt = null;
+        setCanInstall(false);
+        setShowBanner(false);
     };
 
     const handlePlayMedia = (item) => {
@@ -379,6 +444,155 @@ export default function Home() {
         <div style={{ display: 'block', paddingBottom: '100px' }}>
             {showOnboarding && (
                 <GenreOnboarding onComplete={handleOnboardingComplete} />
+            )}
+
+            {showBanner && (
+                <div style={{
+                    margin: '1rem',
+                    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(192, 132, 252, 0.1) 100%)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(139, 92, 246, 0.3)',
+                    borderRadius: '20px',
+                    padding: '1.2rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                    position: 'relative',
+                    boxShadow: '0 8px 32px 0 rgba(139, 92, 246, 0.15)',
+                    animation: 'fadeIn 0.5s ease',
+                    zIndex: 10
+                }}>
+                    <button 
+                        onClick={handleDismissBanner}
+                        style={{
+                            position: 'absolute',
+                            top: '12px',
+                            right: '12px',
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'rgba(255,255,255,0.5)',
+                            cursor: 'pointer',
+                            padding: '4px'
+                        }}
+                    >
+                        <X size={16} />
+                    </button>
+
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <div style={{
+                            background: 'var(--accent-primary-soft)',
+                            color: 'var(--accent-primary)',
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                            boxShadow: '0 0 15px rgba(139, 92, 246, 0.2)'
+                        }}>
+                            <Smartphone size={20} />
+                        </div>
+                        <div style={{ paddingRight: '20px' }}>
+                            <h4 style={{ margin: 0, color: '#fff', fontSize: '0.95rem', fontWeight: 700 }}>Get Mehfil Mobile App</h4>
+                            <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.8rem', lineHeight: 1.4 }}>
+                                Install Mehfil for full-screen mode, smoother playback, and offline app support.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        {canInstall ? (
+                            <button
+                                onClick={handleInstallApp}
+                                style={{
+                                    padding: '8px 18px',
+                                    borderRadius: '50px',
+                                    background: 'var(--accent-primary)',
+                                    color: '#000',
+                                    border: 'none',
+                                    fontWeight: 700,
+                                    fontSize: '0.8rem',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
+                                    transition: 'transform 0.2s'
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                            >
+                                <Download size={14} /> Install Now
+                            </button>
+                        ) : isIOS ? (
+                            <Link
+                                to="/settings"
+                                style={{
+                                    padding: '8px 18px',
+                                    borderRadius: '50px',
+                                    background: 'var(--accent-primary)',
+                                    color: '#000',
+                                    border: 'none',
+                                    fontWeight: 700,
+                                    fontSize: '0.8rem',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    textDecoration: 'none',
+                                    boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
+                                    transition: 'transform 0.2s'
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                            >
+                                <Smartphone size={14} /> How to Install
+                            </Link>
+                        ) : (
+                            <Link
+                                to="/settings"
+                                style={{
+                                    padding: '8px 18px',
+                                    borderRadius: '50px',
+                                    background: 'rgba(255,255,255,0.08)',
+                                    color: '#fff',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    fontWeight: 600,
+                                    fontSize: '0.8rem',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    textDecoration: 'none',
+                                    transition: 'background 0.2s'
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
+                                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+                            >
+                                <Smartphone size={14} /> View Guide
+                            </Link>
+                        )}
+                        <button
+                            onClick={handleDismissBanner}
+                            style={{
+                                padding: '8px 16px',
+                                borderRadius: '50px',
+                                background: 'transparent',
+                                color: 'rgba(255,255,255,0.6)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                fontWeight: 600,
+                                fontSize: '0.8rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = '#fff'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; }}
+                        >
+                            Not Now
+                        </button>
+                    </div>
+                </div>
             )}
 
             {/* Personalized Hero */}
