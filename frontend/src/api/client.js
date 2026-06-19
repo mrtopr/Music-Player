@@ -57,6 +57,7 @@ export const ENDPOINTS = {
  * @returns {Promise<Object>}
  */
 const apiCache = new Map();
+const API_CACHE_MAX = 100; // FIFO eviction — prevents unbounded memory growth
 
 /**
  * Standardized API error reporting
@@ -86,10 +87,15 @@ export async function apiFetch(path, params = {}) {
         // Retain standard query topologies for 5 minutes globally
         apiCache.set(urlString, finalData);
         setTimeout(() => apiCache.delete(urlString), 5 * 60 * 1000);
+        // FIFO eviction: remove oldest entry when cap is exceeded
+        if (apiCache.size > API_CACHE_MAX) {
+            apiCache.delete(apiCache.keys().next().value);
+        }
 
         return finalData;
     } catch (err) {
-        return handleApiError(err, path);
+        handleApiError(err, path); // logs the error
+        throw err;                 // propagate so callers can react (was silently swallowed before)
     }
 }
 

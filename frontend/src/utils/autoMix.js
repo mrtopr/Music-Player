@@ -52,8 +52,8 @@ export const calculateMatchScore = (candidate, current, recentIds = []) => {
     const energyDiff = Math.abs(candMeta.energy - currMeta.energy);
     score += Math.max(0, 20 - (energyDiff * 20));
 
-    // 4. Content diversity
-    if (candidate.primaryArtists === current.primaryArtists) score += 10;
+    // 4. Artist variety — reward different artists to avoid same-artist loops
+    if (candidate.primaryArtists !== current.primaryArtists) score += 10;
 
     return score;
 };

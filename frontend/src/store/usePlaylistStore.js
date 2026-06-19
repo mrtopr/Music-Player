@@ -10,9 +10,9 @@ export const usePlaylistStore = create((set, get) => ({
     })(),
 
     createPlaylist: (name) => {
-        if (!name?.trim()) return;
+        if (!name?.trim()) return null;
         const newPlaylist = {
-            id: Date.now().toString(),
+            id: `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
             name: name.trim(),
             songs: [],
             createdAt: new Date().toISOString()
@@ -28,7 +28,7 @@ export const usePlaylistStore = create((set, get) => ({
             return { playlists: updated };
         });
 
-        console.log('Playlist created:', name);
+        return newPlaylist.id; // returned so callers can immediately add songs
     },
 
     deletePlaylist: (id) => {

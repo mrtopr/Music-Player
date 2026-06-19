@@ -120,7 +120,10 @@ class ProAudioEngine {
         const idle = activeChannel === 'A' ? this.gainB : this.gainA;
 
         active.gain.setTargetAtTime(volume, now, 0.05);
+        // setTargetAtTime approaches 0 asymptotically — hard-snap to exactly 0
+        // after ~8 time constants (0.4s) to eliminate any residual EQ bleed-through.
         idle.gain.setTargetAtTime(0, now, 0.05);
+        idle.gain.setValueAtTime(0, now + 0.4);
     }
 
 

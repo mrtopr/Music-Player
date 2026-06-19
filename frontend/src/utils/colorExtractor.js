@@ -14,16 +14,9 @@ export async function extractAlbumColors(imageUrl, trackTitle = '') {
 
     if (!imageUrl || imageUrl === 'favicon.ico') return fallback;
 
-    console.group(`[ColorExtractor] Extracting for: ${trackTitle}`);
-    console.log('Image URL:', imageUrl);
-
     try {
-        // node-vibrant can fail on CORS if not handled. 
-        // Typically image servers for music (saavn) have CORS headers.
         const vBuilder = Vibrant.from(imageUrl);
         const palette = await vBuilder.getPalette();
-
-        console.log('Extracted Palette:', palette);
 
         const safeHex = (swatch, d) => (swatch && typeof swatch.getHex === 'function' ? swatch.getHex() : d);
         const safeRGB = (swatch, d) => {
@@ -52,7 +45,6 @@ export async function extractAlbumColors(imageUrl, trackTitle = '') {
         const config = mood ? MOOD_CATEGORIES[mood] : null;
 
         if (config) {
-            console.log(`[ColorExtractor] Applying biased theme from mood: ${mood}`);
             colors.accent = config.colorFallback;
             colors.accentRGB = config.rgbFallback;
             if (colors.dominant === '#1a1a1a') {
@@ -61,13 +53,10 @@ export async function extractAlbumColors(imageUrl, trackTitle = '') {
             }
         }
 
-        console.log('Final Palette:', colors);
-        console.groupEnd();
         return colors;
 
     } catch (error) {
         console.error('[ColorExtractor] Failed:', error);
-        console.groupEnd();
         return fallback;
     }
 }

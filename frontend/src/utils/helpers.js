@@ -9,13 +9,11 @@ export function formatTime(seconds) {
 
 export function decodeEntities(text) {
     if (!text) return '';
-    return text
-        .replace(/&quot;/g, '"')
-        .replace(/&amp;/g, '&')
-        .replace(/&#039;/g, "'")
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&apos;/g, "'");
+    // Use the browser's built-in HTML parser — handles every named and numeric
+    // entity (&amp; &#8211; &#x2019; &quot; etc.) without maintaining a manual list.
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = text;
+    return textarea.value;
 }
 
 export function getSafeImage(image, getImageUrlFn) {
@@ -37,7 +35,10 @@ export function parseLrc(lrcText) {
             const min = parseInt(match[1]);
             const sec = parseInt(match[2]);
             const msStr = match[3] || '0';
-            const ms = parseFloat(`0.${msStr}`);
+            // Standard LRC uses centiseconds (1–2 digits); extended uses milliseconds (3 digits).
+            const ms = msStr.length <= 2
+                ? parseInt(msStr, 10) / 100   // centiseconds → seconds
+                : parseInt(msStr, 10) / 1000; // milliseconds → seconds
             const time = min * 60 + sec + ms;
             const text = match[4].trim();
             result.push({ time, text });

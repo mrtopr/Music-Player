@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Heart, ListMusic, Plus, Play, Pause, Music, Trash2, Share2 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../api/client.js';
+import { decodeEntities } from '../utils/helpers.js';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { usePlaylistStore } from '../store/usePlaylistStore';
 import AddToPlaylist from '../components/common/AddToPlaylist';
@@ -29,7 +30,7 @@ function SongRow({ song, index, onPlay, isCurrent, isPlaying }) {
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontWeight: 500, color: isCurrent ? 'var(--accent-primary)' : 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {song.title?.replace(/&quot;/g, '"')}
+                    {decodeEntities(song.title || '')}
                 </div>
                 <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {song.subtitle || song.primaryArtists}

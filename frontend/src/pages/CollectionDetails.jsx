@@ -4,7 +4,7 @@ import { Play, Pause, Shuffle, ArrowLeft, Heart, MoreHorizontal, Clock, Loader2,
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
 import AddToPlaylist from '../components/common/AddToPlaylist';
-import { formatTime } from '../utils/helpers.js';
+import { formatTime, decodeEntities } from '../utils/helpers.js';
 
 export default function CollectionDetails({ type }) {
     const { id } = useParams();
@@ -142,7 +142,7 @@ export default function CollectionDetails({ type }) {
         );
     }
 
-    const title = data.name || data.title?.replace(/&quot;/g, '"');
+    const title = decodeEntities(data.name || data.title || '');
     const subtitle = data.subtitle || data.primaryArtists || (type === 'artist' ? 'Artist' : 'Collection');
     const image = getImageUrl(data.image);
     const isArtist = type === 'artist';
@@ -300,7 +300,7 @@ export default function CollectionDetails({ type }) {
 
                                     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                         <div style={{ color: isCurrent ? 'var(--accent-primary)' : '#fff', fontWeight: 500, fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                            {(track.title || track.name || 'Unknown Track')?.replace(/&quot;/g, '"')}
+                                            {decodeEntities(track.title || track.name || 'Unknown Track')}
                                         </div>
                                         <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                             {track.primaryArtists || track.subtitle}

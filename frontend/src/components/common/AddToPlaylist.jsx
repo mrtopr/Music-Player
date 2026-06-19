@@ -45,7 +45,9 @@ export default function AddToPlaylist({ song, className = "" }) {
         e.preventDefault();
         e.stopPropagation();
         if (newPlaylistName.trim()) {
-            createPlaylist(newPlaylistName.trim());
+            const newId = createPlaylist(newPlaylistName.trim());
+            // Immediately add the song to the newly created playlist
+            if (newId) addSongToPlaylist(newId, song);
             setNewPlaylistName('');
             setIsCreating(false);
         }

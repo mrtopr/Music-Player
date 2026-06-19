@@ -28,6 +28,7 @@ export default function SearchPage() {
     const navigate = useNavigate();
     const inputRef = useRef(null);
     const loaderRef = useRef(null);
+    const fetchingRef = useRef(false); // prevents IntersectionObserver double-fire
 
     const playSong = usePlayerStore(s => s.playSong);
     const playQueue = usePlayerStore(s => s.playQueue);
@@ -38,6 +39,7 @@ export default function SearchPage() {
         if (!q || q.length < 2) return;
         if (p === 1) setLoading(true);
         else setLoadingMore(true);
+        fetchingRef.current = true;
 
         setSearched(true);
         try {
@@ -59,23 +61,22 @@ export default function SearchPage() {
         } finally {
             setLoading(false);
             setLoadingMore(false);
+            fetchingRef.current = false;
         }
     }, []);
 
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting && hasMore && !loading && !loadingMore && query.length >= 2) {
-                setPage(prevPage => {
-                    const next = prevPage + 1;
-                    doSearch(query, searchType, next);
-                    return next;
-                });
+            if (entries[0].isIntersecting && hasMore && !loading && !loadingMore && !fetchingRef.current && query.length >= 2) {
+                const next = page + 1;
+                setPage(next);
+                doSearch(query, searchType, next);
             }
         }, { threshold: 0.1 });
 
         if (loaderRef.current) observer.observe(loaderRef.current);
         return () => observer.disconnect();
-    }, [hasMore, loading, loadingMore, query, searchType, doSearch]);
+    }, [hasMore, loading, loadingMore, page, query, searchType, doSearch]);
 
     useEffect(() => {
         if (!query.trim()) {

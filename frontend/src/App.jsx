@@ -81,12 +81,20 @@ function AppContent() {
     }, [colors]);
 
     useEffect(() => {
-        const saved = localStorage.getItem('mehfilUser');
-        if (saved) setUser(JSON.parse(saved));
+        try {
+            const saved = localStorage.getItem('mehfilUser');
+            if (saved) setUser(JSON.parse(saved));
+        } catch (e) {
+            console.warn('[App] Failed to restore user session from localStorage:', e);
+        }
 
         const handleLogin = () => {
-            const data = localStorage.getItem('mehfilUser');
-            if (data) setUser(JSON.parse(data));
+            try {
+                const data = localStorage.getItem('mehfilUser');
+                if (data) setUser(JSON.parse(data));
+            } catch (e) {
+                console.warn('[App] Failed to parse user from login event:', e);
+            }
         };
         window.addEventListener('mehfil-login', handleLogin);
 

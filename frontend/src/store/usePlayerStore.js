@@ -245,6 +245,9 @@ const handleIncomingSyncMessage = async (data) => {
 // Hard-init the pro engine once
 audioEngine.init(audioA, audioB);
 
+// ── Lyrics Cache (keyed by song ID, survives song changes within a session) ──
+const lyricsCache = new Map();
+
 export const usePlayerStore = create((set, get) => ({
 
     // ── State ──
@@ -263,6 +266,7 @@ export const usePlayerStore = create((set, get) => ({
     participants: [],
     lyrics: null,
     lyricsLoading: false,
+    lyricsError: false, // true when the upstream fetch itself failed (vs. simply not found)
 
     volume: 0.8,
     isMuted: false,
@@ -385,29 +389,43 @@ export const usePlayerStore = create((set, get) => ({
 
     fetchLyricsForSong: async (song) => {
         if (!song) return;
-        const query = `${song.title} ${song.primaryArtists || song.subtitle || ''}`.trim();
+
+        // Return immediately from cache — no re-fetch for songs already resolved
+        const cacheKey = song.id || song.title;
+        if (cacheKey && lyricsCache.has(cacheKey)) {
+            set({ lyrics: lyricsCache.get(cacheKey), lyricsLoading: false, lyricsError: false });
+            return;
+        }
+
+        // Decode HTML entities (e.g. &amp; &quot; from JioSaavn) so lrclib gets a clean query
+        const rawTitle = decodeEntities(song.title || '');
+        const rawArtist = decodeEntities(song.primaryArtists || song.subtitle || '');
+        const query = `${rawTitle} ${rawArtist}`.trim();
+
         try {
             const res = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(query)}`);
-            if (!res.ok) throw new Error('Failed to fetch lyrics');
+            if (!res.ok) throw new Error(`lrclib responded ${res.status}`);
             const data = await res.json();
             const match = data && data[0];
             if (match) {
                 const parsedSynced = match.syncedLyrics ? parseLrc(match.syncedLyrics) : [];
-                set({
-                    lyrics: {
-                        plain: match.plainLyrics || null,
-                        synced: parsedSynced,
-                        isSynced: parsedSynced.length > 0,
-                        instrumental: match.instrumental || false
-                    },
-                    lyricsLoading: false
-                });
+                const lyricsPayload = {
+                    plain: match.plainLyrics || null,
+                    synced: parsedSynced,
+                    isSynced: parsedSynced.length > 0,
+                    instrumental: match.instrumental || false
+                };
+                if (cacheKey) lyricsCache.set(cacheKey, lyricsPayload);
+                set({ lyrics: lyricsPayload, lyricsLoading: false, lyricsError: false });
             } else {
-                set({ lyrics: null, lyricsLoading: false });
+                // No results — cache the "not found" result too to prevent repeated hits
+                if (cacheKey) lyricsCache.set(cacheKey, null);
+                set({ lyrics: null, lyricsLoading: false, lyricsError: false });
             }
         } catch (err) {
             console.warn('Lyrics fetch failed:', err);
-            set({ lyrics: null, lyricsLoading: false });
+            // Don't cache errors — a transient network issue should be retried on next visit
+            set({ lyrics: null, lyricsLoading: false, lyricsError: true });
         }
     },
 
@@ -430,10 +448,10 @@ export const usePlayerStore = create((set, get) => ({
         for (let i = 0; i < currentQueue.length; i++) {
             const song = currentQueue[i];
             if (addIds.has(song.id)) {
+                // Only songs strictly before the current index pull the pointer back.
+                // Removing the current song itself (i === currentIndex) must NOT shift it,
+                // otherwise the insertion position ends up one slot too low.
                 if (i < currentIndex) {
-                    newCurrentIndex--;
-                } 
-                else if (i === currentIndex) {
                     newCurrentIndex--;
                 }
             } else {
@@ -515,6 +533,14 @@ export const usePlayerStore = create((set, get) => ({
         const nextChannel = freshState.activeChannel === 'A' ? 'B' : 'A';
         const nextAudio = nextChannel === 'A' ? audioA : audioB;
 
+        // Peek at the lyrics cache before committing state.
+        // If the song is already cached, apply lyrics atomically — no flash, no spinner.
+        // undefined = not in cache (triggers fetch); null = cached "not found"
+        const lyricsCacheKey = song.id || song.title;
+        const cachedLyrics = lyricsCache.has(lyricsCacheKey)
+            ? lyricsCache.get(lyricsCacheKey)
+            : undefined;
+
         // [CRITICAL] Immediate state commit with the NEW channel
         // Otherwise onTimeUpdate will reject the updates until this finishes
         set({
@@ -527,11 +553,15 @@ export const usePlayerStore = create((set, get) => ({
             duration: song.duration || 0, // Pre-populating from metadata if available
             isPrepared: false,
             isTransitioning: false,
-            lyrics: null,
-            lyricsLoading: true
+            lyrics: cachedLyrics !== undefined ? cachedLyrics : null,
+            lyricsLoading: cachedLyrics === undefined, // only true when a fetch is actually needed
+            lyricsError: false
         });
 
-        get().fetchLyricsForSong(song);
+        // Only fetch when not already in cache
+        if (cachedLyrics === undefined) {
+            get().fetchLyricsForSong(song);
+        }
         if (!isSync) {
             broadcastHostState();
         }

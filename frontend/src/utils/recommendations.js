@@ -98,7 +98,7 @@ export async function getPersonalizedSections() {
     // Liked song genre radio
     const likedSongs = (() => {
         try {
-            return JSON.parse(localStorage.getItem('mehfilLikedSongs') || '[]');
+            return JSON.parse(localStorage.getItem('likedSongs') || '[]');
         } catch { return []; }
     })();
 
