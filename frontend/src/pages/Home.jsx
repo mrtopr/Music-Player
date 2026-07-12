@@ -720,7 +720,7 @@ export default function Home() {
                             title="New releases"
                             onShowMore={() => navigate('/section/newReleases')}
                         />
-                        {loading ? <LoadingSkeleton /> : <HorizontalScroll songs={newReleases} onPlay={playSong} currentId={currentId} isPlaying={isPlaying} />}
+                        {loading ? <LoadingSkeleton /> : <HorizontalScroll songs={newReleases} onPlay={handlePlayMedia} currentId={currentId} isPlaying={isPlaying} />}
                     </div>
 
                     {/* Popular Albums */}

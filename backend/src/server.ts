@@ -1,5 +1,5 @@
 import { serve } from '@hono/node-server'
-import { AlbumController, ArtistController, ModulesController, RecognitionController, SearchController, SongController } from '#modules/index'
+import { AlbumController, ArtistController, ModulesController, RecognitionController, SearchController, SongController, TelemetryController } from '#modules/index'
 import { PlaylistController } from '#modules/playlists/controllers'
 import { App } from './app'
 
@@ -10,7 +10,8 @@ const app = new App([
   new ArtistController(),
   new PlaylistController(),
   new RecognitionController(),
-  new ModulesController()
+  new ModulesController(),
+  new TelemetryController()
 ]).getApp()
 
 const port = Number(process.env.PORT) || 3000

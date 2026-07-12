@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  playbackEvents PlaybackEvent[]
+}
+
+model Track {
+  id          String   @id // JioSaavn Track ID or internal UUID
+  name        String?
+  artist      String?
+  album       String?
+  durationMs  Int?
+  genre       String?
+  bpm         Int?     // For Phase 1 Content-Based Queue
+  
+  playbackEvents PlaybackEvent[]
+}
+
+model PlaybackEvent {
+  id                 String   @id @default(uuid())
+  user               User     @relation(fields: [userId], references: [id])
+  userId             String
+  track              Track    @relation(fields: [trackId], references: [id])
+  trackId            String
+  sessionId          String   @default(uuid())
+  eventType          String   // play_started, play_completed, skipped, repeated
+  timestamp          DateTime @default(now())
+  contextSource      String?  // search, playlist, auto-queue
+  contextPlaylistId  String?
+  durationListenedMs Int?
+  
+  @@index([userId, timestamp])
+  @@index([trackId, eventType])
+}

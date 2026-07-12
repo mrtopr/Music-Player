@@ -4,6 +4,7 @@ import { addToHistory, addGenrePlay } from '../utils/history.js';
 import { pickBestNext } from '../utils/autoMix.js';
 import { audioEngine } from '../utils/audioEngine.js';
 import { parseLrc } from '../utils/helpers.js';
+import { logPlaybackEvent, getUserId } from '../utils/telemetry.js';
 
 // Singleton audio elements shared across HMR
 if (!window.__mehfilAudioA) {
@@ -541,6 +542,18 @@ export const usePlayerStore = create((set, get) => ({
             ? lyricsCache.get(lyricsCacheKey)
             : undefined;
 
+        if (freshState.currentSong && freshState.currentSong.id !== song.id) {
+            const prevAudio = freshState.activeChannel === 'A' ? audioA : audioB;
+            const isCompleted = freshState.isTransitioning || (prevAudio.duration && prevAudio.duration - prevAudio.currentTime < 2);
+            logPlaybackEvent({ 
+                track: freshState.currentSong, 
+                eventType: isCompleted ? 'play_completed' : 'skipped',
+                durationListenedMs: Math.round(prevAudio.currentTime * 1000)
+            });
+        }
+        
+        logPlaybackEvent({ track: song, eventType: 'play_started' });
+
         // [CRITICAL] Immediate state commit with the NEW channel
         // Otherwise onTimeUpdate will reject the updates until this finishes
         set({
@@ -744,7 +757,37 @@ export const usePlayerStore = create((set, get) => ({
             } catch (err) { }
         }
 
-        const next = pickBestNext(pool, state.currentSong);
+        let next = null;
+        try {
+            // Attempt to get recommendation from ML Microservice
+            const mlRes = await fetch('http://localhost:8000/api/ml/recommend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: getUserId(),
+                    current_track_id: state.currentSong.id,
+                    limit: 1,
+                    client_hour: new Date().getHours()
+                })
+            });
+            const mlData = await mlRes.json();
+            
+            if (mlData.success && mlData.recommendations.length > 0) {
+                const recommendedId = mlData.recommendations[0].track_id;
+                const found = pool.find(s => s.id === recommendedId);
+                if (found) {
+                    next = { ...found, mlQueued: true };
+                }
+            }
+        } catch (mlErr) {
+            console.warn('[AutoMix] ML Service unavailable, falling back to local autoMix...', mlErr);
+        }
+
+        // Fallback to local autoMix logic
+        if (!next) {
+            next = pickBestNext(pool, state.currentSong);
+        }
+
         if (next) {
             console.log('[AutoMix] Preloading:', next.title);
             const inQueue = state.queue.some(s => s.id === next.id);
@@ -902,6 +945,14 @@ const attachAudioListeners = () => {
         const store = usePlayerStore.getState();
         const audio = e.target;
         if (store.activeChannel !== (audio === audioA ? 'A' : 'B')) return;
+
+        if (store.currentSong && !store.isTransitioning) {
+            logPlaybackEvent({ 
+                track: store.currentSong, 
+                eventType: 'play_completed',
+                durationListenedMs: Math.round(audio.currentTime * 1000)
+            });
+        }
 
         if (store.repeat === 'one') {
             audio.currentTime = 0;

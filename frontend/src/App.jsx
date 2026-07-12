@@ -21,6 +21,7 @@ import CollectionDetails from './pages/CollectionDetails';
 import SectionPage from './pages/SectionPage';
 import Legal from './pages/Legal';
 import About from './pages/About';
+import Stats from './pages/Stats';
 
 function AppContent() {
     const [user, setUser] = useState(null);
@@ -132,6 +133,7 @@ function AppContent() {
                         <Route path="/section/:type" element={<SectionPage />} />
                         <Route path="/legal/:type" element={<Legal />} />
                         <Route path="/about" element={<About />} />
+                        <Route path="/stats" element={<Stats />} />
                     </Routes>
                 </div>
             </div>

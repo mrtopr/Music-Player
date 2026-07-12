@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, ChevronUp, ListMusic } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, ChevronUp, ListMusic, Sparkles } from 'lucide-react';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { getImageUrl } from '../../api/client.js';
 import { formatTime, decodeEntities, getSafeImage } from '../../utils/helpers.js';
@@ -47,7 +47,14 @@ export default function MiniPlayer({ onExpand, onQueue }) {
                     <img id="miniPlayerImage" src={imageUrl} alt="Album Art" />
                     <div>
                         <div id="miniPlayerTitle">{title}</div>
-                        <div id="miniPlayerArtist">{artist}</div>
+                        <div id="miniPlayerArtist">
+                            {artist}
+                            {currentSong.mlQueued && (
+                                <span style={{ marginLeft: '6px', color: 'var(--accent-primary)', display: 'inline-flex', alignItems: 'center', gap: '2px', fontSize: '10px' }} title="Queued via Taste Profile">
+                                    <Sparkles size={10} />
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
 

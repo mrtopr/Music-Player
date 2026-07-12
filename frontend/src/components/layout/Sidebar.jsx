@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, ListMusic, Heart, Settings, LogOut, Mic2, Download } from 'lucide-react';
+import { Home, ListMusic, Heart, Settings, LogOut, Mic2, Download, BarChart2 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 export default function Sidebar() {
@@ -74,6 +74,12 @@ export default function Sidebar() {
                     <Link to="/artists" className="sidebar-link" onClick={handleLinkClick}>
                         <Mic2 className="icon-svg" size={20} />
                         <span>Artists</span>
+                    </Link>
+                </li>
+                <li className={isActive('/stats')}>
+                    <Link to="/stats" className="sidebar-link" onClick={handleLinkClick}>
+                        <BarChart2 className="icon-svg" size={20} />
+                        <span>Stats</span>
                     </Link>
                 </li>
                 <li className={isActive('/settings')}>

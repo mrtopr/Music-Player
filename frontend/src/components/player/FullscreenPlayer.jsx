@@ -480,6 +480,26 @@ export default function FullscreenPlayer({ visible, onClose }) {
     const [optionsOpen, setOptionsOpen] = useState(false);
     const [downloading, setDownloading] = useState(false);
     const [showLyrics, setShowLyrics] = useState(false);
+    const [mlFeatures, setMlFeatures] = useState(null);
+
+    // Fetch ML features for generative UI
+    useEffect(() => {
+        if (!currentSong) return;
+        const fetchFeatures = async () => {
+            try {
+                const res = await fetch(`http://localhost:8000/api/ml/features/${currentSong.id}`);
+                const data = await res.json();
+                if (data.success) {
+                    setMlFeatures(data);
+                } else {
+                    setMlFeatures(null);
+                }
+            } catch (e) {
+                setMlFeatures(null);
+            }
+        };
+        fetchFeatures();
+    }, [currentSong?.id]);
 
     const handleDownload = async () => {
         if (!currentSong) return;
@@ -564,12 +584,20 @@ export default function FullscreenPlayer({ visible, onClose }) {
                 pointerEvents: 'none'
             }}></div>
 
-            {/* High-density atmospheric overlay */}
+            {/* High-density atmospheric overlay - Reacts to Music Energy */}
             <div style={{
                 position: 'absolute', inset: 0,
-                background: `radial-gradient(circle at 20% 30%, rgba(${albumColors.accentRGB}, 0.15) 0%, transparent 50%)`,
-                zIndex: 1, pointerEvents: 'none'
+                background: `radial-gradient(circle at 20% 30%, rgba(${albumColors.accentRGB}, ${mlFeatures?.energy > 0.6 ? 0.35 : 0.15}) 0%, transparent ${mlFeatures?.energy > 0.6 ? '60%' : '50%'})`,
+                zIndex: 1, pointerEvents: 'none',
+                transition: 'all 2s ease-in-out',
+                animation: mlFeatures?.energy > 0.6 ? `pulse-energy ${1.5 / mlFeatures.energy}s infinite alternate` : 'none'
             }}></div>
+            <style>{`
+                @keyframes pulse-energy {
+                    0% { transform: scale(1); opacity: 0.8; }
+                    100% { transform: scale(1.1); opacity: 1; }
+                }
+            `}</style>
 
             {/* Header Area */}
             <header style={{
@@ -586,6 +614,16 @@ export default function FullscreenPlayer({ visible, onClose }) {
 
                 <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '2px', opacity: 0.5, textTransform: 'uppercase', marginBottom: '4px' }}>Now Playing</div>
+                    {currentSong.mlQueued && (
+                        <div style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '4px',
+                            background: 'rgba(198, 161, 91, 0.15)', color: 'var(--accent-primary)',
+                            padding: '4px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: 600,
+                            border: '1px solid rgba(198, 161, 91, 0.3)'
+                        }}>
+                            <Sparkles size={10} /> Queued via Taste Profile
+                        </div>
+                    )}
                 </div>
 
                 <div style={{ position: 'relative' }}>
