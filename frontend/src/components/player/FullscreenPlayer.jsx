@@ -487,7 +487,8 @@ export default function FullscreenPlayer({ visible, onClose }) {
         if (!currentSong) return;
         const fetchFeatures = async () => {
             try {
-                const res = await fetch(`http://localhost:8000/api/ml/features/${currentSong.id}`);
+                const ML_API_URL = import.meta.env.VITE_ML_SERVICE_URL || 'http://localhost:8000';
+                const res = await fetch(`${ML_API_URL}/api/ml/features/${currentSong.id}`);
                 const data = await res.json();
                 if (data.success) {
                     setMlFeatures(data);

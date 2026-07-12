@@ -760,7 +760,8 @@ export const usePlayerStore = create((set, get) => ({
         let next = null;
         try {
             // Attempt to get recommendation from ML Microservice
-            const mlRes = await fetch('http://localhost:8000/api/ml/recommend', {
+            const ML_API_URL = import.meta.env.VITE_ML_SERVICE_URL || 'http://localhost:8000';
+            const mlRes = await fetch(`${ML_API_URL}/api/ml/recommend`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

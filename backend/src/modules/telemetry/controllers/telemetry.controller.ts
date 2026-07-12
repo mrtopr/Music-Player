@@ -48,6 +48,17 @@ export class TelemetryController {
                 })
               }
             }
+          },
+          500: {
+            description: 'Error response',
+            content: {
+              'application/json': {
+                schema: z.object({
+                  success: z.boolean(),
+                  data: z.any()
+                })
+              }
+            }
           }
         }
       }),
@@ -69,18 +80,18 @@ export class TelemetryController {
             track = await prisma.track.create({
               data: {
                 id: trackId,
-                title: title || 'Unknown Track',
+                name: title || 'Unknown Track',
                 artist: artist || 'Unknown Artist',
                 genre: genre || 'Unknown',
                 durationMs: durationMs || 180000
               }
             })
-          } else if ((track.artist === 'Unknown Artist' || track.title === 'Unknown Track') && (title || artist)) {
+          } else if ((track.artist === 'Unknown Artist' || track.name === 'Unknown Track') && (title || artist)) {
              // Update track if it was previously created without metadata
              track = await prisma.track.update({
                 where: { id: trackId },
                 data: {
-                   title: title || track.title,
+                   name: title || track.name,
                    artist: artist || track.artist,
                    genre: genre || track.genre,
                    durationMs: durationMs || track.durationMs
@@ -123,6 +134,17 @@ export class TelemetryController {
         responses: {
           200: {
             description: 'Successful response',
+            content: {
+              'application/json': {
+                schema: z.object({
+                  success: z.boolean(),
+                  data: z.any()
+                })
+              }
+            }
+          },
+          500: {
+            description: 'Error response',
             content: {
               'application/json': {
                 schema: z.object({

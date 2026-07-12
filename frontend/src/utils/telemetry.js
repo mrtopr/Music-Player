@@ -53,7 +53,8 @@ export const logPlaybackEvent = async ({
 
     // 2. Send to Python ML Microservice (Update Taste Profile)
     if (eventType === 'play_completed' || eventType === 'skipped') {
-      await fetch('http://localhost:8000/api/ml/update-profile', {
+      const ML_API_URL = import.meta.env.VITE_ML_SERVICE_URL || 'http://localhost:8000';
+      await fetch(`${ML_API_URL}/api/ml/update-profile`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
