@@ -8,8 +8,16 @@ export default function LoginModal() {
     const fileRef = useRef(null);
 
     useEffect(() => {
-        const saved = localStorage.getItem('mehfilUser');
-        if (!saved) {
+        // Check old guest session
+        const oldUser = localStorage.getItem('mehfilUser');
+        // Check new JWT auth session (Zustand persisted store)
+        const jwtAuth = localStorage.getItem('mehfil-auth-storage');
+        const hasJwtSession = jwtAuth
+            ? (() => { try { return JSON.parse(jwtAuth)?.state?.isAuthenticated; } catch { return false; } })()
+            : false;
+
+        // Only show if neither session exists
+        if (!oldUser && !hasJwtSession) {
             setTimeout(() => setVisible(true), 500);
         }
     }, []);
@@ -90,7 +98,7 @@ export default function LoginModal() {
                         width: '100%', padding: '0.9rem', borderRadius: 'var(--radius-pill, 50px)',
                         fontSize: '1rem', fontWeight: 600
                     }}>
-                        Start Listening 🎵
+                        Start Listening
                     </button>
                 </form>
             </div>

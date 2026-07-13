@@ -542,6 +542,7 @@ body {
   border-color: #EF4444 !important;
   color: #fff !important;
   animation: pulse 1.5s infinite;
+  border-radius: 12px !important;
 }
 
 
@@ -5515,7 +5516,7 @@ div.featured-playlists h2 {
   height: 42px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 12px;
+  border-radius: 12px !important;
   backdrop-filter: blur(8px);
 }
 
@@ -5532,6 +5533,7 @@ div.featured-playlists h2 {
   color: #ff4757 !important;
   animation: micPulse 1.5s infinite;
   background: rgba(255, 71, 87, 0.1) !important;
+  border-radius: 12px !important;
 }
 
 @keyframes micPulse {

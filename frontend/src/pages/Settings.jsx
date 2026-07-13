@@ -3,12 +3,44 @@ import { Settings as SettingsIcon, User, Palette, Volume2, Info, Trash2, LogOut,
 import { getPreferredGenres, savePreferredGenres, getGenreCounts } from '../utils/history.js';
 import { ALL_GENRES, GENRE_PROFILES } from '../utils/genreProfiles.js';
 import { usePlayerStore } from '../store/usePlayerStore.js';
+import { useAuthStore } from '../store/useAuthStore';
+import { Upload } from 'lucide-react';
+
+// Static list — defined outside component to avoid re-creation on every render
+const PRESET_AVATARS = [
+    'https://api.dicebear.com/7.x/notionists/svg?seed=Felix',
+    'https://api.dicebear.com/7.x/notionists/svg?seed=Aneka',
+    'https://api.dicebear.com/7.x/notionists/svg?seed=Oliver',
+    'https://api.dicebear.com/7.x/notionists/svg?seed=Sam',
+    'https://api.dicebear.com/7.x/notionists/svg?seed=Bella',
+    'https://api.dicebear.com/7.x/notionists/svg?seed=Leo',
+    'https://api.dicebear.com/7.x/notionists/svg?seed=Ravi',
+    'https://api.dicebear.com/7.x/notionists/svg?seed=Priya',
+];
 
 export default function Settings() {
     const isAutoMixEnabled = usePlayerStore(state => state.isAutoMixEnabled);
     const toggleAutoMix = usePlayerStore(state => state.toggleAutoMix);
-    const [user, setUser] = useState(null);
+    const { user, token, logout, login } = useAuthStore();
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [editName, setEditName] = useState('');
+    const [editAvatar, setEditAvatar] = useState(''); // URL or base64
+    const [savingProfile, setSavingProfile] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
+    const fileInputRef = React.useRef(null);
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 2 * 1024 * 1024) {
+                alert('File too large. Maximum size is 2MB.');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (ev) => setEditAvatar(ev.target.result); // base64 for local preview
+            reader.readAsDataURL(file);
+        }
+    };
     const [auddToken, setAuddToken] = useState(localStorage.getItem('audd_api_token') || '');
     const [preferredGenres, setPreferredGenres] = useState(getPreferredGenres());
     const [genreCounts, setGenreCounts] = useState(getGenreCounts());
@@ -20,8 +52,6 @@ export default function Settings() {
     const [isIOS, setIsIOS] = useState(false);
 
     useEffect(() => {
-        const saved = localStorage.getItem('mehfilUser');
-        if (saved) setUser(JSON.parse(saved));
 
         const checkInstallState = () => {
             const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
@@ -57,10 +87,36 @@ export default function Settings() {
         }
     };
 
-    const logout = () => {
+    const handleLogout = () => {
         if (confirm('Logout from Mehfil?')) {
-            localStorage.removeItem('mehfilUser');
-            window.location.reload();
+            logout();
+        }
+    };
+
+    const handleSaveProfile = async () => {
+        setSavingProfile(true);
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/auth/me`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ name: editName, profileImageUrl: editAvatar })
+            });
+            const data = await res.json();
+            if (data.success) {
+                login(data.user, token);
+                setIsEditingProfile(false);
+                setSuccessMsg('Profile updated successfully!');
+                setTimeout(() => setSuccessMsg(''), 3000);
+            } else {
+                alert('Error updating profile: ' + data.message);
+            }
+        } catch (e) {
+            alert('Network error while updating profile');
+        } finally {
+            setSavingProfile(false);
         }
     };
 
@@ -104,33 +160,128 @@ export default function Settings() {
                             <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>
                                 <User size={20} /> My Account
                             </h3>
-                            {user && (
-                                <button onClick={logout} style={{ 
-                                    background: 'rgba(255,255,255,0.05)', border: 'none', color: '#ff6b6b', 
-                                    padding: '0.5rem 1rem', borderRadius: '12px', cursor: 'pointer',
-                                    display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', fontWeight: 500,
-                                    transition: 'all 0.2s'
-                                }}>
-                                    <LogOut size={16} /> Logout
-                                </button>
-                            )}
                         </div>
                         
                         {user ? (
-                            <div className="profile-info-row">
-                                <div style={{ position: 'relative' }}>
-                                    <img src={user.profilePicture || '/dp.png'} alt="Profile" className="profile-image" />
-                                    <div className="profile-verified-badge">
-                                        <Check size={14} strokeWidth={3} />
+                            isEditingProfile ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+                                    {/* Live Preview */}
+                                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                        <img
+                                            src={editAvatar || user.profileImageUrl || '/dp.png'}
+                                            alt="Preview"
+                                            style={{
+                                                width: '80px', height: '80px', borderRadius: '50%',
+                                                border: '3px solid var(--accent-primary)',
+                                                boxShadow: '0 0 20px rgba(168,85,247,0.4)',
+                                                background: '#fff', objectFit: 'cover',
+                                                transition: 'all 0.3s ease'
+                                            }}
+                                        />
+                                    </div>
+
+                                    {/* Name Input */}
+                                    <div>
+                                        <label style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>Display Name</label>
+                                        <input
+                                            type="text"
+                                            value={editName}
+                                            onChange={e => setEditName(e.target.value)}
+                                            style={{
+                                                width: '100%', padding: '10px 14px', borderRadius: '8px',
+                                                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                                                color: '#fff', boxSizing: 'border-box', fontSize: '0.95rem'
+                                            }}
+                                        />
+                                    </div>
+
+                                    {/* Avatar Grid */}
+                                    <div>
+                                        <label style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '8px' }}>Choose an Avatar</label>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem', marginBottom: '1rem' }}>
+                                            {PRESET_AVATARS.map((url, i) => (
+                                                <div
+                                                    key={i}
+                                                    onClick={() => setEditAvatar(url)}
+                                                    title={`Avatar ${i + 1}`}
+                                                    style={{
+                                                        cursor: 'pointer', borderRadius: '50%', overflow: 'hidden',
+                                                        padding: '3px',
+                                                        background: editAvatar === url
+                                                            ? 'linear-gradient(135deg, #a855f7, #6366f1)'
+                                                            : 'transparent',
+                                                        border: editAvatar === url
+                                                            ? 'none'
+                                                            : '2px solid rgba(255,255,255,0.12)',
+                                                        transition: 'all 0.25s ease',
+                                                        transform: editAvatar === url ? 'scale(1.08)' : 'scale(1)',
+                                                        aspectRatio: '1/1',
+                                                    }}
+                                                >
+                                                    <img src={url} alt={`Avatar ${i + 1}`} style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#f5f5f5', display: 'block' }} />
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Upload from Gallery */}
+                                        <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" style={{ display: 'none' }} />
+                                        <button
+                                            className="settings-btn"
+                                            style={{ width: '100%', background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.8)', border: '1px dashed rgba(255,255,255,0.25)', justifyContent: 'center', gap: '8px' }}
+                                            onClick={() => fileInputRef.current?.click()}
+                                        >
+                                            <Upload size={15} /> Upload from Gallery
+                                        </button>
+                                        {editAvatar?.startsWith('data:') && (
+                                            <div style={{ marginTop: '0.6rem', fontSize: '0.8rem', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <CheckCircle2 size={13} /> Custom image selected — preview above
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Actions */}
+                                    <div style={{ display: 'flex', gap: '1rem' }}>
+                                        <button
+                                            className="settings-btn"
+                                            style={{ background: 'var(--accent-primary)', color: '#000', flex: 1, fontWeight: 700, justifyContent: 'center' }}
+                                            onClick={handleSaveProfile}
+                                            disabled={savingProfile}
+                                        >
+                                            {savingProfile ? 'Saving…' : 'Save Profile'}
+                                        </button>
+                                        <button
+                                            className="settings-btn"
+                                            style={{ background: 'rgba(255,255,255,0.08)', color: '#fff', flex: 1, justifyContent: 'center' }}
+                                            onClick={() => setIsEditingProfile(false)}
+                                        >
+                                            Cancel
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="profile-text">
-                                    <div className="profile-name-text">{user.name}</div>
-                                    <div className="profile-meta-text">
-                                        Premium Listener &bull; Joined {new Date(user.loginDate).toLocaleDateString()}
+                            ) : (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+                                    <div style={{ position: 'relative' }}>
+                                        <img src={user.profileImageUrl || '/dp.png'} alt="Profile" className="profile-image" />
+                                        <div className="profile-verified-badge">
+                                            <Check size={14} strokeWidth={3} />
+                                        </div>
+                                    </div>
+                                    <div className="profile-text" style={{ flex: 1 }}>
+                                        <div className="profile-name-text">{user.name}</div>
+                                        <div className="profile-meta-text">
+                                            {user.email} &bull; Joined Recently
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '0.5rem', marginLeft: 'auto' }}>
+                                        <button className="settings-btn" style={{ background: 'rgba(255,255,255,0.1)' }} onClick={() => { setEditName(user.name); setEditAvatar(user.profileImageUrl); setIsEditingProfile(true); }}>
+                                            Edit
+                                        </button>
+                                        <button className="settings-btn" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.2)' }} onClick={handleLogout}>
+                                            <LogOut size={16} /> Logout
+                                        </button>
                                     </div>
                                 </div>
-                            </div>
+                            )
                         ) : (
                             <div style={{ textAlign: 'center', padding: '1rem', border: '2px dashed rgba(255,255,255,0.1)', borderRadius: '16px' }}>
                                 <p style={{ color: 'var(--text-muted)', margin: 0 }}>Log in to sync your library across devices.</p>

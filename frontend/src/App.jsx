@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { usePlayerStore } from './store/usePlayerStore';
 import { usePlaylistStore } from './store/usePlaylistStore';
+import { useAuthStore } from './store/useAuthStore';
 import { themeManager } from './utils/themeManager';
 import Sidebar from './components/layout/Sidebar';
 import TopBar from './components/layout/TopBar';
@@ -11,7 +12,6 @@ import EqualizerModal from './components/player/EqualizerModal';
 import SleepTimerModal from './components/player/SleepTimerModal';
 import QueuePanel from './components/player/QueuePanel';
 import MobileTabBar from './components/layout/MobileTabBar';
-import LoginModal from './components/layout/LoginModal';
 import Home from './pages/Home';
 import SearchPage from './pages/Search';
 import Library from './pages/Library';
@@ -22,9 +22,11 @@ import SectionPage from './pages/SectionPage';
 import Legal from './pages/Legal';
 import About from './pages/About';
 import Stats from './pages/Stats';
+import Auth from './pages/Auth';
 
 function AppContent() {
-    const [user, setUser] = useState(null);
+    const { user, checkAuth } = useAuthStore();
+    const location = useLocation();
     const fsVisible = usePlayerStore(state => state.isFullScreen);
     const setFsVisible = usePlayerStore(state => state.setFullScreen);
     const queueVisible = usePlayerStore(state => state.isQueueOpen);
@@ -34,13 +36,17 @@ function AppContent() {
     const sleepVisible = usePlayerStore(state => state.isSleepTimerOpen);
     const setSleepVisible = usePlayerStore(state => state.setSleepTimerOpen);
 
-
     const colors = usePlayerStore(state => state.albumColors);
 
     const joinSession = usePlayerStore(state => state.joinSession);
     const importPlaylist = usePlaylistStore(state => state.importPlaylist);
 
+    // True when on the auth page — renders without chrome
+    const isAuthPage = location.pathname === '/auth';
+
     useEffect(() => {
+        checkAuth(); // Verify JWT token on load
+
         const handleHash = () => {
             const hash = window.location.hash;
             if (hash.startsWith('#listen=')) {
@@ -82,32 +88,17 @@ function AppContent() {
     }, [colors]);
 
     useEffect(() => {
-        try {
-            const saved = localStorage.getItem('mehfilUser');
-            if (saved) setUser(JSON.parse(saved));
-        } catch (e) {
-            console.warn('[App] Failed to restore user session from localStorage:', e);
-        }
-
-        const handleLogin = () => {
-            try {
-                const data = localStorage.getItem('mehfilUser');
-                if (data) setUser(JSON.parse(data));
-            } catch (e) {
-                console.warn('[App] Failed to parse user from login event:', e);
-            }
-        };
-        window.addEventListener('mehfil-login', handleLogin);
-
         // Initialize Theme Manager
         themeManager.init();
-
-        return () => window.removeEventListener('mehfil-login', handleLogin);
     }, []);
+
+    // ── Auth page: completely standalone, no sidebar/topbar/player ──
+    if (isAuthPage) {
+        return <Auth />;
+    }
 
     return (
         <>
-            <LoginModal />
             <div className="screen">
                 <div className="mobile-overlay" id="sidebarOverlay" onClick={() => {
                     document.querySelector('.sidebar')?.classList.remove('open');

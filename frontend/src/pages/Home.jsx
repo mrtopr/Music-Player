@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { PlayCircle, Flame, ChevronRight, ListMusic, Mic2, Play, Pause, Music, History, Sparkles, Heart, Compass, Check, Users, SlidersHorizontal, Download, X, Smartphone } from 'lucide-react';
+import { 
+    PlayCircle, Flame, ChevronRight, ListMusic, Mic2, Play, Pause, Music, 
+    History, Sparkles, Heart, Compass, Check, Users, SlidersHorizontal, 
+    Download, X, Smartphone, Activity, Frown, Award, Zap, Star, Mic, Calendar, Disc3
+} from 'lucide-react';
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { themeManager } from '../utils/themeManager.js';
@@ -11,16 +15,16 @@ import { GENRE_PROFILES, ALL_GENRES } from '../utils/genreProfiles.js';
 import AddToPlaylist from '../components/common/AddToPlaylist';
 
 const CATEGORIES = [
-    { label: 'All Music', query: 'bollywood trending 2024 hits' },
-    { label: 'Romantic', query: 'romantic hindi songs' },
-    { label: 'Dance', query: 'bollywood dance party songs' },
-    { label: 'Sad', query: 'sad hindi songs emotional' },
-    { label: 'Party', query: 'bollywood party songs 2024' },
-    { label: 'Classical', query: 'indian classical music' },
-    { label: 'Rock', query: 'hindi rock songs' },
-    { label: 'Pop', query: 'hindi pop songs 2024' },
-    { label: 'Hip Hop', query: 'desi hip hop rap' },
-    { label: 'Latest 2024', query: 'latest bollywood 2024' },
+    { label: 'All Music', query: 'bollywood trending 2024 hits', icon: Music },
+    { label: 'Romantic', query: 'romantic hindi songs', icon: Heart },
+    { label: 'Dance', query: 'bollywood dance party songs', icon: Activity },
+    { label: 'Sad', query: 'sad hindi songs emotional', icon: Frown },
+    { label: 'Party', query: 'bollywood party songs 2024', icon: Sparkles },
+    { label: 'Classical', query: 'indian classical music', icon: Award },
+    { label: 'Rock', query: 'hindi rock songs', icon: Zap },
+    { label: 'Pop', query: 'hindi pop songs 2024', icon: Star },
+    { label: 'Hip Hop', query: 'desi hip hop rap', icon: Mic },
+    { label: 'Latest 2024', query: 'latest bollywood 2024', icon: Calendar },
 ];
 
 function getCleanGreeting() {
@@ -36,8 +40,8 @@ function SongCard({ song, onPlay, isCurrentSong, isPlaying }) {
     const active = isCurrentSong ? 'playing' : '';
     return (
         <div className={`card song-card ${active}`} onClick={() => onPlay(song)} style={{ minWidth: '180px', maxWidth: '200px', flex: '0 0 auto' }}>
-            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '8px' }}>
-                <img src={getImageUrl(song.image) || '/mehfil-logo.png'} alt={song.title || song.name} loading="lazy" style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', display: 'block' }} />
+            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '8px', aspectRatio: '1/1', boxShadow: '0 8px 20px rgba(0,0,0,0.4)', marginBottom: '12px' }}>
+                <img src={getImageUrl(song.image) || '/mehfil-logo.png'} alt={song.title || song.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', marginBottom: 0, boxShadow: 'none' }} />
                 {isCurrentSong && isPlaying && (
                     <div style={{ position: 'absolute', bottom: '8px', left: '8px', display: 'flex', alignItems: 'flex-end', gap: '2px', height: '16px' }}>
                         {[1, 2, 3, 4].map(i => (
@@ -596,58 +600,178 @@ export default function Home() {
             )}
 
             {/* Personalized Hero */}
-            <section className="mehfil-intro">
-                {/* Atmospheric background orbs - GPU composited */}
-                <div className="hero-orb hero-orb-1" />
-                <div className="hero-orb hero-orb-2" />
-                <div className="hero-orb hero-orb-3" />
+            {/* Personalized Hero with Graphic Background */}
+            <section className="mehfil-intro" style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                textAlign: 'left',
+                padding: '30px 2rem 35px',
+                gap: '1.5rem',
+                flexWrap: 'wrap',
+                position: 'relative',
+                width: '100%',
+                minHeight: '260px',
+                overflow: 'hidden',
+                borderRadius: '24px',
+                backgroundImage: 'url("/ChatGPT%20Image%20Jul%2013,%202026,%2004_39_34%20PM.png")',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                marginBottom: '10px'
+            }}>
+                {/* A subtle dark overlay to ensure text remains readable and to feather all edges seamlessly into the background */}
+                <div style={{
+                    position: 'absolute',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'linear-gradient(to right, #09080F 0%, rgba(9, 8, 15, 0.6) 45%, transparent 100%)',
+                    boxShadow: 'inset 0 0 120px 80px #09080F',
+                    zIndex: 1,
+                    pointerEvents: 'none'
+                }}></div>
 
-                <div className="intro-text">
-                    <h1 style={{ fontSize: '2.8rem', fontWeight: 800, color: '#fff', margin: '0 0 0.8rem 0', lineHeight: 1.2 }}>
-                        {getCleanGreeting()}, {userName ? (userName.charAt(0).toUpperCase() + userName.slice(1)) : 'Friend'}
+                {/* Left column - Content */}
+                <div className="intro-text" style={{ flex: '1 1 450px', maxWidth: '600px', zIndex: 3, position: 'relative' }}>
+                    <h1 style={{ fontSize: '2.6rem', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+                        {getCleanGreeting()}, <br />
+                        <span style={{ 
+                            background: 'linear-gradient(135deg, #c084fc, #ec4899)', 
+                            WebkitBackgroundClip: 'text', 
+                            WebkitTextFillColor: 'transparent',
+                            textShadow: '0 0 30px rgba(168, 85, 247, 0.3)'
+                        }}>
+                            {userName ? (userName.charAt(0).toUpperCase() + userName.slice(1)) : 'Friend'}
+                        </span>
                     </h1>
-                    <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5, margin: '0 0 1.5rem 0' }}>
+                    <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.4, margin: '0 0 1.2rem 0', textShadow: '0 1px 5px rgba(0,0,0,0.5)', maxWidth: '450px' }}>
                         {(userProfile?.preferredGenres?.length > 0 || userProfile?.topGenres?.length > 0)
                             ? `Your mix of ${[...(userProfile.preferredGenres || []), ...(userProfile.topGenres || [])].slice(0, 3).join(' · ')} is ready`
                             : 'Experience the magic of music! From soulful melodies to energetic beats, Suno Dil se'
                         }
                     </p>
-                    <div className="hero-cta">
-                        <button className="primary-cta-btn" onClick={() => handlePlayAll(recommendations.length ? recommendations : trending)}>
-                            <PlayCircle size={20} />
-                            🎧 Start Listening
+                    <div className="hero-cta" style={{ display: 'flex', gap: '0.8rem' }}>
+                        <button className="primary-cta-btn" onClick={() => handlePlayAll(recommendations.length ? recommendations : trending)} style={{ boxShadow: '0 5px 20px rgba(168, 85, 247, 0.4)', padding: '10px 20px', fontSize: '0.9rem' }}>
+                            <PlayCircle size={18} />
+                            Start Listening
                         </button>
-                        <button className="secondary-cta-btn" onClick={() => handlePlayAll(trending)}>
-                            <Flame size={20} />
+                        <button className="secondary-cta-btn" onClick={() => handlePlayAll(trending)} style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)', padding: '10px 20px', fontSize: '0.9rem' }}>
+                            <Flame size={18} />
                             Play Trending
                         </button>
                     </div>
-                </div>
 
-                {/* Feathered bottom blend — no JS, pure CSS mask */}
-                <div className="hero-fade-bottom" />
+                    {/* Stats widgets */}
+                    <div className="hero-stats-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '1.5rem' }}>
+                        {[
+                            { label: 'Songs', val: '12.4K', icon: Music, color: '#00F2FE' },
+                            { label: 'Artists', val: '8.2K', icon: Users, color: '#c084fc' },
+                            { label: 'Albums', val: '2.4K', icon: Disc3, color: '#ec4899' },
+                            { label: 'Playlists', val: '98', icon: ListMusic, color: '#8b5cf6' },
+                        ].map((stat, i) => {
+                            const StatIcon = stat.icon;
+                            return (
+                                <div key={i} className="stat-card" style={{
+                                    display: 'flex', alignItems: 'center', gap: '12px',
+                                    padding: '10px 16px', borderRadius: '16px',
+                                    background: 'rgba(10, 5, 20, 0.5)',
+                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    minWidth: '115px', flex: '1 1 auto',
+                                    backdropFilter: 'blur(12px)',
+                                    boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+                                    transition: 'transform 0.2s ease, background 0.2s ease'
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
+                                onMouseLeave={e => e.currentTarget.style.background = 'rgba(10, 5, 20, 0.5)'}
+                                >
+                                    <div style={{
+                                        width: '32px', height: '32px', borderRadius: '8px',
+                                        background: `${stat.color}25`, display: 'flex',
+                                        alignItems: 'center', justifyContent: 'center',
+                                        color: stat.color,
+                                    }}>
+                                        <StatIcon size={16} />
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>{stat.val}</span>
+                                        <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', fontWeight: 500, letterSpacing: '0.5px' }}>{stat.label}</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
             </section>
 
             {/* Categories */}
-            <div className="featured-playlists">
-                <h2>Select Category</h2>
-                <div className="category-scroll">
-                    {CATEGORIES.map((cat, i) => (
-                        <button
-                            key={cat.label}
-                            type="button"
-                            className={`btn btn-outline-primary ${activeCategory === i ? 'active' : ''}`}
-                            onClick={() => handleCategory(i)}
-                        >
-                            {cat.label}
-                        </button>
-                    ))}
+            <div style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+                <h2 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#fff', marginBottom: '1rem' }}>Browse by Category</h2>
+                <div className="category-scroll-grid" style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch', msOverflowStyle: 'none' }}>
+                    {CATEGORIES.map((cat, i) => {
+                        const Icon = cat.icon || Music;
+                        const active = activeCategory === i;
+                        return (
+                            <button
+                                key={cat.label}
+                                type="button"
+                                onClick={() => handleCategory(i)}
+                                style={{
+                                    flex: '0 0 100px',
+                                    height: '95px',
+                                    borderRadius: '16px',
+                                    background: active ? 'rgba(124, 111, 247, 0.15)' : 'rgba(255,255,255,0.03)',
+                                    border: active ? '1.5px solid #7c6ff7' : '1px solid rgba(255,255,255,0.08)',
+                                    color: active ? '#fff' : 'rgba(255,255,255,0.6)',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '8px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    boxShadow: active ? '0 0 15px rgba(124, 111, 247, 0.25)' : 'none',
+                                    padding: '10px 6px',
+                                    outline: 'none',
+                                }}
+                                onMouseEnter={e => {
+                                    if (!active) {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
+                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+                                        e.currentTarget.style.color = '#fff';
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                    }
+                                }}
+                                onMouseLeave={e => {
+                                    if (!active) {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                                        e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                    }
+                                }}
+                            >
+                                <div style={{
+                                    width: '36px', height: '36px',
+                                    borderRadius: '12px',
+                                    background: active ? 'rgba(124, 111, 247, 0.2)' : 'rgba(255,255,255,0.04)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    color: active ? '#c084fc' : 'var(--accent-primary)',
+                                    transition: 'all 0.2s',
+                                }}>
+                                    <Icon size={18} />
+                                </div>
+                                <span style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '-0.1px', textAlign: 'center', whiteSpace: 'nowrap' }}>
+                                    {cat.label}
+                                </span>
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 
             {/* Category Results */}
             {activeCategory > 0 && (
-                <div className="trending" style={{ marginBottom: 'var(--space-xl, 1.5rem)' }}>
+                <div className="trending" style={{ marginBottom: '1.5rem' }}>
                     <SectionHeader title={CATEGORIES[activeCategory].label} />
                     {categoryLoading ? <LoadingSkeleton /> : (
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
@@ -662,6 +786,15 @@ export default function Home() {
             {/* Main Feed (only when All Music is active) */}
             {activeCategory === 0 && (
                 <>
+                    {/* Trending Picks (Moved to top) */}
+                    <div className="trending" style={{ marginBottom: '1.5rem' }}>
+                        <SectionHeader
+                            title="Trending Picks"
+                            onShowMore={() => navigate('/section/trending')}
+                        />
+                        {loading ? <LoadingSkeleton /> : <HorizontalScroll songs={trending} onPlay={playSong} currentId={currentId} isPlaying={isPlaying} />}
+                    </div>
+
                     {/* Recently Played */}
                     {recentlyPlayed.length > 0 && (
                         <div className="trending" style={{ marginBottom: '1.5rem' }}>
@@ -670,7 +803,7 @@ export default function Home() {
                         </div>
                     )}
 
-                    {/* Personalized Sections (Artist Radio + Genre Mixes + Liked Songs Radio) */}
+                    {/* Personalized Sections */}
                     {personalizedSections.map((section, i) => (
                         <div key={i} className="trending" style={{ marginBottom: '1.5rem' }}>
                             <SectionHeader
@@ -680,42 +813,22 @@ export default function Home() {
                         </div>
                     ))}
 
-                    {/* Made For You */}
-                    {recommendations.length > 0 && (
-                        <div className="recommendations" style={{ marginTop: '1.5rem' }}>
-                            <SectionHeader
-                                title={userProfile?.topArtists?.length > 0 ? "Made for you" : "Trending picks"}
-                                onShowMore={() => navigate('/section/recommendations')}
-                            />
-                            <HorizontalScroll songs={recommendations} onPlay={playSong} currentId={currentId} isPlaying={isPlaying} />
-                        </div>
-                    )}
-
                     {/* Discover New Music */}
                     {discoverSongs.length > 0 && (
-                        <div className="trending" style={{ marginTop: '1.5rem' }}>
+                        <div className="trending" style={{ marginBottom: '1.5rem' }}>
                             <SectionHeader title="Discover new music" />
                             <HorizontalScroll songs={discoverSongs} onPlay={playSong} currentId={currentId} isPlaying={isPlaying} />
                         </div>
                     )}
 
-                    {/* Trending Now */}
-                    <div className="trending">
-                        <SectionHeader
-                            title="Trending now"
-                            onShowMore={() => navigate('/section/trending')}
-                        />
-                        {loading ? <LoadingSkeleton /> : <HorizontalScroll songs={trending} onPlay={playSong} currentId={currentId} isPlaying={isPlaying} />}
-                    </div>
-
                     {/* Popular Artists */}
-                    <div className="artists-section" style={{ marginTop: '1.5rem' }}>
+                    <div className="artists-section" style={{ marginBottom: '1.5rem' }}>
                         <SectionHeader title="Popular artists" onShowMore={() => navigate('/artists')} />
                         {loading ? <LoadingSkeleton /> : <ArtistHorizontalScroll artists={artists} onPlay={handlePlayMedia} />}
                     </div>
 
                     {/* New Releases */}
-                    <div className="nrelease" style={{ marginTop: '1.5rem' }}>
+                    <div className="nrelease" style={{ marginBottom: '1.5rem' }}>
                         <SectionHeader
                             title="New releases"
                             onShowMore={() => navigate('/section/newReleases')}

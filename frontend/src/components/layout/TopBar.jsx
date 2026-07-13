@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, SlidersHorizontal, Moon, Mic, Loader2, Radio, Users } from 'lucide-react';
 import { usePlayerStore } from '../../store/usePlayerStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { apiFetch } from '../../api/client.js';
 
@@ -371,18 +372,61 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
     };
 
     return (
-        <div className="top-bar glass-morphism">
-            <div className="search">
-                <div className="search-box">
-                    <Search className="search-icon" size={18} />
+        <div className="top-bar glass-morphism" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+            <div className="search" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, maxWidth: '420px' }}>
+                <button 
+                  className="icon-btn" 
+                  onClick={() => {
+                      const fs = usePlayerStore.getState().isFullScreen;
+                      usePlayerStore.getState().setFullScreen(!fs);
+                  }}
+                  title="Toggle Fullscreen"
+                  style={{
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '12px',
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                </button>
+                <div className="search-box" style={{ 
+                    position: 'relative', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    background: 'rgba(255, 255, 255, 0.05)', 
+                    border: '1px solid rgba(255,255,255,0.08)', 
+                    borderRadius: '12px', 
+                    padding: '0 14px', 
+                    flex: 1,
+                    height: '42px',
+                    transition: 'all 0.3s'
+                }}>
                     <input
                         type="text"
                         id="searchInput"
                         value={localQuery}
                         onChange={handleSearchChange}
-                        placeholder="Search songs, artists, albums"
+                        placeholder="Search songs, artists, albums..."
                         onFocus={handleSearchFocus}
+                        style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#fff',
+                            fontSize: '0.9rem',
+                            width: '100%',
+                            outline: 'none',
+                        }}
                     />
+                    <Search className="search-icon" size={18} style={{ color: 'rgba(255, 255, 255, 0.4)', marginLeft: '10px' }} />
                 </div>
             </div>
 
@@ -392,12 +436,37 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   className={`icon-btn mic-btn ${isListening ? 'listening' : ''}`} 
                   onClick={startRecognition}
                   title="Identify Song"
+                  style={{
+                      background: 'rgba(0, 242, 254, 0.06)',
+                      border: '1px solid rgba(0, 242, 254, 0.25)',
+                      color: '#00F2FE',
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '12px',
+                      cursor: 'pointer'
+                  }}
                 >
                   {isListening ? <Loader2 className="spin" size={20} /> : <Mic size={20} />}
                 </button>
-                <button id="openEqBtn" className="icon-btn tooltip-btn" aria-label="Equalizer" onClick={onOpenEq}>
+                
+                <button 
+                    id="openEqBtn" 
+                    className="icon-btn tooltip-btn" 
+                    aria-label="Equalizer" 
+                    onClick={onOpenEq}
+                    style={{
+                        background: 'rgba(168, 85, 247, 0.06)',
+                        border: '1px solid rgba(168, 85, 247, 0.25)',
+                        color: '#c084fc',
+                        width: '42px',
+                        height: '42px',
+                        borderRadius: '12px',
+                        cursor: 'pointer'
+                    }}
+                >
                     <SlidersHorizontal size={20} />
                 </button>
+                
                 <button 
                   id="openSleepBtn" 
                   className={`icon-btn tooltip-btn ${sleepTimer?.active ? 'active' : ''}`} 
@@ -405,7 +474,11 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   onClick={onOpenSleep}
                   style={{
                       borderColor: sleepTimer?.active ? 'rgba(124, 111, 247, 0.4)' : 'rgba(255,255,255,0.08)',
-                      background: sleepTimer?.active ? 'rgba(124, 111, 247, 0.15)' : 'rgba(255,255,255,0.03)'
+                      background: sleepTimer?.active ? 'rgba(124, 111, 247, 0.15)' : 'rgba(255,255,255,0.03)',
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '12px',
+                      cursor: 'pointer'
                   }}
                 >
                     <img 
@@ -456,9 +529,10 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
             </div>
 
 
-            <div className="profile" id="profileEdit" onClick={() => navigate('/settings')}>
-                <img src={user?.profilePicture || '/dp.png'} alt="Profile" className="icon-svg" />
-                <span className="profile-name">{user?.name || 'Guest'}</span>
+            <div className="profile" id="profileEdit" onClick={() => user ? navigate('/settings') : navigate('/auth')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '6px 14px' }}>
+                <img src={user?.profileImageUrl || '/dp.png'} alt="Profile" className="icon-svg" style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover' }} />
+                <span style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600 }}>{user ? user.name.split(' ')[0] : 'Sign In'}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
             </div>
         </div>
     );

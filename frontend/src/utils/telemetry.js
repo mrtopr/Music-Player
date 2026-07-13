@@ -2,14 +2,11 @@
 
 const TELEMETRY_API_URL = 'http://localhost:3000/api/telemetry/events'
 
+import { useAuthStore } from '../store/useAuthStore';
+
 // In a real app, generate/store a real UUID for the user and session
 export const getUserId = () => {
-  let userId = localStorage.getItem('telemetry_user_id')
-  if (!userId) {
-    userId = crypto.randomUUID()
-    localStorage.setItem('telemetry_user_id', userId)
-  }
-  return userId
+  return useAuthStore.getState().user?.id || null;
 }
 
 const getSessionId = () => {
@@ -28,7 +25,12 @@ export const logPlaybackEvent = async ({
   durationListenedMs = 0
 }) => {
   const userId = getUserId()
+  const token = useAuthStore.getState().token;
   const sessionId = getSessionId()
+
+  if (!userId || !token) {
+    return; // Do not log telemetry for unauthenticated users
+  }
 
   const payload = {
     userId,
@@ -47,7 +49,10 @@ export const logPlaybackEvent = async ({
     // 1. Send to Node.js Analytics Backend
     await fetch(TELEMETRY_API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(payload)
     })
 

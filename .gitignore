@@ -24,3 +24,5 @@ backend/.env
 .planning/
 .vite/
 .github/
+
+.agent
