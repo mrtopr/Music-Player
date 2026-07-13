@@ -66,12 +66,14 @@ export class TelemetryController {
         const { userId, trackId, title, artist, genre, durationMs, sessionId, eventType, contextSource, contextPlaylistId, durationListenedMs } = ctx.req.valid('json')
         
         try {
-          // Ensure user exists
-          const user = await prisma.user.upsert({
-            where: { id: userId },
-            update: {},
-            create: { id: userId }
+          // Verify user exists (since telemetry requires auth)
+          const user = await prisma.user.findUnique({
+            where: { id: userId }
           })
+          
+          if (!user) {
+            return ctx.json({ success: false, data: 'User not found' }, 404)
+          }
           
           // 1. Check if track exists, if not, create it using provided metadata
           let track = await prisma.track.findUnique({ where: { id: trackId } })
