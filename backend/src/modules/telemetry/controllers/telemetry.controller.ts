@@ -59,6 +59,17 @@ export class TelemetryController {
                 })
               }
             }
+          },
+          404: {
+            description: 'Not found',
+            content: {
+              'application/json': {
+                schema: z.object({
+                  success: z.boolean(),
+                  data: z.any()
+                })
+              }
+            }
           }
         }
       }),
