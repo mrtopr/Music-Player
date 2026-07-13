@@ -212,6 +212,10 @@ export class AuthController {
           401: {
             description: 'Unauthorized',
             content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
+          },
+          500: {
+            description: 'Internal Error',
+            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
           }
         }
       }),
@@ -264,6 +268,10 @@ export class AuthController {
         responses: {
           200: {
             description: 'Reset token generated',
+            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
+          },
+          500: {
+            description: 'Internal Error',
             content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
           }
         }
@@ -333,6 +341,10 @@ export class AuthController {
           },
           400: {
             description: 'Invalid or expired token',
+            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
+          },
+          500: {
+            description: 'Internal Error',
             content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
           }
         }

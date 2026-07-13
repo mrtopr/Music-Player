@@ -129,7 +129,58 @@ export default function Settings() {
     return (
         <div style={{ display: 'block', paddingBottom: '160px', animation: 'fadeIn 0.5s ease' }}>
             <div style={{ padding: '2rem 1rem', maxWidth: '800px', margin: '0 auto' }}>
-                
+                <style>{`
+                    .settings-btn {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 8px;
+                        padding: 10px 20px;
+                        border-radius: 12px;
+                        font-size: 0.95rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                        border: 1px solid transparent;
+                        outline: none;
+                        font-family: inherit;
+                        text-decoration: none;
+                    }
+                    .settings-btn:hover {
+                        transform: translateY(-2px);
+                    }
+                    .settings-btn:active {
+                        transform: translateY(0);
+                    }
+                    .settings-btn.edit-btn {
+                        background: rgba(255, 255, 255, 0.06);
+                        color: #fff;
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                    }
+                    .settings-btn.edit-btn:hover {
+                        background: rgba(255, 255, 255, 0.12);
+                        border-color: rgba(255, 255, 255, 0.2);
+                    }
+                    .settings-btn.logout-btn {
+                        background: rgba(239, 68, 68, 0.1);
+                        color: #ef4444;
+                        border: 1px solid rgba(239, 68, 68, 0.2);
+                    }
+                    .settings-btn.logout-btn:hover {
+                        background: rgba(239, 68, 68, 0.15);
+                        border-color: rgba(239, 68, 68, 0.3);
+                        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+                    }
+                    .theme-swatch {
+                        width: 24px; height: 24px; border-radius: 50%;
+                        display: inline-block; cursor: pointer;
+                        transition: transform 0.2s ease, box-shadow 0.2s ease;
+                        border: 2px solid rgba(255,255,255,0.1);
+                    }
+                    .theme-swatch:hover {
+                        transform: scale(1.15);
+                    }
+                `}</style>
                 <header className="settings-header">
                     <h1 className="settings-title">
                         <SettingsIcon size={32} className="spin-slow" /> Settings
@@ -272,11 +323,11 @@ export default function Settings() {
                                             {user.email} &bull; Joined Recently
                                         </div>
                                     </div>
-                                    <div style={{ display: 'flex', gap: '0.5rem', marginLeft: 'auto' }}>
-                                        <button className="settings-btn" style={{ background: 'rgba(255,255,255,0.1)' }} onClick={() => { setEditName(user.name); setEditAvatar(user.profileImageUrl); setIsEditingProfile(true); }}>
+                                    <div style={{ display: 'flex', gap: '0.8rem', marginLeft: 'auto' }}>
+                                        <button className="settings-btn edit-btn" onClick={() => { setEditName(user.name); setEditAvatar(user.profileImageUrl); setIsEditingProfile(true); }}>
                                             Edit
                                         </button>
-                                        <button className="settings-btn" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.2)' }} onClick={handleLogout}>
+                                        <button className="settings-btn logout-btn" onClick={handleLogout}>
                                             <LogOut size={16} /> Logout
                                         </button>
                                     </div>
@@ -302,11 +353,11 @@ export default function Settings() {
                             <div>
                                 <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff', marginBottom: '4px' }}>Mehfil Purple Theme</div>
                                 <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>A consistent brand experience across the entire app</div>
-                                <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
-                                    <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#7C3AED', display: 'inline-block', boxShadow: '0 0 8px rgba(124,58,237,0.6)' }} title="Deep Purple"></span>
-                                    <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#8B5CF6', display: 'inline-block', boxShadow: '0 0 8px rgba(139,92,246,0.6)' }} title="Purple"></span>
-                                    <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#A78BFA', display: 'inline-block', boxShadow: '0 0 8px rgba(167,139,250,0.6)' }} title="Violet"></span>
-                                    <span style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#C084FC', display: 'inline-block', boxShadow: '0 0 8px rgba(192,132,252,0.6)' }} title="Lavender"></span>
+                                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                                    <span className="theme-swatch" style={{ background: '#7C3AED', boxShadow: '0 0 12px rgba(124,58,237,0.6)' }} title="Deep Purple"></span>
+                                    <span className="theme-swatch" style={{ background: '#8B5CF6', boxShadow: '0 0 12px rgba(139,92,246,0.6)' }} title="Purple"></span>
+                                    <span className="theme-swatch" style={{ background: '#A78BFA', boxShadow: '0 0 12px rgba(167,139,250,0.6)' }} title="Violet"></span>
+                                    <span className="theme-swatch" style={{ background: '#C084FC', boxShadow: '0 0 12px rgba(192,132,252,0.6)' }} title="Lavender"></span>
                                 </div>
                             </div>
                         </div>

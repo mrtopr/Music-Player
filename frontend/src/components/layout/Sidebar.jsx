@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Home, ListMusic, Heart, Settings, LogOut, Mic2, Download, BarChart2, LogIn,
-  Disc3, Radio, Grid, Plus, Music
+  Disc3, Plus, Music
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -66,13 +66,28 @@ export default function Sidebar() {
         }
     };
 
-    // Default seed playlists to match mockup if user has none
-    const displayedPlaylists = playlists.length > 0 ? playlists : [
-        { id: 'chill-vibes', name: 'Chill Vibes', songs: Array(25) },
-        { id: 'late-night-drive', name: 'Late Night Drive', songs: Array(18) },
-        { id: 'workout-mix', name: 'Workout Mix', songs: Array(32) },
-        { id: 'heartbreak-hits', name: 'Heartbreak Hits', songs: Array(21) },
-    ];
+    const [apiPlaylists, setApiPlaylists] = useState([]);
+
+    useEffect(() => {
+        if (playlists.length === 0) {
+            import('../../api/client').then(({ apiFetch, ENDPOINTS }) => {
+                apiFetch(ENDPOINTS.featuredPlaylists)
+                    .then(data => {
+                        if (data && data.results) {
+                            setApiPlaylists(data.results.slice(0, 5));
+                        }
+                    })
+                    .catch(err => console.error("Sidebar API Playlists Error:", err));
+            });
+        }
+    }, [playlists.length]);
+
+    // Use real API playlists if user has none
+    const displayedPlaylists = playlists.length > 0 ? playlists : apiPlaylists.map(p => ({
+        id: p.id,
+        name: p.title || p.name,
+        songs: Array(p.songCount || 0)
+    }));
 
     return (
         <div className="sidebar" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -114,18 +129,7 @@ export default function Sidebar() {
                         <span>Albums</span>
                     </Link>
                 </li>
-                <li className={isActive('/genres')}>
-                    <Link to="/" className="sidebar-link" onClick={(e) => { handleLinkClick(); window.scrollTo({ top: 380, behavior: 'smooth' }); }}>
-                        <Grid className="icon-svg" size={20} />
-                        <span>Genres</span>
-                    </Link>
-                </li>
-                <li className={isActive('/radio')}>
-                    <Link to="/section/recommendations" className="sidebar-link" onClick={handleLinkClick}>
-                        <Radio className="icon-svg" size={20} />
-                        <span>Radio</span>
-                    </Link>
-                </li>
+
                 <li className={isActive('/stats')}>
                     <Link to="/stats" className="sidebar-link" onClick={handleLinkClick}>
                         <BarChart2 className="icon-svg" size={20} />

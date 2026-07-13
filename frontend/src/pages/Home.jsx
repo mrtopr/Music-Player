@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { themeManager } from '../utils/themeManager.js';
 import { getRecentlyPlayed } from '../utils/history.js';
 import { getUserProfile, savePreferredGenres } from '../utils/history.js';
@@ -268,6 +269,9 @@ function Footer() {
 }
 
 export default function Home() {
+    const user = useAuthStore(s => s.user);
+    const userName = user?.name || '';
+    
     const [trending, setTrending] = useState([]);
     const [newReleases, setNewReleases] = useState([]);
     const [playlists, setPlaylists] = useState([]);
@@ -439,10 +443,6 @@ export default function Home() {
     const handlePlayAll = (songs) => {
         if (songs.length) playQueue(songs, 0);
     };
-
-    const userName = (() => {
-        try { return JSON.parse(localStorage.getItem('mehfilUser') || '{}').name?.split(' ')[0]; } catch { return null; }
-    })();
 
     return (
         <div style={{ display: 'block', paddingBottom: '100px' }}>
@@ -634,7 +634,7 @@ export default function Home() {
                 {/* Left column - Content */}
                 <div className="intro-text" style={{ flex: '1 1 450px', maxWidth: '600px', zIndex: 3, position: 'relative' }}>
                     <h1 style={{ fontSize: '2.6rem', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-                        {getCleanGreeting()}, <br />
+                        {getCleanGreeting()},{' '}
                         <span style={{ 
                             background: 'linear-gradient(135deg, #c084fc, #ec4899)', 
                             WebkitBackgroundClip: 'text', 
@@ -651,11 +651,41 @@ export default function Home() {
                         }
                     </p>
                     <div className="hero-cta" style={{ display: 'flex', gap: '0.8rem' }}>
-                        <button className="primary-cta-btn" onClick={() => handlePlayAll(recommendations.length ? recommendations : trending)} style={{ boxShadow: '0 5px 20px rgba(168, 85, 247, 0.4)', padding: '10px 20px', fontSize: '0.9rem' }}>
+                        <button onClick={() => handlePlayAll(recommendations.length ? recommendations : trending)} style={{ 
+                            background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', 
+                            border: 'none', 
+                            color: '#fff', 
+                            borderRadius: '12px', 
+                            padding: '10px 20px', 
+                            fontSize: '0.95rem', 
+                            fontWeight: 700, 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '8px',
+                            boxShadow: '0 4px 15px rgba(236, 72, 153, 0.4)',
+                            cursor: 'pointer'
+                        }}>
                             <PlayCircle size={18} />
                             Start Listening
                         </button>
-                        <button className="secondary-cta-btn" onClick={() => handlePlayAll(trending)} style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)', padding: '10px 20px', fontSize: '0.9rem' }}>
+                        <button onClick={() => handlePlayAll(trending)} style={{ 
+                            background: 'rgba(255, 255, 255, 0.03)', 
+                            backdropFilter: 'blur(10px)', 
+                            border: '1px solid rgba(255,255,255,0.08)', 
+                            color: '#fff', 
+                            borderRadius: '12px', 
+                            padding: '10px 20px', 
+                            fontSize: '0.95rem', 
+                            fontWeight: 600, 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '8px',
+                            cursor: 'pointer',
+                            transition: 'background 0.2s'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'}
+                        >
                             <Flame size={18} />
                             Play Trending
                         </button>
@@ -671,18 +701,18 @@ export default function Home() {
                         ].map((stat, i) => {
                             const StatIcon = stat.icon;
                             return (
-                                <div key={i} className="stat-card" style={{
-                                    display: 'flex', alignItems: 'center', gap: '12px',
-                                    padding: '10px 16px', borderRadius: '16px',
-                                    background: 'rgba(10, 5, 20, 0.5)',
-                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                <div key={i} style={{
+                                    display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px',
+                                    padding: '10px 16px', borderRadius: '12px',
+                                    background: 'rgba(255, 255, 255, 0.03)',
+                                    border: '1px solid rgba(255, 255, 255, 0.05)',
                                     minWidth: '115px', flex: '1 1 auto',
                                     backdropFilter: 'blur(12px)',
-                                    boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-                                    transition: 'transform 0.2s ease, background 0.2s ease'
+                                    transition: 'background 0.2s ease',
+                                    cursor: 'default'
                                 }}
-                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
-                                onMouseLeave={e => e.currentTarget.style.background = 'rgba(10, 5, 20, 0.5)'}
+                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'}
+                                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'}
                                 >
                                     <div style={{
                                         width: '32px', height: '32px', borderRadius: '8px',
