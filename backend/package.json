@@ -29,7 +29,7 @@
   "scripts": {
     "dev": "npx tsx watch src/server.ts",
     "start": "node dist/server.js",
-    "build": "tsc && tsc-alias",
+    "build": "npx prisma generate && tsc && tsc-alias",
     "format": "prettier --write \"./**/*.{js,ts,json}\"",
     "lint": "eslint .",
     "lint:fix": "bun run lint --fix",
