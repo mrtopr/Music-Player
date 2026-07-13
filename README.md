@@ -1,45 +1,46 @@
 # Mehfil – दिल से सुनो 🎵
 
-Mehfil is a premium, high-performance music streaming ecosystem designed for a seamless Bollywood music experience. It features a modern web frontend and a robust, scalable backend API.
+Mehfil is a premium, AI-powered music streaming ecosystem designed for a seamless Bollywood music experience. It features a modern, glassmorphic web frontend, a robust Hono-based Node.js API, and a dedicated Python Machine Learning service that powers intelligent recommendations and dynamic auto-queuing.
 
 ---
 
 ## 🚀 Key Features
 
-- **High-Quality Streaming**: Access to a vast library of songs, albums, and playlists with high-fidelity audio.
-- **Music Recognition**: Integrated Shazam-like music recognition to identify tracks on the fly.
-- **Dynamic UI**: A premium Glassmorphism-inspired interface with dynamic backgrounds that adapt to the currently playing song's album art.
-- **Queue Management**: Advanced queue handling with support for playlists, shuffling, and repeat modes.
-- **Sleep Timer**: Built-in sleep timer for a better night-time listening experience.
-- **Responsive Design**: Fully optimized for Desktop and Mobile browsers.
+- **High-Quality Streaming**: Access to a vast library of songs, albums, and playlists with high-fidelity audio via the JioSaavn API.
+- **AI Auto-Queue & Recommendations**: A dedicated Machine Learning service that analyzes audio features (BPM, Energy, Valence) and user telemetry to intelligently predict and queue the next best track using Cosine Similarity.
+- **Dynamic User Taste Profiles**: The system actively learns what you like. Completing a song pulls your taste profile closer to its features, while skipping pushes it away.
+- **Secure Authentication**: Full JWT-based authentication system backed by PostgreSQL and Prisma ORM.
+- **Premium Dynamic UI**: A modern, responsive Glassmorphism-inspired interface with dynamic backgrounds that adapt to the currently playing song's album art in real-time.
+- **Advanced Queue Management**: Full control over playback with support for playlists, shuffling, and repeat modes.
+- **Music Recognition**: Integrated Shazam-like audio fingerprinting to identify tracks on the fly.
 
 ---
 
 ## 🛠️ Tech Stack Analysis
 
-### **Frontend (Web)**
+### **Frontend (Web Application)**
 A modern, reactive single-page application built with performance and aesthetics in mind.
-- **Framework**: [React 19](https://react.dev/)
-- **Build Tool**: [Vite](https://vitejs.dev/)
-- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/) (Fast, scalable, and boilerplate-free).
-- **Styling**: Vanilla CSS with a focus on Glassmorphism, CSS Variables, and custom animations.
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Color Extraction**: [Node-Vibrant](https://github.com/vibrant/node-vibrant) for real-time extraction of dominant colors from album art.
-- **Routing**: [React Router DOM](https://reactrouter.com/)
+- **Framework**: [React 19](https://react.dev/) with [Vite](https://vitejs.dev/)
+- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/) (Fast, scalable, and boilerplate-free)
+- **Styling**: Vanilla CSS with deep Glassmorphism, CSS Variables, and custom micro-animations
+- **Color Extraction**: [Node-Vibrant](https://github.com/vibrant/node-vibrant) for real-time dominant color extraction from album art
+- **Icons & Routing**: [Lucide React](https://lucide.dev/) and [React Router DOM](https://reactrouter.com/)
 
-### **Backend (API)**
-A high-performance, unofficial JioSaavn API wrapper.
-- **Framework**: [Hono](https://hono.dev/) (The ultra-fast web framework for the Edge).
-- **Runtime**: [Bun](https://bun.sh/) or [Node.js](https://nodejs.org/).
-- **Validation**: [Zod](https://zod.dev/) for type-safe schema validation.
-- **Documentation**: [Scalar](https://scalar.com/) for interactive API reference.
-- **Deployment**: Optimized for [Cloudflare Workers](https://workers.cloudflare.com/) and [Vercel](https://vercel.com/).
-- **Modules**:
-  - `Songs`: Fetch track details and streaming links.
-  - `Albums`: Detailed album metadata and tracklists.
-  - `Search`: Global search across songs, albums, artists, and playlists.
-  - `Artists`: Comprehensive artist profiles and discography.
-  - `Recognition`: Advanced audio fingerprinting for music identification.
+### **Backend (Core Node API)**
+A high-performance API wrapper and authentication server.
+- **Framework**: [Hono](https://hono.dev/) (Ultra-fast Edge web framework)
+- **Database & ORM**: PostgreSQL paired with [Prisma](https://www.prisma.io/)
+- **Security**: JWT Authentication and bcrypt password hashing
+- **Validation**: [Zod](https://zod.dev/) for strict type-safe OpenAPI schemas
+- **Documentation**: [Scalar](https://scalar.com/) for interactive API reference
+- **Modules**: Authentication, Telemetry, Songs, Albums, Search, Playlists, and Audio Recognition
+
+### **ML-Service (AI Recommendations)**
+A lightweight, fast Python microservice for data-science operations.
+- **Framework**: [FastAPI](https://fastapi.tiangolo.com/) with Uvicorn
+- **Machine Learning**: [Scikit-Learn](https://scikit-learn.org/) and [NumPy](https://numpy.org/)
+- **Algorithms**: Vector Embeddings, Cosine Similarity, and Telemetry-driven Learning Rates
+- **Context-Aware**: Adjusts music recommendations dynamically based on the user's local time (e.g., lower BPM at night).
 
 ---
 
@@ -47,19 +48,23 @@ A high-performance, unofficial JioSaavn API wrapper.
 
 ```text
 .
-├── backend/            # Hono-based API service
+├── backend/            # Hono-based Node.js API Service
+│   ├── prisma/         # PostgreSQL Database Schema
 │   ├── src/
-│   │   ├── modules/    # Functional modules (songs, search, recognition, etc.)
-│   │   ├── common/     # Shared utilities and types
+│   │   ├── modules/    # Auth, Telemetry, JioSaavn integrations, etc.
 │   │   └── server.ts   # Entry point
-│   └── tsconfig.json   # TypeScript configuration
-├── frontend/           # React 19 web application
+│   └── package.json    # Backend Dependencies
+├── frontend/           # React 19 Web Application
 │   ├── src/
-│   │   ├── components/ # Reusable UI components
-│   │   ├── store/      # Zustand state management
-│   │   ├── pages/      # Route-level components
-│   │   └── styles/     # CSS modules and global styles
-│   └── vite.config.js  # Vite configuration
+│   │   ├── components/ # Reusable UI components & Layouts
+│   │   ├── pages/      # Route-level components (Home, Auth, Settings)
+│   │   ├── store/      # Zustand state managers (Auth, Player)
+│   │   └── styles/     # CSS modules and global UI styles
+│   └── vite.config.js  # Vite Configuration
+├── ml-service/         # Python FastAPI Machine Learning Service
+│   ├── main.py         # Recommendation Engine & Telemetry processing
+│   ├── seed_data.py    # Database seeding tools
+│   └── requirements.txt# Python Dependencies
 └── README.md           # Project documentation
 ```
 
@@ -67,15 +72,31 @@ A high-performance, unofficial JioSaavn API wrapper.
 
 ## 🛠️ Getting Started
 
-### Backend Setup
-1. Navigate to the backend directory: `cd backend`
-2. Install dependencies: `bun install` (or `npm install`)
-3. Run in development: `bun run dev`
+### 1. Database & Backend Setup
+Navigate to the backend directory and set up your PostgreSQL environment:
+```bash
+cd backend
+npm install
+npx prisma generate
+npx prisma db push
+npm run dev
+```
 
-### Frontend Setup
-1. Navigate to the frontend directory: `cd frontend`
-2. Install dependencies: `npm install`
-3. Start the development server: `npm run dev`
+### 2. Machine Learning Service Setup
+Navigate to the ML service directory and start the FastAPI server:
+```bash
+cd ml-service
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### 3. Frontend Setup
+Navigate to the frontend directory and launch the Vite dev server:
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
 ---
 
