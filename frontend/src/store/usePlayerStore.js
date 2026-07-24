@@ -680,34 +680,49 @@ export const usePlayerStore = create((set, get) => ({
 
 
 
-    nextSong: () => {
-        const { queue, queueIndex, shuffle, repeat, activeChannel, sessionCode } = get();
-        if (!queue.length) return;
+    nextSong: async () => {
+        const { queue, queueIndex, shuffle, repeat, activeChannel, sessionCode, isAutoMixEnabled, currentSong } = get();
+        if (!queue.length && !currentSong) return;
 
         if (sessionCode) {
             set({ isCoordinator: true });
         }
 
         const audio = activeChannel === 'A' ? audioA : audioB;
-        if (queue.length === 1) {
-            audio.currentTime = 0;
-            audio.play().catch(() => { });
-            broadcastHostState();
-            return;
-        }
 
         let next;
-        if (shuffle) {
+        if (shuffle && queue.length > 1) {
             next = Math.floor(Math.random() * queue.length);
         } else if (queueIndex < queue.length - 1) {
             next = queueIndex + 1;
-        } else if (repeat === 'all' || repeat === 'off') {
+        } else if (repeat === 'all') {
+            next = 0;
+        } else if (isAutoMixEnabled) {
+            // AutoMix / Auto Recommendation mode: fetch and append next recommendation!
+            try {
+                const { getRecommendations } = await import('../utils/recommendations.js');
+                const recs = await getRecommendations(5, currentSong);
+                const candidates = recs.filter(r => r && r.id !== currentSong?.id && !queue.some(q => q.id === r.id));
+                const nextRecommended = candidates[0] || recs[0];
+                if (nextRecommended) {
+                    const newQueue = [...queue, nextRecommended];
+                    set({ queue: newQueue, queueIndex: newQueue.length - 1, isPrepared: true });
+                    get().playSong(nextRecommended, false, true);
+                    return;
+                }
+            } catch (err) {
+                console.warn('[AutoMix] Failed auto-queue next song:', err);
+            }
+            // Fallback if no recommendation could be fetched
             next = 0;
         } else {
-            return;
+            next = 0;
         }
-        set({ queueIndex: next });
-        get().playSong(queue[next], false, true);
+
+        if (next !== undefined && queue[next]) {
+            set({ queueIndex: next });
+            get().playSong(queue[next], false, true);
+        }
     },
 
     prevSong: () => {
@@ -747,12 +762,12 @@ export const usePlayerStore = create((set, get) => ({
 
         console.log('[AutoMix] Analyzing for best match (10s mark)...');
 
-        let pool = state.queue.filter(s => s.id !== state.currentSong.id);
+        let pool = state.queue.filter(s => s && s.id !== state.currentSong.id);
 
         if (pool.length < 5) {
             try {
                 const { getRecommendations } = await import('../utils/recommendations.js');
-                const recs = await getRecommendations(10);
+                const recs = await getRecommendations(10, state.currentSong);
                 pool = [...pool, ...recs];
             } catch (err) { }
         }
@@ -765,7 +780,7 @@ export const usePlayerStore = create((set, get) => ({
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    user_id: getUserId(),
+                    user_id: getUserId() || 'guest',
                     current_track_id: state.currentSong.id,
                     limit: 1,
                     client_hour: new Date().getHours()
@@ -775,23 +790,23 @@ export const usePlayerStore = create((set, get) => ({
             
             if (mlData.success && mlData.recommendations.length > 0) {
                 const recommendedId = mlData.recommendations[0].track_id;
-                const found = pool.find(s => s.id === recommendedId);
+                const found = pool.find(s => s && s.id === recommendedId);
                 if (found) {
                     next = { ...found, mlQueued: true };
                 }
             }
         } catch (mlErr) {
-            console.warn('[AutoMix] ML Service unavailable, falling back to local autoMix...', mlErr);
+            // Optional ML Service
         }
 
-        // Fallback to local autoMix logic
+        // Fallback to local autoMix scoring logic
         if (!next) {
             next = pickBestNext(pool, state.currentSong);
         }
 
         if (next) {
-            console.log('[AutoMix] Preloading:', next.title);
-            const inQueue = state.queue.some(s => s.id === next.id);
+            console.log('[AutoMix] Preloading next song:', next.title || next.name);
+            const inQueue = state.queue.some(s => s && s.id === next.id);
             if (!inQueue) {
                 set(s => ({ queue: [...s.queue, next] }));
             }

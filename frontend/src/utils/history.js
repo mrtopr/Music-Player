@@ -10,6 +10,29 @@ const PREFS_KEY = 'mehfil_preferred_genres';
 const MAX_ENTRIES = 50;
 
 /**
+ * Extract a clean string representation of primary artists from any song object.
+ */
+export function extractArtistString(song) {
+    if (!song) return 'Unknown Artist';
+    if (typeof song.artist === 'string' && song.artist.trim()) return song.artist;
+    if (typeof song.primaryArtists === 'string' && song.primaryArtists.trim()) return song.primaryArtists;
+    if (Array.isArray(song.primaryArtists)) {
+        const names = song.primaryArtists.map(a => (typeof a === 'object' ? a.name : a)).filter(Boolean);
+        if (names.length) return names.join(', ');
+    }
+    if (Array.isArray(song.artist)) {
+        const names = song.artist.map(a => (typeof a === 'object' ? a.name : a)).filter(Boolean);
+        if (names.length) return names.join(', ');
+    }
+    if (typeof song.subtitle === 'string' && song.subtitle.trim()) return song.subtitle;
+    if (song.artists?.primary && Array.isArray(song.artists.primary)) {
+        const names = song.artists.primary.map(a => a.name).filter(Boolean);
+        if (names.length) return names.join(', ');
+    }
+    return 'Unknown Artist';
+}
+
+/**
  * Add a song to the listening history.
  * If the song already exists, move it to the top.
  * Updates the timestamp each time.
@@ -26,7 +49,7 @@ export function addToHistory(song) {
         const entry = {
             id: songId,
             title: song.name || song.title || 'Unknown',
-            artist: song.primaryArtists || song.artist || 'Unknown Artist',
+            artist: extractArtistString(song),
             image: song.image || 'favicon.ico',
             downloadUrl: song.downloadUrl || null,
             duration: song.duration || 0,
@@ -35,7 +58,7 @@ export function addToHistory(song) {
         };
 
         // Deduplication: Remove if already exists
-        const filteredHistory = history.filter(item => item.id !== songId);
+        const filteredHistory = history.filter(item => item && item.id !== songId);
 
         // Add to the top
         filteredHistory.unshift(entry);
@@ -62,7 +85,8 @@ export function addToHistory(song) {
 export function getHistory() {
     try {
         const data = localStorage.getItem(STORAGE_KEY);
-        return data ? JSON.parse(data) : [];
+        const parsed = data ? JSON.parse(data) : [];
+        return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
     } catch (e) {
         console.warn('Failed to parse history from localStorage:', e);
         return [];
@@ -89,9 +113,12 @@ export function getTopArtists(limit = 3) {
     const artistCounts = {};
 
     history.forEach(item => {
-        const artists = item.artist.split(',').map(a => a.trim());
+        if (!item) return;
+        const artistStr = extractArtistString(item);
+        if (!artistStr || artistStr === 'Unknown Artist') return;
+        const artists = artistStr.split(',').map(a => a.trim());
         artists.forEach(artist => {
-            if (artist === 'Unknown Artist') return;
+            if (!artist || artist === 'Unknown Artist') return;
             artistCounts[artist] = (artistCounts[artist] || 0) + 1;
         });
     });

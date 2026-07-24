@@ -21,12 +21,20 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["music", "entertainment"],
+  "categories": [
+    "music",
+    "entertainment"
+  ],
   "shortcuts": [
     {
       "name": "Top Hits",
       "url": "/",
-      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+      "icons": [
+        {
+          "src": "/favicon.ico",
+          "sizes": "64x64"
+        }
+      ]
     }
   ]
 }

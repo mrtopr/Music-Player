@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { 
-    PlayCircle, Flame, ChevronRight, ListMusic, Mic2, Play, Pause, Music, 
-    History, Sparkles, Heart, Compass, Check, Users, SlidersHorizontal, 
+import {
+    PlayCircle, Flame, ChevronRight, ListMusic, Mic2, Play, Pause, Music,
+    History, Sparkles, Heart, Compass, Check, Users, SlidersHorizontal,
     Download, X, Smartphone, Activity, Frown, Award, Zap, Star, Mic, Calendar, Disc3
 } from 'lucide-react';
 import { apiFetch, getImageUrl } from '../api/client.js';
@@ -247,10 +247,10 @@ function Footer() {
         <footer style={{ marginTop: '4rem', padding: '2rem 1rem', borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', color: 'rgba(255,255,255,0.6)' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: '2rem', fontSize: '0.9rem', fontWeight: 500, flexWrap: 'wrap', justifyContent: 'center' }}>
-                    <Link to="/about" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.5)'}>About</Link>
-                    <Link to="/legal/terms" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.5)'}>Terms & Conditions</Link>
-                    <Link to="/legal/privacy" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.5)'}>Privacy Policy</Link>
-                    <Link to="/legal/contact" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='rgba(255,255,255,0.5)'}>Contact Us</Link>
+                    <Link to="/about" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#fff'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.5)'}>About</Link>
+                    <Link to="/legal/terms" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#fff'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.5)'}>Terms & Conditions</Link>
+                    <Link to="/legal/privacy" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#fff'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.5)'}>Privacy Policy</Link>
+                    <Link to="/legal/contact" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#fff'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.5)'}>Contact Us</Link>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px 16px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
                     <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>
@@ -271,7 +271,7 @@ function Footer() {
 export default function Home() {
     const user = useAuthStore(s => s.user);
     const userName = user?.name || '';
-    
+
     const [trending, setTrending] = useState([]);
     const [newReleases, setNewReleases] = useState([]);
     const [playlists, setPlaylists] = useState([]);
@@ -466,7 +466,7 @@ export default function Home() {
                     animation: 'fadeIn 0.5s ease',
                     zIndex: 10
                 }}>
-                    <button 
+                    <button
                         onClick={handleDismissBanner}
                         style={{
                             position: 'absolute',
@@ -635,9 +635,9 @@ export default function Home() {
                 <div className="intro-text" style={{ flex: '1 1 450px', maxWidth: '600px', zIndex: 3, position: 'relative' }}>
                     <h1 style={{ fontSize: '2.6rem', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
                         {getCleanGreeting()},{' '}
-                        <span style={{ 
-                            background: 'linear-gradient(135deg, #c084fc, #ec4899)', 
-                            WebkitBackgroundClip: 'text', 
+                        <span style={{
+                            background: 'linear-gradient(135deg, #c084fc, #ec4899)',
+                            WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             textShadow: '0 0 30px rgba(168, 85, 247, 0.3)'
                         }}>
@@ -651,16 +651,16 @@ export default function Home() {
                         }
                     </p>
                     <div className="hero-cta" style={{ display: 'flex', gap: '0.8rem' }}>
-                        <button onClick={() => handlePlayAll(recommendations.length ? recommendations : trending)} style={{ 
-                            background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', 
-                            border: 'none', 
-                            color: '#fff', 
-                            borderRadius: '12px', 
-                            padding: '10px 20px', 
-                            fontSize: '0.95rem', 
-                            fontWeight: 700, 
-                            display: 'flex', 
-                            alignItems: 'center', 
+                        <button onClick={() => handlePlayAll(recommendations.length ? recommendations : trending)} style={{
+                            background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+                            border: 'none',
+                            color: '#fff',
+                            borderRadius: '12px',
+                            padding: '10px 20px',
+                            fontSize: '0.95rem',
+                            fontWeight: 700,
+                            display: 'flex',
+                            alignItems: 'center',
                             gap: '8px',
                             boxShadow: '0 4px 15px rgba(236, 72, 153, 0.4)',
                             cursor: 'pointer'
@@ -668,23 +668,23 @@ export default function Home() {
                             <PlayCircle size={18} />
                             Start Listening
                         </button>
-                        <button onClick={() => handlePlayAll(trending)} style={{ 
-                            background: 'rgba(255, 255, 255, 0.03)', 
-                            backdropFilter: 'blur(10px)', 
-                            border: '1px solid rgba(255,255,255,0.08)', 
-                            color: '#fff', 
-                            borderRadius: '12px', 
-                            padding: '10px 20px', 
-                            fontSize: '0.95rem', 
-                            fontWeight: 600, 
-                            display: 'flex', 
-                            alignItems: 'center', 
+                        <button onClick={() => handlePlayAll(trending)} style={{
+                            background: 'rgba(255, 255, 255, 0.03)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            color: '#fff',
+                            borderRadius: '12px',
+                            padding: '10px 20px',
+                            fontSize: '0.95rem',
+                            fontWeight: 600,
+                            display: 'flex',
+                            alignItems: 'center',
                             gap: '8px',
                             cursor: 'pointer',
                             transition: 'background 0.2s'
                         }}
-                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'}
-                        onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'}
+                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'}
                         >
                             <Flame size={18} />
                             Play Trending
@@ -711,8 +711,8 @@ export default function Home() {
                                     transition: 'background 0.2s ease',
                                     cursor: 'default'
                                 }}
-                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'}
-                                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'}
+                                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'}
+                                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'}
                                 >
                                     <div style={{
                                         width: '32px', height: '32px', borderRadius: '8px',

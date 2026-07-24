@@ -48,6 +48,19 @@ class TelemetryEvent(BaseModel):
     track_id: str
     event_type: str # 'play_completed' or 'skipped'
 
+def get_or_create_vector(track_id: str) -> np.ndarray:
+    if track_id in MOCK_FEATURES:
+        return MOCK_FEATURES[track_id]
+    
+    # Generate deterministic pseudo-vector from track_id string
+    seed = sum(ord(c) for c in track_id)
+    bpm = 80.0 + (seed % 80)
+    energy = (seed % 100) / 100.0
+    valence = ((seed * 17) % 100) / 100.0
+    vec = np.array([bpm, energy, valence])
+    MOCK_FEATURES[track_id] = vec
+    return vec
+
 @app.post("/api/ml/features")
 async def store_features(feature: TrackFeature):
     """Store audio features for a track to generate embeddings."""
@@ -57,17 +70,13 @@ async def store_features(feature: TrackFeature):
 @app.get("/api/ml/features/{track_id}")
 async def get_features(track_id: str):
     """Retrieve audio features for dynamic UI."""
-    vector = MOCK_FEATURES.get(track_id)
-    if vector is not None:
-        return {"success": True, "bpm": float(vector[0]), "energy": float(vector[1]), "valence": float(vector[2])}
-    return {"success": False, "message": "Not found"}
+    vector = get_or_create_vector(track_id)
+    return {"success": True, "bpm": float(vector[0]), "energy": float(vector[1]), "valence": float(vector[2])}
 
 @app.post("/api/ml/update-profile")
 async def update_profile(event: TelemetryEvent):
     """Update the user's taste vector based on their listening behavior."""
-    track_vector = MOCK_FEATURES.get(event.track_id)
-    if track_vector is None:
-        return {"success": False, "message": "Track features not found"}
+    track_vector = get_or_create_vector(event.track_id)
         
     user_vector = USER_VECTORS.get(event.user_id, np.zeros(3))
     
@@ -89,13 +98,8 @@ async def get_recommendations(req: RecommendationRequest):
     Recommend the next tracks based on the current track using Cosine Similarity.
     This acts as the core of the dynamic Auto-Queue.
     """
-    # 1. Get the current track's embedding and the user's taste embedding
-    current_vector = MOCK_FEATURES.get(req.current_track_id)
+    current_vector = get_or_create_vector(req.current_track_id)
     user_vector = USER_VECTORS.get(req.user_id)
-    
-    if current_vector is None:
-        # Fallback to random simulation if we don't know this track
-        current_vector = np.random.rand(3)
 
     # Blend the user's long-term taste with their current song (70% current song, 30% user taste)
     if user_vector is not None:
@@ -104,24 +108,19 @@ async def get_recommendations(req: RecommendationRequest):
         search_vector = current_vector.copy()
 
     # Apply Time-of-Day Context (Hyper-Personalization)
-    # search_vector is [BPM, Energy, Valence]
-    # Nighttime (10 PM to 5 AM): Shift towards lower energy and lower BPM
     if req.client_hour >= 22 or req.client_hour <= 5:
-        # Reduce target BPM by 20% and Energy by 30%
         search_vector[0] = search_vector[0] * 0.8
         search_vector[1] = search_vector[1] * 0.7
-    # Daytime / Workout hours (6 AM to 11 AM, 3 PM to 6 PM): Shift towards slightly higher energy
     elif (6 <= req.client_hour <= 11) or (15 <= req.client_hour <= 18):
         search_vector[0] = search_vector[0] * 1.1
         search_vector[1] = search_vector[1] * 1.15
 
-    # 2. Compare against all known tracks (Brute force for MVP, use HNSW index in prod)
+    # 2. Compare against known tracks
     candidates = []
     for track_id, vector in MOCK_FEATURES.items():
         if track_id == req.current_track_id:
             continue
             
-        # Cosine similarity expects 2D arrays
         sim = cosine_similarity(search_vector.reshape(1, -1), vector.reshape(1, -1))[0][0]
         candidates.append({"track_id": track_id, "score": float(sim)})
         
