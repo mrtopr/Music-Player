@@ -664,7 +664,11 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                 padding: '12px', zIndex: 500, boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
                                 animation: 'fadeIn 0.2s ease-out'
                             }}>
-                                <OptionItem icon={<Plus size={18} />} label="Add to Library" onClick={() => { toggleLike(currentSong); setOptionsOpen(false); }} />
+                                <OptionItem 
+                                    icon={<Heart size={18} fill={liked ? '#EF4444' : 'none'} color={liked ? '#EF4444' : '#fff'} />} 
+                                    label={liked ? "Liked in Library" : "Add to Favorites"} 
+                                    onClick={() => { toggleLike(currentSong); setOptionsOpen(false); }} 
+                                />
 
                                 {currentSong.album?.id && (
                                     <OptionItem icon={<Disc size={18} />} label="Go to Album" onClick={() => handleNavigate(`/album/${currentSong.album.id}`)} />
@@ -741,9 +745,14 @@ export default function FullscreenPlayer({ visible, onClose }) {
                         <button
                             onClick={(e) => { e.stopPropagation(); toggleLike(currentSong); }}
                             className={`fs-like-btn ${liked ? 'liked' : ''}`}
-                            style={{ cursor: 'pointer', pointerEvents: 'auto', padding: '10px' }}
+                            style={{ cursor: 'pointer', pointerEvents: 'auto', padding: '10px', background: 'none', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            aria-label={liked ? "Unlike song" : "Like song"}
                         >
-                            <Heart size={36} fill={liked ? 'currentColor' : 'none'} color={liked ? '#FFB800' : '#fff'} />
+                            <Heart 
+                                size={32} 
+                                fill={liked ? '#EF4444' : 'none'} 
+                                color={liked ? '#EF4444' : 'rgba(255, 255, 255, 0.75)'} 
+                            />
                         </button>
                     </div>
 

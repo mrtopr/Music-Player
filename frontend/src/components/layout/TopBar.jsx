@@ -3,7 +3,7 @@ import { Search, SlidersHorizontal, Moon, Mic, Loader2, Radio, Users } from 'luc
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { apiFetch } from '../../api/client.js';
+import { apiFetch, API_BASE_URL } from '../../api/client.js';
 
 
 
@@ -251,11 +251,10 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
         setIsListening(true);
         console.info('[Shazam] Starting microphone...');
         try {
-
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             
-            // Fix for iOS Safari: Safely detect supported mimeType or fallback to default
-            const supportedTypes = ['audio/webm', 'audio/ogg', 'audio/mp4', 'audio/aac'];
+            // Cross-browser supported MIME type detection
+            const supportedTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg', 'audio/mp4', 'audio/aac'];
             const mimeType = supportedTypes.find(type => MediaRecorder.isTypeSupported(type)) || '';
             const options = mimeType ? { mimeType } : {};
             const mediaRecorder = new MediaRecorder(stream, options);
@@ -273,15 +272,16 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                     return;
                 }
 
-                const blob = new Blob(chunks, mimeType ? { type: mimeType } : undefined);
+                const recType = mediaRecorder.mimeType || mimeType || 'audio/webm';
+                const blob = new Blob(chunks, { type: recType });
                 
-                if (blob.size < 1000) { // Less than 1KB is likely silence or error
+                if (blob.size < 1000) {
                     alert("Recording too short or silent. Please try again.");
                     setIsListening(false);
                     return;
                 }
 
-                const fileExt = mimeType ? mimeType.split('/')[1].split(';')[0] : 'm4a';
+                const fileExt = recType.includes('mp4') ? 'mp4' : recType.includes('ogg') ? 'ogg' : 'webm';
                 const formData = new FormData();
                 formData.append('file', blob, `recognize.${fileExt}`);
                 
@@ -296,7 +296,8 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                 console.info('[Shazam] Uploading sample for identification...');
 
                 try {
-                    const res = await fetch('/api/recognize', {
+                    const recognizeUrl = `${API_BASE_URL}/api/recognize`;
+                    const res = await fetch(recognizeUrl, {
                         method: 'POST',
                         body: formData
                     });
@@ -317,13 +318,13 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                         if (searchRes.results?.length > 0) {
                             playSong(searchRes.results[0]);
                         } else {
-                            alert(`Identified as: "${songTitle}", but it's not available in our library.`);
+                            alert(`Identified as: "${data.result.title}" by ${data.result.artist}, but it's not available in our library.`);
                         }
                     } else if (data.status === 'error') {
-                        const msg = data.error?.error_message || "Recognition service error. Please check your API token.";
+                        const msg = data.error?.error_message || data.message || "Recognition error. AudD test token only supports sample audio from their docs. Add your free AudD API token in Settings!";
                         alert(msg);
                     } else {
-                        alert("Couldn't identify that song. Make sure the music is loud enough!");
+                        alert("Couldn't identify that song. Make sure the music is playing clearly near your microphone!");
                     }
                 } catch (err) {
                     console.error('[Shazam] Identification failed:', err);
@@ -334,14 +335,15 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                 }
             };
 
-            // Start recording with timeslice to ensure data is periodically emitted
+            // Start recording with timeslice
             mediaRecorder.start(1000); 
             
             setTimeout(() => {
                 if (mediaRecorder.state === 'recording') mediaRecorder.stop();
-            }, 7000); // 7 sec recording
+            }, 6000); // 6 sec audio sample
         } catch (err) {
             console.error('Permission/Mic error:', err);
+            alert(`Microphone access error: ${err.message || 'Please grant microphone permissions in browser settings.'}`);
             setIsListening(false);
         }
     };
@@ -372,41 +374,17 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
     };
 
     return (
-        <div className="top-bar glass-morphism" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-            <div className="search" style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, maxWidth: '420px' }}>
-                <button 
-                  className="icon-btn" 
-                  onClick={() => {
-                      const fs = usePlayerStore.getState().isFullScreen;
-                      usePlayerStore.getState().setFullScreen(!fs);
-                  }}
-                  title="Toggle Fullscreen"
-                  style={{
-                      width: '42px',
-                      height: '42px',
-                      borderRadius: '12px',
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s'
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-                </button>
+        <div className="top-bar glass-morphism" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)', gap: '2rem' }}>
+            <div className="search" style={{ display: 'flex', alignItems: 'center', flex: 1, maxWidth: '480px' }}>
                 <div className="search-box" style={{ 
                     position: 'relative', 
                     display: 'flex', 
                     alignItems: 'center', 
-                    background: 'rgba(255, 255, 255, 0.05)', 
+                    background: 'rgba(255, 255, 255, 0.04)', 
                     border: '1px solid rgba(255,255,255,0.08)', 
                     borderRadius: '12px', 
-                    padding: '0 14px', 
-                    flex: 1,
+                    padding: '0 16px', 
+                    width: '100%',
                     height: '42px',
                     transition: 'all 0.3s'
                 }}>
@@ -430,16 +408,15 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                 </div>
             </div>
 
-
-            <div className="premium-tools" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <div className="nav-right-controls" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                 <button 
                   className={`icon-btn mic-btn ${isListening ? 'listening' : ''}`} 
                   onClick={startRecognition}
                   title="Identify Song"
                   style={{
-                      background: 'rgba(0, 242, 254, 0.06)',
-                      border: '1px solid rgba(0, 242, 254, 0.25)',
-                      color: '#00F2FE',
+                      background: isListening ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                      border: isListening ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                      color: isListening ? '#10B981' : 'var(--text-secondary)',
                       width: '42px',
                       height: '42px',
                       borderRadius: '12px',
@@ -455,9 +432,9 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                     aria-label="Equalizer" 
                     onClick={onOpenEq}
                     style={{
-                        background: 'rgba(168, 85, 247, 0.06)',
-                        border: '1px solid rgba(168, 85, 247, 0.25)',
-                        color: '#c084fc',
+                        background: 'rgba(255, 255, 255, 0.04)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        color: 'var(--text-secondary)',
                         width: '42px',
                         height: '42px',
                         borderRadius: '12px',
@@ -473,8 +450,9 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   aria-label="Sleep Timer" 
                   onClick={onOpenSleep}
                   style={{
-                      borderColor: sleepTimer?.active ? 'rgba(124, 111, 247, 0.4)' : 'rgba(255,255,255,0.08)',
-                      background: sleepTimer?.active ? 'rgba(124, 111, 247, 0.15)' : 'rgba(255,255,255,0.03)',
+                      borderColor: sleepTimer?.active ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255,255,255,0.08)',
+                      background: sleepTimer?.active ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.04)',
+                      color: sleepTimer?.active ? '#10B981' : 'var(--text-secondary)',
                       width: '42px',
                       height: '42px',
                       borderRadius: '12px',
@@ -482,11 +460,12 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   }}
                 >
                     <img 
-                        src={`https://img.icons8.com/?size=40&id=10772&format=png&color=${sleepTimer?.active ? '7C6FF7' : '00F2FE'}`} 
+                        src={`https://img.icons8.com/?size=40&id=10772&format=png&color=${sleepTimer?.active ? '10B981' : 'FFFFFF'}`} 
                         alt="Sleep Timer" 
                         style={{ 
-                            width: '20px', 
-                            height: '20px',
+                            width: '18px', 
+                            height: '18px',
+                            opacity: sleepTimer?.active ? 1 : 0.7,
                             transition: 'opacity 0.2s'
                         }} 
                     />
@@ -499,9 +478,9 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                       onClick={() => setSyncPanelOpen(!syncPanelOpen)}
                       title="Listen Together"
                       style={{
-                          background: sessionCode ? 'rgba(124, 111, 247, 0.15)' : 'rgba(255,255,255,0.05)',
-                          border: sessionCode ? '1px solid rgba(124, 111, 247, 0.4)' : '1px solid rgba(255,255,255,0.1)',
-                          color: sessionCode ? '#c084fc' : 'var(--accent-primary)',
+                          background: sessionCode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.04)',
+                          border: sessionCode ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(255,255,255,0.08)',
+                          color: sessionCode ? '#10B981' : 'var(--text-secondary)',
                           transition: 'all 0.3s ease',
                           display: 'flex',
                           alignItems: 'center',
@@ -526,13 +505,13 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                         />
                     )}
                 </div>
-            </div>
 
-
-            <div className="profile" id="profileEdit" onClick={() => user ? navigate('/settings') : navigate('/auth')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '6px 14px' }}>
-                <img src={user?.profileImageUrl || '/dp.png'} alt="Profile" className="icon-svg" style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover' }} />
-                <span style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600 }}>{user ? user.name.split(' ')[0] : 'Sign In'}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                {/* User Profile */}
+                <div className="profile" id="profileEdit" onClick={() => user ? navigate('/settings') : navigate('/auth')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '6px 14px', height: '42px', marginLeft: '4px' }}>
+                    <img src={user?.profileImageUrl || '/dp.png'} alt="Profile" className="icon-svg" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
+                    <span style={{ fontSize: '0.85rem', color: '#fff', fontWeight: 600 }}>{user ? user.name.split(' ')[0] : 'Sign In'}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
             </div>
         </div>
     );

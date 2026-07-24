@@ -1,32 +1,32 @@
 /* ===== MEHFIL BRAND IDENTITY - MIDNIGHT AURORA ===== */
 
 :root {
-    /* === PRIMARY ACCENT - Electric Cyan === */
-    --mehfil-gold-primary: #00F2FE; /* Re-using variable name so we don't break existing CSS */
-    --mehfil-gold-soft: #4FACFE;
-    --mehfil-gold-glow: rgba(0, 242, 254, 0.4);
+    /* === PRIMARY ACCENT - Emerald Green === */
+    --mehfil-gold-primary: #10B981;
+    --mehfil-gold-soft: #34D399;
+    --mehfil-gold-glow: rgba(16, 185, 129, 0.35);
 
-    /* === DARK BASE - Ultra Deep Midnight === */
-    --mehfil-dark-base: #09090E;
-    --mehfil-surface-card: #131420;
-    --mehfil-surface-elevated: #1D1E30;
+    /* === DARK BASE - True Charcoal === */
+    --mehfil-dark-base: #0A0A0B;
+    --mehfil-surface-card: #141416;
+    --mehfil-surface-elevated: #1C1C1F;
 
     /* === TEXT HIERARCHY === */
-    --mehfil-text-primary: #FFFFFF;
-    --mehfil-text-secondary: #E2E8F0;
-    --mehfil-text-muted: #94A3B8;
-    --mehfil-text-subtle: #64748B;
+    --mehfil-text-primary: #F4F4F5;
+    --mehfil-text-secondary: #A1A1AA;
+    --mehfil-text-muted: #71717A;
+    --mehfil-text-subtle: #52525B;
 
-    /* === SECONDARY ACCENT - Neon Purple === */
-    --mehfil-accent-blue: #764BA2;
-    --mehfil-accent-blue-glow: rgba(118, 75, 162, 0.5);
+    /* === SECONDARY ACCENT - Forest Emerald === */
+    --mehfil-accent-blue: #059669;
+    --mehfil-accent-blue-glow: rgba(5, 150, 105, 0.4);
 
     /* === BORDERS & STATUS === */
-    --mehfil-border: rgba(255, 255, 255, 0.08);
-    --mehfil-border-strong: rgba(255, 255, 255, 0.15);
-    --mehfil-danger: #FF2A5F;
-    --mehfil-warning: #FFB020;
-    --mehfil-info: #00F2FE;
+    --mehfil-border: rgba(255, 255, 255, 0.06);
+    --mehfil-border-strong: rgba(255, 255, 255, 0.12);
+    --mehfil-danger: #EF4444;
+    --mehfil-warning: #F59E0B;
+    --mehfil-info: #10B981;
 
     /* === MOTION TIMING - Fluid & Dynamic === */
     --mehfil-motion-slow: 600ms;
@@ -53,17 +53,17 @@
     --mehfil-shadow-gold: 0 0 24px var(--mehfil-gold-glow);
 
     /* Compatibility bridge for legacy CSS variables used across files */
-    --accent-primary: var(--mehfil-gold-primary);
-    --accent-hover: var(--mehfil-gold-soft);
-    --accent-secondary: var(--mehfil-accent-blue);
-    --bg-main: var(--mehfil-dark-base);
-    --bg-dark: var(--mehfil-surface-card);
-    --bg-darker: var(--mehfil-dark-base);
-    --card-bg: var(--mehfil-surface-card);
-    --border-color: var(--mehfil-border);
-    --text-primary: var(--mehfil-text-primary);
-    --text-secondary: var(--mehfil-text-secondary);
-    --text-muted: var(--mehfil-text-muted);
+    --accent-primary: #10B981;
+    --accent-hover: #34D399;
+    --accent-secondary: #059669;
+    --bg-main: #0A0A0B;
+    --bg-dark: #0F0F11;
+    --bg-darker: #070708;
+    --card-bg: #141416;
+    --border-color: rgba(255, 255, 255, 0.04);
+    --text-primary: #F4F4F5;
+    --text-secondary: #A1A1AA;
+    --text-muted: #71717A;
 
     /* === TYPOGRAPHY SCALE === */
     --font-sans: 'Plus Jakarta Sans', 'Outfit', sans-serif;

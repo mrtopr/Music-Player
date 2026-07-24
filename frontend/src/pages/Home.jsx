@@ -636,10 +636,10 @@ export default function Home() {
                     <h1 style={{ fontSize: '2.6rem', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
                         {getCleanGreeting()},{' '}
                         <span style={{
-                            background: 'linear-gradient(135deg, #c084fc, #ec4899)',
+                            background: 'linear-gradient(135deg, #10B981, #34D399)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
-                            textShadow: '0 0 30px rgba(168, 85, 247, 0.3)'
+                            textShadow: '0 0 30px rgba(16, 185, 129, 0.3)'
                         }}>
                             {userName ? (userName.charAt(0).toUpperCase() + userName.slice(1)) : 'Friend'}
                         </span>
@@ -652,7 +652,7 @@ export default function Home() {
                     </p>
                     <div className="hero-cta" style={{ display: 'flex', gap: '0.8rem' }}>
                         <button onClick={() => handlePlayAll(recommendations.length ? recommendations : trending)} style={{
-                            background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+                            background: 'linear-gradient(135deg, #059669, #10B981)',
                             border: 'none',
                             color: '#fff',
                             borderRadius: '12px',
@@ -662,14 +662,14 @@ export default function Home() {
                             display: 'flex',
                             alignItems: 'center',
                             gap: '8px',
-                            boxShadow: '0 4px 15px rgba(236, 72, 153, 0.4)',
+                            boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
                             cursor: 'pointer'
                         }}>
                             <PlayCircle size={18} />
                             Start Listening
                         </button>
                         <button onClick={() => handlePlayAll(trending)} style={{
-                            background: 'rgba(255, 255, 255, 0.03)',
+                            background: 'rgba(255, 255, 255, 0.04)',
                             backdropFilter: 'blur(10px)',
                             border: '1px solid rgba(255,255,255,0.08)',
                             color: '#fff',
@@ -684,7 +684,7 @@ export default function Home() {
                             transition: 'background 0.2s'
                         }}
                             onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'}
-                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)'}
                         >
                             <Flame size={18} />
                             Play Trending
@@ -694,10 +694,10 @@ export default function Home() {
                     {/* Stats widgets */}
                     <div className="hero-stats-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '1.5rem' }}>
                         {[
-                            { label: 'Songs', val: '12.4K', icon: Music, color: '#00F2FE' },
-                            { label: 'Artists', val: '8.2K', icon: Users, color: '#c084fc' },
-                            { label: 'Albums', val: '2.4K', icon: Disc3, color: '#ec4899' },
-                            { label: 'Playlists', val: '98', icon: ListMusic, color: '#8b5cf6' },
+                            { label: 'Songs', val: '12.4K', icon: Music, color: '#10B981' },
+                            { label: 'Artists', val: '8.2K', icon: Users, color: '#34D399' },
+                            { label: 'Albums', val: '2.4K', icon: Disc3, color: '#059669' },
+                            { label: 'Playlists', val: '98', icon: ListMusic, color: '#10B981' },
                         ].map((stat, i) => {
                             const StatIcon = stat.icon;
                             return (
@@ -734,9 +734,9 @@ export default function Home() {
             </section>
 
             {/* Categories */}
-            <div style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
-                <h2 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#fff', marginBottom: '1rem' }}>Browse by Category</h2>
-                <div className="category-scroll-grid" style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch', msOverflowStyle: 'none' }}>
+            <div style={{ marginTop: '2.8rem', marginBottom: '2rem' }}>
+                <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', marginBottom: '1.2rem' }}>Browse by Category</h2>
+                <div className="category-scroll-grid" style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingTop: '4px', paddingBottom: '0.5rem', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch', msOverflowStyle: 'none' }}>
                     {CATEGORIES.map((cat, i) => {
                         const Icon = cat.icon || Music;
                         const active = activeCategory === i;
@@ -746,51 +746,40 @@ export default function Home() {
                                 type="button"
                                 onClick={() => handleCategory(i)}
                                 style={{
-                                    flex: '0 0 100px',
-                                    height: '95px',
-                                    borderRadius: '16px',
-                                    background: active ? 'rgba(124, 111, 247, 0.15)' : 'rgba(255,255,255,0.03)',
-                                    border: active ? '1.5px solid #7c6ff7' : '1px solid rgba(255,255,255,0.08)',
-                                    color: active ? '#fff' : 'rgba(255,255,255,0.6)',
+                                    flex: '0 0 auto',
+                                    borderRadius: '50px',
+                                    background: active ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.04)',
+                                    border: active ? '1px solid #10B981' : '1px solid rgba(255,255,255,0.08)',
+                                    color: active ? '#10B981' : 'rgba(255,255,255,0.7)',
                                     display: 'flex',
-                                    flexDirection: 'column',
+                                    flexDirection: 'row',
                                     alignItems: 'center',
-                                    justifyContent: 'center',
                                     gap: '8px',
                                     cursor: 'pointer',
-                                    transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                                    boxShadow: active ? '0 0 15px rgba(124, 111, 247, 0.25)' : 'none',
-                                    padding: '10px 6px',
+                                    transition: 'all 0.2s ease',
+                                    boxShadow: active ? '0 0 16px rgba(16, 185, 129, 0.25)' : 'none',
+                                    padding: '9px 18px',
                                     outline: 'none',
                                 }}
                                 onMouseEnter={e => {
                                     if (!active) {
-                                        e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
-                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
+                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)';
                                         e.currentTarget.style.color = '#fff';
-                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                        e.currentTarget.style.transform = 'translateY(-1px)';
                                     }
                                 }}
                                 onMouseLeave={e => {
                                     if (!active) {
-                                        e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
                                         e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
-                                        e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                                        e.currentTarget.style.color = 'rgba(255,255,255,0.7)';
                                         e.currentTarget.style.transform = 'translateY(0)';
                                     }
                                 }}
                             >
-                                <div style={{
-                                    width: '36px', height: '36px',
-                                    borderRadius: '12px',
-                                    background: active ? 'rgba(124, 111, 247, 0.2)' : 'rgba(255,255,255,0.04)',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    color: active ? '#c084fc' : 'var(--accent-primary)',
-                                    transition: 'all 0.2s',
-                                }}>
-                                    <Icon size={18} />
-                                </div>
-                                <span style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '-0.1px', textAlign: 'center', whiteSpace: 'nowrap' }}>
+                                <Icon size={16} style={{ color: active ? '#10B981' : 'var(--text-secondary)' }} />
+                                <span style={{ fontSize: '0.85rem', fontWeight: 600, letterSpacing: '-0.1px', whiteSpace: 'nowrap' }}>
                                     {cat.label}
                                 </span>
                             </button>

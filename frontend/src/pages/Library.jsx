@@ -71,7 +71,8 @@ function LikedSongsSection() {
         <div>
             {/* Hero banner */}
             <div style={{
-                background: 'linear-gradient(135deg, rgba(80,50,150,0.6), rgba(40,20,100,0.6))',
+                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.05))',
+                border: '1px solid rgba(16, 185, 129, 0.2)',
                 padding: 'var(--space-xl, 1.5rem)', borderRadius: '16px',
                 marginBottom: 'var(--space-xl, 1.5rem)', display: 'flex',
                 justifyContent: 'space-between', alignItems: 'center'
