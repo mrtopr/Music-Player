@@ -96,7 +96,7 @@ export default function Settings() {
     const handleSaveProfile = async () => {
         setSavingProfile(true);
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/auth/me`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/auth/me`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

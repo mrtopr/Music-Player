@@ -32,7 +32,15 @@ export class App {
   private initializeGlobalMiddlewares() {
     this.app.use(logger())
     this.app.use(prettyJSON())
-    this.app.use(cors())
+    // Explicitly allow Authorization header so browser-side token requests work.
+    // FRONTEND_URL env var should be set to your deployed frontend URL in production.
+    const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173'
+    this.app.use(cors({
+      origin: [allowedOrigin, 'http://localhost:5173', 'http://localhost:3000'],
+      allowHeaders: ['Content-Type', 'Authorization'],
+      allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      credentials: true,
+    }))
   }
 
   private initializeSwaggerUI() {

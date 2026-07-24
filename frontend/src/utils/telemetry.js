@@ -1,8 +1,9 @@
 // Utility to send telemetry events to our backend
-
-const TELEMETRY_API_URL = 'http://localhost:3000/api/telemetry/events'
-
 import { useAuthStore } from '../store/useAuthStore';
+
+// VITE_API_URL is empty in dev → relative path goes through Vite proxy to localhost:3000.
+// In production, set VITE_API_URL to your deployed backend URL.
+const TELEMETRY_API_URL = `${import.meta.env.VITE_API_URL || ''}/api/telemetry/events`
 
 // In a real app, generate/store a real UUID for the user and session
 export const getUserId = () => {

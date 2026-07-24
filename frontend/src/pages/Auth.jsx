@@ -148,16 +148,27 @@ export default function Auth() {
 
   const navigate   = useNavigate();
   const loginStore = useAuthStore(s => s.login);
-  const API        = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  // VITE_API_URL is intentionally empty in dev so that /api/* requests
+  // go through Vite's built-in proxy (localhost:5173 → localhost:3000).
+  // In production, set VITE_API_URL to your deployed backend URL.
+  const API        = import.meta.env.VITE_API_URL || '';
 
   const go = v => { setView(v); setError(null); };
   const togglePass = () => setShowPass(p => !p);
 
   const post = async (path, body) => {
     const r = await fetch(`${API}${path}`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
     });
-    return r.json();
+    // Parse JSON regardless of status so error messages from the backend are surfaced
+    const data = await r.json();
+    if (!r.ok && data.success === undefined) {
+      // Server returned an error without a `success` field — normalize it
+      return { success: false, message: data.message || `Server error (${r.status})` };
+    }
+    return data;
   };
 
   const handleAuth = async e => {

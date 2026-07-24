@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Play, Clock, Music, Loader2 } from 'lucide-react';
 import '../styles/Stats.css';
 import { getUserId } from '../utils/telemetry.js';
+import { useAuthStore } from '../store/useAuthStore';
 
 export default function Stats() {
     const [stats, setStats] = useState(null);
@@ -9,15 +10,27 @@ export default function Stats() {
 
     useEffect(() => {
         const fetchStats = async () => {
+            const userId = getUserId();
+            const token = useAuthStore.getState().token;
+
+            // Don't attempt fetch for unauthenticated users — userId would be null
+            // which fails backend UUID validation and returns a 400 error.
+            if (!userId || !token) {
+                setLoading(false);
+                return;
+            }
+
             try {
-                // Adjust port to match where your backend is running locally
-                const res = await fetch(`http://localhost:3000/api/telemetry/stats?userId=${getUserId()}`);
+                const API = import.meta.env.VITE_API_URL || '';
+                const res = await fetch(`${API}/api/telemetry/stats?userId=${userId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
                 const data = await res.json();
                 if (data.success) {
                     setStats(data.data);
                 }
             } catch (error) {
-                console.error("Failed to fetch stats", error);
+                console.error('Failed to fetch stats', error);
             } finally {
                 setLoading(false);
             }

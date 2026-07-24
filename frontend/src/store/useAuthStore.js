@@ -15,7 +15,9 @@ export const useAuthStore = create(
         if (!token) return;
 
         try {
-          const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+          // Use empty string fallback → relative path → Vite proxy handles it in dev.
+          // In production, VITE_API_URL should be set to the deployed backend URL.
+          const API_URL = import.meta.env.VITE_API_URL || '';
           const res = await fetch(`${API_URL}/api/auth/me`, {
             headers: { Authorization: `Bearer ${token}` }
           });
