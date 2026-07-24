@@ -4,7 +4,7 @@
 
 export const API_BASE_URL = (() => {
     // 1. Check for Environment Variable (Production-ready VITE approach)
-    const envUrl = import.meta.env.VITE_API_BASE_URL;
+    const envUrl = import.meta.env.VITE_API_URL;
     if (envUrl) return envUrl.replace(/\/$/, '');
 
     // 2. Fallbacks for specific overrides (stored or query param)

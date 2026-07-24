@@ -34,9 +34,14 @@ export class App {
     this.app.use(prettyJSON())
     // Explicitly allow Authorization header so browser-side token requests work.
     // FRONTEND_URL env var should be set to your deployed frontend URL in production.
-    const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173'
+    // Supports multiple comma-separated origins: e.g. "https://mehfil-music.vercel.app,https://custom-domain.com"
+    const allowedOrigins = new Set([
+      ...(process.env.FRONTEND_URL || '').split(',').map(o => o.trim()).filter(Boolean),
+      'http://localhost:5173',
+      'http://localhost:3000',
+    ])
     this.app.use(cors({
-      origin: [allowedOrigin, 'http://localhost:5173', 'http://localhost:3000'],
+      origin: (origin) => allowedOrigins.has(origin) ? origin : null,
       allowHeaders: ['Content-Type', 'Authorization'],
       allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       credentials: true,
