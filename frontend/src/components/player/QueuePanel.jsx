@@ -100,7 +100,7 @@ export default function QueuePanel({ visible, onClose }) {
                                     if (jumpInQueue) {
                                         jumpInQueue(queueIndex + 1 + i);
                                     } else {
-                                        playSong(song, true, true);
+                                        playSong(song, false, true);
                                     }
                                 }}
                                 style={{

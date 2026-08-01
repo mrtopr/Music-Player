@@ -4,7 +4,7 @@ import {
     Shuffle, Repeat, Repeat1, Volume2, VolumeX, Heart,
     MoreHorizontal, Monitor, ListMusic, Sparkles,
     User, Disc, Share2, Download, Plus, Check, Loader2,
-    SlidersHorizontal, Mic
+    SlidersHorizontal, Mic, Waves
 } from 'lucide-react';
 
 import { usePlayerStore } from '../../store/usePlayerStore';
@@ -12,6 +12,7 @@ import { getImageUrl, getAudioUrl } from '../../api/client.js';
 import { useNavigate } from 'react-router-dom';
 import { formatTime, decodeEntities, getSafeImage } from '../../utils/helpers.js';
 import { useBackButtonClose } from '../../hooks/useBackButtonClose.js';
+import SoundEffectsPanel from './SoundEffectsPanel.jsx';
 import '../../../styles/fullscreen-player.css';
 
 function OptionItem({ icon, label, onClick }) {
@@ -33,14 +34,20 @@ function OptionItem({ icon, label, onClick }) {
     );
 }
 
-// ── Synced Lyrics Sub-component (Subscribed to currentTime to prevent parent re-renders) ──
+// ── Synced Lyrics Sub-component (Ultra-clean, borderless Apple Music typography) ──
 function FullscreenLyricsPanel() {
     const lyrics = usePlayerStore(state => state.lyrics);
     const lyricsLoading = usePlayerStore(state => state.lyricsLoading);
+    const lyricsError = usePlayerStore(state => state.lyricsError);
+    const fetchLyricsForSong = usePlayerStore(state => state.fetchLyricsForSong);
+    const currentSong = usePlayerStore(state => state.currentSong);
     const currentTime = usePlayerStore(state => state.currentTime);
     const duration = usePlayerStore(state => state.duration);
     const seek = usePlayerStore(state => state.seek);
+
     const lyricsContainerRef = useRef(null);
+    const [isUserScrolling, setIsUserScrolling] = useState(false);
+    const scrollTimeoutRef = useRef(null);
 
     let activeIndex = -1;
     if (lyrics && lyrics.isSynced && lyrics.synced.length > 0) {
@@ -53,48 +60,89 @@ function FullscreenLyricsPanel() {
         }
     }
 
+    // Auto scroll active lyric into middle
     useEffect(() => {
-        if (lyricsContainerRef.current) {
+        if (!isUserScrolling && lyricsContainerRef.current) {
             const activeElement = lyricsContainerRef.current.querySelector('.fs-lyric-line.active');
             if (activeElement) {
-                const containerHeight = lyricsContainerRef.current.clientHeight;
+                const container = lyricsContainerRef.current;
+                const containerHeight = container.clientHeight;
                 const elementTop = activeElement.offsetTop;
                 const elementHeight = activeElement.clientHeight;
-                lyricsContainerRef.current.scrollTo({
+                container.scrollTo({
                     top: elementTop - containerHeight / 2 + elementHeight / 2,
                     behavior: 'smooth'
                 });
             }
         }
-    }, [activeIndex]);
+    }, [activeIndex, isUserScrolling]);
+
+    // Handle manual scroll pause
+    const handleScroll = () => {
+        setIsUserScrolling(true);
+        if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+        scrollTimeoutRef.current = setTimeout(() => {
+            setIsUserScrolling(false);
+        }, 4000);
+    };
+
+    const scrollToActive = () => {
+        setIsUserScrolling(false);
+        if (lyricsContainerRef.current) {
+            const activeElement = lyricsContainerRef.current.querySelector('.fs-lyric-line.active');
+            if (activeElement) {
+                const container = lyricsContainerRef.current;
+                container.scrollTo({
+                    top: activeElement.offsetTop - container.clientHeight / 2 + activeElement.clientHeight / 2,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    };
+
+    const containerStyle = {
+        width: '100%',
+        height: '100%',
+        maxHeight: '520px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        boxSizing: 'border-box',
+        overflow: 'hidden'
+    };
 
     if (lyricsLoading) {
         return (
-            <div className="glass-morphism" style={{
-                width: '100%', height: '380px', display: 'flex', flexDirection: 'column',
-                justifyContent: 'center', alignItems: 'center', background: 'rgba(255,255,255,0.03)',
-                backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.06)',
-                borderRadius: '24px', padding: '20px', boxSizing: 'border-box'
-            }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', color: 'var(--accent-primary)' }}>
-                    <Loader2 className="spin" size={36} />
-                    <span>Fetching lyrics...</span>
+            <div style={containerStyle}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', color: 'rgba(255,255,255,0.7)' }}>
+                    <Loader2 className="spin" size={32} style={{ color: 'var(--accent-primary)' }} />
+                    <span style={{ fontSize: '0.9rem', fontWeight: 600, opacity: 0.8 }}>Loading lyrics...</span>
                 </div>
             </div>
         );
     }
 
-    if (!lyrics) {
+    if (!lyrics || lyricsError) {
         return (
-            <div className="glass-morphism" style={{
-                width: '100%', height: '380px', display: 'flex', flexDirection: 'column',
-                justifyContent: 'center', alignItems: 'center', background: 'rgba(255,255,255,0.03)',
-                backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.06)',
-                borderRadius: '24px', padding: '20px', boxSizing: 'border-box'
-            }}>
-                <div style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center' }}>
-                    <Mic size={36} style={{ marginBottom: '10px', opacity: 0.3 }} />
-                    <p style={{ margin: 0 }}>Lyrics not found for this song.</p>
+            <div style={containerStyle}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'rgba(255,255,255,0.45)', textAlign: 'center', gap: '12px' }}>
+                    <Mic size={36} style={{ opacity: 0.3 }} />
+                    <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600 }}>Lyrics not available</p>
+                    {currentSong && (
+                        <button
+                            onClick={() => fetchLyricsForSong(currentSong)}
+                            style={{
+                                padding: '6px 16px', borderRadius: '20px',
+                                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
+                                color: 'rgba(255,255,255,0.8)', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer',
+                                transition: 'all 0.2s ease'
+                            }}
+                        >
+                            Retry
+                        </button>
+                    )}
                 </div>
             </div>
         );
@@ -102,57 +150,79 @@ function FullscreenLyricsPanel() {
 
     if (lyrics.instrumental) {
         return (
-            <div className="glass-morphism" style={{
-                width: '100%', height: '380px', display: 'flex', flexDirection: 'column',
-                justifyContent: 'center', alignItems: 'center', background: 'rgba(255,255,255,0.03)',
-                backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.06)',
-                borderRadius: '24px', padding: '20px', boxSizing: 'border-box'
-            }}>
-                <div style={{ fontSize: '1.6rem', fontWeight: 600, color: 'rgba(255,255,255,0.6)', fontStyle: 'italic' }}>
-                    ♫ Instrumental ♫
+            <div style={containerStyle}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
+                    <div style={{ display: 'flex', gap: '5px', alignItems: 'flex-end', height: '26px' }}>
+                        {[0.4, 0.8, 0.5, 1, 0.6, 0.9, 0.3].map((h, i) => (
+                            <div key={i} style={{
+                                width: '3px', height: `${h * 100}%`, borderRadius: '3px',
+                                background: 'var(--accent-primary)',
+                                animation: `pulseBar 1.2s ease-in-out ${i * 0.15}s infinite alternate`
+                            }} />
+                        ))}
+                    </div>
+                    <div style={{ fontSize: '1.3rem', fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.5px' }}>
+                        ♫ Instrumental ♫
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="glass-morphism" style={{
-            width: '100%', height: '380px', display: 'flex', flexDirection: 'column',
-            justifyContent: 'center', alignItems: 'center', background: 'rgba(255,255,255,0.03)',
-            backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.06)',
-            borderRadius: '24px', padding: '20px', boxSizing: 'border-box', overflow: 'hidden',
-            position: 'relative'
-        }}>
+        <div style={containerStyle}>
             {lyrics.isSynced ? (
-                <div 
+                <div
                     ref={lyricsContainerRef}
-                    className="fs-lyrics-container" 
+                    onScroll={handleScroll}
+                    className="fs-lyrics-container"
                     style={{
-                        height: '100%', width: '100%', overflowY: 'auto', padding: '140px 0',
-                        display: 'flex', flexDirection: 'column', gap: '1.5rem', alignItems: 'center',
-                        maskImage: 'linear-gradient(to bottom, transparent 0%, white 20%, white 80%, transparent 100%)',
-                        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, white 20%, white 80%, transparent 100%)',
-                        scrollBehavior: 'smooth', scrollbarWidth: 'none', msOverflowStyle: 'none'
+                        width: '100%',
+                        height: '100%',
+                        overflowY: 'auto',
+                        padding: '160px 20px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '1.6rem',
+                        alignItems: 'center',
+                        maskImage: 'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)',
+                        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)',
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
+                        boxSizing: 'border-box'
                     }}
                 >
                     {lyrics.synced.map((line, idx) => {
                         const isActive = idx === activeIndex;
+                        const isPast = idx < activeIndex;
                         return (
-                            <div 
-                                key={idx} 
+                            <div
+                                key={idx}
                                 className={`fs-lyric-line ${isActive ? 'active' : ''}`}
                                 onClick={() => duration > 0 && seek((line.time / duration) * 100)}
                                 style={{
-                                    fontSize: isActive ? '1.8rem' : '1.4rem',
-                                    fontWeight: 700, textAlign: 'center',
-                                    color: isActive ? '#fff' : 'rgba(255,255,255,0.3)',
-                                    textShadow: isActive ? '0 0 20px rgba(255,255,255,0.5)' : 'none',
-                                    transform: isActive ? 'scale(1.05)' : 'scale(1)',
-                                    transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
-                                    cursor: 'pointer', padding: '4px 10px', borderRadius: '8px'
+                                    fontSize: isActive ? '1.85rem' : '1.35rem',
+                                    fontWeight: isActive ? 800 : 600,
+                                    textAlign: 'center',
+                                    lineHeight: '1.45',
+                                    color: isActive ? '#ffffff' : isPast ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.25)',
+                                    transform: isActive ? 'scale(1.04)' : 'scale(1)',
+                                    transition: 'all 0.35s cubic-bezier(0.25, 1, 0.5, 1)',
+                                    cursor: 'pointer',
+                                    padding: '4px 16px',
+                                    maxWidth: '96%',
+                                    userSelect: 'none'
                                 }}
-                                onMouseEnter={e => { if(!isActive) e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; }}
-                                onMouseLeave={e => { if(!isActive) e.currentTarget.style.color = 'rgba(255,255,255,0.3)'; }}
+                                onMouseEnter={e => {
+                                    if (!isActive) {
+                                        e.currentTarget.style.color = 'rgba(255,255,255,0.75)';
+                                    }
+                                }}
+                                onMouseLeave={e => {
+                                    if (!isActive) {
+                                        e.currentTarget.style.color = isPast ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.25)';
+                                    }
+                                }}
                             >
                                 {line.text}
                             </div>
@@ -161,16 +231,53 @@ function FullscreenLyricsPanel() {
                 </div>
             ) : (
                 <div style={{
-                    width: '100%', height: '100%', overflowY: 'auto', padding: '10px',
-                    fontSize: '1.2rem', lineHeight: '1.8', color: 'rgba(255,255,255,0.85)',
-                    whiteSpace: 'pre-wrap', textAlign: 'center', scrollbarWidth: 'none', msOverflowStyle: 'none'
+                    width: '100%',
+                    height: '100%',
+                    overflowY: 'auto',
+                    padding: '20px 30px',
+                    fontSize: '1.2rem',
+                    lineHeight: '1.9',
+                    color: 'rgba(255,255,255,0.85)',
+                    whiteSpace: 'pre-wrap',
+                    textAlign: 'center',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none'
                 }}>
                     {lyrics.plain}
                 </div>
             )}
+
+            {/* Minimal floating sync button */}
+            {isUserScrolling && lyrics.isSynced && (
+                <button
+                    onClick={scrollToActive}
+                    style={{
+                        position: 'absolute',
+                        bottom: '20px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        background: 'rgba(20, 22, 34, 0.85)',
+                        backdropFilter: 'blur(16px)',
+                        border: '1px solid rgba(255,255,255,0.12)',
+                        color: '#ffffff',
+                        padding: '6px 16px',
+                        borderRadius: '20px',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        zIndex: 30,
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                        animation: 'sep-in 0.2s ease'
+                    }}
+                >
+                    🎯 Sync
+                </button>
+            )}
         </div>
     );
 }
+
+
 
 // ── Progress & Time Section (Handles drag-to-seek, click-to-seek, and real-time updates) ──
 function FullscreenProgressSection() {
@@ -474,6 +581,9 @@ export default function FullscreenPlayer({ visible, onClose }) {
     const setQueueOpen = usePlayerStore(state => state.setQueueOpen);
     const setEqualizerOpen = usePlayerStore(state => state.setEqualizerOpen);
     const setFullScreen = usePlayerStore(state => state.setFullScreen);
+    const isSoundEffectsOpen = usePlayerStore(state => state.isSoundEffectsOpen);
+    const setSoundEffectsOpen = usePlayerStore(state => state.setSoundEffectsOpen);
+    const soundEnhancement = usePlayerStore(state => state.soundEnhancement);
     const likedSongs = usePlayerStore(state => state.likedSongs);
     const toggleLike = usePlayerStore(state => state.toggleLike);
     const toggleAutoMix = usePlayerStore(state => state.toggleAutoMix);
@@ -558,6 +668,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
     const artist = currentSong ? decodeEntities(currentSong.primaryArtists || currentSong.subtitle) : '';
 
     return (
+        <>
         <div className={`fullscreen-player-v3 ${visible ? 'active' : ''}`}
             id="fullscreenPlayerV3"
             onTouchStart={handleTouchStart}
@@ -797,6 +908,27 @@ export default function FullscreenPlayer({ visible, onClose }) {
                             >
                                 <SlidersHorizontal size={22} /> <span>EQ</span>
                               </button>
+
+                              {/* Sound Effects Button */}
+                              <button
+                                  onClick={() => setSoundEffectsOpen(true)}
+                                  className={`fs-util-btn ${soundEnhancement?.preset && soundEnhancement.preset !== 'normal' ? 'active' : ''}`}
+                                  style={{
+                                      cursor: 'pointer',
+                                      pointerEvents: 'auto',
+                                      padding: '12px',
+                                      color: soundEnhancement?.preset && soundEnhancement.preset !== 'normal' ? 'var(--accent-primary)' : '#fff',
+                                      background: soundEnhancement?.preset && soundEnhancement.preset !== 'normal' ? 'rgba(212,160,83,0.15)' : 'transparent',
+                                      borderRadius: '8px',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '4px',
+                                  }}
+                                  title="Sound Effects"
+                              >
+                                  <Waves size={22} /> <span>Sound</span>
+                              </button>
+
                               <button
                                   onClick={() => setShowLyrics(!showLyrics)}
                                   className={`fs-util-btn ${showLyrics ? 'active' : ''}`}
@@ -834,5 +966,12 @@ export default function FullscreenPlayer({ visible, onClose }) {
             </main>
 
         </div>
+
+        {/* Sound Effects Panel — rendered outside the player main div but within the component */}
+        <SoundEffectsPanel
+            visible={isSoundEffectsOpen}
+            onClose={() => setSoundEffectsOpen(false)}
+        />
+        </>
     );
 }

@@ -13,6 +13,7 @@ class ProAudioEngine {
         this.filters = null;
         this.initialized = false;
         this.currentFadeId = 0;
+        this._enhancementConnected = false;
     }
 
     init(audioA, audioB) {
@@ -46,7 +47,7 @@ class ProAudioEngine {
             treble.type = 'highshelf';
             treble.frequency.value = 3000;
 
-            // Chain: Source -> Gain -> EQ -> Destination
+            // Chain: Source → Gain → EQ → Destination (default, overridden by connectEnhancement)
             this.sourceA.connect(this.gainA);
             this.sourceB.connect(this.gainB);
 
@@ -62,6 +63,33 @@ class ProAudioEngine {
             console.log('[ProAudioEngine] Hard-initialized successfully.');
         } catch (e) {
             console.error('[ProAudioEngine] Initialization failed:', e);
+        }
+    }
+
+    /**
+     * Connects the Sound Enhancement Engine between the EQ treble node and destination.
+     * Called ONCE by soundEngine after it builds its processing chain.
+     * Safe to call multiple times — subsequent calls are no-ops.
+     *
+     * @param {AudioNode} enhancementInput - The first node of the enhancement chain
+     * @param {AudioNode} enhancementOutput - The last node of the enhancement chain (connected to destination)
+     */
+    connectEnhancement(enhancementInput, enhancementOutput) {
+        if (!this.initialized || this._enhancementConnected) return;
+        if (!enhancementInput || !enhancementOutput) return;
+
+        try {
+            // 1. Disconnect treble from the default destination
+            this.filters.treble.disconnect(this.ctx.destination);
+            // 2. Reconnect treble → enhancement chain
+            this.filters.treble.connect(enhancementInput);
+            // 3. Connect enhancement output → destination
+            enhancementOutput.connect(this.ctx.destination);
+
+            this._enhancementConnected = true;
+            console.log('[ProAudioEngine] Enhancement chain connected successfully.');
+        } catch (e) {
+            console.error('[ProAudioEngine] connectEnhancement failed:', e);
         }
     }
 

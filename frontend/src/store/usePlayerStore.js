@@ -3,6 +3,7 @@ import { getAudioUrl, getImageUrl, apiFetch } from '../api/client.js';
 import { addToHistory, addGenrePlay } from '../utils/history.js';
 import { pickBestNext } from '../utils/autoMix.js';
 import { audioEngine } from '../utils/audioEngine.js';
+import { soundEngine } from '../utils/soundEngine.js';
 import { parseLrc, decodeEntities } from '../utils/helpers.js';
 import { logPlaybackEvent, getUserId } from '../utils/telemetry.js';
 
@@ -246,6 +247,13 @@ const handleIncomingSyncMessage = async (data) => {
 // Hard-init the pro engine once
 audioEngine.init(audioA, audioB);
 
+// Build the sound enhancement DSP chain using the same AudioContext
+// and connect it between the EQ treble node and the destination.
+if (audioEngine.ctx) {
+    soundEngine.build(audioEngine.ctx);
+    audioEngine.connectEnhancement(soundEngine.input, soundEngine.output);
+}
+
 // ── Lyrics Cache (keyed by song ID, survives song changes within a session) ──
 const lyricsCache = new Map();
 
@@ -286,6 +294,23 @@ export const usePlayerStore = create((set, get) => ({
 
     // Equalizer State
     equalizer: { bass: 0, mid: 0, treble: 0 },
+
+    // Sound Enhancement State (loaded from soundEngine which reads localStorage)
+    soundEnhancement: (() => {
+        const s = soundEngine.getState();
+        return {
+            preset: s.preset || 'normal',
+            bass: s.bass ?? 0,
+            subBass: s.subBass ?? 0,
+            punch: s.punch ?? 0,
+            presence: s.presence ?? 0,
+            stereoWidth: s.stereoWidth ?? 0,
+            spatialEnabled: s.spatialEnabled ?? false,
+            loudness: s.loudness ?? 0,
+            room: s.room || 'off',
+        };
+    })(),
+    isSoundEffectsOpen: false,
 
     // Sleep Timer State
     sleepTimer: {
@@ -497,7 +522,7 @@ export const usePlayerStore = create((set, get) => ({
         broadcastHostState();
     },
 
-    playSong: async (rawSong, autoOpen = true, isFromQueue = false, isSync = false) => {
+    playSong: async (rawSong, autoOpen = false, isFromQueue = false, isSync = false) => {
 
         const state = get();
         if (!rawSong) return;
@@ -641,7 +666,7 @@ export const usePlayerStore = create((set, get) => ({
 
 
 
-    playQueue: (songs, startIndex = 0, autoOpen = true) => {
+    playQueue: (songs, startIndex = 0, autoOpen = false) => {
         if (!songs.length) return;
         const { newQueue, targetIndex } = get().injectIntoQueue(songs, startIndex);
         set({ queue: newQueue, queueIndex: targetIndex });
@@ -655,7 +680,7 @@ export const usePlayerStore = create((set, get) => ({
         const { queue } = get();
         if (index < 0 || index >= queue.length) return;
         set({ queueIndex: index });
-        get().playSong(queue[index], true, true);
+        get().playSong(queue[index], false, true);
     },
 
     togglePlay: () => {
@@ -873,6 +898,39 @@ export const usePlayerStore = create((set, get) => ({
             if (filters[key]) filters[key].gain.value = val;
         });
         set({ equalizer: vals });
+    },
+
+
+    // ── Sound Enhancement Actions ──
+    setSoundEffectsOpen: (val) => set({ isSoundEffectsOpen: val }),
+
+    applySoundPreset: (presetName) => {
+        soundEngine.applyPreset(presetName);
+        const s = soundEngine.getState();
+        set({
+            soundEnhancement: {
+                preset: s.preset,
+                bass: s.bass,
+                subBass: s.subBass,
+                punch: s.punch,
+                presence: s.presence,
+                stereoWidth: s.stereoWidth,
+                spatialEnabled: s.spatialEnabled,
+                loudness: s.loudness,
+                room: s.room,
+            }
+        });
+    },
+
+    setSoundParam: (key, value) => {
+        soundEngine.setParam(key, value);
+        set(state => ({
+            soundEnhancement: {
+                ...state.soundEnhancement,
+                [key]: value,
+                preset: key === 'preset' ? value : 'custom',
+            }
+        }));
     },
 
 

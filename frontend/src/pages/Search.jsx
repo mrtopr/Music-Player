@@ -5,6 +5,7 @@ import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
 import AddToPlaylist from '../components/common/AddToPlaylist';
 import { decodeEntities } from '../utils/helpers.js';
+import { rankByRelativeSimilarity } from '../utils/relativeSearch.js';
 
 const TRENDING_SEARCHES = [
     'Arijit Singh', 'Kesariya', 'Tum Hi Ho', 'Raataan Lambiyan',
@@ -45,13 +46,14 @@ export default function SearchPage() {
         try {
             const endpoint = `/api/search/${type}`;
             const res = await apiFetch(endpoint, { query: q, limit: 20, page: p });
-            const newResults = res.results || [];
+            const newResults = rankByRelativeSimilarity(q, res.results || []);
 
             if (p === 1) setResults(newResults);
             else setResults(prev => {
                 // simple deduplication just in case
                 const existIds = new Set(prev.map(i => i.id));
-                return [...prev, ...newResults.filter(i => !existIds.has(i.id))];
+                const filteredNew = newResults.filter(i => !existIds.has(i.id));
+                return rankByRelativeSimilarity(q, [...prev, ...filteredNew]);
             });
 
             setHasMore(newResults.length === 20); // Limit is 20

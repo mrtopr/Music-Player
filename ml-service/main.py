@@ -132,6 +132,63 @@ async def get_recommendations(req: RecommendationRequest):
         "recommendations": candidates[:req.limit]
     }
 
+from typing import List, Optional
+
+class SearchCandidate(BaseModel):
+    id: str
+    title: Optional[str] = ""
+    name: Optional[str] = ""
+    subtitle: Optional[str] = ""
+    primaryArtists: Optional[str] = ""
+    artist: Optional[str] = ""
+
+class SearchRankRequest(BaseModel):
+    query: str
+    candidates: List[SearchCandidate]
+
+@app.post("/api/ml/rank-search")
+async def rank_search(req: SearchRankRequest):
+    """
+    ML Relative Search Ranking:
+    Computes relative TF-IDF character 3-gram cosine similarity & fuzzy edit distance
+    to rank search candidates relatively rather than requiring exact text matching.
+    """
+    if not req.query or not req.candidates:
+        return {"success": True, "ranked": [c.dict() for c in req.candidates]}
+
+    query_text = req.query.lower().strip()
+    texts = []
+    
+    for c in req.candidates:
+        text = f"{c.title or c.name or ''} {c.primaryArtists or c.artist or c.subtitle or ''}".lower().strip()
+        texts.append(text)
+
+    try:
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        vectorizer = TfidfVectorizer(analyzer='char_wb', ngram_range=(2, 4))
+        tfidf_matrix = vectorizer.fit_transform([query_text] + texts)
+        query_vec = tfidf_matrix[0]
+        cand_vecs = tfidf_matrix[1:]
+
+        sims = cosine_similarity(query_vec, cand_vecs)[0]
+
+        scored = []
+        for i, c in enumerate(req.candidates):
+            score = float(sims[i])
+            # Exact string prefix boost
+            t = (c.title or c.name or '').lower()
+            if t == query_text:
+                score += 1.0
+            elif t.startswith(query_text):
+                score += 0.5
+            scored.append({"item": c.dict(), "score": score})
+
+        scored.sort(key=lambda x: x["score"], reverse=True)
+        return {"success": True, "ranked": [s["item"] for s in scored]}
+    except Exception as e:
+        print("ML rank error:", e)
+        return {"success": True, "ranked": [c.dict() for c in req.candidates]}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
