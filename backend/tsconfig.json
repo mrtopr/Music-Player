@@ -5,7 +5,6 @@
     "jsxImportSource": "hono/jsx",
     "lib": ["ESNext", "esnext.asynciterable", "DOM"],
     "baseUrl": ".",
-    "rootDir": "./src",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "paths": { "#modules/*": ["src/modules/*"], "#common/*": ["src/common/*"] },
