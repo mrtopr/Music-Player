@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mehfil-v3';
+const CACHE_NAME = 'mehfil-v4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -10,7 +10,7 @@ const STATIC_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Pre-caching assets...');
+      console.log('Pre-caching static assets...');
       return cache.addAll(STATIC_ASSETS);
     })
   );
@@ -34,26 +34,22 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Only handle HTTP/HTTPS requests (ignores chrome-extension, etc.)
+  // Only handle HTTP/HTTPS requests
   if (!url.protocol.startsWith('http')) {
     return;
   }
 
-  // Skip caching for external music/API streams, use Network First
+  // 1. Pass external origin media (audio CDN streams, Saavn CDN, external APIs) directly to browser
   if (url.origin !== self.location.origin) {
-    event.respondWith(
-      fetch(request).catch(() => caches.match(request))
-    );
-    return;
+    return; // Don't call respondWith — let browser perform direct native fetch & media streaming
   }
 
-  // Skip caching for local API requests (they are dynamic and shouldn't be cached)
+  // 2. Pass local API requests directly to network
   if (url.pathname.startsWith('/api/')) {
-    event.respondWith(fetch(request));
-    return;
+    return; // Don't call respondWith — let native fetch handle it
   }
 
-  // 1. Navigation requests (HTML pages) -> Network First, falling back to cache
+  // 3. Navigation requests (HTML pages) -> Network First, falling back to cached index.html
   if (
     request.mode === 'navigate' ||
     (request.method === 'GET' && request.headers.get('accept')?.includes('text/html'))
@@ -61,35 +57,35 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (response.status === 200) {
+          if (response && response.status === 200) {
             const clone = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
           }
           return response;
         })
-        .catch(() => {
-          // If offline, fallback to cached index.html
-          return caches.match('/index.html') || caches.match('/');
+        .catch(async () => {
+          const cachedHtml = (await caches.match('/index.html')) || (await caches.match('/'));
+          return cachedHtml || new Response('Offline', { status: 503, statusText: 'Offline' });
         })
     );
     return;
   }
 
-  // 2. Static UI assets (JS, CSS, local images, fonts) -> Cache First, falling back to network
+  // 4. Static UI assets (JS, CSS, local images) -> Cache First, falling back to network
   if (request.method === 'GET') {
     event.respondWith(
       caches.match(request).then((cached) => {
-        return cached || fetch(request).then((response) => {
-          if (response.status === 200) {
+        if (cached) return cached;
+        return fetch(request).then((response) => {
+          if (response && response.status === 200) {
             const clone = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
           }
           return response;
+        }).catch(() => {
+          return new Response('Asset Unavailable', { status: 404 });
         });
       })
     );
-  } else {
-    // Pass other methods (POST, PUT, DELETE, etc.) directly to the network
-    event.respondWith(fetch(request));
   }
 });

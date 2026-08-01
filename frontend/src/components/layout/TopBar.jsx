@@ -230,6 +230,8 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
     const sessionCode = usePlayerStore(state => state.sessionCode);
     const sessionRole = usePlayerStore(state => state.sessionRole);
     const isPlaying = usePlayerStore(state => state.isPlaying);
+    const isAiDjEnabled = usePlayerStore(state => state.isAiDjEnabled);
+    const toggleAiDj = usePlayerStore(state => state.toggleAiDj);
     const sleepTimer = usePlayerStore(state => state.sleepTimer);
     const createSession = usePlayerStore(state => state.createSession);
     const joinSession = usePlayerStore(state => state.joinSession);
@@ -374,8 +376,15 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
     };
 
     return (
-        <div className="top-bar glass-morphism" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)', gap: '2rem' }}>
+        <div className="top-bar glass-morphism" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)', gap: '1rem' }}>
+            {/* Mobile Brand Logo */}
+            <div className="mobile-brand" onClick={() => navigate('/')} style={{ display: 'none', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover' }} />
+                <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, var(--accent-primary, #d4a053), #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mehfil</span>
+            </div>
+
             <div className="search" style={{ display: 'flex', alignItems: 'center', flex: 1, maxWidth: '480px' }}>
+
                 <div className="search-box" style={{ 
                     position: 'relative', 
                     display: 'flex', 
@@ -395,6 +404,9 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                         onChange={handleSearchChange}
                         placeholder="Search songs, artists, albums..."
                         onFocus={handleSearchFocus}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleSearchFocus();
+                        }}
                         style={{
                             background: 'transparent',
                             border: 'none',
@@ -404,7 +416,25 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                             outline: 'none',
                         }}
                     />
-                    <Search className="search-icon" size={18} style={{ color: 'rgba(255, 255, 255, 0.4)', marginLeft: '10px' }} />
+                    <button
+                        id="searchButton"
+                        type="button"
+                        onClick={handleSearchFocus}
+                        title="Search"
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '4px',
+                            marginLeft: '6px'
+                        }}
+                    >
+                        <Search className="search-icon" size={18} />
+                    </button>
                 </div>
             </div>
 
@@ -426,14 +456,16 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   {isListening ? <Loader2 className="spin" size={20} /> : <Mic size={20} />}
                 </button>
                 
+
                 <button 
                     id="openEqBtn" 
                     className="icon-btn tooltip-btn" 
                     aria-label="Equalizer" 
+                    title="Audio Equalizer (EQ)"
                     onClick={onOpenEq}
                     style={{
+                        borderColor: 'rgba(255,255,255,0.08)',
                         background: 'rgba(255, 255, 255, 0.04)',
-                        border: '1px solid rgba(255, 255, 255, 0.08)',
                         color: 'var(--text-secondary)',
                         width: '42px',
                         height: '42px',
@@ -443,6 +475,7 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                 >
                     <SlidersHorizontal size={20} />
                 </button>
+
                 
                 <button 
                   id="openSleepBtn" 

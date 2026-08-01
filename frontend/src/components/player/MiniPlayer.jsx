@@ -70,6 +70,7 @@ export default function MiniPlayer({ onExpand, onQueue }) {
                         <SkipForward size={16} />
                     </button>
 
+
                     <button id="miniQueueBtn" onClick={onQueue} title="Queue" style={{ marginLeft: '4px' }}>
                         <ListMusic size={16} />
                     </button>

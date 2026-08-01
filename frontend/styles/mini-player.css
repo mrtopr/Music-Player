@@ -1252,3 +1252,21 @@
     background: #1a1a1a;
   }
 }
+
+/* Mobile responsive mini player cleanup */
+@media (max-width: 768px) {
+  .mini-player-expand,
+  .mini-player-branding,
+  .mini-volume-control {
+    display: none !important;
+  }
+  .mini-player-controls {
+    gap: 4px !important;
+  }
+  .mini-player-controls button {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    min-width: 32px !important;
+  }
+}

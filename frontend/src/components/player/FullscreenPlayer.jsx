@@ -4,7 +4,7 @@ import {
     Shuffle, Repeat, Repeat1, Volume2, VolumeX, Heart,
     MoreHorizontal, Monitor, ListMusic, Sparkles,
     User, Disc, Share2, Download, Plus, Check, Loader2,
-    SlidersHorizontal, Mic, Waves
+    SlidersHorizontal, Mic, Waves, Radio, CheckCircle
 } from 'lucide-react';
 
 import { usePlayerStore } from '../../store/usePlayerStore';
@@ -12,6 +12,7 @@ import { getImageUrl, getAudioUrl } from '../../api/client.js';
 import { useNavigate } from 'react-router-dom';
 import { formatTime, decodeEntities, getSafeImage } from '../../utils/helpers.js';
 import { useBackButtonClose } from '../../hooks/useBackButtonClose.js';
+import { saveTrackOffline, isTrackOffline } from '../../utils/offlineStorage.js';
 import SoundEffectsPanel from './SoundEffectsPanel.jsx';
 import '../../../styles/fullscreen-player.css';
 
@@ -591,8 +592,22 @@ export default function FullscreenPlayer({ visible, onClose }) {
     const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
     const [optionsOpen, setOptionsOpen] = useState(false);
     const [downloading, setDownloading] = useState(false);
+    const [isOfflineSaved, setIsOfflineSaved] = useState(false);
     const [showLyrics, setShowLyrics] = useState(false);
     const [mlFeatures, setMlFeatures] = useState(null);
+    const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && (window.innerWidth < 768 || 'ontouchstart' in window));
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    useEffect(() => {
+        if (currentSong?.id) {
+            isTrackOffline(currentSong.id).then(setIsOfflineSaved);
+        }
+    }, [currentSong?.id]);
 
     // Fetch ML features for generative UI
     useEffect(() => {
@@ -619,20 +634,28 @@ export default function FullscreenPlayer({ visible, onClose }) {
         setDownloading(true);
         try {
             const url = getAudioUrl(currentSong.downloadUrl);
-            if (!url) throw new Error("No download URL available");
+            const imgUrl = getImageUrl(currentSong.image);
 
-            const response = await fetch(url);
-            const blob = await response.blob();
-            const blobUrl = window.URL.createObjectURL(blob);
+            // 1. Save for offline playing in Mehfil IndexedDB
+            await saveTrackOffline(currentSong, url, imgUrl);
+            setIsOfflineSaved(true);
 
-            const link = document.createElement('a');
-            link.href = blobUrl;
-            link.download = `${decodeEntities(currentSong.title)}.mp3`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(blobUrl);
+            // 2. Trigger browser download
+            if (url) {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = `${decodeEntities(currentSong.title)}.mp3`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(blobUrl);
+            }
+
             setOptionsOpen(false);
+            alert(`"${decodeEntities(currentSong.title)}" saved for offline playback!`);
         } catch (err) {
             console.error('Download failed:', err);
             alert('Download failed. Please try again.');
@@ -716,8 +739,9 @@ export default function FullscreenPlayer({ visible, onClose }) {
             {/* Header Area */}
             <header style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: '2rem 4rem', position: 'relative', zIndex: 100
+                padding: isMobile ? '1.2rem 1.5rem 0.5rem 1.5rem' : '2rem 4rem', position: 'relative', zIndex: 100
             }}>
+
                 <button onClick={onClose} style={{
                     background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff',
                     width: '44px', height: '44px', borderRadius: '50%', cursor: 'pointer',
@@ -799,11 +823,13 @@ export default function FullscreenPlayer({ visible, onClose }) {
 
                                 <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '8px 0' }}></div>
 
-                                <OptionItem
-                                    icon={downloading ? <Loader2 className="spin" size={18} /> : <Download size={18} />}
-                                    label={downloading ? "Downloading..." : "Download Original"}
-                                    onClick={handleDownload}
-                                />
+                                {isMobile && (
+                                    <OptionItem
+                                        icon={downloading ? <Loader2 className="spin" size={18} /> : <Download size={18} />}
+                                        label={downloading ? "Downloading..." : "Download Original"}
+                                        onClick={handleDownload}
+                                    />
+                                )}
 
                                 <OptionItem icon={<Share2 size={18} />} label="Copy Share Link" onClick={() => {
                                     navigator.clipboard.writeText(window.location.origin + `/song/${currentSong.id}`);
@@ -929,6 +955,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                   <Waves size={22} /> <span>Sound</span>
                               </button>
 
+                              {/* Lyrics Button */}
                               <button
                                   onClick={() => setShowLyrics(!showLyrics)}
                                   className={`fs-util-btn ${showLyrics ? 'active' : ''}`}
@@ -947,7 +974,32 @@ export default function FullscreenPlayer({ visible, onClose }) {
                               >
                                   <Mic size={22} /> <span>Lyrics</span>
                               </button>
+
+                              {/* Download for Offline Button (Mobile Only) */}
+                              {isMobile && (
+                                  <button
+                                      onClick={handleDownload}
+                                      className={`fs-util-btn ${isOfflineSaved ? 'active' : ''}`}
+                                      style={{
+                                          cursor: 'pointer',
+                                          pointerEvents: 'auto',
+                                          padding: '12px',
+                                          color: isOfflineSaved ? '#10b981' : '#fff',
+                                          background: isOfflineSaved ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
+                                          borderRadius: '8px',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          gap: '4px'
+                                      }}
+                                      title={isOfflineSaved ? "Saved for Offline Playback" : "Download for Offline"}
+                                  >
+                                      {downloading ? <Loader2 className="spin" size={22} /> : isOfflineSaved ? <CheckCircle size={22} /> : <Download size={22} />}
+                                      <span>{isOfflineSaved ? "Saved" : "Download"}</span>
+                                  </button>
+                              )}
                           </div>
+
+
 
                         <div className="fs-utility-right">
                             <Volume2 size={20} opacity={0.6} />

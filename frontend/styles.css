@@ -5632,27 +5632,30 @@ div.featured-playlists h2 {
     z-index: 1001;
   }
 
-  .search {
-    margin: 0 !important;
-    flex: 1;
+  .mobile-brand {
     display: flex !important;
     align-items: center !important;
-    gap: 6px !important;
   }
+
+  .search {
+    display: none !important;
+  }
+
 
   .search input[type="text"] {
     flex: 1;
-    padding-left: 36px !important;
-    padding-right: 12px !important;
-    font-size: 13px !important;
-    height: 38px !important;
-    border-radius: 19px !important;
+    min-width: 0 !important;
+    padding-left: 32px !important;
+    padding-right: 8px !important;
+    font-size: 12px !important;
+    height: 34px !important;
+    border-radius: 17px !important;
     background: rgba(255, 255, 255, 0.05) !important;
   }
 
   .search::before {
-    left: 12px !important;
-    font-size: 14px !important;
+    left: 10px !important;
+    font-size: 13px !important;
     opacity: 0.7;
   }
 
@@ -5661,28 +5664,30 @@ div.featured-playlists h2 {
   }
 
   #searchButton {
-    width: 38px !important;
-    height: 38px !important;
-    min-width: 38px !important;
-    border-radius: 50% !important;
-    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    background: var(--accent-primary) !important;
-    box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.3) !important;
+    cursor: pointer !important;
   }
+
 
   .premium-tools {
     display: flex !important;
-    gap: 6px !important;
+    gap: 4px !important;
     margin-right: 0 !important;
+    flex-shrink: 0 !important;
   }
 
   .premium-tools button {
-    width: 36px !important;
-    height: 36px !important;
-    min-width: 36px !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
     background: rgba(255, 255, 255, 0.08) !important;
     border-radius: 50% !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -5692,6 +5697,10 @@ div.featured-playlists h2 {
     justify-content: center !important;
   }
 
+  .sync-btn {
+    display: none !important;
+  }
+
   .profile {
     margin-top: 0 !important;
     padding: 0 !important;
@@ -5699,10 +5708,11 @@ div.featured-playlists h2 {
   }
 
   .profile img {
-    width: 36px !important;
-    height: 36px !important;
+    width: 32px !important;
+    height: 32px !important;
     border: 2px solid var(--accent-primary) !important;
   }
+
 
   .btn,
   .btn-primary,

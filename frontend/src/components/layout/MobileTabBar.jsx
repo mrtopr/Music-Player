@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Search, Heart, Mic2, ListMusic } from 'lucide-react';
+import { Home, Search, Heart, Mic2, ListMusic, Download } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 export default function MobileTabBar() {
@@ -8,7 +8,8 @@ export default function MobileTabBar() {
     const tabs = [
         { path: '/', icon: Home, label: 'Home' },
         { path: '/search', icon: Search, label: 'Search' },
-        { path: '/playlists', icon: ListMusic, label: 'Library' },
+        { path: '/library', icon: ListMusic, label: 'Library' },
+        { path: '/downloads', icon: Download, label: 'Downloads' },
         { path: '/artists', icon: Mic2, label: 'Artists' },
     ];
 

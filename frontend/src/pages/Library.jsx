@@ -1,13 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, ListMusic, Plus, Play, Pause, Music, Trash2, Share2 } from 'lucide-react';
+import { Heart, ListMusic, Plus, Play, Pause, Music, Trash2, Share2, Download, HardDrive, CheckCircle } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../api/client.js';
 import { decodeEntities } from '../utils/helpers.js';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { usePlaylistStore } from '../store/usePlaylistStore';
 import AddToPlaylist from '../components/common/AddToPlaylist';
+import { getOfflineTracks, saveTrackOffline, removeTrackOffline, getOfflineStorageStats, isTrackOffline } from '../utils/offlineStorage.js';
 
 function SongRow({ song, index, onPlay, isCurrent, isPlaying }) {
+    const [downloaded, setDownloaded] = useState(false);
+    const [downloading, setDownloading] = useState(false);
+
+    useEffect(() => {
+        if (song?.id) {
+            isTrackOffline(song.id).then(setDownloaded);
+        }
+    }, [song?.id]);
+
+    const handleDownload = async (e) => {
+        e.stopPropagation();
+        if (downloaded) return;
+        setDownloading(true);
+        try {
+            const dlUrl = getImageUrl(song.downloadUrl) || song.downloadUrl?.[0]?.url || song.url;
+            const imgUrl = getImageUrl(song.image);
+            await saveTrackOffline(song, dlUrl, imgUrl);
+            setDownloaded(true);
+            alert(`"${song.title}" saved for offline listening!`);
+        } catch (err) {
+            console.error('Offline save failed:', err);
+            alert('Failed to save track offline.');
+        } finally {
+            setDownloading(false);
+        }
+    };
+
     return (
         <div
             onClick={() => onPlay(song)}
@@ -36,6 +64,15 @@ function SongRow({ song, index, onPlay, isCurrent, isPlaying }) {
                     {song.subtitle || song.primaryArtists}
                 </div>
             </div>
+            {typeof window !== 'undefined' && (window.innerWidth < 768 || 'ontouchstart' in window) && (
+                <button
+                    onClick={handleDownload}
+                    title={downloaded ? "Saved Offline" : "Download for Offline"}
+                    style={{ background: 'none', border: 'none', color: downloaded ? 'var(--accent-primary)' : 'var(--text-muted)', cursor: downloaded ? 'default' : 'pointer', opacity: downloaded ? 1 : 0.6 }}
+                >
+                    {downloaded ? <CheckCircle size={18} /> : downloading ? <div style={{ fontSize: '0.7rem' }}>...</div> : <Download size={18} />}
+                </button>
+            )}
             <button onClick={(e) => { e.stopPropagation(); onPlay(song); }} style={{ background: 'none', border: 'none', color: isCurrent ? 'var(--accent-primary)' : 'var(--text-secondary)', cursor: 'pointer' }}>
                 {isCurrent && isPlaying ? <Pause size={18} /> : <Play size={18} />}
             </button>
@@ -43,6 +80,7 @@ function SongRow({ song, index, onPlay, isCurrent, isPlaying }) {
         </div>
     );
 }
+
 
 function LikedSongsSection() {
     const playSong = usePlayerStore(s => s.playSong);
@@ -219,29 +257,183 @@ function PlaylistsSection() {
     );
 }
 
-export default function Library() {
-    const location = useLocation();
-    const isFavorites = location.pathname.includes('/favorites');
-    const isPlaylists = location.pathname.includes('/playlists');
+
+function OfflineSongsSection() {
+    const playSong = usePlayerStore(s => s.playSong);
+    const playQueue = usePlayerStore(s => s.playQueue);
+    const currentSong = usePlayerStore(s => s.currentSong);
+    const isPlaying = usePlayerStore(s => s.isPlaying);
+
+    const [offlineTracks, setOfflineTracks] = useState([]);
+    const [stats, setStats] = useState({ count: 0, totalMb: '0' });
+    const [loading, setLoading] = useState(true);
+
+    const refreshOffline = async () => {
+        setLoading(true);
+        const tracks = await getOfflineTracks();
+        const s = await getOfflineStorageStats();
+        setOfflineTracks(tracks);
+        setStats(s);
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        refreshOffline();
+    }, []);
+
+    const handleDelete = async (id) => {
+        if (confirm('Delete this track from offline downloads?')) {
+            await removeTrackOffline(id);
+            await refreshOffline();
+        }
+    };
+
+    if (loading) {
+        return (
+            <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+                <p>Loading offline downloads...</p>
+            </div>
+        );
+    }
+
+    if (offlineTracks.length === 0) {
+        return (
+            <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', marginTop: '1rem' }}>
+                <HardDrive size={48} strokeWidth={1} style={{ opacity: 0.4, marginBottom: '1rem' }} />
+                <h3>No Offline Downloads</h3>
+                <p style={{ fontSize: '0.9rem' }}>Download songs to listen offline without internet connection!</p>
+            </div>
+        );
+    }
 
     return (
-        <div style={{ display: 'block', paddingBottom: '100px' }}>
-            <div style={{ padding: 'var(--space-xl, 1.5rem) 1rem' }}>
-                <h1 style={{ fontSize: 'var(--text-3xl, 1.875rem)', marginBottom: 'var(--space-2xl, 2rem)' }}>
-                    {isFavorites ? 'Your Favorites' : isPlaylists ? 'Your Playlists' : 'Your Library'}
-                </h1>
+        <div style={{ marginTop: '2rem' }}>
+            {/* Hero banner */}
+            <div style={{
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(99, 102, 241, 0.08))',
+                border: '1px solid rgba(139, 92, 246, 0.25)',
+                padding: 'var(--space-xl, 1.5rem)', borderRadius: '16px',
+                marginBottom: 'var(--space-xl, 1.5rem)', display: 'flex',
+                justifyContent: 'space-between', alignItems: 'center'
+            }}>
+                <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <h2 style={{ margin: 0, fontSize: '1.4rem' }}>⬇️ Offline Downloads</h2>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 800, background: 'rgba(139, 92, 246, 0.2)', color: '#c4b5fd', padding: '2px 8px', borderRadius: '10px' }}>
+                            {stats.totalMb} MB Used
+                        </span>
+                    </div>
+                    <p style={{ margin: '0.3rem 0 0', color: 'rgba(255,255,255,0.7)', fontSize: '0.88rem' }}>
+                        {offlineTracks.length} tracks saved for offline playback
+                    </p>
+                </div>
+                <button className="primary-cta-btn" onClick={() => playQueue(offlineTracks, 0)} style={{ borderRadius: 'var(--radius-pill, 50px)', padding: '0.7rem 1.5rem' }}>
+                    <Play size={18} /> Play Offline
+                </button>
+            </div>
 
-                {isFavorites && <LikedSongsSection />}
-                {isPlaylists && <PlaylistsSection />}
-
-                {/* Fallback if somehow just /library */}
-                {!isFavorites && !isPlaylists && (
-                    <>
-                        <LikedSongsSection />
-                        <PlaylistsSection />
-                    </>
-                )}
+            {/* Song List */}
+            <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '12px', overflow: 'hidden' }}>
+                {offlineTracks.map((song, i) => (
+                    <div
+                        key={song.id}
+                        style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            padding: '0.75rem 1rem', borderBottom: '1px solid rgba(255,255,255,0.03)'
+                        }}
+                    >
+                        <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => playSong(song)}>
+                            <SongRow song={song} index={i} onPlay={playSong} isCurrent={currentSong?.id === song.id} isPlaying={isPlaying} />
+                        </div>
+                        <button
+                            onClick={() => handleDelete(song.id)}
+                            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', padding: '8px' }}
+                            title="Remove Download"
+                            onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
+                            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.4)'}
+                        >
+                            <Trash2 size={18} />
+                        </button>
+                    </div>
+                ))}
             </div>
         </div>
     );
 }
+
+export default function Library() {
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const isFavorites = location.pathname.includes('/favorites');
+    const isPlaylists = location.pathname.includes('/playlists');
+    const isDownloads = location.pathname.includes('/downloads');
+
+    const activeTab = isDownloads ? 'downloads' : isPlaylists ? 'playlists' : 'favorites';
+
+    return (
+        <div style={{ display: 'block', paddingBottom: '120px' }}>
+            <div style={{ padding: 'var(--space-xl, 1.5rem) 1rem' }}>
+                <h1 style={{ fontSize: '1.75rem', marginBottom: '1.2rem', fontWeight: 800 }}>
+                    Your Collection
+                </h1>
+
+                {/* Sub-tab Pills */}
+                <div style={{
+                    display: 'flex', gap: '8px', marginBottom: '1.5rem', overflowX: 'auto',
+                    paddingBottom: '4px', scrollbarWidth: 'none'
+                }}>
+                    <button
+                        onClick={() => navigate('/favorites')}
+                        style={{
+                            padding: '8px 16px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 700,
+                            cursor: 'pointer', border: '1px solid',
+                            background: activeTab === 'favorites' ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)',
+                            borderColor: activeTab === 'favorites' ? 'var(--accent-primary)' : 'rgba(255,255,255,0.1)',
+                            color: activeTab === 'favorites' ? '#000' : '#fff',
+                            transition: 'all 0.2s ease', whiteSpace: 'nowrap'
+                        }}
+                    >
+                        ♥ Liked Songs
+                    </button>
+
+                    <button
+                        onClick={() => navigate('/playlists')}
+                        style={{
+                            padding: '8px 16px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 700,
+                            cursor: 'pointer', border: '1px solid',
+                            background: activeTab === 'playlists' ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)',
+                            borderColor: activeTab === 'playlists' ? 'var(--accent-primary)' : 'rgba(255,255,255,0.1)',
+                            color: activeTab === 'playlists' ? '#000' : '#fff',
+                            transition: 'all 0.2s ease', whiteSpace: 'nowrap'
+                        }}
+                    >
+                        🎵 Playlists
+                    </button>
+
+                    <button
+                        onClick={() => navigate('/downloads')}
+                        style={{
+                            padding: '8px 16px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 700,
+                            cursor: 'pointer', border: '1px solid',
+                            background: activeTab === 'downloads' ? 'linear-gradient(135deg, #10b981, #059669)' : 'rgba(16, 185, 129, 0.12)',
+                            borderColor: activeTab === 'downloads' ? '#10b981' : 'rgba(16, 185, 129, 0.3)',
+                            color: activeTab === 'downloads' ? '#fff' : '#34d399',
+                            transition: 'all 0.2s ease', whiteSpace: 'nowrap',
+                            boxShadow: activeTab === 'downloads' ? '0 4px 15px rgba(16, 185, 129, 0.3)' : 'none'
+                        }}
+                    >
+                        ⬇️ Offline Downloads
+                    </button>
+                </div>
+
+                {/* Section View */}
+                {activeTab === 'favorites' && <LikedSongsSection />}
+                {activeTab === 'playlists' && <PlaylistsSection />}
+                {activeTab === 'downloads' && <OfflineSongsSection />}
+            </div>
+        </div>
+    );
+}
+
+

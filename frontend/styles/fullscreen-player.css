@@ -343,9 +343,9 @@
     .fs-content-body {
         flex-direction: column;
         justify-content: space-between;
-        padding: 0 1.2rem 1.2rem 1.2rem;
-        gap: 0.5rem;
-        flex: 1; /* Match header space dynamically */
+        padding: 0 1.2rem 0.8rem 1.2rem;
+        gap: 0.4rem;
+        flex: 1;
         overflow: hidden;
     }
 
@@ -355,73 +355,76 @@
         flex: 1;
         display: flex;
         align-items: center;
+        justify-content: center;
+        min-height: 0 !important;
     }
 
     .fs-artwork-wrapper {
-        width: min(320px, 85vw, 50vh) !important;
-        height: min(320px, 85vw, 50vh) !important;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
+        width: min(200px, 55vw, 28vh) !important;
+        height: min(200px, 55vw, 28vh) !important;
+        border-radius: 18px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
     }
 
     .fs-controls-section {
         width: 100%;
         margin-top: 0;
-        flex: 2;
+        flex: shrink;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
     }
 
     .fs-badge-row {
-        margin-bottom: 0.8rem !important;
-        gap: 8px !important;
+        margin-bottom: 0.3rem !important;
+        gap: 6px !important;
     }
 
     .fs-badge,
     .fs-automix-badge,
     .fs-source-badge {
-        padding: 4px 10px !important;
+        padding: 3px 8px !important;
         font-size: 8px !important;
     }
 
     .fs-info-row {
-        margin-bottom: 0.8rem;
+        margin-bottom: 0.4rem;
         padding: 0;
     }
 
     .fs-title {
-        font-size: 1.1rem !important;
+        font-size: 1rem !important;
     }
 
     .fs-artist {
-        font-size: 0.8rem !important;
-        margin-top: 4px;
+        font-size: 0.75rem !important;
+        margin-top: 2px;
     }
 
     .fs-progress-area {
-        margin-bottom: 1rem !important;
+        margin-bottom: 0.4rem !important;
     }
 
     .fs-main-controls {
         gap: 0;
         justify-content: space-around !important;
-        padding: 0.6rem 1rem !important;
+        padding: 0.4rem 0.6rem !important;
         width: 100%;
         border-radius: 16px !important;
-        background: rgba(255, 255, 255, 0.03) !important;
+        background: rgba(255, 255, 255, 0.04) !important;
     }
 
     .fs-play-btn {
-        width: 52px !important;
-        height: 52px !important;
+        width: 48px !important;
+        height: 48px !important;
     }
 
     .fs-utility-bar {
-        margin-top: 0.8rem !important;
-        padding-bottom: env(safe-area-inset-bottom, 10px);
-        gap: 10px;
-        justify-content: space-between;
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.6rem !important;
+        padding-bottom: env(safe-area-inset-bottom, 12px);
+        width: 100% !important;
+        justify-content: center !important;
     }
 
     .fs-util-btn span {
@@ -429,13 +432,17 @@
     }
 
     .fs-utility-left {
-        gap: 15px !important;
+        width: 100% !important;
+        justify-content: space-around !important;
+        gap: 4px !important;
     }
 
-    .fs-volume-track {
-        width: 80px !important;
+    .fs-utility-right {
+        display: none !important;
     }
 }
+
+
 
 @keyframes fadeInOut {
     0% { opacity: 0; transform: scale(0.8); }

@@ -114,6 +114,8 @@ function AppContent() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/search" element={<SearchPage />} />
+                        <Route path="/library" element={<Library />} />
+                        <Route path="/downloads" element={<Library />} />
                         <Route path="/playlists" element={<Library />} />
                         <Route path="/favorites" element={<Library />} />
                         <Route path="/artists" element={<Artists />} />

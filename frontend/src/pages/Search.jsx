@@ -142,9 +142,45 @@ export default function SearchPage() {
                 </div>
             )}
 
-            <div style={{ padding: 'var(--space-2xl, 2rem) 1rem' }}>
+            <div style={{ padding: '1rem 1rem 6rem 1rem' }}>
+                {/* Dedicated Search Bar */}
+                <div style={{ position: 'relative', marginBottom: '1.2rem', width: '100%' }}>
+                    <SearchIcon size={20} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-primary, #d4a053)' }} />
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        value={query}
+                        onChange={(e) => navigate(`/search?q=${encodeURIComponent(e.target.value)}`, { replace: true })}
+                        placeholder="Search songs, artists, albums, playlists..."
+                        style={{
+                            width: '100%',
+                            padding: '14px 44px 14px 48px',
+                            fontSize: '0.95rem',
+                            borderRadius: '16px',
+                            border: '1px solid rgba(255,255,255,0.12)',
+                            background: 'rgba(255,255,255,0.06)',
+                            color: '#fff',
+                            outline: 'none',
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                            boxSizing: 'border-box'
+                        }}
+                    />
+                    {query && (
+                        <button
+                            onClick={() => navigate('/search', { replace: true })}
+                            style={{
+                                position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
+                                background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '4px'
+                            }}
+                        >
+                            <X size={18} />
+                        </button>
+                    )}
+                </div>
+
                 {/* Context Tabs */}
                 <div className="search-tabs-container" style={{ 
+
                     display: 'flex', gap: '0.6rem', marginBottom: '1.5rem', 
                     overflowX: 'auto', padding: '0.2rem 0.2rem 0.8rem 0.2rem', 
                     scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch'

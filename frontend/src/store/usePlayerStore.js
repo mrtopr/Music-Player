@@ -4,6 +4,7 @@ import { addToHistory, addGenrePlay } from '../utils/history.js';
 import { pickBestNext } from '../utils/autoMix.js';
 import { audioEngine } from '../utils/audioEngine.js';
 import { soundEngine } from '../utils/soundEngine.js';
+import { getOfflineTracks, saveTrackOffline, removeTrackOffline, isTrackOffline } from '../utils/offlineStorage.js';
 import { parseLrc, decodeEntities } from '../utils/helpers.js';
 import { logPlaybackEvent, getUserId } from '../utils/telemetry.js';
 
@@ -605,16 +606,27 @@ export const usePlayerStore = create((set, get) => ({
         }
 
 
-        let url = getAudioUrl(song.downloadUrl);
+        let url = song.offlineAudioUrl || getAudioUrl(song.downloadUrl);
         if (!url && song.id) {
             try {
-                const { apiFetch } = await import('../api/client.js');
-                const detailRes = await apiFetch('/api/songs', { id: song.id });
-                if (detailRes && detailRes[0]) {
-                    song = { ...song, ...detailRes[0] };
-                    url = getAudioUrl(song.downloadUrl);
+                const isOfflineSaved = await isTrackOffline(song.id);
+                if (isOfflineSaved) {
+                    const offlineList = await getOfflineTracks();
+                    const match = offlineList.find(t => t.id === song.id);
+                    if (match && match.offlineAudioUrl) url = match.offlineAudioUrl;
                 }
-            } catch (err) { }
+            } catch (e) {}
+
+            if (!url) {
+                try {
+                    const { apiFetch } = await import('../api/client.js');
+                    const detailRes = await apiFetch('/api/songs', { id: song.id });
+                    if (detailRes && detailRes[0]) {
+                        song = { ...song, ...detailRes[0] };
+                        url = getAudioUrl(song.downloadUrl);
+                    }
+                } catch (err) { }
+            }
         }
 
         if (!url) return console.warn('No URL for:', song.title);

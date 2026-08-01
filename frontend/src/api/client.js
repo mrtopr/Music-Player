@@ -127,12 +127,15 @@ export function getImageUrl(imageData) {
  */
 export function getAudioUrl(downloadUrls) {
     if (!downloadUrls) return null;
-    if (typeof downloadUrls === 'string') return downloadUrls;
-    if (Array.isArray(downloadUrls)) {
+    let url = null;
+    if (typeof downloadUrls === 'string') {
+        url = downloadUrls;
+    } else if (Array.isArray(downloadUrls) && downloadUrls.length > 0) {
         const high = downloadUrls.find(d => d.quality === '320kbps') ||
             downloadUrls.find(d => d.quality === '160kbps') ||
             downloadUrls[downloadUrls.length - 1];
-        return high?.url || null;
+        url = high?.url || downloadUrls[0]?.url || null;
     }
-    return null;
+    if (!url) return null;
+    return url.replace(/^http:\/\//i, 'https://');
 }

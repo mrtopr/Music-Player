@@ -164,8 +164,8 @@ class ProAudioEngine {
         activeGain.gain.cancelScheduledValues(now);
         activeGain.gain.setTargetAtTime(vol, now, 0.02);
     }
-
 }
+
 
 
 
