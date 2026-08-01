@@ -44,6 +44,7 @@
     flex-direction: column;
     justify-content: center;
     min-width: 0;
+    width: 100%;
 }
 
 .fs-info-row {
@@ -51,24 +52,34 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 2.5rem;
+    width: 100%;
+    gap: 1.5rem;
+}
+
+.fs-meta {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .fs-title {
-    font-size: 3.5rem;
+    font-size: clamp(1.8rem, 3.5vw, 3.2rem);
     font-weight: 800;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    width: 100%;
 }
 
 .fs-artist {
-    font-size: 1.4rem;
-    opacity: 0.6;
+    font-size: 1.2rem;
+    opacity: 0.65;
     margin-top: 8px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    width: 100%;
 }
 
 .fs-like-btn {

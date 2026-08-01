@@ -3,6 +3,7 @@ import { X, Play, Trash2 } from 'lucide-react';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { getImageUrl } from '../../api/client.js';
 import { decodeEntities, getSafeImage } from '../../utils/helpers.js';
+import { useBackButtonClose } from '../../hooks/useBackButtonClose.js';
 
 export default function QueuePanel({ visible, onClose }) {
     const queue = usePlayerStore(state => state.queue);
@@ -10,6 +11,8 @@ export default function QueuePanel({ visible, onClose }) {
     const currentSong = usePlayerStore(state => state.currentSong);
     const jumpInQueue = usePlayerStore(state => state.jumpInQueue);
     const playSong = usePlayerStore(state => state.playSong);
+
+    useBackButtonClose(visible, onClose, 'queue-panel');
 
     const upNext = queue.slice(queueIndex + 1);
 

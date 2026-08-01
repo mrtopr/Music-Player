@@ -111,7 +111,6 @@ class ProAudioEngine {
     }
 
 
-    // Force sync the hardware to match the store's current active channel
     sync(activeChannel, volume) {
         if (!this.initialized) return;
         const now = this.ctx.currentTime;
@@ -119,9 +118,11 @@ class ProAudioEngine {
         const active = activeChannel === 'A' ? this.gainA : this.gainB;
         const idle = activeChannel === 'A' ? this.gainB : this.gainA;
 
+        active.gain.cancelScheduledValues(now);
         active.gain.setTargetAtTime(volume, now, 0.05);
         // setTargetAtTime approaches 0 asymptotically — hard-snap to exactly 0
         // after ~8 time constants (0.4s) to eliminate any residual EQ bleed-through.
+        idle.gain.cancelScheduledValues(now);
         idle.gain.setTargetAtTime(0, now, 0.05);
         idle.gain.setValueAtTime(0, now + 0.4);
     }

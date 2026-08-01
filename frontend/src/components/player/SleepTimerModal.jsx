@@ -1,12 +1,15 @@
 import React from 'react';
 import { Moon, X, Clock } from 'lucide-react';
 import { usePlayerStore } from '../../store/usePlayerStore';
+import { useBackButtonClose } from '../../hooks/useBackButtonClose.js';
 
 export default function SleepTimerModal({ visible, onClose }) {
     const sleepTimer = usePlayerStore(state => state.sleepTimer);
     const startSleepTimer = usePlayerStore(state => state.startSleepTimer);
     const stopSleepTimer = usePlayerStore(state => state.stopSleepTimer);
     const { active: activeTimer, remaining } = sleepTimer;
+
+    useBackButtonClose(visible, onClose, 'sleep-timer-modal');
 
     const startTimer = (minutes) => {
         startSleepTimer(minutes);

@@ -3,7 +3,7 @@ import { getAudioUrl, getImageUrl, apiFetch } from '../api/client.js';
 import { addToHistory, addGenrePlay } from '../utils/history.js';
 import { pickBestNext } from '../utils/autoMix.js';
 import { audioEngine } from '../utils/audioEngine.js';
-import { parseLrc } from '../utils/helpers.js';
+import { parseLrc, decodeEntities } from '../utils/helpers.js';
 import { logPlaybackEvent, getUserId } from '../utils/telemetry.js';
 
 // Singleton audio elements shared across HMR

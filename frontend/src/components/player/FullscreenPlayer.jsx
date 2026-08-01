@@ -11,6 +11,7 @@ import { usePlayerStore } from '../../store/usePlayerStore';
 import { getImageUrl, getAudioUrl } from '../../api/client.js';
 import { useNavigate } from 'react-router-dom';
 import { formatTime, decodeEntities, getSafeImage } from '../../utils/helpers.js';
+import { useBackButtonClose } from '../../hooks/useBackButtonClose.js';
 import '../../../styles/fullscreen-player.css';
 
 function OptionItem({ icon, label, onClick }) {
@@ -453,6 +454,7 @@ function FullscreenArtworkSection({ currentSong, title, prevSong, nextSong }) {
 
 export default function FullscreenPlayer({ visible, onClose }) {
     const navigate = useNavigate();
+    useBackButtonClose(visible, onClose, 'fullscreen-player');
 
     // Select actions and states separately to avoid re-rendering the parent on progress/time updates
     const currentSong = usePlayerStore(state => state.currentSong);

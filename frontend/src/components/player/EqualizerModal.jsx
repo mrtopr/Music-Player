@@ -1,6 +1,7 @@
 import React from 'react';
 import { SlidersHorizontal, X, RotateCcw } from 'lucide-react';
 import { usePlayerStore } from '../../store/usePlayerStore';
+import { useBackButtonClose } from '../../hooks/useBackButtonClose.js';
 
 const PRESETS = {
     flat: { bass: 0, mid: 0, treble: 0 },
@@ -16,6 +17,8 @@ export default function EqualizerModal({ visible, onClose }) {
     const setEqualizer = usePlayerStore(state => state.setEqualizer);
     const setEqualizerAll = usePlayerStore(state => state.setEqualizerAll);
     const { bass, mid, treble } = equalizer;
+    
+    useBackButtonClose(visible, onClose, 'equalizer-modal');
     
     // Determine active preset by comparing current values
     const activePreset = Object.entries(PRESETS).find(([_, vals]) => 

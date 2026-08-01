@@ -176,7 +176,7 @@ export async function getPersonalizedSections() {
                     title: `Because You Love ${keyStr.split(',')[0].trim()}`,
                     songs: r.songs,
                     icon: 'user',
-                    color: '#10B981'
+                    color: '#8B5CF6'
                 });
             } else if (r.type === 'genre') {
                 const profile = r.profile || getGenreProfile(r.key);

@@ -1,32 +1,32 @@
 /* ===== MEHFIL BRAND IDENTITY - MIDNIGHT AURORA ===== */
 
 :root {
-    /* === PRIMARY ACCENT - Emerald Green === */
-    --mehfil-gold-primary: #10B981;
-    --mehfil-gold-soft: #34D399;
-    --mehfil-gold-glow: rgba(16, 185, 129, 0.35);
+    /* === PRIMARY ACCENT - Cyber Violet === */
+    --mehfil-gold-primary: #8B5CF6;
+    --mehfil-gold-soft: #A78BFA;
+    --mehfil-gold-glow: rgba(139, 92, 246, 0.35);
 
-    /* === DARK BASE - True Charcoal === */
-    --mehfil-dark-base: #0A0A0B;
-    --mehfil-surface-card: #141416;
-    --mehfil-surface-elevated: #1C1C1F;
+    /* === DARK BASE - True Charcoal / Midnight Obsidian === */
+    --mehfil-dark-base: #09080F;
+    --mehfil-surface-card: #130F1E;
+    --mehfil-surface-elevated: #1B1530;
 
     /* === TEXT HIERARCHY === */
     --mehfil-text-primary: #F4F4F5;
-    --mehfil-text-secondary: #A1A1AA;
+    --mehfil-text-secondary: #A89CC8;
     --mehfil-text-muted: #71717A;
     --mehfil-text-subtle: #52525B;
 
-    /* === SECONDARY ACCENT - Forest Emerald === */
-    --mehfil-accent-blue: #059669;
-    --mehfil-accent-blue-glow: rgba(5, 150, 105, 0.4);
+    /* === SECONDARY ACCENT - Neon Magenta/Violet === */
+    --mehfil-accent-blue: #C084FC;
+    --mehfil-accent-blue-glow: rgba(192, 132, 252, 0.4);
 
     /* === BORDERS & STATUS === */
-    --mehfil-border: rgba(255, 255, 255, 0.06);
-    --mehfil-border-strong: rgba(255, 255, 255, 0.12);
+    --mehfil-border: rgba(139, 92, 246, 0.12);
+    --mehfil-border-strong: rgba(139, 92, 246, 0.25);
     --mehfil-danger: #EF4444;
     --mehfil-warning: #F59E0B;
-    --mehfil-info: #10B981;
+    --mehfil-info: #8B5CF6;
 
     /* === MOTION TIMING - Fluid & Dynamic === */
     --mehfil-motion-slow: 600ms;
@@ -53,16 +53,16 @@
     --mehfil-shadow-gold: 0 0 24px var(--mehfil-gold-glow);
 
     /* Compatibility bridge for legacy CSS variables used across files */
-    --accent-primary: #10B981;
-    --accent-hover: #34D399;
-    --accent-secondary: #059669;
-    --bg-main: #0A0A0B;
-    --bg-dark: #0F0F11;
-    --bg-darker: #070708;
-    --card-bg: #141416;
-    --border-color: rgba(255, 255, 255, 0.04);
+    --accent-primary: #8B5CF6;
+    --accent-hover: #A78BFA;
+    --accent-secondary: #C084FC;
+    --bg-main: #09080F;
+    --bg-dark: #0D0B16;
+    --bg-darker: #07060B;
+    --card-bg: #130F1E;
+    --border-color: rgba(139, 92, 246, 0.12);
     --text-primary: #F4F4F5;
-    --text-secondary: #A1A1AA;
+    --text-secondary: #A89CC8;
     --text-muted: #71717A;
 
     /* === TYPOGRAPHY SCALE === */

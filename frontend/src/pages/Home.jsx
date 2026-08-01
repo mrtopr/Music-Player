@@ -346,41 +346,41 @@ export default function Home() {
         };
         window.addEventListener('pwa-can-install', handler);
 
-        async function fetchHome() {
+        function fetchHome() {
             setLoading(true);
-            try {
-                const artistNames = ['Arijit Singh', 'Shreya Ghoshal', 'Badshah', 'Divine', 'Jubin Nautiyal', 'Sonu Nigam', 'Raftaar', 'MC Stan'];
-                const [modules, ...artistResps] = await Promise.all([
-                    apiFetch('/api/modules', { language: 'hindi,english' }),
-                    ...artistNames.map(name => apiFetch('/api/search/artists', { query: name, limit: 1 }))
-                ]);
 
-                const popularArtists = artistResps.map(r => r.results?.[0]).filter(Boolean);
+            // 1. Fetch modules (Trending, Playlists) immediately
+            apiFetch('/api/modules', { language: 'hindi,english' })
+                .then(modules => {
+                    if (modules) {
+                        setTrending(modules.trending?.songs || []);
+                        setNewReleases(modules.trending?.albums || modules.albums || []);
+                        setPlaylists(modules.playlists || []);
+                    }
+                    // Stop loading as soon as the main content is here
+                    setLoading(false);
+                })
+                .catch(err => {
+                    console.error('Failed to load modules', err);
+                    setLoading(false);
+                });
 
-                if (modules) {
-                    setTrending(modules.trending?.songs || []);
-                    setNewReleases(modules.trending?.albums || modules.albums || []);
+            // 2. Fetch popular artists in parallel without blocking
+            const artistNames = ['Arijit Singh', 'Shreya Ghoshal', 'Badshah', 'Divine', 'Jubin Nautiyal', 'Sonu Nigam', 'Raftaar', 'MC Stan'];
+            Promise.all(artistNames.map(name => apiFetch('/api/search/artists', { query: name, limit: 1 })))
+                .then(artistResps => {
+                    const popularArtists = artistResps.map(r => r.results?.[0]).filter(Boolean);
                     setArtists(popularArtists || []);
-                    setPlaylists(modules.playlists || []);
-                }
+                })
+                .catch(err => console.error('Failed to load artists', err));
 
-                setRecentlyPlayed(getRecentlyPlayed(10));
+            // 3. Local History
+            setRecentlyPlayed(getRecentlyPlayed(10));
 
-                // Load all personalization data in parallel
-                const [recs, sections, discover] = await Promise.all([
-                    getRecommendations(12),
-                    getPersonalizedSections(),
-                    getDiscoverSongs(10)
-                ]);
-                setRecommendations(recs);
-                setPersonalizedSections(sections);
-                setDiscoverSongs(discover);
-
-            } catch (err) {
-                console.error('Failed to load home data', err);
-            } finally {
-                setLoading(false);
-            }
+            // 4. Personalization features progressively
+            getRecommendations(12).then(setRecommendations).catch(() => {});
+            getPersonalizedSections().then(setPersonalizedSections).catch(() => {});
+            getDiscoverSongs(10).then(setDiscoverSongs).catch(() => {});
         }
         fetchHome();
 
@@ -636,10 +636,10 @@ export default function Home() {
                     <h1 style={{ fontSize: '2.6rem', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
                         {getCleanGreeting()},{' '}
                         <span style={{
-                            background: 'linear-gradient(135deg, #10B981, #34D399)',
+                            background: 'linear-gradient(135deg, #C084FC, #8B5CF6, #38BDF8)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
-                            textShadow: '0 0 30px rgba(16, 185, 129, 0.3)'
+                            textShadow: '0 0 30px rgba(139, 92, 246, 0.4)'
                         }}>
                             {userName ? (userName.charAt(0).toUpperCase() + userName.slice(1)) : 'Friend'}
                         </span>
@@ -652,7 +652,7 @@ export default function Home() {
                     </p>
                     <div className="hero-cta" style={{ display: 'flex', gap: '0.8rem' }}>
                         <button onClick={() => handlePlayAll(recommendations.length ? recommendations : trending)} style={{
-                            background: 'linear-gradient(135deg, #059669, #10B981)',
+                            background: 'linear-gradient(135deg, #7C3AED, #8B5CF6)',
                             border: 'none',
                             color: '#fff',
                             borderRadius: '12px',
@@ -662,7 +662,7 @@ export default function Home() {
                             display: 'flex',
                             alignItems: 'center',
                             gap: '8px',
-                            boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
+                            boxShadow: '0 4px 18px rgba(139, 92, 246, 0.45)',
                             cursor: 'pointer'
                         }}>
                             <PlayCircle size={18} />
@@ -694,10 +694,10 @@ export default function Home() {
                     {/* Stats widgets */}
                     <div className="hero-stats-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '1.5rem' }}>
                         {[
-                            { label: 'Songs', val: '12.4K', icon: Music, color: '#10B981' },
-                            { label: 'Artists', val: '8.2K', icon: Users, color: '#34D399' },
-                            { label: 'Albums', val: '2.4K', icon: Disc3, color: '#059669' },
-                            { label: 'Playlists', val: '98', icon: ListMusic, color: '#10B981' },
+                            { label: 'Songs', val: '12.4K', icon: Music, color: '#8B5CF6' },
+                            { label: 'Artists', val: '8.2K', icon: Users, color: '#C084FC' },
+                            { label: 'Albums', val: '2.4K', icon: Disc3, color: '#38BDF8' },
+                            { label: 'Playlists', val: '98', icon: ListMusic, color: '#A78BFA' },
                         ].map((stat, i) => {
                             const StatIcon = stat.icon;
                             return (
@@ -748,16 +748,16 @@ export default function Home() {
                                 style={{
                                     flex: '0 0 auto',
                                     borderRadius: '50px',
-                                    background: active ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.04)',
-                                    border: active ? '1px solid #10B981' : '1px solid rgba(255,255,255,0.08)',
-                                    color: active ? '#10B981' : 'rgba(255,255,255,0.7)',
+                                    background: active ? 'rgba(139, 92, 246, 0.18)' : 'rgba(255,255,255,0.04)',
+                                    border: active ? '1px solid #8B5CF6' : '1px solid rgba(255,255,255,0.08)',
+                                    color: active ? '#C084FC' : 'rgba(255,255,255,0.7)',
                                     display: 'flex',
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     gap: '8px',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s ease',
-                                    boxShadow: active ? '0 0 16px rgba(16, 185, 129, 0.25)' : 'none',
+                                    boxShadow: active ? '0 0 18px rgba(139, 92, 246, 0.35)' : 'none',
                                     padding: '9px 18px',
                                     outline: 'none',
                                 }}
@@ -778,7 +778,7 @@ export default function Home() {
                                     }
                                 }}
                             >
-                                <Icon size={16} style={{ color: active ? '#10B981' : 'var(--text-secondary)' }} />
+                                <Icon size={16} style={{ color: active ? '#C084FC' : 'var(--text-secondary)' }} />
                                 <span style={{ fontSize: '0.85rem', fontWeight: 600, letterSpacing: '-0.1px', whiteSpace: 'nowrap' }}>
                                     {cat.label}
                                 </span>

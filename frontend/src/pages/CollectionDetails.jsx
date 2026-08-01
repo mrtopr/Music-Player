@@ -136,9 +136,9 @@ export default function CollectionDetails({ type }) {
 
     if (!data) {
         return (
-            <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                <h2>Content not found.</h2>
-                <button onClick={() => navigate(-1)} style={{ marginTop: '1rem', padding: '0.6rem 1.4rem', borderRadius: '50px', background: 'var(--accent-primary, #10B981)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Go Back</button>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '80vh', gap: '1rem', color: 'var(--accent-primary, #8B5CF6)' }}>
+                <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)' }}>Failed to load collection details.</p>
+                <button onClick={() => navigate(-1)} style={{ marginTop: '1rem', padding: '0.6rem 1.4rem', borderRadius: '50px', background: 'var(--accent-primary, #8B5CF6)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Go Back</button>
             </div>
         );
     }
@@ -228,8 +228,8 @@ export default function CollectionDetails({ type }) {
                             <div style={{ 
                                 display: 'inline-flex', alignItems: 'center', gap: '6px', 
                                 padding: '4px 12px', borderRadius: '50px', 
-                                background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)',
-                                color: '#10B981', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.8rem' 
+                                background: 'rgba(139, 92, 246, 0.12)', border: '1px solid rgba(139, 92, 246, 0.3)',
+                                color: 'var(--accent-primary, #8B5CF6)', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.8rem' 
                             }}>
                                 <CheckCircle2 size={14} /> Verified Artist
                             </div>
@@ -363,18 +363,18 @@ export default function CollectionDetails({ type }) {
                                         borderRadius: '10px', 
                                         cursor: 'pointer', 
                                         transition: 'all 0.15s ease',
-                                        background: isCurrent ? 'rgba(16, 185, 129, 0.08)' : 'transparent',
-                                        borderLeft: isCurrent ? '3px solid #10B981' : '3px solid transparent'
+                                        background: isCurrent ? 'rgba(139, 92, 246, 0.12)' : 'transparent',
+                                        borderLeft: isCurrent ? '3px solid #8B5CF6' : '3px solid transparent'
                                     }} 
                                     onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }} 
                                     onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent'; }}
                                 >
                                     {/* Track Index / Play Indicator */}
-                                    <div style={{ fontSize: '0.85rem', fontWeight: 600, color: isCurrent ? '#10B981' : 'var(--text-muted)' }}>
+                                    <div style={{ fontSize: '0.85rem', fontWeight: 600, color: isCurrent ? '#8B5CF6' : 'var(--text-muted)' }}>
                                         {isCurrent && isPlaying ? (
                                             <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: '14px' }}>
                                                 {[1, 2, 3].map(i => (
-                                                    <div key={i} style={{ width: '2px', background: '#10B981', borderRadius: '1px', animation: `eqBar 0.${4 + i}s ease-in-out infinite alternate` }} />
+                                                    <div key={i} style={{ width: '2px', background: '#8B5CF6', borderRadius: '1px', animation: `eqBar 0.${4 + i}s ease-in-out infinite alternate` }} />
                                                 ))}
                                             </div>
                                         ) : (
@@ -386,7 +386,7 @@ export default function CollectionDetails({ type }) {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', minWidth: 0 }}>
                                         <img src={getImageUrl(track.image)} alt="" style={{ width: '44px', height: '44px', borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }} />
                                         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                                            <div style={{ color: isCurrent ? '#10B981' : '#F4F4F5', fontWeight: 600, fontSize: '0.92rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            <div style={{ color: isCurrent ? '#8B5CF6' : '#F4F4F5', fontWeight: 600, fontSize: '0.92rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {decodeEntities(track.title || track.name || 'Unknown Track')}
                                             </div>
                                             <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

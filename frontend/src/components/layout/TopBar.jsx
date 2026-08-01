@@ -414,9 +414,9 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   onClick={startRecognition}
                   title="Identify Song"
                   style={{
-                      background: isListening ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.04)',
-                      border: isListening ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
-                      color: isListening ? '#10B981' : 'var(--text-secondary)',
+                      background: isListening ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                      border: isListening ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                      color: isListening ? 'var(--accent-primary, #8B5CF6)' : 'var(--text-secondary)',
                       width: '42px',
                       height: '42px',
                       borderRadius: '12px',
@@ -450,9 +450,9 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   aria-label="Sleep Timer" 
                   onClick={onOpenSleep}
                   style={{
-                      borderColor: sleepTimer?.active ? 'rgba(16, 185, 129, 0.4)' : 'rgba(255,255,255,0.08)',
-                      background: sleepTimer?.active ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.04)',
-                      color: sleepTimer?.active ? '#10B981' : 'var(--text-secondary)',
+                      borderColor: sleepTimer?.active ? 'rgba(139, 92, 246, 0.4)' : 'rgba(255,255,255,0.08)',
+                      background: sleepTimer?.active ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.04)',
+                      color: sleepTimer?.active ? 'var(--accent-primary, #8B5CF6)' : 'var(--text-secondary)',
                       width: '42px',
                       height: '42px',
                       borderRadius: '12px',
@@ -460,7 +460,7 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   }}
                 >
                     <img 
-                        src={`https://img.icons8.com/?size=40&id=10772&format=png&color=${sleepTimer?.active ? '10B981' : 'FFFFFF'}`} 
+                        src={`https://img.icons8.com/?size=40&id=10772&format=png&color=${sleepTimer?.active ? '8B5CF6' : 'FFFFFF'}`} 
                         alt="Sleep Timer" 
                         style={{ 
                             width: '18px', 
@@ -478,9 +478,9 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                       onClick={() => setSyncPanelOpen(!syncPanelOpen)}
                       title="Listen Together"
                       style={{
-                          background: sessionCode ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.04)',
-                          border: sessionCode ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(255,255,255,0.08)',
-                          color: sessionCode ? '#10B981' : 'var(--text-secondary)',
+                          background: sessionCode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.04)',
+                          border: sessionCode ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid rgba(255,255,255,0.08)',
+                          color: sessionCode ? 'var(--accent-primary, #8B5CF6)' : 'var(--text-secondary)',
                           transition: 'all 0.3s ease',
                           display: 'flex',
                           alignItems: 'center',

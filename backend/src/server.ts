@@ -3,7 +3,7 @@ import { AlbumController, ArtistController, ModulesController, RecognitionContro
 import { PlaylistController } from '#modules/playlists/controllers'
 import { App } from './app'
 
-const app = new App([
+export const app = new App([
   new SearchController(),
   new SongController(),
   new AlbumController(),
@@ -17,8 +17,8 @@ const app = new App([
 
 const port = Number(process.env.PORT) || 3000
 
-// For Node.js (Render, etc.)
-if (typeof Bun === 'undefined') {
+// For Node.js (Render, local dev, etc.)
+if (typeof Bun === 'undefined' && !process.env.VERCEL) {
     serve({
         fetch: app.fetch,
         port
