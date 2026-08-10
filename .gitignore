@@ -25,4 +25,7 @@ backend/.env
 .vite/
 .github/
 
+# Generated scripts
+*-player-script.js
+
 .agent
