@@ -8,6 +8,7 @@ import Sidebar from './components/layout/Sidebar';
 import TopBar from './components/layout/TopBar';
 import MiniPlayer from './components/player/MiniPlayer';
 import FullscreenPlayer from './components/player/FullscreenPlayer';
+import YouTubeHiddenPlayer from './components/player/YouTubeHiddenPlayer';
 import EqualizerModal from './components/player/EqualizerModal';
 import SleepTimerModal from './components/player/SleepTimerModal';
 import QueuePanel from './components/player/QueuePanel';
@@ -35,6 +36,9 @@ function AppContent() {
     const setEqVisible = usePlayerStore(state => state.setEqualizerOpen);
     const sleepVisible = usePlayerStore(state => state.isSleepTimerOpen);
     const setSleepVisible = usePlayerStore(state => state.setSleepTimerOpen);
+    const currentSong = usePlayerStore(state => state.currentSong);
+    // MiniPlayer shows whenever there's a current song (including YT songs now handled natively)
+    const showMiniPlayer = !fsVisible && !!currentSong;
 
     const colors = usePlayerStore(state => state.albumColors);
 
@@ -131,12 +135,15 @@ function AppContent() {
                 </div>
             </div>
 
-            {!fsVisible && (
+            {showMiniPlayer && (
                 <MiniPlayer
                     onExpand={() => setFsVisible(true)}
                     onQueue={() => setQueueVisible(true)}
                 />
             )}
+
+            {/* YouTube IFrame API — invisible audio engine for YT songs */}
+            <YouTubeHiddenPlayer />
 
             <FullscreenPlayer visible={fsVisible} onClose={() => setFsVisible(false)} />
             <EqualizerModal visible={eqVisible} onClose={() => setEqVisible(false)} />

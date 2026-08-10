@@ -13,7 +13,6 @@ class ProAudioEngine {
         this.filters = null;
         this.initialized = false;
         this.currentFadeId = 0;
-        this._enhancementConnected = false;
     }
 
     init(audioA, audioB) {
@@ -47,7 +46,7 @@ class ProAudioEngine {
             treble.type = 'highshelf';
             treble.frequency.value = 3000;
 
-            // Chain: Source → Gain → EQ → Destination (default, overridden by connectEnhancement)
+            // Chain: Source → Gain → EQ → Destination
             this.sourceA.connect(this.gainA);
             this.sourceB.connect(this.gainB);
 
@@ -63,33 +62,6 @@ class ProAudioEngine {
             console.log('[ProAudioEngine] Hard-initialized successfully.');
         } catch (e) {
             console.error('[ProAudioEngine] Initialization failed:', e);
-        }
-    }
-
-    /**
-     * Connects the Sound Enhancement Engine between the EQ treble node and destination.
-     * Called ONCE by soundEngine after it builds its processing chain.
-     * Safe to call multiple times — subsequent calls are no-ops.
-     *
-     * @param {AudioNode} enhancementInput - The first node of the enhancement chain
-     * @param {AudioNode} enhancementOutput - The last node of the enhancement chain (connected to destination)
-     */
-    connectEnhancement(enhancementInput, enhancementOutput) {
-        if (!this.initialized || this._enhancementConnected) return;
-        if (!enhancementInput || !enhancementOutput) return;
-
-        try {
-            // 1. Disconnect treble from the default destination
-            this.filters.treble.disconnect(this.ctx.destination);
-            // 2. Reconnect treble → enhancement chain
-            this.filters.treble.connect(enhancementInput);
-            // 3. Connect enhancement output → destination
-            enhancementOutput.connect(this.ctx.destination);
-
-            this._enhancementConnected = true;
-            console.log('[ProAudioEngine] Enhancement chain connected successfully.');
-        } catch (e) {
-            console.error('[ProAudioEngine] connectEnhancement failed:', e);
         }
     }
 
@@ -132,6 +104,9 @@ class ProAudioEngine {
         // Final Hard Snap
         setTimeout(() => {
             if (this.initialized && this.currentFadeId === fadeId) {
+                const nowSnap = this.ctx.currentTime;
+                fromGain.gain.cancelScheduledValues(nowSnap);
+                toGain.gain.cancelScheduledValues(nowSnap);
                 fromGain.gain.value = 0;
                 toGain.gain.value = target;
             }
@@ -148,11 +123,9 @@ class ProAudioEngine {
 
         active.gain.cancelScheduledValues(now);
         active.gain.setTargetAtTime(volume, now, 0.05);
-        // setTargetAtTime approaches 0 asymptotically — hard-snap to exactly 0
-        // after ~8 time constants (0.4s) to eliminate any residual EQ bleed-through.
+
         idle.gain.cancelScheduledValues(now);
         idle.gain.setTargetAtTime(0, now, 0.05);
-        idle.gain.setValueAtTime(0, now + 0.4);
     }
 
 

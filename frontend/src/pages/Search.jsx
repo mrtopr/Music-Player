@@ -31,6 +31,7 @@ export default function SearchPage() {
     const loaderRef = useRef(null);
     const fetchingRef = useRef(false); // prevents IntersectionObserver double-fire
 
+    const musicSource = usePlayerStore(s => s.musicSource);
     const playSong = usePlayerStore(s => s.playSong);
     const playQueue = usePlayerStore(s => s.playQueue);
     const currentSong = usePlayerStore(s => s.currentSong);
@@ -44,19 +45,43 @@ export default function SearchPage() {
 
         setSearched(true);
         try {
-            const endpoint = `/api/search/${type}`;
-            const res = await apiFetch(endpoint, { query: q, limit: 20, page: p });
-            const newResults = rankByRelativeSimilarity(q, res.results || []);
+            let combined = [];
+
+            const promises = [];
+
+            // 1. Fetch from JioSaavn if source is auto or saavn
+            if (musicSource === 'auto' || musicSource === 'saavn') {
+                const endpoint = `/api/search/${type}`;
+                promises.push(
+                    apiFetch(endpoint, { query: q, limit: 20, page: p })
+                        .then(res => (res.results || []).map(item => ({ ...item, source: 'saavn' })))
+                        .catch(e => { console.warn('JioSaavn search failed:', e); return []; })
+                );
+            }
+
+            // 2. Fetch from YouTube if source is auto or youtube
+            if (musicSource === 'auto' || musicSource === 'youtube') {
+                promises.push(
+                    apiFetch('/api/youtube/search', { query: q, type, limit: 20 })
+                        .then(res => (res?.results || []).map(item => ({ ...item, source: 'youtube' })))
+                        .catch(e => { console.warn('YouTube search failed:', e); return []; })
+                );
+            }
+
+            const searchOutputs = await Promise.all(promises);
+            combined = searchOutputs.flat();
+
+
+            const newResults = rankByRelativeSimilarity(q, combined);
 
             if (p === 1) setResults(newResults);
             else setResults(prev => {
-                // simple deduplication just in case
                 const existIds = new Set(prev.map(i => i.id));
                 const filteredNew = newResults.filter(i => !existIds.has(i.id));
                 return rankByRelativeSimilarity(q, [...prev, ...filteredNew]);
             });
 
-            setHasMore(newResults.length === 20); // Limit is 20
+            setHasMore(newResults.length >= 10);
 
         } catch (err) {
             console.error(`Search ${type} failed:`, err);
@@ -65,7 +90,7 @@ export default function SearchPage() {
             setLoadingMore(false);
             fetchingRef.current = false;
         }
-    }, []);
+    }, [musicSource]);
 
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
@@ -109,7 +134,7 @@ export default function SearchPage() {
         navigate(`/search?q=${encodeURIComponent(term)}`);
     };
 
-    // Navigate to deep context pages
+    // Navigate to deep context pages — all songs now go through playSong
     const handleContextClick = (item) => {
         if (searchType === 'songs') {
             playSong(item);
@@ -143,39 +168,25 @@ export default function SearchPage() {
             )}
 
             <div style={{ padding: '1rem 1rem 6rem 1rem' }}>
-                {/* Dedicated Search Bar */}
-                <div style={{ position: 'relative', marginBottom: '1.2rem', width: '100%' }}>
-                    <SearchIcon size={20} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--accent-primary, #d4a053)' }} />
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        value={query}
-                        onChange={(e) => navigate(`/search?q=${encodeURIComponent(e.target.value)}`, { replace: true })}
-                        placeholder="Search songs, artists, albums, playlists..."
-                        style={{
-                            width: '100%',
-                            padding: '14px 44px 14px 48px',
-                            fontSize: '0.95rem',
-                            borderRadius: '16px',
-                            border: '1px solid rgba(255,255,255,0.12)',
-                            background: 'rgba(255,255,255,0.06)',
-                            color: '#fff',
-                            outline: 'none',
-                            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-                            boxSizing: 'border-box'
-                        }}
-                    />
-                    {query && (
-                        <button
-                            onClick={() => navigate('/search', { replace: true })}
-                            style={{
-                                position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)',
-                                background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', padding: '4px'
-                            }}
-                        >
-                            <X size={18} />
-                        </button>
-                    )}
+                <style>{`
+                    .mobile-only-search { display: none; margin-bottom: 1.5rem; }
+                    @media (max-width: 768px) {
+                        .mobile-only-search { display: block; }
+                    }
+                `}</style>
+
+                {/* Mobile Search Bar (Only visible on small screens where TopBar is hidden) */}
+                <div className="mobile-only-search">
+                    <form onSubmit={(e) => { e.preventDefault(); handleQuickSearch(e.target.search.value); }} style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.08)', borderRadius: '14px', padding: '0.7rem 1.2rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <SearchIcon size={20} style={{ color: 'rgba(255,255,255,0.6)', marginRight: '12px' }} />
+                        <input
+                            name="search"
+                            type="text"
+                            placeholder="Search songs, artists, albums..."
+                            defaultValue={query}
+                            style={{ flex: 1, background: 'transparent', border: 'none', color: '#fff', fontSize: '1.05rem', outline: 'none' }}
+                        />
+                    </form>
                 </div>
 
                 {/* Context Tabs */}
@@ -270,6 +281,7 @@ export default function SearchPage() {
                             {results.map((item, i) => {
                                 const isSong = searchType === 'songs';
                                 const isCurrent = isSong && currentSong?.id === item.id;
+                                const isCurrentlyPlaying = isCurrent && isPlaying;
                                 const isArtist = searchType === 'artists';
 
                                 if (isSong) {
@@ -282,12 +294,28 @@ export default function SearchPage() {
                                             <div className="song-art-container">
                                                 <img src={getImageUrl(item.image) || '/mehfil-logo.png'} alt="" />
                                                 <div className="song-play-overlay">
-                                                    {isCurrent && isPlaying ? <Pause size={16} fill="#fff" /> : <Play size={16} fill="#fff" />}
+                                                    {isCurrentlyPlaying ? <Pause size={16} fill="#fff" /> : <Play size={16} fill="#fff" />}
                                                 </div>
                                             </div>
                                             <div className="song-details">
                                                 <div className="song-name">{decodeEntities(item.title || item.name)}</div>
-                                                <div className="song-meta">{decodeEntities(item.primaryArtists || item.subtitle || (isSong ? 'Various' : ''))}</div>
+                                                <div className="song-meta" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <span>{decodeEntities(item.primaryArtists || item.subtitle || (isSong ? 'Various' : ''))}</span>
+                                                    {item.source && (
+                                                        <span style={{
+                                                            fontSize: '0.65rem',
+                                                            padding: '2px 6px',
+                                                            borderRadius: '4px',
+                                                            background: item.source === 'youtube' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(212, 160, 83, 0.15)',
+                                                            color: item.source === 'youtube' ? '#ef4444' : 'var(--accent-primary, #d4a053)',
+                                                            fontWeight: 700,
+                                                            textTransform: 'uppercase',
+                                                            letterSpacing: '0.5px'
+                                                        }}>
+                                                            {item.source === 'youtube' ? 'YT Music' : 'JioSaavn'}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                             <div className="song-actions">
                                                 <AddToPlaylist song={item} />

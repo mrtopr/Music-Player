@@ -4,7 +4,7 @@ import {
     Shuffle, Repeat, Repeat1, Volume2, VolumeX, Heart,
     MoreHorizontal, Monitor, ListMusic, Sparkles,
     User, Disc, Share2, Download, Plus, Check, Loader2,
-    SlidersHorizontal, Mic, Waves, Radio, CheckCircle
+    SlidersHorizontal, Mic, Radio, CheckCircle, Tv
 } from 'lucide-react';
 
 import { usePlayerStore } from '../../store/usePlayerStore';
@@ -13,7 +13,6 @@ import { useNavigate } from 'react-router-dom';
 import { formatTime, decodeEntities, getSafeImage } from '../../utils/helpers.js';
 import { useBackButtonClose } from '../../hooks/useBackButtonClose.js';
 import { saveTrackOffline, isTrackOffline } from '../../utils/offlineStorage.js';
-import SoundEffectsPanel from './SoundEffectsPanel.jsx';
 import '../../../styles/fullscreen-player.css';
 
 function OptionItem({ icon, label, onClick }) {
@@ -582,9 +581,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
     const setQueueOpen = usePlayerStore(state => state.setQueueOpen);
     const setEqualizerOpen = usePlayerStore(state => state.setEqualizerOpen);
     const setFullScreen = usePlayerStore(state => state.setFullScreen);
-    const isSoundEffectsOpen = usePlayerStore(state => state.isSoundEffectsOpen);
-    const setSoundEffectsOpen = usePlayerStore(state => state.setSoundEffectsOpen);
-    const soundEnhancement = usePlayerStore(state => state.soundEnhancement);
+
     const likedSongs = usePlayerStore(state => state.likedSongs);
     const toggleLike = usePlayerStore(state => state.toggleLike);
     const toggleAutoMix = usePlayerStore(state => state.toggleAutoMix);
@@ -613,12 +610,20 @@ export default function FullscreenPlayer({ visible, onClose }) {
     useEffect(() => {
         if (!currentSong) return;
         const fetchFeatures = async () => {
+            const ML_API_URL = import.meta.env.VITE_ML_SERVICE_URL;
+            if (!ML_API_URL) {
+                setMlFeatures(null);
+                return;
+            }
             try {
-                const ML_API_URL = import.meta.env.VITE_ML_SERVICE_URL || 'http://localhost:8000';
-                const res = await fetch(`${ML_API_URL}/api/ml/features/${currentSong.id}`);
-                const data = await res.json();
-                if (data.success) {
-                    setMlFeatures(data);
+                const res = await fetch(`${ML_API_URL}/api/ml/features/${currentSong.id}`).catch(() => null);
+                if (res && res.ok) {
+                    const data = await res.json().catch(() => null);
+                    if (data && data.success) {
+                        setMlFeatures(data);
+                    } else {
+                        setMlFeatures(null);
+                    }
                 } else {
                     setMlFeatures(null);
                 }
@@ -935,25 +940,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                 <SlidersHorizontal size={22} /> <span>EQ</span>
                               </button>
 
-                              {/* Sound Effects Button */}
-                              <button
-                                  onClick={() => setSoundEffectsOpen(true)}
-                                  className={`fs-util-btn ${soundEnhancement?.preset && soundEnhancement.preset !== 'normal' ? 'active' : ''}`}
-                                  style={{
-                                      cursor: 'pointer',
-                                      pointerEvents: 'auto',
-                                      padding: '12px',
-                                      color: soundEnhancement?.preset && soundEnhancement.preset !== 'normal' ? 'var(--accent-primary)' : '#fff',
-                                      background: soundEnhancement?.preset && soundEnhancement.preset !== 'normal' ? 'rgba(212,160,83,0.15)' : 'transparent',
-                                      borderRadius: '8px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: '4px',
-                                  }}
-                                  title="Sound Effects"
-                              >
-                                  <Waves size={22} /> <span>Sound</span>
-                              </button>
+
 
                               {/* Lyrics Button */}
                               <button
@@ -974,6 +961,32 @@ export default function FullscreenPlayer({ visible, onClose }) {
                               >
                                   <Mic size={22} /> <span>Lyrics</span>
                               </button>
+
+                              {/* YouTube Video Mode Button */}
+                              {currentSong?.id?.startsWith('yt_') && (
+                                  <button
+                                      onClick={() => {
+                                          setFullScreen(false);
+                                          usePlayerStore.getState().setVideoMode(true);
+                                      }}
+                                      className="fs-util-btn"
+                                      style={{
+                                          cursor: 'pointer',
+                                          pointerEvents: 'auto',
+                                          padding: '12px',
+                                          color: '#c084fc',
+                                          background: 'rgba(168,85,247,0.15)',
+                                          borderRadius: '8px',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          gap: '6px',
+                                          border: '1px solid rgba(168,85,247,0.3)'
+                                      }}
+                                      title="Switch to Video Player"
+                                  >
+                                      <Tv size={22} /> <span>Watch Video</span>
+                                  </button>
+                              )}
 
                               {/* Download for Offline Button (Mobile Only) */}
                               {isMobile && (
@@ -1019,11 +1032,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
 
         </div>
 
-        {/* Sound Effects Panel — rendered outside the player main div but within the component */}
-        <SoundEffectsPanel
-            visible={isSoundEffectsOpen}
-            onClose={() => setSoundEffectsOpen(false)}
-        />
+
         </>
     );
 }

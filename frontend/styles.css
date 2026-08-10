@@ -5813,3 +5813,375 @@ div.featured-playlists h2 {
     transform: translateY(0);
   }
 }
+
+/* ========== YOUTUBE MUSIC PLAYER ========== */
+
+/* ── Main music player bar — positioned like MiniPlayer but above it ── */
+.yt-music-player {
+  position: fixed;
+  bottom: 80px; /* sit just above the native MiniPlayer */
+  left: 0;
+  right: 0;
+  z-index: 8500;
+  background: linear-gradient(135deg, rgba(20, 8, 8, 0.98) 0%, rgba(13, 11, 22, 0.98) 100%);
+  border-top: 1px solid rgba(255, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow:
+    0 -8px 40px rgba(0, 0, 0, 0.6),
+    0 -1px 0 rgba(255, 0, 0, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: ytBarSlideUp 0.35s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+@keyframes ytBarSlideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* Progress track */
+.yt-progress-track {
+  position: relative;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: height 0.15s ease;
+}
+
+.yt-music-player:hover .yt-progress-track {
+  height: 5px;
+}
+
+.yt-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FF0000, #FF4444);
+  border-radius: 0 2px 2px 0;
+  transition: width 0.3s linear;
+  position: relative;
+}
+
+.yt-progress-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 12px;
+  height: 12px;
+  background: #FF0000;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(255, 0, 0, 0.6);
+  transition: transform 0.15s ease;
+  pointer-events: none;
+}
+
+.yt-music-player:hover .yt-progress-thumb {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Inner layout */
+.yt-music-player-inner {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  gap: 16px;
+  height: 70px;
+}
+
+/* Song info section */
+.yt-music-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.yt-music-thumb-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+}
+
+.yt-music-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.yt-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
+  background: #FF0000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid rgba(20, 8, 8, 0.98);
+}
+
+.yt-music-meta {
+  min-width: 0;
+  flex: 1;
+}
+
+.yt-music-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.yt-music-artist {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.yt-music-time {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 3px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.3px;
+}
+
+/* Center controls */
+.yt-music-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.yt-ctrl-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: none;
+  color: var(--text-secondary);
+}
+
+.yt-ctrl-btn:hover {
+  color: var(--text-primary);
+  transform: scale(1.05);
+}
+
+/* Play button */
+.yt-play-btn {
+  width: 44px;
+  height: 44px;
+  background: #FF0000 !important;
+  color: #fff !important;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(255, 0, 0, 0.4);
+  transition: all 0.2s ease !important;
+}
+
+.yt-play-btn:hover {
+  background: #CC0000 !important;
+  box-shadow: 0 6px 20px rgba(255, 0, 0, 0.55) !important;
+  transform: scale(1.08) !important;
+}
+
+.yt-play-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.yt-play-btn.loading {
+  animation: ytPulsing 1s ease infinite;
+}
+
+@keyframes ytPulsing {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Right actions */
+.yt-music-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.yt-volume-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.yt-action-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.yt-action-btn-sm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+}
+
+.yt-action-btn-sm:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+}
+
+.yt-action-btn-sm.active {
+  background: rgba(255, 0, 0, 0.15);
+  color: #FF4444;
+}
+
+.yt-action-btn-sm.yt-close-sm:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #EF4444;
+}
+
+.yt-volume-slider {
+  width: 70px;
+  height: 3px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  accent-color: #FF0000;
+}
+
+.yt-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #FF0000;
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(255, 0, 0, 0.5);
+}
+
+/* ── Fullscreen video overlay ── */
+.yt-player-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  animation: ytFsIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes ytFsIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.yt-player-fs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: rgba(13, 11, 22, 0.95);
+  border-bottom: 1px solid rgba(255, 0, 0, 0.15);
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.yt-player-fs-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.yt-player-fs-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.yt-player-fs-artist {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 1px;
+}
+
+.yt-player-fs-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.yt-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+}
+
+.yt-action-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--text-primary);
+}
+
+.yt-action-btn.yt-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #EF4444;
+}
+
+/* When native MiniPlayer is not visible, place YT bar at bottom */
+.yt-music-player.no-mini {
+  bottom: 0;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .yt-music-player-inner {
+    padding: 8px 12px;
+    gap: 10px;
+  }
+  .yt-music-actions {
+    display: none;
+  }
+  .yt-play-btn {
+    width: 38px;
+    height: 38px;
+  }
+  .yt-volume-slider {
+    width: 50px;
+  }
+}
+

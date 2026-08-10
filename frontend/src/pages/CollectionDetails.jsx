@@ -269,16 +269,17 @@ export default function CollectionDetails({ type }) {
                     onClick={handlePlayAll} 
                     style={{
                         width: '56px', height: '56px', borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #059669, #10B981)', border: 'none',
+                        background: 'linear-gradient(135deg, #7C3AED, #8B5CF6)', border: 'none',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        cursor: 'pointer', boxShadow: '0 8px 25px rgba(16, 185, 129, 0.35)',
+                        cursor: 'pointer', boxShadow: '0 8px 25px rgba(139, 92, 246, 0.45)',
                         transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
                     }} 
                     onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'} 
                     onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                     title="Play All"
                 >
-                    <Play size={26} fill="#000" color="#000" style={{ transform: 'translateX(2px)' }} />
+                    <Play size={26} fill="#fff" color="#fff" style={{ transform: 'translateX(2px)' }} />
+
                 </button>
 
                 <button 
@@ -390,8 +391,9 @@ export default function CollectionDetails({ type }) {
                                                 {decodeEntities(track.title || track.name || 'Unknown Track')}
                                             </div>
                                             <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                {track.primaryArtists || track.subtitle || subtitle}
+                                                {track.primaryArtists || track.singers || (typeof track.subtitle === 'string' && track.subtitle !== 'Top Indian Artist' && track.subtitle !== 'Artist' ? track.subtitle : 'Unknown Artist')}
                                             </div>
+
                                         </div>
                                     </div>
 

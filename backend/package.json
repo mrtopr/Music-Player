@@ -46,6 +46,7 @@
     "commit-msg": "bun run commitlint --edit $1"
   },
   "dependencies": {
+    "@distube/ytdl-core": "^4.16.12",
     "@hono/node-server": "^1.14.0",
     "@hono/zod-openapi": "^0.19.2",
     "@hono/zod-validator": "^0.4.3",

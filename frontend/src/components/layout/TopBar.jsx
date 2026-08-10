@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, SlidersHorizontal, Moon, Mic, Loader2, Radio, Users } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, SlidersHorizontal, Moon, Mic, Loader2, Radio, Users, ChevronDown } from 'lucide-react';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -240,6 +240,18 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
     const [localQuery, setLocalQuery] = useState('');
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [syncPanelOpen, setSyncPanelOpen] = useState(false);
+    const [sourceDropdownOpen, setSourceDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setSourceDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -375,10 +387,31 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
         }
     };
 
+    const musicSource = usePlayerStore(state => state.musicSource);
+    const setMusicSource = usePlayerStore(state => state.setMusicSource);
+
     return (
-        <div className="top-bar glass-morphism" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)', gap: '1rem' }}>
+        <div className="top-bar glass-morphism" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)', gap: '1rem', position: 'relative', zIndex: 1000 }}>
+            <style>{`
+                @media (max-width: 768px) {
+                    .top-bar { padding: 12px 14px !important; gap: 8px !important; }
+                    .nav-right-controls { gap: 6px !important; }
+                    .icon-btn { width: 38px !important; height: 38px !important; border-radius: 10px !important; }
+                }
+                @media (max-width: 500px) {
+                    .top-bar { padding: 10px 8px !important; gap: 4px !important; }
+                    .nav-right-controls { gap: 4px !important; flex-shrink: 0; }
+                    .icon-btn { width: 34px !important; height: 34px !important; border-radius: 8px !important; }
+                    .mobile-brand span { display: none !important; }
+                    .music-source-switcher { transform: scale(0.85); transform-origin: center; margin: 0 -4px; }
+                    .profile { padding: 4px 10px !important; height: 34px !important; }
+                    .profile span, .profile svg { display: none !important; }
+                    .profile img { margin: 0; }
+                }
+            `}</style>
+            
             {/* Mobile Brand Logo */}
-            <div className="mobile-brand" onClick={() => navigate('/')} style={{ display: 'none', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+            <div className="mobile-brand" onClick={() => navigate('/')} style={{ display: 'none', alignItems: 'center', gap: '8px', cursor: 'pointer', flexShrink: 0 }}>
                 <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover' }} />
                 <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, var(--accent-primary, #d4a053), #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mehfil</span>
             </div>
@@ -439,6 +472,90 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
             </div>
 
             <div className="nav-right-controls" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                {/* Music Source Switcher Dropdown */}
+                <div className="music-source-switcher" ref={dropdownRef} style={{ position: 'relative', flexShrink: 0 }}>
+                    <button
+                        type="button"
+                        onClick={() => setSourceDropdownOpen(!sourceDropdownOpen)}
+                        title={`Current Source: ${musicSource.toUpperCase()}`}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            background: 'var(--accent-primary, #d4a053)',
+                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            borderRadius: '12px',
+                            padding: '6px 8px',
+                            gap: '4px',
+                            color: '#000',
+                            fontSize: '1rem',
+                            cursor: 'pointer',
+                            boxShadow: '0 4px 10px rgba(212, 160, 83, 0.2)',
+                            transition: 'all 0.2s ease'
+                        }}
+                    >
+                        {musicSource === 'auto' ? '✨' : musicSource === 'saavn' ? '🎵' : '📺'}
+                        <ChevronDown size={14} style={{ opacity: 0.8 }} />
+                    </button>
+
+                    {sourceDropdownOpen && (
+                        <div style={{
+                            position: 'absolute',
+                            top: '100%',
+                            right: 0,
+                            marginTop: '8px',
+                            background: 'rgba(20, 20, 25, 0.95)',
+                            backdropFilter: 'blur(20px)',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '12px',
+                            padding: '6px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '4px',
+                            zIndex: 100,
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                            minWidth: '120px'
+                        }}>
+                            {[
+                                { id: 'auto', icon: '✨', label: 'Auto (Best)' },
+                                { id: 'saavn', icon: '🎵', label: 'JioSaavn' },
+                                { id: 'youtube', icon: '📺', label: 'YouTube' }
+                            ].map(src => (
+                                <button
+                                    key={src.id}
+                                    onClick={() => {
+                                        setMusicSource(src.id);
+                                        setSourceDropdownOpen(false);
+                                    }}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        background: musicSource === src.id ? 'rgba(255,255,255,0.1)' : 'transparent',
+                                        color: musicSource === src.id ? '#fff' : 'rgba(255,255,255,0.7)',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        padding: '8px 10px',
+                                        fontSize: '0.85rem',
+                                        fontWeight: musicSource === src.id ? 700 : 500,
+                                        cursor: 'pointer',
+                                        textAlign: 'left',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseEnter={e => {
+                                        if (musicSource !== src.id) e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                                    }}
+                                    onMouseLeave={e => {
+                                        if (musicSource !== src.id) e.currentTarget.style.background = 'transparent';
+                                    }}
+                                >
+                                    <span>{src.icon}</span>
+                                    {src.label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
                 <button 
                   className={`icon-btn mic-btn ${isListening ? 'listening' : ''}`} 
                   onClick={startRecognition}

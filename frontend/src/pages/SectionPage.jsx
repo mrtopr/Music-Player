@@ -213,20 +213,22 @@ export default function SectionPage() {
                 {/* Back button */}
                 <button
                     onClick={() => navigate(-1)}
+                    title="Go Back"
                     style={{
-                        display: 'flex', alignItems: 'center', gap: '8px',
-                        background: 'rgba(255,255,255,0.06)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        color: 'var(--text-secondary)', borderRadius: '50px',
-                        padding: '8px 16px', cursor: 'pointer', fontSize: '0.85rem',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: 'rgba(255, 255, 255, 0.08)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        color: '#fff', borderRadius: '50%',
+                        width: '40px', height: '40px', cursor: 'pointer',
                         marginBottom: '1.5rem', transition: 'all 0.2s',
-                        width: 'fit-content'
+                        backdropFilter: 'blur(12px)'
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.15)'; e.currentTarget.style.color = 'var(--accent-primary)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.25)'; e.currentTarget.style.borderColor = '#8B5CF6'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
                 >
-                    <ArrowLeft size={16} /> Back
+                    <ArrowLeft size={18} />
                 </button>
+
 
                 {/* Title row */}
                 <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>

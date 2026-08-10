@@ -170,19 +170,3 @@ input[type="range"]:active {
     opacity: 1;
     transform: translateY(0);
 }
-
-/* Hover Sound Effect Indicator (Visual Only) */
-.has-hover-sound::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    opacity: 0;
-    background: radial-gradient(circle, var(--mehfil-gold-glow) 0%, transparent 70%);
-    transition: opacity var(--mehfil-motion-fast);
-    pointer-events: none;
-}
-
-.has-hover-sound:hover::after {
-    opacity: 0.3;
-}

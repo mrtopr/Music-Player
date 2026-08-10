@@ -54,7 +54,7 @@ export function addToHistory(song) {
             downloadUrl: song.downloadUrl || null,
             duration: song.duration || 0,
             timestamp: Date.now(),
-            genre: song.genre || song.type || ''
+            genre: song.genre || ''
         };
 
         // Deduplication: Remove if already exists
@@ -173,8 +173,9 @@ export function getTopGenres(limit = 3) {
     const counts = getGenreCounts();
     return Object.entries(counts)
         .sort(([, a], [, b]) => b - a)
-        .slice(0, limit)
-        .map(([genre]) => genre);
+        .map(([genre]) => genre)
+        .filter(genre => genre && !['song', 'album', 'playlist', 'radio'].includes(genre.toLowerCase()))
+        .slice(0, limit);
 }
 
 /**

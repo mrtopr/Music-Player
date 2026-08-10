@@ -6,3 +6,5 @@ export * from './artists/controllers'
 export * from './modules'
 export * from './telemetry/controllers/telemetry.controller'
 export * from './auth/controllers/auth.controller'
+export * from './youtube/controllers/youtube.controller'
+

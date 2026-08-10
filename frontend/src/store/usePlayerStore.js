@@ -3,7 +3,6 @@ import { getAudioUrl, getImageUrl, apiFetch } from '../api/client.js';
 import { addToHistory, addGenrePlay } from '../utils/history.js';
 import { pickBestNext } from '../utils/autoMix.js';
 import { audioEngine } from '../utils/audioEngine.js';
-import { soundEngine } from '../utils/soundEngine.js';
 import { getOfflineTracks, saveTrackOffline, removeTrackOffline, isTrackOffline } from '../utils/offlineStorage.js';
 import { parseLrc, decodeEntities } from '../utils/helpers.js';
 import { logPlaybackEvent, getUserId } from '../utils/telemetry.js';
@@ -248,12 +247,7 @@ const handleIncomingSyncMessage = async (data) => {
 // Hard-init the pro engine once
 audioEngine.init(audioA, audioB);
 
-// Build the sound enhancement DSP chain using the same AudioContext
-// and connect it between the EQ treble node and the destination.
-if (audioEngine.ctx) {
-    soundEngine.build(audioEngine.ctx);
-    audioEngine.connectEnhancement(soundEngine.input, soundEngine.output);
-}
+
 
 // ── Lyrics Cache (keyed by song ID, survives song changes within a session) ──
 const lyricsCache = new Map();
@@ -290,28 +284,14 @@ export const usePlayerStore = create((set, get) => ({
     isTransitioning: false,
     likedSongs: (() => { try { return JSON.parse(localStorage.getItem('likedSongs') || '[]'); } catch { return []; } })(),
 
+    musicSource: (() => { try { return localStorage.getItem('mehfil_music_source') || 'auto'; } catch { return 'auto'; } })(),
     activeChannel: 'A', // 'A' | 'B'
 
 
     // Equalizer State
     equalizer: { bass: 0, mid: 0, treble: 0 },
 
-    // Sound Enhancement State (loaded from soundEngine which reads localStorage)
-    soundEnhancement: (() => {
-        const s = soundEngine.getState();
-        return {
-            preset: s.preset || 'normal',
-            bass: s.bass ?? 0,
-            subBass: s.subBass ?? 0,
-            punch: s.punch ?? 0,
-            presence: s.presence ?? 0,
-            stereoWidth: s.stereoWidth ?? 0,
-            spatialEnabled: s.spatialEnabled ?? false,
-            loudness: s.loudness ?? 0,
-            room: s.room || 'off',
-        };
-    })(),
-    isSoundEffectsOpen: false,
+
 
     // Sleep Timer State
     sleepTimer: {
@@ -345,7 +325,11 @@ export const usePlayerStore = create((set, get) => ({
         return { likedSongs: newLikes };
     }),
 
+    isVideoMode: false,
+
     setFullScreen: (val) => set({ isFullScreen: val }),
+    setVideoMode: (val) => set({ isVideoMode: val }),
+    toggleVideoMode: () => set(state => ({ isVideoMode: !state.isVideoMode })),
     setQueueOpen: (val) => set({ isQueueOpen: val }),
     setEqualizerOpen: (val) => set({ isEqualizerOpen: val }),
     setSleepTimerOpen: (val) => set({ isSleepTimerOpen: val }),
@@ -553,8 +537,8 @@ export const usePlayerStore = create((set, get) => ({
         // Collect genre signal for personalization
         const songGenre = rawSong.language
             ? (rawSong.language.includes('hindi') ? 'Hindi' : rawSong.language)
-            : (rawSong.genre || rawSong.type || null);
-        if (songGenre) addGenrePlay(songGenre);
+            : (rawSong.genre || null);
+        if (songGenre && songGenre.toLowerCase() !== 'song') addGenrePlay(songGenre);
 
         // Prep Channel
         const nextChannel = freshState.activeChannel === 'A' ? 'B' : 'A';
@@ -605,8 +589,30 @@ export const usePlayerStore = create((set, get) => ({
             broadcastHostState();
         }
 
+        // ── YouTube songs: pause native audio engine, delegate to YouTubeHiddenPlayer ──
+        if (song.id && song.id.startsWith('yt_')) {
+            // Stop any playing JioSaavn audio immediately
+            audioA.pause();
+            audioB.pause();
+            audioA.currentTime = 0;
+            audioB.currentTime = 0;
+
+            // State was already committed above (currentSong, isPlaying, etc.).
+            // The YouTubeHiddenPlayer useEffect will pick up the new currentSong.id
+            // and load/play the video automatically.
+            return;
+        }
+
+        // ── JioSaavn songs: stop any playing YouTube track ──
+        if (window.__ytPlayerInstance) {
+            try {
+                window.__ytPlayerInstance.pauseVideo?.();
+                window.__ytPlayerInstance.stopVideo?.();
+            } catch (e) {}
+        }
 
         let url = song.offlineAudioUrl || getAudioUrl(song.downloadUrl);
+
         if (!url && song.id) {
             try {
                 const isOfflineSaved = await isTrackOffline(song.id);
@@ -703,6 +709,18 @@ export const usePlayerStore = create((set, get) => ({
             set({ isCoordinator: true });
         }
 
+        // ── YouTube song: delegate to hidden iframe player ──
+        if (currentSong?.id?.startsWith('yt_')) {
+            const ytPlayer = window.__ytPlayerInstance;
+            if (ytPlayer) {
+                if (isPlaying) ytPlayer.pauseVideo?.();
+                else ytPlayer.playVideo?.();
+            }
+            set({ isPlaying: !isPlaying });
+            broadcastHostState();
+            return;
+        }
+
         if (isPlaying) {
             audioA.pause();
             audioB.pause();
@@ -763,10 +781,25 @@ export const usePlayerStore = create((set, get) => ({
     },
 
     prevSong: () => {
-        const { queue, queueIndex, activeChannel, sessionCode } = get();
+        const { queue, queueIndex, activeChannel, sessionCode, currentSong, currentTime } = get();
         if (sessionCode) {
             set({ isCoordinator: true });
         }
+
+        // ── YouTube song: seek to start or go previous ──
+        if (currentSong?.id?.startsWith('yt_')) {
+            const ytPlayer = window.__ytPlayerInstance;
+            if (!queue.length || currentTime > 3 || queue.length === 1 || queueIndex === 0) {
+                ytPlayer?.seekTo?.(0, true);
+                broadcastHostState();
+                return;
+            }
+            const prev = Math.max(0, queueIndex - 1);
+            set({ queueIndex: prev });
+            get().playSong(queue[prev], false, true);
+            return;
+        }
+
         const audio = activeChannel === 'A' ? audioA : audioB;
         if (!queue.length || audio.currentTime > 3 || queue.length === 1 || queueIndex === 0) {
             audio.currentTime = 0;
@@ -780,10 +813,24 @@ export const usePlayerStore = create((set, get) => ({
     },
 
     seek: (pct) => {
-        const { activeChannel, sessionCode } = get();
+        const { activeChannel, sessionCode, currentSong, duration } = get();
         if (sessionCode) {
             set({ isCoordinator: true });
         }
+
+        // ── YouTube song: seek via IFrame API ──
+        if (currentSong?.id?.startsWith('yt_')) {
+            const ytPlayer = window.__ytPlayerInstance;
+            const dur = ytPlayer?.getDuration?.() || duration || 0;
+            if (ytPlayer && dur) {
+                ytPlayer.seekTo((pct / 100) * dur, true);
+            }
+            const newTime = (pct / 100) * (duration || 0);
+            set({ progress: pct, currentTime: newTime });
+            broadcastHostState();
+            return;
+        }
+
         const audio = activeChannel === 'A' ? audioA : audioB;
         if (!audio.duration) return;
         audio.currentTime = (pct / 100) * audio.duration;
@@ -854,17 +901,25 @@ export const usePlayerStore = create((set, get) => ({
 
 
     setVolume: (vol) => {
-        const { activeChannel } = get();
+        const { activeChannel, currentSong } = get();
+        // Sync to YT player if applicable
+        if (currentSong?.id?.startsWith('yt_') && window.__ytPlayerInstance) {
+            window.__ytPlayerInstance.unMute?.();
+            window.__ytPlayerInstance.setVolume?.(Math.round(vol * 100));
+        }
         audioEngine.setVolume(activeChannel, vol);
-
-        // Backup physical volume
         audioA.volume = 1;
         audioB.volume = 1;
         set({ volume: vol, isMuted: vol === 0 });
     },
 
     toggleMute: () => {
-        const { isMuted, volume, activeChannel } = get();
+        const { isMuted, volume, activeChannel, currentSong } = get();
+        // Sync to YT player if applicable
+        if (currentSong?.id?.startsWith('yt_') && window.__ytPlayerInstance) {
+            if (!isMuted) window.__ytPlayerInstance.mute?.();
+            else { window.__ytPlayerInstance.unMute?.(); window.__ytPlayerInstance.setVolume?.(Math.round(volume * 100)); }
+        }
         audioEngine.setVolume(activeChannel, !isMuted ? 0 : volume);
         set({ isMuted: !isMuted });
     },
@@ -913,38 +968,13 @@ export const usePlayerStore = create((set, get) => ({
     },
 
 
-    // ── Sound Enhancement Actions ──
-    setSoundEffectsOpen: (val) => set({ isSoundEffectsOpen: val }),
 
-    applySoundPreset: (presetName) => {
-        soundEngine.applyPreset(presetName);
-        const s = soundEngine.getState();
-        set({
-            soundEnhancement: {
-                preset: s.preset,
-                bass: s.bass,
-                subBass: s.subBass,
-                punch: s.punch,
-                presence: s.presence,
-                stereoWidth: s.stereoWidth,
-                spatialEnabled: s.spatialEnabled,
-                loudness: s.loudness,
-                room: s.room,
-            }
-        });
+
+
+    setMusicSource: (source) => {
+        try { localStorage.setItem('mehfil_music_source', source); } catch {}
+        set({ musicSource: source });
     },
-
-    setSoundParam: (key, value) => {
-        soundEngine.setParam(key, value);
-        set(state => ({
-            soundEnhancement: {
-                ...state.soundEnhancement,
-                [key]: value,
-                preset: key === 'preset' ? value : 'custom',
-            }
-        }));
-    },
-
 
     // ── Sleep Timer Actions ──
     startSleepTimer: (minutes) => {

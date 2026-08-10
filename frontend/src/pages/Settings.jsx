@@ -19,6 +19,8 @@ const PRESET_AVATARS = [
 ];
 
 export default function Settings() {
+    const musicSource = usePlayerStore(state => state.musicSource);
+    const setMusicSource = usePlayerStore(state => state.setMusicSource);
     const isAutoMixEnabled = usePlayerStore(state => state.isAutoMixEnabled);
     const toggleAutoMix = usePlayerStore(state => state.toggleAutoMix);
     const { user, token, logout, login } = useAuthStore();
@@ -489,33 +491,72 @@ export default function Settings() {
                             <h3 style={{ margin: '0 0 1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>
                                 <Sparkles size={20} /> Playback Settings
                             </h3>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div style={{ marginRight: '1rem' }}>
-                                    <div style={{ color: '#fff', fontWeight: 600, fontSize: '1rem', marginBottom: '4px' }}>AutoMix</div>
-                                    <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.4 }}>
-                                        Crossfade seamlessly between songs with DJ-style transitions.
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ marginRight: '1rem' }}>
+                                        <div style={{ color: '#fff', fontWeight: 600, fontSize: '1rem', marginBottom: '4px' }}>Music Source Provider</div>
+                                        <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.4 }}>
+                                            Select where songs are fetched from. Auto mode searches both JioSaavn and YouTube Music simultaneously.
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '4px', gap: '4px' }}>
+                                        {[
+                                            { id: 'auto', label: '✨ Auto' },
+                                            { id: 'saavn', label: '🎵 Saavn' },
+                                            { id: 'youtube', label: '📺 YouTube' }
+                                        ].map(src => (
+                                            <button
+                                                key={src.id}
+                                                type="button"
+                                                onClick={() => setMusicSource(src.id)}
+                                                style={{
+                                                    background: musicSource === src.id ? 'var(--accent-primary, #d4a053)' : 'transparent',
+                                                    color: musicSource === src.id ? '#000' : 'rgba(255,255,255,0.7)',
+                                                    border: 'none',
+                                                    borderRadius: '8px',
+                                                    padding: '6px 12px',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: 700,
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s ease'
+                                                }}
+                                            >
+                                                {src.label}
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
-                                <label style={{ position: 'relative', display: 'inline-block', width: '46px', height: '24px', flexShrink: 0 }}>
-                                    <input 
-                                        type="checkbox" 
-                                        checked={isAutoMixEnabled} 
-                                        onChange={toggleAutoMix}
-                                        style={{ opacity: 0, width: 0, height: 0 }} 
-                                    />
-                                    <span style={{
-                                        position: 'absolute', cursor: 'pointer', inset: 0,
-                                        background: isAutoMixEnabled ? 'var(--accent-primary)' : 'rgba(255,255,255,0.15)',
-                                        transition: '.3s ease', borderRadius: '34px',
-                                        boxShadow: isAutoMixEnabled ? '0 0 10px rgba(139,92,246,0.3)' : 'none'
-                                    }}>
+
+                                <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)' }} />
+
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ marginRight: '1rem' }}>
+                                        <div style={{ color: '#fff', fontWeight: 600, fontSize: '1rem', marginBottom: '4px' }}>AutoMix</div>
+                                        <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.4 }}>
+                                            Crossfade seamlessly between songs with DJ-style transitions.
+                                        </div>
+                                    </div>
+                                    <label style={{ position: 'relative', display: 'inline-block', width: '46px', height: '24px', flexShrink: 0 }}>
+                                        <input 
+                                            type="checkbox" 
+                                            checked={isAutoMixEnabled} 
+                                            onChange={toggleAutoMix}
+                                            style={{ opacity: 0, width: 0, height: 0 }} 
+                                        />
                                         <span style={{
-                                            position: 'absolute', content: '""', height: '18px', width: '18px',
-                                            left: isAutoMixEnabled ? '24px' : '4px', bottom: '3px',
-                                            background: isAutoMixEnabled ? '#000' : '#fff', transition: '.3s ease', borderRadius: '50%'
-                                        }}></span>
-                                    </span>
-                                </label>
+                                            position: 'absolute', cursor: 'pointer', inset: 0,
+                                            background: isAutoMixEnabled ? 'var(--accent-primary)' : 'rgba(255,255,255,0.15)',
+                                            transition: '.3s ease', borderRadius: '34px',
+                                            boxShadow: isAutoMixEnabled ? '0 0 10px rgba(139,92,246,0.3)' : 'none'
+                                        }}>
+                                            <span style={{
+                                                position: 'absolute', content: '""', height: '18px', width: '18px',
+                                                left: isAutoMixEnabled ? '24px' : '4px', bottom: '3px',
+                                                background: isAutoMixEnabled ? '#000' : '#fff', transition: '.3s ease', borderRadius: '50%'
+                                            }}></span>
+                                        </span>
+                                    </label>
+                                </div>
                             </div>
                         </section>
 

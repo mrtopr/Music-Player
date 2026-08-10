@@ -41,15 +41,30 @@
 
 /* Progress Container */
 .progress-container {
-  position: relative;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  position: absolute;
+  top: -8px;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.15);
   cursor: pointer;
-  transition: height 0.2s ease;
+  transition: height 0.2s ease, top 0.2s ease;
+  z-index: 10;
 }
 
-.mini-player:hover .progress-container {
-  height: 6px;
+.progress-container::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  bottom: -10px;
+  left: 0;
+  right: 0;
+}
+
+.mini-player:hover .progress-container,
+.progress-container:hover {
+  height: 10px;
+  top: -10px;
 }
 
 .progress-bar {
@@ -262,8 +277,10 @@
 
 #miniVolumeSlider {
   width: 80px;
-  height: 4px;
+  height: 24px; /* increased hit area */
   background: rgba(255, 255, 255, 0.2);
+  background-clip: content-box;
+  padding: 10px 0;
   border-radius: 2px;
   outline: none;
   cursor: pointer;
@@ -1254,19 +1271,46 @@
 }
 
 /* Mobile responsive mini player cleanup */
+/* Mobile responsive mini player cleanup */
 @media (max-width: 768px) {
+  .mini-player {
+    height: 64px;
+    padding: 0;
+  }
+  .mini-player-content {
+    padding: 8px 12px;
+    height: 64px;
+  }
   .mini-player-expand,
   .mini-player-branding,
   .mini-volume-control {
     display: none !important;
   }
+  .mini-player-info {
+    gap: 8px;
+  }
+  #miniPlayerImage {
+    width: 44px;
+    height: 44px;
+  }
+  #miniPlayerTitle {
+    font-size: 13px;
+  }
+  #miniPlayerArtist {
+    font-size: 11px;
+  }
   .mini-player-controls {
-    gap: 4px !important;
+    gap: 6px !important;
   }
   .mini-player-controls button {
     width: 32px !important;
     height: 32px !important;
     padding: 0 !important;
     min-width: 32px !important;
+    font-size: 12px;
+  }
+  #miniPlayButton {
+    width: 38px !important;
+    height: 38px !important;
   }
 }

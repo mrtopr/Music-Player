@@ -1,8 +1,14 @@
 import React from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, ChevronUp, ListMusic, Sparkles } from 'lucide-react';
+import { SkipBack, SkipForward, ListMusic, Tv } from 'lucide-react';
+import { PlayIcon } from '../icons/PlayIcon';
+import { PauseIcon } from '../icons/PauseIcon';
+import { ChevronUpIcon } from '../icons/ChevronUpIcon';
+import { SparklesIcon } from '../icons/SparklesIcon';
+import { VolumeToggleIcon } from '../icons/VolumeToggleIcon';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { getImageUrl } from '../../api/client.js';
 import { formatTime, decodeEntities, getSafeImage } from '../../utils/helpers.js';
+import Tooltip from '../common/Tooltip';
 
 export default function MiniPlayer({ onExpand, onQueue }) {
     const currentSong = usePlayerStore(state => state.currentSong);
@@ -18,9 +24,12 @@ export default function MiniPlayer({ onExpand, onQueue }) {
     const seek = usePlayerStore(state => state.seek);
     const setVolume = usePlayerStore(state => state.setVolume);
     const toggleMute = usePlayerStore(state => state.toggleMute);
+    const isVideoMode = usePlayerStore(state => state.isVideoMode);
+    const setVideoMode = usePlayerStore(state => state.setVideoMode);
 
     if (!currentSong) return null;
 
+    const isYtSong = currentSong.id?.startsWith('yt_');
     const imageUrl = getSafeImage(currentSong.image, getImageUrl);
     const title = decodeEntities(currentSong.title || 'Unknown');
     const artist = decodeEntities(currentSong.primaryArtists || currentSong.subtitle || 'Unknown');
@@ -50,8 +59,8 @@ export default function MiniPlayer({ onExpand, onQueue }) {
                         <div id="miniPlayerArtist">
                             {artist}
                             {currentSong.mlQueued && (
-                                <span style={{ marginLeft: '6px', color: 'var(--accent-primary)', display: 'inline-flex', alignItems: 'center', gap: '2px', fontSize: '10px' }} title="Queued via Taste Profile">
-                                    <Sparkles size={10} />
+                                <span style={{ marginLeft: '6px', display: 'inline-flex', alignItems: 'center', gap: '2px', fontSize: '10px' }} title="Queued via Taste Profile">
+                                    <SparklesIcon size={14} style={{ color: 'var(--mehfil-gold-primary)' }} />
                                 </span>
                             )}
                         </div>
@@ -60,47 +69,90 @@ export default function MiniPlayer({ onExpand, onQueue }) {
 
                 {/* Controls */}
                 <div className="mini-player-controls">
-                    <button id="miniPrevButton" onClick={prevSong} title="Previous">
-                        <SkipBack size={16} />
-                    </button>
-                    <button id="miniPlayButton" onClick={togglePlay} title="Play/Pause">
-                        {isPlaying ? <Pause size={18} /> : <Play size={18} />}
-                    </button>
-                    <button id="miniNextButton" onClick={nextSong} title="Next">
-                        <SkipForward size={16} />
-                    </button>
+                    {/* YouTube Video Mode Button */}
+                    {isYtSong && (
+                        <button
+                            onClick={() => setVideoMode(!isVideoMode)}
+                            title={isVideoMode ? 'Switch to Audio Mode' : 'Switch to Video Mode'}
+                            style={{
+                                background: isVideoMode ? 'rgba(168,85,247,0.3)' : 'rgba(255,255,255,0.06)',
+                                border: '1px solid ' + (isVideoMode ? '#a855f7' : 'rgba(255,255,255,0.12)'),
+                                color: isVideoMode ? '#c084fc' : 'rgba(255,255,255,0.7)',
+                                borderRadius: '8px',
+                                padding: '5px 8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                marginRight: '4px'
+                            }}
+                        >
+                            <Tv size={14} /> Video
+                        </button>
+                    )}
 
+                    <Tooltip content="Previous">
+                        <button id="miniPrevButton" onClick={prevSong} aria-label="Previous">
+                            <SkipBack size={16} />
+                        </button>
+                    </Tooltip>
+                    <Tooltip content="Play/Pause">
+                        <button id="miniPlayButton" onClick={togglePlay} aria-label="Play/Pause">
+                            {isPlaying ? <PauseIcon size={24} /> : <PlayIcon size={24} />}
+                        </button>
+                    </Tooltip>
+                    <Tooltip content="Next">
+                        <button id="miniNextButton" onClick={nextSong} aria-label="Next">
+                            <SkipForward size={16} />
+                        </button>
+                    </Tooltip>
 
-                    <button id="miniQueueBtn" onClick={onQueue} title="Queue" style={{ marginLeft: '4px' }}>
-                        <ListMusic size={16} />
-                    </button>
+                    <Tooltip content="Queue">
+                        <button id="miniQueueBtn" onClick={onQueue} aria-label="Queue" style={{ marginLeft: '4px' }}>
+                            <ListMusic size={16} />
+                        </button>
+                    </Tooltip>
 
                     <div className="mini-volume-control">
-                        <button id="miniVolumeButton" onClick={toggleMute} title="Volume">
-                            {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
-                        </button>
-                        <input
-                            type="range"
-                            id="miniVolumeSlider"
-                            min="0"
-                            max="100"
-                            value={isMuted ? 0 : volume * 100}
-                            onChange={(e) => setVolume(Number(e.target.value) / 100)}
-                            title="Volume"
-                        />
+                        <Tooltip content={isMuted ? "Unmute" : "Mute"}>
+                            <button id="miniVolumeButton" onClick={toggleMute} aria-label={isMuted ? "Unmute" : "Mute"}>
+                                <VolumeToggleIcon size={16} isMuted={isMuted} />
+                            </button>
+                        </Tooltip>
+                        <Tooltip content={`Volume: ${isMuted ? 0 : Math.round(volume * 100)}%`}>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <input
+                                    type="range"
+                                    id="miniVolumeSlider"
+                                    min="0"
+                                    max="100"
+                                    value={isMuted ? 0 : volume * 100}
+                                    onChange={(e) => setVolume(Number(e.target.value) / 100)}
+                                    aria-label="Volume"
+                                />
+                            </div>
+                        </Tooltip>
                     </div>
 
-                    <button id="expandPlayer" onClick={onExpand} title="Expand" style={{ marginLeft: '4px' }}>
-                        <ChevronUp size={16} />
-                    </button>
                 </div>
 
                 {/* Time & Branding */}
-                <div className="mini-player-expand">
+                <div className="mini-player-expand" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div className="time-display">
                         <span id="currentTime">{formatTime(currentTime)}</span>
                         <span id="duration">{formatTime(duration)}</span>
                     </div>
+                    
+                    <Tooltip content="Expand player (Full Screen)">
+                        <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                            <button id="expandPlayer" onClick={onExpand} aria-label="Expand player" style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onMouseEnter={e => e.currentTarget.style.color = '#fff'} onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}>
+                                <ChevronUpIcon size={20} />
+                            </button>
+                        </div>
+                    </Tooltip>
                 </div>
 
                 <div className="mini-player-branding">

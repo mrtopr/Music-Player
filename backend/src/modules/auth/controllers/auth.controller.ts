@@ -302,7 +302,8 @@ export class AuthController {
           })
 
           // In production: send email. For now, log to console for testing.
-          const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth?reset=${token}`
+          const frontendOrigin = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim()
+          const resetUrl = `${frontendOrigin}/auth?reset=${token}`
           console.log('\n🔑 [Password Reset] Token for', email)
           console.log('   Reset URL:', resetUrl)
           console.log('   Token expires at:', expiresAt.toISOString(), '\n')

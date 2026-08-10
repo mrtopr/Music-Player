@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
-    PlayCircle, Flame, ChevronRight, ListMusic, Mic2, Play, Pause, Music,
+    PlayCircle, Flame, ChevronRight, ChevronLeft, ListMusic, Mic2, Play, Pause, Music,
     History, Sparkles, Heart, Compass, Check, Users, SlidersHorizontal,
     Download, X, Smartphone, Activity, Frown, Award, Zap, Star, Mic, Calendar, Disc3
 } from 'lucide-react';
@@ -16,17 +16,19 @@ import { GENRE_PROFILES, ALL_GENRES } from '../utils/genreProfiles.js';
 import AddToPlaylist from '../components/common/AddToPlaylist';
 
 const CATEGORIES = [
-    { label: 'All Music', query: 'bollywood trending 2024 hits', icon: Music },
-    { label: 'Romantic', query: 'romantic hindi songs', icon: Heart },
-    { label: 'Dance', query: 'bollywood dance party songs', icon: Activity },
-    { label: 'Sad', query: 'sad hindi songs emotional', icon: Frown },
-    { label: 'Party', query: 'bollywood party songs 2024', icon: Sparkles },
-    { label: 'Classical', query: 'indian classical music', icon: Award },
-    { label: 'Rock', query: 'hindi rock songs', icon: Zap },
-    { label: 'Pop', query: 'hindi pop songs 2024', icon: Star },
-    { label: 'Hip Hop', query: 'desi hip hop rap', icon: Mic },
-    { label: 'Latest 2024', query: 'latest bollywood 2024', icon: Calendar },
+    { label: 'All Music', query: 'bollywood trending 2026 hits', icon: Music },
+    { label: 'Romantic', query: 'romantic hindi songs 2026', icon: Heart },
+    { label: 'Dance', query: 'bollywood dance party songs 2026', icon: Activity },
+    { label: 'Sad', query: 'sad hindi songs 2026', icon: Frown },
+    { label: 'Party', query: 'bollywood party songs 2026', icon: Sparkles },
+    { label: 'Classical', query: 'indian classical music hits', icon: Award },
+    { label: 'Rock', query: 'hindi rock songs hits', icon: Zap },
+    { label: 'Pop', query: 'hindi pop songs 2026', icon: Star },
+    { label: 'Hip Hop', query: 'desi hip hop rap 2026', icon: Mic },
+    { label: 'Latest 2026', query: 'latest bollywood 2026 new song album releases', icon: Calendar },
 ];
+
+
 
 function getCleanGreeting() {
     const h = new Date().getHours();
@@ -98,11 +100,58 @@ function SectionHeader({ title, onShowMore }) {
 }
 
 function HorizontalScroll({ songs, onPlay, currentId, isPlaying }) {
+    const scrollRef = React.useRef(null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(true);
+
+    const handleScroll = () => {
+        if (scrollRef.current) {
+            const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+            setCanScrollLeft(scrollLeft > 0);
+            setCanScrollRight(Math.ceil(scrollLeft + clientWidth) < scrollWidth - 10);
+        }
+    };
+
+    const scroll = (dir) => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollBy({ left: dir * (window.innerWidth > 768 ? 600 : 300), behavior: 'smooth' });
+        }
+    };
+
+    useEffect(() => {
+        handleScroll();
+        window.addEventListener('resize', handleScroll);
+        return () => window.removeEventListener('resize', handleScroll);
+    }, [songs]);
+
     return (
-        <div className="horizontal-scroll" style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1.5rem', scrollbarWidth: 'thin' }}>
-            {songs.map(song => (
-                <SongCard key={song.id || song.title} song={song} onPlay={onPlay} isCurrentSong={currentId === song.id} isPlaying={isPlaying} />
-            ))}
+        <div style={{ position: 'relative' }} className="horizontal-scroll-container">
+            {canScrollLeft && (
+                <button onClick={() => scroll(-1)} style={scrollBtnStyle('left')} className="scroll-arrow-btn" aria-label="Scroll left">
+                    <ChevronLeft size={24} />
+                </button>
+            )}
+            <div
+                ref={scrollRef}
+                onScroll={handleScroll}
+                className="horizontal-scroll"
+                style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1.5rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+                {songs.map(song => (
+                    <SongCard key={song.id || song.title} song={song} onPlay={onPlay} isCurrentSong={currentId === song.id} isPlaying={isPlaying} />
+                ))}
+            </div>
+            <div style={{
+                position: 'absolute', right: 0, top: 0, bottom: '1.5rem', width: '60px',
+                background: 'linear-gradient(to left, #05050a 10%, transparent)',
+                pointerEvents: 'none', zIndex: 2, borderRadius: '0 8px 8px 0',
+                opacity: canScrollRight ? 1 : 0, transition: 'opacity 0.3s'
+            }} />
+            {canScrollRight && (
+                <button onClick={() => scroll(1)} style={scrollBtnStyle('right')} className="scroll-arrow-btn" aria-label="Scroll right">
+                    <ChevronRight size={24} />
+                </button>
+            )}
         </div>
     );
 }
@@ -125,14 +174,82 @@ function ArtistCard({ artist, onPlay }) {
 }
 
 function ArtistHorizontalScroll({ artists, onPlay }) {
+    const scrollRef = React.useRef(null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(true);
+
+    const handleScroll = () => {
+        if (scrollRef.current) {
+            const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+            setCanScrollLeft(scrollLeft > 0);
+            setCanScrollRight(Math.ceil(scrollLeft + clientWidth) < scrollWidth - 10);
+        }
+    };
+
+    const scroll = (dir) => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollBy({ left: dir * (window.innerWidth > 768 ? 600 : 300), behavior: 'smooth' });
+        }
+    };
+
+    useEffect(() => {
+        handleScroll();
+        window.addEventListener('resize', handleScroll);
+        return () => window.removeEventListener('resize', handleScroll);
+    }, [artists]);
+
     return (
-        <div className="horizontal-scroll" style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1.5rem', scrollbarWidth: 'thin' }}>
-            {artists.map(artist => (
-                <ArtistCard key={artist.id} artist={artist} onPlay={onPlay} />
-            ))}
+        <div style={{ position: 'relative' }} className="horizontal-scroll-container">
+            {canScrollLeft && (
+                <button onClick={() => scroll(-1)} style={scrollBtnStyle('left')} className="scroll-arrow-btn" aria-label="Scroll left">
+                    <ChevronLeft size={24} />
+                </button>
+            )}
+            <div
+                ref={scrollRef}
+                onScroll={handleScroll}
+                className="horizontal-scroll"
+                style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1.5rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+                {artists.map(artist => (
+                    <ArtistCard key={artist.id} artist={artist} onPlay={onPlay} />
+                ))}
+            </div>
+            <div style={{
+                position: 'absolute', right: 0, top: 0, bottom: '1.5rem', width: '60px',
+                background: 'linear-gradient(to left, #05050a 10%, transparent)',
+                pointerEvents: 'none', zIndex: 2, borderRadius: '0 8px 8px 0',
+                opacity: canScrollRight ? 1 : 0, transition: 'opacity 0.3s'
+            }} />
+            {canScrollRight && (
+                <button onClick={() => scroll(1)} style={scrollBtnStyle('right')} className="scroll-arrow-btn" aria-label="Scroll right">
+                    <ChevronRight size={24} />
+                </button>
+            )}
         </div>
     );
 }
+
+const scrollBtnStyle = (side) => ({
+    position: 'absolute',
+    top: 'calc(50% - 24px)',
+    [side]: '10px',
+    zIndex: 10,
+    width: '40px',
+    height: '40px',
+    borderRadius: '50%',
+    background: 'rgba(30,30,40,0.9)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    color: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+    transition: 'all 0.2s',
+    backdropFilter: 'blur(10px)'
+});
+
 
 function LoadingSkeleton() {
     return (
@@ -265,6 +382,60 @@ function Footer() {
                 </p>
             </div>
         </footer>
+    );
+}
+
+function HeroBackdrop({ recentTracks }) {
+    const albums = recentTracks && recentTracks.length > 0 ? recentTracks.slice(0, 6) : [];
+
+    if (albums.length === 0) {
+        return (
+            <div
+                style={{
+                    position: 'absolute', inset: 0, zIndex: 0,
+                    background: `
+            radial-gradient(ellipse 800px 500px at 20% 20%, rgba(124, 58, 237, 0.15), transparent 60%),
+            radial-gradient(ellipse 600px 400px at 80% 60%, rgba(167, 139, 250, 0.08), transparent 60%),
+            #0F0A1A
+          `
+                }}
+            />
+        );
+    }
+
+    // If fewer than 6, repeat them to fill the grid
+    const displayAlbums = [];
+    while (displayAlbums.length < 6) {
+        displayAlbums.push(...albums);
+    }
+    const finalAlbums = displayAlbums.slice(0, 6);
+
+    return (
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0, overflow: 'hidden', borderRadius: 'inherit' }}>
+            <div style={{
+                position: 'absolute', right: 0, top: 0, height: '100%', width: '66.666667%',
+                display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridTemplateRows: 'repeat(2, 1fr)',
+                opacity: 0.35, filter: 'blur(90px)', transform: 'scale(1.5)', gap: '10px'
+            }}>
+                {finalAlbums.map((track, i) => (
+                    <img
+                        key={`${track.id}-${i}`}
+                        src={getImageUrl(track.image) || '/mehfil-logo.png'}
+                        alt=""
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                    />
+                ))}
+            </div>
+            {/* Edge fades - horizontal + vertical to remove hard rectangular seam */}
+            <div style={{
+                position: 'absolute', inset: 0,
+                background: 'linear-gradient(to right, #0A0A0B 0%, rgba(10,10,11,0.6) 40%, transparent 100%)'
+            }} />
+            <div style={{
+                position: 'absolute', inset: 0,
+                background: 'linear-gradient(to top, #0A0A0B 0%, transparent 40%, rgba(10,10,11,0.6) 100%)'
+            }} />
+        </div>
     );
 }
 
@@ -600,7 +771,6 @@ export default function Home() {
             )}
 
             {/* Personalized Hero */}
-            {/* Personalized Hero with Graphic Background */}
             <section className="mehfil-intro" style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -615,44 +785,46 @@ export default function Home() {
                 minHeight: '260px',
                 overflow: 'hidden',
                 borderRadius: '24px',
-                backgroundImage: 'url("/ChatGPT%20Image%20Jul%2013,%202026,%2004_39_34%20PM.png")',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
                 marginBottom: '10px'
             }}>
-                {/* A subtle dark overlay to ensure text remains readable and to feather all edges seamlessly into the background */}
-                <div style={{
-                    position: 'absolute',
-                    top: 0, left: 0, right: 0, bottom: 0,
-                    background: 'linear-gradient(to right, #09080F 0%, rgba(9, 8, 15, 0.6) 45%, transparent 100%)',
-                    boxShadow: 'inset 0 0 120px 80px #09080F',
-                    zIndex: 1,
-                    pointerEvents: 'none'
-                }}></div>
+                <HeroBackdrop recentTracks={recentlyPlayed} />
 
                 {/* Left column - Content */}
-                <div className="intro-text" style={{ flex: '1 1 450px', maxWidth: '600px', zIndex: 3, position: 'relative' }}>
-                    <h1 style={{ fontSize: '2.6rem', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+                <div className="intro-text" style={{ flex: '1 1 300px', maxWidth: '100%', zIndex: 3, position: 'relative' }}>
+                    <h1 style={{ fontSize: 'clamp(2rem, 5vw, 2.6rem)', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
                         {getCleanGreeting()},{' '}
                         <span style={{
-                            background: 'linear-gradient(135deg, #C084FC, #8B5CF6, #38BDF8)',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
+                            color: '#C084FC',
                             textShadow: '0 0 30px rgba(139, 92, 246, 0.4)'
                         }}>
                             {userName ? (userName.charAt(0).toUpperCase() + userName.slice(1)) : 'Friend'}
                         </span>
                     </h1>
                     <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.4, margin: '0 0 1.2rem 0', textShadow: '0 1px 5px rgba(0,0,0,0.5)', maxWidth: '450px' }}>
-                        {(userProfile?.preferredGenres?.length > 0 || userProfile?.topGenres?.length > 0)
-                            ? `Your mix of ${[...(userProfile.preferredGenres || []), ...(userProfile.topGenres || [])].slice(0, 3).join(' · ')} is ready`
-                            : 'Experience the magic of music! From soulful melodies to energetic beats, Suno Dil se'
-                        }
+                        {(() => {
+                            const combinedGenres = [...(userProfile?.preferredGenres || []), ...(userProfile?.topGenres || [])];
+                            const genreParts = [...new Set(combinedGenres)]
+                                .filter(g => g && !['song', 'album', 'playlist', 'radio'].includes(g.toLowerCase()))
+                                .slice(0, 3);
+                            return genreParts.length > 0
+                                ? `Your mix of ${genreParts.join(' · ')} is ready`
+                                : 'Experience the magic of music! From soulful melodies to energetic beats, Suno Dil se';
+                        })()}
                     </p>
                     <div className="hero-cta" style={{ display: 'flex', gap: '0.8rem' }}>
-                        <button onClick={() => handlePlayAll(recommendations.length ? recommendations : trending)} style={{
-                            background: 'linear-gradient(135deg, #7C3AED, #8B5CF6)',
+                        <button onClick={() => {
+                            if (currentSong) {
+                                if (!isPlaying) togglePlay();
+                            } else {
+                                const recent = getRecentlyPlayed(1);
+                                if (recent && recent.length > 0) {
+                                    playSong(recent[0]);
+                                } else {
+                                    handlePlayAll(recommendations.length ? recommendations : trending);
+                                }
+                            }
+                        }} style={{
+                            background: '#7C3AED',
                             border: 'none',
                             color: '#fff',
                             borderRadius: '12px',
@@ -668,6 +840,7 @@ export default function Home() {
                             <PlayCircle size={18} />
                             Start Listening
                         </button>
+
                         <button onClick={() => handlePlayAll(trending)} style={{
                             background: 'rgba(255, 255, 255, 0.04)',
                             backdropFilter: 'blur(10px)',
@@ -690,47 +863,36 @@ export default function Home() {
                             Play Trending
                         </button>
                     </div>
+                </div>
 
-                    {/* Stats widgets */}
-                    <div className="hero-stats-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '1.5rem' }}>
-                        {[
-                            { label: 'Songs', val: '12.4K', icon: Music, color: '#8B5CF6' },
-                            { label: 'Artists', val: '8.2K', icon: Users, color: '#C084FC' },
-                            { label: 'Albums', val: '2.4K', icon: Disc3, color: '#38BDF8' },
-                            { label: 'Playlists', val: '98', icon: ListMusic, color: '#A78BFA' },
-                        ].map((stat, i) => {
-                            const StatIcon = stat.icon;
-                            return (
-                                <div key={i} style={{
-                                    display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px',
-                                    padding: '10px 16px', borderRadius: '12px',
-                                    background: 'rgba(255, 255, 255, 0.03)',
-                                    border: '1px solid rgba(255, 255, 255, 0.05)',
-                                    minWidth: '115px', flex: '1 1 auto',
+                {/* Right column - Jump Back In Grid */}
+                {recentlyPlayed.length > 0 && (
+                    <div style={{ flex: '1 1 300px', maxWidth: '100%', zIndex: 3, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <h3 style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px', marginTop: 0 }}>Jump back in</h3>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px' }}>
+                            {recentlyPlayed.slice(0, 4).map((track, i) => (
+                                <div key={i} onClick={() => playSong(track)} style={{
+                                    display: 'flex', alignItems: 'center', gap: '12px',
+                                    background: 'rgba(25, 25, 30, 0.65)',
                                     backdropFilter: 'blur(12px)',
-                                    transition: 'background 0.2s ease',
-                                    cursor: 'default'
+                                    border: '1px solid rgba(255,255,255,0.06)',
+                                    borderRadius: '12px', padding: '10px',
+                                    cursor: 'pointer', transition: 'all 0.2s ease',
+                                    boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
                                 }}
-                                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'}
-                                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'}
+                                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(40, 40, 45, 0.9)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.4)'; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(25, 25, 30, 0.65)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)'; }}
                                 >
-                                    <div style={{
-                                        width: '32px', height: '32px', borderRadius: '8px',
-                                        background: `${stat.color}25`, display: 'flex',
-                                        alignItems: 'center', justifyContent: 'center',
-                                        color: stat.color,
-                                    }}>
-                                        <StatIcon size={16} />
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                        <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>{stat.val}</span>
-                                        <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', fontWeight: 500, letterSpacing: '0.5px' }}>{stat.label}</span>
+                                    <img src={getImageUrl(track.image) || '/music.png'} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }} />
+                                    <div style={{ overflow: 'hidden', minWidth: 0, flex: 1 }}>
+                                        <div style={{ fontSize: '0.95rem', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginBottom: '2px' }}>{track.title}</div>
+                                        <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{track.artist}</div>
                                     </div>
                                 </div>
-                            );
-                        })}
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
             </section>
 
             {/* Categories */}
@@ -814,13 +976,7 @@ export default function Home() {
                         {loading ? <LoadingSkeleton /> : <HorizontalScroll songs={trending} onPlay={playSong} currentId={currentId} isPlaying={isPlaying} />}
                     </div>
 
-                    {/* Recently Played */}
-                    {recentlyPlayed.length > 0 && (
-                        <div className="trending" style={{ marginBottom: '1.5rem' }}>
-                            <SectionHeader title="Recently played" />
-                            <HorizontalScroll songs={recentlyPlayed} onPlay={playSong} currentId={currentId} isPlaying={isPlaying} />
-                        </div>
-                    )}
+
 
                     {/* Personalized Sections */}
                     {personalizedSections.map((section, i) => (
@@ -832,13 +988,6 @@ export default function Home() {
                         </div>
                     ))}
 
-                    {/* Discover New Music */}
-                    {discoverSongs.length > 0 && (
-                        <div className="trending" style={{ marginBottom: '1.5rem' }}>
-                            <SectionHeader title="Discover new music" />
-                            <HorizontalScroll songs={discoverSongs} onPlay={playSong} currentId={currentId} isPlaying={isPlaying} />
-                        </div>
-                    )}
 
                     {/* Popular Artists */}
                     <div className="artists-section" style={{ marginBottom: '1.5rem' }}>
@@ -862,6 +1011,7 @@ export default function Home() {
                     </div>
                 </>
             )}
+
 
             <Footer />
         </div>
