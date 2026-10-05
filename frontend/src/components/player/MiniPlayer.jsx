@@ -34,8 +34,20 @@ export default function MiniPlayer({ onExpand, onQueue }) {
     const title = decodeEntities(currentSong.title || 'Unknown');
     const artist = decodeEntities(currentSong.primaryArtists || currentSong.subtitle || 'Unknown');
 
+    const handlePlayerClick = (e) => {
+        // Prevent expanding if clicking any interactive button or slider
+        if (e.target.closest('button') || e.target.closest('input') || e.target.closest('.mini-volume-control') || e.target.closest('.mini-seekbar-wrapper') || e.target.closest('.mini-center-timeline')) {
+            return;
+        }
+        onExpand?.();
+    };
+
     return (
-        <div className={`mini-player visible ${isPlaying ? 'playing' : ''}`} id="miniPlayer">
+        <div 
+            className={`mini-player visible ${isPlaying ? 'playing' : ''}`} 
+            id="miniPlayer"
+            onClick={handlePlayerClick}
+        >
             {/* Top Micro Progress Bar */}
             <div className="progress-container">
                 <div className="progress-bar" style={{ width: `${progress || 0}%` }}></div>
