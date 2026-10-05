@@ -18,18 +18,23 @@ export const app = new App([
 
 const port = Number(process.env.PORT) || 3000
 
-// For Node.js (Render, local dev, etc.)
-if (typeof Bun === 'undefined' && !process.env.VERCEL) {
+// Detect Edge / Cloudflare Workers runtime
+const isCloudflareWorker = typeof WebSocketPair !== 'undefined' || typeof caches !== 'undefined' && typeof process === 'undefined'
+const isNodeRuntime = typeof process !== 'undefined' && process.release?.name === 'node' && !process.env.VERCEL && !isCloudflareWorker
+
+// Start standalone HTTP server only when running in traditional Node.js (Render, Local dev)
+if (isNodeRuntime && typeof Bun === 'undefined') {
+  try {
     serve({
-        fetch: app.fetch,
-        port
+      fetch: app.fetch,
+      port
     }, (info) => {
-        console.log(`Server is running on Node.js: http://localhost:${info.port}`)
+      console.log(`Server is running on Node.js: http://localhost:${info.port}`)
     })
+  } catch (e) {
+    // Graceful fallback for non-Node environments
+  }
 }
 
-// For Bun / Cloudflare Workers
-export default {
-  port,
-  fetch: app.fetch
-}
+// For Cloudflare Workers / Bun / Edge runtimes
+export default app
