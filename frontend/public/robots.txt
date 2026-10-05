@@ -9,5 +9,5 @@ Disallow: /favorites
 Disallow: /playlists
 Disallow: /downloads
 
-# XML Sitemap (Replace with your actual production domain)
-Sitemap: https://mehfil.vercel.app/sitemap.xml
+# XML Sitemap
+Sitemap: https://mehfil-music.vercel.app/sitemap.xml
