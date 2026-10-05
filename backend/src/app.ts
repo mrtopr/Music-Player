@@ -39,9 +39,16 @@ export class App {
       ...(process.env.FRONTEND_URL || '').split(',').map(o => o.trim()).filter(Boolean),
       'http://localhost:5173',
       'http://localhost:3000',
+      'https://mehfil-music.vercel.app',
+      'https://mehfil.vercel.app',
     ])
     this.app.use(cors({
-      origin: (origin) => allowedOrigins.has(origin) ? origin : null,
+      origin: (origin) => {
+        if (!origin || allowedOrigins.has(origin) || origin.endsWith('.vercel.app')) {
+          return origin || '*'
+        }
+        return null
+      },
       allowHeaders: ['Content-Type', 'Authorization'],
       allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       credentials: true,

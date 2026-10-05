@@ -15,21 +15,13 @@
   },
   "sideEffects": false,
   "imports": {
-    "#modules/*": {
-      "types": "./src/modules/*/index.d.ts",
-      "production": "./dist/modules/*/index.js",
-      "default": "./src/modules/*/"
-    },
-    "#common/*": {
-      "types": "./src/common/*/index.d.ts",
-      "production": "./dist/common/*/index.js",
-      "default": "./src/common/*/"
-    }
+    "#modules/*": "./src/modules/*",
+    "#common/*": "./src/common/*"
   },
   "scripts": {
     "dev": "npx tsx watch src/server.ts",
     "start": "node dist/server.js",
-    "build": "npx prisma generate && tsc && tsc-alias",
+    "build": "prisma generate && tsc && tsc-alias",
     "format": "prettier --write \"./**/*.{js,ts,json}\"",
     "lint": "eslint .",
     "lint:fix": "bun run lint --fix",
@@ -39,7 +31,7 @@
     "prerelease": "bun run test",
     "release": "bun run changelogen --release --push",
     "spell-check": "cspell .",
-    "postinstall": "npx simple-git-hooks"
+    "postinstall": "prisma generate"
   },
   "simple-git-hooks": {
     "pre-commit": "bun run lint && bun run format",

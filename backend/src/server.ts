@@ -1,6 +1,6 @@
 import { serve } from '@hono/node-server'
-import { AlbumController, ArtistController, ModulesController, RecognitionController, SearchController, SongController, TelemetryController, AuthController, YouTubeController } from '#modules/index'
-import { PlaylistController } from '#modules/playlists/controllers'
+import { AlbumController, ArtistController, ModulesController, RecognitionController, SearchController, SongController, TelemetryController, AuthController, YouTubeController } from './modules/index'
+import { PlaylistController } from './modules/playlists/controllers'
 import { App } from './app'
 
 export const app = new App([
