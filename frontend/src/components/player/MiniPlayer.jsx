@@ -130,6 +130,7 @@ export default function MiniPlayer({ onExpand, onQueue }) {
                                     min="0"
                                     max="100"
                                     value={isMuted ? 0 : volume * 100}
+                                    style={{ '--volume-percent': `${isMuted ? 0 : Math.round(volume * 100)}%` }}
                                     onChange={(e) => setVolume(Number(e.target.value) / 100)}
                                     aria-label="Volume"
                                 />
