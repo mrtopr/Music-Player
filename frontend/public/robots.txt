@@ -1,0 +1,13 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow private user-state or auth pages from indexing
+Disallow: /auth
+Disallow: /settings
+Disallow: /favorites
+Disallow: /playlists
+Disallow: /downloads
+
+# XML Sitemap (Replace with your actual production domain)
+Sitemap: https://mehfil.vercel.app/sitemap.xml
