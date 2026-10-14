@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Play, Trash2 } from 'lucide-react';
+import { X, Play, Trash2 } from '../common/LordIcon';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { getImageUrl } from '../../api/client.js';
 import { decodeEntities, getSafeImage } from '../../utils/helpers.js';

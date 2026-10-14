@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { X, Maximize2, Minimize2, ExternalLink, Play, Pause, Volume2, VolumeX, Youtube, SkipBack, SkipForward } from 'lucide-react';
+import { X, Maximize2, Minimize2, ExternalLink, Play, Pause, Volume2, VolumeX, Youtube, SkipBack, SkipForward } from '../common/LordIcon';
 import { useYouTubeStore } from '../../store/useYouTubeStore';
 import { getImageUrl } from '../../api/client.js';
 import { decodeEntities, formatTime } from '../../utils/helpers.js';

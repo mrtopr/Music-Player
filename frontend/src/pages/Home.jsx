@@ -4,7 +4,7 @@ import {
     PlayCircle, Flame, ChevronRight, ChevronLeft, ListMusic, Mic2, Play, Pause, Music,
     History, Sparkles, Heart, Compass, Check, Users, SlidersHorizontal,
     Download, X, Smartphone, Activity, Frown, Award, Zap, Star, Mic, Calendar, Disc3
-} from 'lucide-react';
+} from '../components/common/LordIcon';
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { useAuthStore } from '../store/useAuthStore';

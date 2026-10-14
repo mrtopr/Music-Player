@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Play, Clock, Music, Loader2 } from 'lucide-react';
+import { Play, Clock, Music, Loader2 } from '../components/common/LordIcon';
 import '../styles/Stats.css';
 import { getUserId } from '../utils/telemetry.js';
 import { useAuthStore } from '../store/useAuthStore';

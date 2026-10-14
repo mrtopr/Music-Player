@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, HardDrive, FileVideo, Magnet, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Download, HardDrive, FileVideo, Magnet, ExternalLink, ShieldCheck } from '../common/LordIcon';
 
 export default function MovieDownloadSection({ videoFiles, torrentUrl, detailsUrl, movieTitle }) {
     if (!videoFiles || videoFiles.length === 0) {

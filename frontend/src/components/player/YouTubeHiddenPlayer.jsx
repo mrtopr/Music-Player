@@ -4,7 +4,7 @@ import { getImageUrl } from '../../api/client.js';
 import {
   ArrowLeft, X, Play, Pause, SkipBack, SkipForward,
   Volume2, VolumeX, Maximize2, Minimize2, Tv
-} from 'lucide-react';
+} from '../common/LordIcon';
 import { formatTime, decodeEntities } from '../../utils/helpers.js';
 
 // Expose a shared player ref that the store can call into

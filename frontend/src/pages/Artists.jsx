@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mic2, Play, ArrowLeft, Loader2 } from 'lucide-react';
+import { Mic2, Play, ArrowLeft, Loader2 } from '../components/common/LordIcon';
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { useNavigate } from 'react-router-dom';

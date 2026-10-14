@@ -1,5 +1,5 @@
 import React from 'react';
-import { SkipBack, SkipForward, ListMusic, Tv } from 'lucide-react';
+import { SkipBack, SkipForward, ListMusic, Tv } from '../common/LordIcon';
 import { PlayIcon } from '../icons/PlayIcon';
 import { PauseIcon } from '../icons/PauseIcon';
 import { ChevronUpIcon } from '../icons/ChevronUpIcon';

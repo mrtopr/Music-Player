@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, User, Palette, Volume2, Info, Trash2, LogOut, ShieldAlert, Check, CheckCircle2, Mic, ExternalLink, Sparkles, Download, Smartphone } from 'lucide-react';
+import { Settings as SettingsIcon, User, Palette, Volume2, Info, Trash2, LogOut, ShieldAlert, Check, CheckCircle2, Mic, ExternalLink, Sparkles, Download, Smartphone, Upload } from '../components/common/LordIcon';
 import { getPreferredGenres, savePreferredGenres, getGenreCounts } from '../utils/history.js';
 import { ALL_GENRES, GENRE_PROFILES } from '../utils/genreProfiles.js';
 import { usePlayerStore } from '../store/usePlayerStore.js';
 import { useAuthStore } from '../store/useAuthStore';
-import { Upload } from 'lucide-react';
 
 // Static list — defined outside component to avoid re-creation on every render
 const PRESET_AVATARS = [

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Home, ListMusic, Heart, Settings, LogOut, Mic2, Download, BarChart2, LogIn,
   Disc3, Plus, Music
-} from 'lucide-react';
+} from '../common/LordIcon';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
 import { usePlaylistStore } from '../../store/usePlaylistStore';

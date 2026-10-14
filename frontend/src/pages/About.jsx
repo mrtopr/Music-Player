@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Sparkles, Mic2, SlidersHorizontal, Heart, Music, ListMusic, History } from 'lucide-react';
+import { Users, Sparkles, Mic2, SlidersHorizontal, Heart, Music, ListMusic, History } from '../components/common/LordIcon';
 
 export default function About() {
     return (

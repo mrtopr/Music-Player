@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Plus, Check, ListMusic, Music, ListPlus, FolderPlus, X } from 'lucide-react';
+import { Plus, Check, ListMusic, Music, ListPlus, FolderPlus, X } from './LordIcon';
 import { usePlaylistStore } from '../../store/usePlaylistStore';
 import { usePlayerStore } from '../../store/usePlayerStore';
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Play, Pause, Shuffle, ArrowLeft, Heart, MoreHorizontal, Clock, Loader2, Music, Share2, CheckCircle2 } from 'lucide-react';
+import { Play, Pause, Shuffle, ArrowLeft, Heart, MoreHorizontal, Clock, Loader2, Music, Share2, CheckCircle2 } from '../components/common/LordIcon';
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
 import AddToPlaylist from '../components/common/AddToPlaylist';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { User, Camera, X } from 'lucide-react';
+import { User, Camera, X } from '../common/LordIcon';
 
 export default function LoginModal() {
     const [visible, setVisible] = useState(false);

@@ -5,7 +5,7 @@ import {
   Music2, AlertCircle, Loader2,
   CheckCircle, KeyRound, Mail, ArrowLeft, Eye, EyeOff,
   Headphones, Radio, Disc3, Mic2
-} from 'lucide-react';
+} from '../components/common/LordIcon';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MODULE-LEVEL constants (defined once, never re-created)

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Moon, X, Clock } from 'lucide-react';
+import { Moon, X, Clock } from '../common/LordIcon';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { useBackButtonClose } from '../../hooks/useBackButtonClose.js';
 

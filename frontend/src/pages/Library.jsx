@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, ListMusic, Plus, Play, Pause, Music, Trash2, Share2, Download, HardDrive, CheckCircle } from 'lucide-react';
+import { Heart, ListMusic, Plus, Play, Pause, Music, Trash2, Share2, Download, HardDrive, CheckCircle } from '../components/common/LordIcon';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../api/client.js';
 import { decodeEntities } from '../utils/helpers.js';

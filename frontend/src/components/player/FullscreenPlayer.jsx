@@ -4,10 +4,12 @@ import {
     Shuffle, Repeat, Repeat1, Volume2, VolumeX, Heart,
     MoreHorizontal, Monitor, ListMusic, Sparkles,
     User, Disc, Share2, Download, Plus, Check, Loader2,
-    SlidersHorizontal, Mic, Radio, CheckCircle, Tv
-} from 'lucide-react';
+    SlidersHorizontal, Mic, Radio, CheckCircle, Tv,
+    Clock, FolderPlus, X
+} from '../common/LordIcon';
 
 import { usePlayerStore } from '../../store/usePlayerStore';
+import { usePlaylistStore } from '../../store/usePlaylistStore';
 import { getImageUrl, getAudioUrl } from '../../api/client.js';
 import { useNavigate } from 'react-router-dom';
 import { formatTime, decodeEntities, getSafeImage } from '../../utils/helpers.js';
@@ -581,11 +583,19 @@ export default function FullscreenPlayer({ visible, onClose }) {
     const setQueueOpen = usePlayerStore(state => state.setQueueOpen);
     const setEqualizerOpen = usePlayerStore(state => state.setEqualizerOpen);
     const setFullScreen = usePlayerStore(state => state.setFullScreen);
+    const sleepTimer = usePlayerStore(state => state.sleepTimer);
+    const setSleepTimerOpen = usePlayerStore(state => state.setSleepTimerOpen);
 
     const likedSongs = usePlayerStore(state => state.likedSongs);
     const toggleLike = usePlayerStore(state => state.toggleLike);
     const toggleAutoMix = usePlayerStore(state => state.toggleAutoMix);
 
+    const playlists = usePlaylistStore(state => state.playlists);
+    const addSongToPlaylist = usePlaylistStore(state => state.addSongToPlaylist);
+    const createPlaylist = usePlaylistStore(state => state.createPlaylist);
+
+    const [playlistModalOpen, setPlaylistModalOpen] = useState(false);
+    const [newPlaylistName, setNewPlaylistName] = useState('');
     const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
     const [optionsOpen, setOptionsOpen] = useState(false);
     const [downloading, setDownloading] = useState(false);
@@ -695,6 +705,47 @@ export default function FullscreenPlayer({ visible, onClose }) {
     const title = currentSong ? decodeEntities(currentSong.title) : '';
     const artist = currentSong ? decodeEntities(currentSong.primaryArtists || currentSong.subtitle) : '';
 
+    // Smart album resolution
+    const albumId = currentSong?.album?.id || currentSong?.albumId || currentSong?.album_id;
+    const rawAlbumName = typeof currentSong?.album === 'string'
+        ? currentSong.album
+        : (currentSong?.album?.name || currentSong?.album?.title || '');
+    const cleanAlbum = rawAlbumName ? decodeEntities(rawAlbumName).trim() : '';
+    const hasAlbum = Boolean(albumId || (cleanAlbum && cleanAlbum.toLowerCase() !== 'unknown' && cleanAlbum.toLowerCase() !== 'single'));
+
+    // Smart artist resolution
+    const primaryArtistObj = currentSong?.artists?.primary?.[0] || 
+        (Array.isArray(currentSong?.artists) && typeof currentSong.artists[0] === 'object' ? currentSong.artists[0] : null);
+    const artistId = primaryArtistObj?.id || currentSong?.artistId || currentSong?.primaryArtistId;
+    const rawArtistName = primaryArtistObj?.name || currentSong?.primaryArtists || currentSong?.artist || currentSong?.subtitle || '';
+    const cleanArtist = rawArtistName ? decodeEntities(rawArtistName).split(',')[0].trim() : '';
+    const hasArtist = Boolean(artistId || (cleanArtist && cleanArtist.toLowerCase() !== 'unknown artist' && cleanArtist.toLowerCase() !== 'unknown'));
+
+    const handleGoToAlbum = () => {
+        if (albumId) {
+            handleNavigate(`/album/${albumId}`);
+        } else if (cleanAlbum) {
+            handleNavigate(`/search?q=${encodeURIComponent(cleanAlbum)}`);
+        }
+    };
+
+    const handleGoToArtist = () => {
+        if (artistId) {
+            handleNavigate(`/artist/${artistId}`);
+        } else if (cleanArtist) {
+            handleNavigate(`/search?q=${encodeURIComponent(cleanArtist)}`);
+        }
+    };
+
+    const handleCreateAndAddPlaylist = (e) => {
+        e.preventDefault();
+        if (newPlaylistName.trim() && currentSong) {
+            const newId = createPlaylist(newPlaylistName.trim());
+            if (newId) addSongToPlaylist(newId, currentSong);
+            setNewPlaylistName('');
+        }
+    };
+
     return (
         <>
         <div className={`fullscreen-player-v3 ${visible ? 'active' : ''}`}
@@ -800,11 +851,11 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                 }}
                             />
                             <div style={{
-                                position: 'absolute', top: '120%', right: 0, width: '240px',
-                                background: 'rgba(20, 24, 36, 0.95)', backdropFilter: 'blur(20px)',
-                                border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px',
-                                padding: '12px', zIndex: 500, boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-                                animation: 'fadeIn 0.2s ease-out'
+                                position: 'absolute', top: '120%', right: 0, width: '250px',
+                                background: 'rgba(16, 20, 32, 0.96)', backdropFilter: 'blur(25px)',
+                                border: '1px solid rgba(255,255,255,0.12)', borderRadius: '18px',
+                                padding: '10px', zIndex: 500, boxShadow: '0 20px 45px rgba(0,0,0,0.6)',
+                                animation: 'fadeIn 0.2s ease-out', display: 'flex', flexDirection: 'column', gap: '2px'
                             }}>
                                 <OptionItem 
                                     icon={<Heart size={18} fill={liked ? '#EF4444' : 'none'} color={liked ? '#EF4444' : '#fff'} />} 
@@ -812,12 +863,26 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                     onClick={() => { toggleLike(currentSong); setOptionsOpen(false); }} 
                                 />
 
-                                {currentSong.album?.id && (
-                                    <OptionItem icon={<Disc size={18} />} label="Go to Album" onClick={() => handleNavigate(`/album/${currentSong.album.id}`)} />
+                                <OptionItem 
+                                    icon={<FolderPlus size={18} />} 
+                                    label="Add to Playlist" 
+                                    onClick={() => { setPlaylistModalOpen(true); setOptionsOpen(false); }} 
+                                />
+
+                                {hasAlbum && (
+                                    <OptionItem 
+                                        icon={<Disc size={18} />} 
+                                        label={cleanAlbum ? `Go to Album (${cleanAlbum.length > 15 ? cleanAlbum.slice(0, 14) + '…' : cleanAlbum})` : "Go to Album"} 
+                                        onClick={handleGoToAlbum} 
+                                    />
                                 )}
 
-                                {currentSong.artists?.primary?.[0]?.id && (
-                                    <OptionItem icon={<User size={18} />} label="Go to Artist" onClick={() => handleNavigate(`/artist/${currentSong.artists.primary[0].id}`)} />
+                                {hasArtist && (
+                                    <OptionItem 
+                                        icon={<User size={18} />} 
+                                        label={cleanArtist ? `Go to Artist (${cleanArtist.length > 15 ? cleanArtist.slice(0, 14) + '…' : cleanArtist})` : "Go to Artist"} 
+                                        onClick={handleGoToArtist} 
+                                    />
                                 )}
 
                                 <OptionItem 
@@ -826,20 +891,18 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                     onClick={() => { toggleAutoMix(); setOptionsOpen(false); }} 
                                 />
 
-                                <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '8px 0' }}></div>
+                                <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', margin: '6px 4px' }}></div>
 
-                                {isMobile && (
-                                    <OptionItem
-                                        icon={downloading ? <Loader2 className="spin" size={18} /> : <Download size={18} />}
-                                        label={downloading ? "Downloading..." : "Download Original"}
-                                        onClick={handleDownload}
-                                    />
-                                )}
+                                <OptionItem 
+                                    icon={<Clock size={18} />} 
+                                    label={sleepTimer?.active ? `Sleep Timer (${Math.ceil(sleepTimer.remaining / 60)}m left)` : "Set Sleep Timer"} 
+                                    onClick={() => { setSleepTimerOpen(true); setOptionsOpen(false); }} 
+                                />
 
                                 <OptionItem icon={<Share2 size={18} />} label="Copy Share Link" onClick={() => {
                                     navigator.clipboard.writeText(window.location.origin + `/song/${currentSong.id}`);
                                     setOptionsOpen(false);
-                                    alert('Link copied!');
+                                    alert('Link copied to clipboard!');
                                 }} />
 
                             </div>
@@ -988,8 +1051,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                   </button>
                               )}
 
-                              {/* Download for Offline Button (Mobile Only) */}
-                              {isMobile && (
+                              {/* Download for Offline Button */}
                                   <button
                                       onClick={handleDownload}
                                       className={`fs-util-btn ${isOfflineSaved ? 'active' : ''}`}
@@ -1009,7 +1071,6 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                       {downloading ? <Loader2 className="spin" size={22} /> : isOfflineSaved ? <CheckCircle size={22} /> : <Download size={22} />}
                                       <span>{isOfflineSaved ? "Saved" : "Download"}</span>
                                   </button>
-                              )}
                           </div>
 
 
@@ -1032,6 +1093,112 @@ export default function FullscreenPlayer({ visible, onClose }) {
 
         </div>
 
+
+        {/* Fullscreen Add to Playlist Modal */}
+        {playlistModalOpen && (
+            <div 
+                style={{
+                    position: 'fixed', inset: 0, zIndex: 3000,
+                    background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(12px)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    padding: '20px'
+                }}
+                onClick={() => setPlaylistModalOpen(false)}
+            >
+                <div 
+                    style={{
+                        width: '100%', maxWidth: '380px',
+                        background: 'rgba(18, 22, 34, 0.96)',
+                        border: '1px solid rgba(255,255,255,0.12)',
+                        borderRadius: '22px', padding: '24px',
+                        boxShadow: '0 25px 50px rgba(0,0,0,0.65)',
+                        color: '#fff'
+                    }}
+                    onClick={e => e.stopPropagation()}
+                >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <FolderPlus size={22} style={{ color: 'var(--accent-primary, #C6A15B)' }} />
+                            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700 }}>Add to Playlist</h3>
+                        </div>
+                        <button 
+                            onClick={() => setPlaylistModalOpen(false)}
+                            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', padding: '4px' }}
+                        >
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    <div style={{ maxHeight: '220px', overflowY: 'auto', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {playlists.length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '20px 0', opacity: 0.5, fontSize: '0.9rem' }}>
+                                No playlists yet. Create one below!
+                            </div>
+                        ) : (
+                            playlists.map(pl => {
+                                const inPlaylist = pl.songs?.some(s => s.id === currentSong.id);
+                                return (
+                                    <div 
+                                        key={pl.id}
+                                        onClick={() => {
+                                            if (!inPlaylist) {
+                                                addSongToPlaylist(pl.id, currentSong);
+                                            }
+                                        }}
+                                        style={{
+                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                            padding: '12px 14px', borderRadius: '12px',
+                                            background: inPlaylist ? 'rgba(198, 161, 91, 0.15)' : 'rgba(255,255,255,0.05)',
+                                            border: inPlaylist ? '1px solid rgba(198, 161, 91, 0.4)' : '1px solid transparent',
+                                            cursor: inPlaylist ? 'default' : 'pointer',
+                                            transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        <div>
+                                            <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{pl.name}</div>
+                                            <div style={{ fontSize: '0.75rem', opacity: 0.5 }}>{pl.songs?.length || 0} tracks</div>
+                                        </div>
+                                        {inPlaylist ? (
+                                            <span style={{ color: 'var(--accent-primary, #C6A15B)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', fontWeight: 600 }}>
+                                                <Check size={16} /> Added
+                                            </span>
+                                        ) : (
+                                            <Plus size={16} style={{ opacity: 0.6 }} />
+                                        )}
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
+
+                    <form onSubmit={handleCreateAndAddPlaylist} style={{ display: 'flex', gap: '8px' }}>
+                        <input 
+                            type="text"
+                            placeholder="New playlist name..."
+                            value={newPlaylistName}
+                            onChange={e => setNewPlaylistName(e.target.value)}
+                            style={{
+                                flex: 1, padding: '10px 14px', borderRadius: '12px',
+                                background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
+                                color: '#fff', fontSize: '0.9rem', outline: 'none'
+                            }}
+                        />
+                        <button
+                            type="submit"
+                            disabled={!newPlaylistName.trim()}
+                            style={{
+                                padding: '10px 16px', borderRadius: '12px',
+                                background: newPlaylistName.trim() ? 'var(--accent-primary, #C6A15B)' : 'rgba(255,255,255,0.1)',
+                                border: 'none', color: '#000', fontWeight: 700, cursor: newPlaylistName.trim() ? 'pointer' : 'not-allowed',
+                                fontSize: '0.88rem'
+                            }}
+                        >
+                            Create
+                        </button>
+                    </form>
+                </div>
+            </div>
+        )}
 
         </>
     );

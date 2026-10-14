@@ -1,5 +1,5 @@
 import React from 'react';
-import { SlidersHorizontal, X, RotateCcw } from 'lucide-react';
+import { SlidersHorizontal, X, RotateCcw } from '../common/LordIcon';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { useBackButtonClose } from '../../hooks/useBackButtonClose.js';
 

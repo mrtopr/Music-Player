@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Search, Heart, Mic2, ListMusic, Download } from 'lucide-react';
+import { Home, Search, Heart, Mic2, ListMusic, Download } from '../common/LordIcon';
 import { Link, useLocation } from 'react-router-dom';
 
 export default function MobileTabBar() {

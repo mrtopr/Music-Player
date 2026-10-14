@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Play, Pause, Flame, ListMusic, Sparkles, Loader2, PlayCircle } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Flame, ListMusic, Sparkles, Loader2, PlayCircle } from '../components/common/LordIcon';
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { getRecommendations } from '../utils/recommendations.js';

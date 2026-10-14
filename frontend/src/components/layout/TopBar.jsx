@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, SlidersHorizontal, Moon, Mic, Loader2, Radio, Users, ChevronDown } from 'lucide-react';
+import { Search, SlidersHorizontal, Moon, Mic, Loader2, Radio, Users, ChevronDown } from '../common/LordIcon';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useNavigate, useLocation } from 'react-router-dom';
