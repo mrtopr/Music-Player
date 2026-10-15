@@ -386,17 +386,12 @@ export default function Genres() {
                 }
             `}</style>
 
-            {/* Mobile Header matching Screenshot 3 */}
+            {/* Mobile Header */}
             <div className="genres-mobile-header">
-                <button className="genres-burger-btn" onClick={openSidebar} aria-label="Open menu">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                        <line x1="4" y1="7" x2="20" y2="7"></line>
-                        <line x1="4" y1="12" x2="20" y2="12"></line>
-                        <line x1="4" y1="17" x2="20" y2="17"></line>
-                    </svg>
-                </button>
-
-                <h1 className="genres-brand-title">QENARA</h1>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => navigate('/')}>
+                    <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: '30px', height: '30px', borderRadius: '50%', border: '1.5px solid rgba(168, 85, 247, 0.5)', boxShadow: '0 0 12px rgba(168, 85, 247, 0.4)' }} />
+                    <span style={{ fontFamily: "'Merienda', cursive", fontSize: '1.35rem', fontWeight: 700, background: 'linear-gradient(135deg, #c084fc 0%, #a855f7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mehfil</span>
+                </div>
 
                 <div className="genres-header-right">
                     <button className="genres-icon-round-btn" onClick={() => navigate('/search')} aria-label="Search">

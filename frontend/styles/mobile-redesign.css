@@ -60,7 +60,7 @@
   }
 
   .top-bar .mobile-burger-toggle {
-    display: flex !important;
+    display: none !important;
   }
 
   .top-bar .mobile-brand {
