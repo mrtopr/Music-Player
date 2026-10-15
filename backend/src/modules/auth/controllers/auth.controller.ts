@@ -59,8 +59,11 @@ export class AuthController {
       }),
       async (ctx) => {
         const { name, email, password } = ctx.req.valid('json')
+        const cleanEmail = email.trim().toLowerCase()
         try {
-          const existing = await prisma.user.findUnique({ where: { email } })
+          const existing = await prisma.user.findFirst({
+            where: { email: { equals: cleanEmail, mode: 'insensitive' } }
+          })
           if (existing) return ctx.json({ success: false, message: 'Email already exists' }, 400)
 
           const salt = await bcrypt.genSalt(10)
@@ -68,10 +71,10 @@ export class AuthController {
 
           const user = await prisma.user.create({
             data: {
-              name,
-              email,
+              name: name.trim(),
+              email: cleanEmail,
               passwordHash,
-              profileImageUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`
+              profileImageUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name.trim())}`
             }
           })
 
@@ -123,8 +126,12 @@ export class AuthController {
       }),
       async (ctx) => {
         const { email, password } = ctx.req.valid('json')
+        const cleanEmail = email.trim()
         try {
-          const user = await prisma.user.findUnique({ where: { email } })
+          // Look up user by exact match or case-insensitive match
+          let user = await prisma.user.findFirst({
+            where: { email: { equals: cleanEmail, mode: 'insensitive' } }
+          })
           if (!user) return ctx.json({ success: false, message: 'Invalid credentials' }, 401)
 
           const isMatch = await bcrypt.compare(password, user.passwordHash)
@@ -137,6 +144,7 @@ export class AuthController {
             user: { id: user.id, name: user.name, email: user.email, profileImageUrl: user.profileImageUrl }
           }, 200)
         } catch (error) {
+          console.error('[Auth Error] Login:', error)
           return ctx.json({ success: false, message: 'Internal server error' }, 500)
         }
       }
