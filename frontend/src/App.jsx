@@ -101,6 +101,11 @@ function AppContent() {
         return <Auth />;
     }
 
+    const handleCloseFs = React.useCallback(() => setFsVisible(false), [setFsVisible]);
+    const handleCloseEq = React.useCallback(() => setEqVisible(false), [setEqVisible]);
+    const handleCloseSleep = React.useCallback(() => setSleepVisible(false), [setSleepVisible]);
+    const handleCloseQueue = React.useCallback(() => setQueueVisible(false), [setQueueVisible]);
+
     return (
         <>
             <div className="screen">
@@ -145,10 +150,10 @@ function AppContent() {
             {/* YouTube IFrame API — invisible audio engine for YT songs */}
             <YouTubeHiddenPlayer />
 
-            <FullscreenPlayer visible={fsVisible} onClose={() => setFsVisible(false)} />
-            <EqualizerModal visible={eqVisible} onClose={() => setEqVisible(false)} />
-            <SleepTimerModal visible={sleepVisible} onClose={() => setSleepVisible(false)} />
-            <QueuePanel visible={queueVisible} onClose={() => setQueueVisible(false)} />
+            <FullscreenPlayer visible={fsVisible} onClose={handleCloseFs} />
+            <EqualizerModal visible={eqVisible} onClose={handleCloseEq} />
+            <SleepTimerModal visible={sleepVisible} onClose={handleCloseSleep} />
+            <QueuePanel visible={queueVisible} onClose={handleCloseQueue} />
             <MobileTabBar />
         </>
     );

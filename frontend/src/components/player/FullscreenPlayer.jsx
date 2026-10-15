@@ -690,6 +690,10 @@ export default function FullscreenPlayer({ visible, onClose }) {
     };
 
     const handleTouchEnd = (e) => {
+        // Prevent swipe down close if touching buttons, controls, or interactive elements
+        if (e.target.closest('button') || e.target.closest('.fs-ctrl-btn') || e.target.closest('.fs-play-btn') || e.target.closest('input')) {
+            return;
+        }
         const deltaX = e.changedTouches[0].clientX - touchStart.x;
         const deltaY = e.changedTouches[0].clientY - touchStart.y;
 
@@ -982,19 +986,19 @@ export default function FullscreenPlayer({ visible, onClose }) {
 
                     {/* Main Controls Overlay */}
                     <div className="fs-main-controls" style={{ position: 'relative', zIndex: 80 }}>
-                        <button onClick={toggleShuffle} className={`fs-ctrl-btn ${shuffle ? 'active' : ''}`}>
+                        <button onClick={(e) => { e.stopPropagation(); toggleShuffle(); }} className={`fs-ctrl-btn ${shuffle ? 'active' : ''}`}>
                             <Shuffle size={20} />
                         </button>
-                        <button onClick={prevSong} className="fs-ctrl-btn large">
+                        <button onClick={(e) => { e.stopPropagation(); prevSong(); }} className="fs-ctrl-btn large">
                             <SkipBack size={32} fill="currentColor" />
                         </button>
-                        <button onClick={togglePlay} className="fs-play-btn" style={{ transform: 'scale(1.1)' }}>
+                        <button onClick={(e) => { e.stopPropagation(); togglePlay(); }} className="fs-play-btn" style={{ transform: 'scale(1.1)' }}>
                             {isPlaying ? <Pause size={36} fill="currentColor" /> : <Play size={36} fill="currentColor" style={{ marginLeft: '4px' }} />}
                         </button>
-                        <button onClick={nextSong} className="fs-ctrl-btn large">
+                        <button onClick={(e) => { e.stopPropagation(); nextSong(); }} className="fs-ctrl-btn large">
                             <SkipForward size={32} fill="currentColor" />
                         </button>
-                        <button onClick={cycleRepeat} className={`fs-ctrl-btn ${repeat !== 'off' ? 'active' : ''}`}>
+                        <button onClick={(e) => { e.stopPropagation(); cycleRepeat(); }} className={`fs-ctrl-btn ${repeat !== 'off' ? 'active' : ''}`}>
                             {repeat === 'one' ? <Repeat1 size={20} /> : <Repeat size={20} />}
                         </button>
                     </div>
