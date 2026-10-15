@@ -139,8 +139,16 @@ export default function YouTubeHiddenPlayer() {
                         } else if (e.data === YT.PlayerState.PAUSED) {
                             usePlayerStore.setState({ isPlaying: false });
                         } else if (e.data === YT.PlayerState.ENDED) {
-                            usePlayerStore.setState({ isPlaying: false });
-                            usePlayerStore.getState().nextSong();
+                            const store = usePlayerStore.getState();
+                            if (store.repeat === 'one') {
+                                const ytPlayer = window.__ytPlayerInstance;
+                                ytPlayer?.seekTo?.(0, true);
+                                ytPlayer?.playVideo?.();
+                                usePlayerStore.setState({ isPlaying: true, progress: 0, currentTime: 0 });
+                            } else {
+                                usePlayerStore.setState({ isPlaying: false });
+                                store.nextSong();
+                            }
                         }
                     },
                     onError: (e) => {

@@ -441,7 +441,15 @@ export const VolumeX = forwardRef((props, ref) => <VolumeToggleIcon ref={ref} {.
 export const Heart = forwardRef((props, ref) => <HeartIcon ref={ref} {...props} />);
 export const Shuffle = forwardRef((props, ref) => <ShuffleIcon ref={ref} {...props} />);
 export const Repeat = forwardRef((props, ref) => <RepeatIcon ref={ref} {...props} />);
-export const Repeat1 = forwardRef((props, ref) => <RepeatIcon ref={ref} {...props} />);
+export const Repeat1 = forwardRef(({ size = 20, color = 'currentColor', strokeWidth = 2, className = '', style = {}, ...props }, ref) => (
+  <svg ref={ref} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} style={style} {...props}>
+    <path d="m17 2 4 4-4 4" />
+    <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+    <path d="m7 22-4-4 4-4" />
+    <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+    <path d="M11 10h1v4" />
+  </svg>
+));
 export const Home = forwardRef((props, ref) => <HomeIcon ref={ref} {...props} />);
 export const Search = forwardRef((props, ref) => <SearchIcon ref={ref} {...props} />);
 export const Music = forwardRef((props, ref) => <AudioLinesIcon ref={ref} {...props} />);

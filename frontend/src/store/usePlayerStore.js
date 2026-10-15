@@ -642,6 +642,7 @@ export const usePlayerStore = create((set, get) => ({
         const currentAudio = state.activeChannel === 'A' ? audioA : audioB;
 
         nextAudio.src = url;
+        nextAudio.loop = state.repeat === 'one';
         nextAudio.load();
 
         // 🎯 Manual clicks (autoOpen=true) use 800ms fade. Auto-mix uses 5s fade.
@@ -746,9 +747,30 @@ export const usePlayerStore = create((set, get) => ({
 
         const audio = activeChannel === 'A' ? audioA : audioB;
 
+        // Repeat One handling: replay current song
+        if (repeat === 'one') {
+            if (currentSong) {
+                if (currentSong?.id?.startsWith('yt_')) {
+                    const ytPlayer = window.__ytPlayerInstance;
+                    ytPlayer?.seekTo?.(0, true);
+                    ytPlayer?.playVideo?.();
+                    set({ progress: 0, currentTime: 0, isPlaying: true });
+                    return;
+                }
+                audio.currentTime = 0;
+                audio.play().catch(() => {});
+                set({ progress: 0, currentTime: 0, isPlaying: true, isTransitioning: false, isPrepared: false });
+                return;
+            }
+        }
+
         let next;
         if (shuffle && queue.length > 1) {
-            next = Math.floor(Math.random() * queue.length);
+            let randIndex;
+            do {
+                randIndex = Math.floor(Math.random() * queue.length);
+            } while (randIndex === queueIndex && queue.length > 1);
+            next = randIndex;
         } else if (queueIndex < queue.length - 1) {
             next = queueIndex + 1;
         } else if (repeat === 'all') {
@@ -757,9 +779,10 @@ export const usePlayerStore = create((set, get) => ({
             // AutoMix / Auto Recommendation mode: fetch and append next recommendation!
             try {
                 const { getRecommendations } = await import('../utils/recommendations.js');
-                const recs = await getRecommendations(5, currentSong);
+                const recs = await getRecommendations(8, currentSong);
                 const candidates = recs.filter(r => r && r.id !== currentSong?.id && !queue.some(q => q.id === r.id));
-                const nextRecommended = candidates[0] || recs[0];
+                const pickIndex = shuffle && candidates.length > 1 ? Math.floor(Math.random() * candidates.length) : 0;
+                const nextRecommended = candidates[pickIndex] || recs[0];
                 if (nextRecommended) {
                     const newQueue = [...queue, nextRecommended];
                     set({ queue: newQueue, queueIndex: newQueue.length - 1, isPrepared: true });
@@ -769,10 +792,15 @@ export const usePlayerStore = create((set, get) => ({
             } catch (err) {
                 console.warn('[AutoMix] Failed auto-queue next song:', err);
             }
-            // Fallback if no recommendation could be fetched
             next = 0;
         } else {
-            next = 0;
+            // End of queue and repeat is off: stop playback cleanly
+            set({ isPlaying: false, progress: 0, currentTime: 0 });
+            audioA.pause();
+            audioB.pause();
+            audioA.currentTime = 0;
+            audioB.currentTime = 0;
+            return;
         }
 
         if (next !== undefined && queue[next]) {
@@ -1030,13 +1058,13 @@ const attachAudioListeners = () => {
         const progress = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
         const remaining = audio.duration ? audio.duration - audio.currentTime : 0;
 
-        // 🎯 STEP 1: PRELOAD NEXT SONG (Early trigger at 10s)
-        if (store.isAutoMixEnabled && audio.duration && remaining < 10 && !store.isPrepared) {
+        // 🎯 STEP 1: PRELOAD NEXT SONG (Early trigger at 10s, bypassed when repeating current track)
+        if (store.isAutoMixEnabled && store.repeat !== 'one' && audio.duration && remaining < 10 && !store.isPrepared) {
             store.prepareNextSong();
         }
 
-        // 🎯 STEP 2: START NEXT SONG (overlap at 6s)
-        if (store.isAutoMixEnabled && audio.duration && remaining < 6 && !store.isTransitioning && store.isPlaying) {
+        // 🎯 STEP 2: START NEXT SONG (overlap at 6s, bypassed when repeating current track)
+        if (store.isAutoMixEnabled && store.repeat !== 'one' && audio.duration && remaining < 6 && !store.isTransitioning && store.isPlaying) {
             usePlayerStore.setState({ isTransitioning: true });
             store.nextSong();
         }
@@ -1074,6 +1102,8 @@ const attachAudioListeners = () => {
         if (store.repeat === 'one') {
             audio.currentTime = 0;
             audio.play().catch(() => { });
+            usePlayerStore.setState({ isPlaying: true, isPrepared: false, isTransitioning: false, progress: 0, currentTime: 0 });
+            return;
         } else {
             // Only nextSong if we haven't already transitioned
             if (!store.isTransitioning) {

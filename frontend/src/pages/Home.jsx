@@ -370,9 +370,9 @@ function Footer() {
                     <Link to="/legal/contact" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#fff'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.5)'}>Contact Us</Link>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px 16px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>
-                        Crafted with <Heart size={14} color="#ef4444" fill="#ef4444" style={{ verticalAlign: 'middle', margin: '0 4px' }} /> by <span style={{ color: '#fff' }}>h3y.Sam</span>
-                    </p>
+                    <div style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600, color: 'rgba(255,255,255,0.8)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                        Crafted with <Heart size={14} color="#ef4444" fill="#ef4444" style={{ verticalAlign: 'middle', margin: '0 4px' }} /> by <span style={{ color: '#fff', marginLeft: '4px' }}>h3y.Sam</span>
+                    </div>
                 </div>
                 <p style={{ margin: 0, fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', maxWidth: '500px', lineHeight: 1.5 }}>
                     Mehfil is an educational, non-commercial project. Audio streaming is powered by third-party APIs. We do not host any copyrighted media files. By using this platform, you agree to our terms of service.
