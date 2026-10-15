@@ -89,6 +89,26 @@ export { default as XIcon } from './XIcon';
 export { default as YoutubeIcon } from './YoutubeIcon';
 export { default as ZapIcon } from './ZapIcon';
 
+export const MoreHorizontal = forwardRef(function MoreHorizontal({ size = 24, color = 'currentColor', strokeWidth = 2, className = '', style = {}, ...props }, ref) {
+  return (
+    <svg ref={ref} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} style={style} {...props}>
+      <circle cx="12" cy="12" r="1.5" fill={color} />
+      <circle cx="19" cy="12" r="1.5" fill={color} />
+      <circle cx="5" cy="12" r="1.5" fill={color} />
+    </svg>
+  );
+});
+
+export const MoreVertical = forwardRef(function MoreVertical({ size = 24, color = 'currentColor', strokeWidth = 2, className = '', style = {}, ...props }, ref) {
+  return (
+    <svg ref={ref} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} style={style} {...props}>
+      <circle cx="12" cy="12" r="1.5" fill={color} />
+      <circle cx="12" cy="5" r="1.5" fill={color} />
+      <circle cx="12" cy="19" r="1.5" fill={color} />
+    </svg>
+  );
+});
+
 // Import individual icons for map & wrappers
 import ActivityIcon from './ActivityIcon';
 import ArrowDownIcon from './ArrowDownIcon';
@@ -345,9 +365,11 @@ const ICON_MAP = {
   'minimize': MinimizeIcon,
   'minimize-2': MinimizeIcon,
   'minimize2': MinimizeIcon,
-  'more-horizontal': SlidersHorizontalIcon,
-  'morehorizontal': SlidersHorizontalIcon,
-  'more': SlidersHorizontalIcon,
+  'more-horizontal': MoreHorizontal,
+  'morehorizontal': MoreHorizontal,
+  'more-vertical': MoreVertical,
+  'morevertical': MoreVertical,
+  'more': MoreHorizontal,
   'eye': EyeIcon,
   'eye-off': EyeOffIcon,
   'eyeoff': EyeOffIcon,
@@ -461,7 +483,6 @@ export const LogOut = forwardRef((props, ref) => <LogoutIcon ref={ref} {...props
 export const LogIn = forwardRef((props, ref) => <LoginIcon ref={ref} {...props} />);
 export const Loader2 = forwardRef((props, ref) => <LoaderCircleIcon ref={ref} {...props} />);
 export const ExternalLink = forwardRef((props, ref) => <ExternalLinkIcon ref={ref} {...props} />);
-export const MoreHorizontal = forwardRef((props, ref) => <SlidersHorizontalIcon ref={ref} {...props} />);
 export const Maximize2 = forwardRef((props, ref) => <Maximize2Icon ref={ref} {...props} />);
 export const Minimize2 = forwardRef((props, ref) => <MinimizeIcon ref={ref} {...props} />);
 export const RotateCcw = forwardRef((props, ref) => <RotateCcwIcon ref={ref} {...props} />);

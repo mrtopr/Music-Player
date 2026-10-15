@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     ChevronDown, ChevronUp, ArrowLeft, Play, Pause, SkipBack, SkipForward,
     Shuffle, Repeat, Repeat1, Volume2, VolumeX, Heart,
-    MoreHorizontal, Monitor, ListMusic, Sparkles,
+    MoreHorizontal, MoreVertical, Monitor, ListMusic, Sparkles,
     User, Disc, Share2, Download, Plus, Check, Loader2,
     SlidersHorizontal, Mic, Radio, CheckCircle, Tv,
     Clock, FolderPlus, X
@@ -997,7 +997,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                         }}
                         aria-label="Options"
                     >
-                        <MoreHorizontal size={18} />
+                        {isMobile ? <MoreVertical size={20} /> : <MoreHorizontal size={20} />}
                     </button>
 
                     {optionsOpen && (
@@ -1032,6 +1032,12 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                     icon={<FolderPlus size={18} />} 
                                     label="Add to Playlist" 
                                     onClick={() => { setPlaylistModalOpen(true); setOptionsOpen(false); }} 
+                                />
+
+                                <OptionItem 
+                                    icon={downloading ? <Loader2 className="spin" size={18} /> : isOfflineSaved ? <CheckCircle size={18} color="#10b981" /> : <Download size={18} />} 
+                                    label={isOfflineSaved ? "Saved Offline" : "Download Offline"} 
+                                    onClick={() => { handleDownload(); setOptionsOpen(false); }} 
                                 />
 
                                 {hasAlbum && (
@@ -1233,109 +1239,107 @@ export default function FullscreenPlayer({ visible, onClose }) {
                         </div>
                     )}
 
-                    {/* Bottom Utility Bar */}
-                    <div className="fs-utility-bar" style={{ position: 'relative', zIndex: 90, marginTop: '3.5rem' }}>
-                        <div className="fs-utility-left" style={{ display: 'flex', gap: '10px' }}>
-                            <button
-                                onClick={() => setQueueOpen(true)}
-                                className="fs-util-btn"
-                                style={{ cursor: 'pointer', pointerEvents: 'auto', padding: '12px' }}
-                            >
-                                <ListMusic size={22} /> <span>Queue</span>
-                            </button>
-                            <button
-                                onClick={() => setEqualizerOpen(true)}
-                                className="fs-util-btn"
-                                style={{ cursor: 'pointer', pointerEvents: 'auto', padding: '12px' }}
-                            >
-                                <SlidersHorizontal size={22} /> <span>EQ</span>
-                              </button>
+                    {/* Bottom Utility Bar (Desktop only, mobile has dedicated 4-action circle row and Lyric drawer) */}
+                    {!isMobile && (
+                        <div className="fs-utility-bar" style={{ position: 'relative', zIndex: 90, marginTop: '3.5rem' }}>
+                            <div className="fs-utility-left" style={{ display: 'flex', gap: '10px' }}>
+                                <button
+                                    onClick={() => setQueueOpen(true)}
+                                    className="fs-util-btn"
+                                    style={{ cursor: 'pointer', pointerEvents: 'auto', padding: '12px' }}
+                                >
+                                    <ListMusic size={22} /> <span>Queue</span>
+                                </button>
+                                <button
+                                    onClick={() => setEqualizerOpen(true)}
+                                    className="fs-util-btn"
+                                    style={{ cursor: 'pointer', pointerEvents: 'auto', padding: '12px' }}
+                                >
+                                    <SlidersHorizontal size={22} /> <span>EQ</span>
+                                </button>
 
+                                {/* Lyrics Button */}
+                                <button
+                                    onClick={() => setShowLyrics(!showLyrics)}
+                                    className={`fs-util-btn ${showLyrics ? 'active' : ''}`}
+                                    style={{ 
+                                        cursor: 'pointer', 
+                                        pointerEvents: 'auto', 
+                                        padding: '12px',
+                                        color: showLyrics ? 'var(--accent-primary)' : '#fff',
+                                        background: showLyrics ? 'rgba(212,160,83,0.15)' : 'transparent',
+                                        borderRadius: '8px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px'
+                                    }}
+                                    title="Lyrics"
+                                >
+                                    <Mic size={22} /> <span>Lyrics</span>
+                                </button>
 
+                                {/* YouTube Video Mode Button */}
+                                {currentSong?.id?.startsWith('yt_') && (
+                                    <button
+                                        onClick={() => {
+                                            setFullScreen(false);
+                                            usePlayerStore.getState().setVideoMode(true);
+                                        }}
+                                        className="fs-util-btn"
+                                        style={{
+                                            cursor: 'pointer',
+                                            pointerEvents: 'auto',
+                                            padding: '12px',
+                                            color: '#c084fc',
+                                            background: 'rgba(168,85,247,0.15)',
+                                            borderRadius: '8px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px',
+                                            border: '1px solid rgba(168,85,247,0.3)'
+                                        }}
+                                        title="Switch to Video Player"
+                                    >
+                                        <Tv size={22} /> <span>Watch Video</span>
+                                    </button>
+                                )}
 
-                              {/* Lyrics Button */}
-                              <button
-                                  onClick={() => setShowLyrics(!showLyrics)}
-                                  className={`fs-util-btn ${showLyrics ? 'active' : ''}`}
-                                  style={{ 
-                                      cursor: 'pointer', 
-                                      pointerEvents: 'auto', 
-                                      padding: '12px',
-                                      color: showLyrics ? 'var(--accent-primary)' : '#fff',
-                                      background: showLyrics ? 'rgba(212,160,83,0.15)' : 'transparent',
-                                      borderRadius: '8px',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: '4px'
-                                  }}
-                                  title="Lyrics"
-                              >
-                                  <Mic size={22} /> <span>Lyrics</span>
-                              </button>
+                                {/* Download for Offline Button */}
+                                <button
+                                    onClick={handleDownload}
+                                    className={`fs-util-btn ${isOfflineSaved ? 'active' : ''}`}
+                                    style={{
+                                        cursor: 'pointer',
+                                        pointerEvents: 'auto',
+                                        padding: '12px',
+                                        color: isOfflineSaved ? '#10b981' : '#fff',
+                                        background: isOfflineSaved ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
+                                        borderRadius: '8px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px'
+                                    }}
+                                    title={isOfflineSaved ? "Saved for Offline Playback" : "Download for Offline"}
+                                >
+                                    {downloading ? <Loader2 className="spin" size={22} /> : isOfflineSaved ? <CheckCircle size={22} /> : <Download size={22} />}
+                                    <span>{isOfflineSaved ? "Saved" : "Download"}</span>
+                                </button>
+                            </div>
 
-                              {/* YouTube Video Mode Button */}
-                              {currentSong?.id?.startsWith('yt_') && (
-                                  <button
-                                      onClick={() => {
-                                          setFullScreen(false);
-                                          usePlayerStore.getState().setVideoMode(true);
-                                      }}
-                                      className="fs-util-btn"
-                                      style={{
-                                          cursor: 'pointer',
-                                          pointerEvents: 'auto',
-                                          padding: '12px',
-                                          color: '#c084fc',
-                                          background: 'rgba(168,85,247,0.15)',
-                                          borderRadius: '8px',
-                                          display: 'flex',
-                                          alignItems: 'center',
-                                          gap: '6px',
-                                          border: '1px solid rgba(168,85,247,0.3)'
-                                      }}
-                                      title="Switch to Video Player"
-                                  >
-                                      <Tv size={22} /> <span>Watch Video</span>
-                                  </button>
-                              )}
-
-                              {/* Download for Offline Button */}
-                                  <button
-                                      onClick={handleDownload}
-                                      className={`fs-util-btn ${isOfflineSaved ? 'active' : ''}`}
-                                      style={{
-                                          cursor: 'pointer',
-                                          pointerEvents: 'auto',
-                                          padding: '12px',
-                                          color: isOfflineSaved ? '#10b981' : '#fff',
-                                          background: isOfflineSaved ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
-                                          borderRadius: '8px',
-                                          display: 'flex',
-                                          alignItems: 'center',
-                                          gap: '4px'
-                                      }}
-                                      title={isOfflineSaved ? "Saved for Offline Playback" : "Download for Offline"}
-                                  >
-                                      {downloading ? <Loader2 className="spin" size={22} /> : isOfflineSaved ? <CheckCircle size={22} /> : <Download size={22} />}
-                                      <span>{isOfflineSaved ? "Saved" : "Download"}</span>
-                                  </button>
-                          </div>
-
-
-
-                        <div className="fs-utility-right">
-                            <Volume2 size={20} opacity={0.6} />
-                            <div className="fs-volume-track" style={{ pointerEvents: 'auto', marginLeft: '10px' }}>
-                                <div className="fs-volume-fill" style={{ width: `${volume * 100}%` }}></div>
-                                <input
-                                    type="range" min="0" max="1" step="0.01"
-                                    value={volume}
-                                    onChange={(e) => setVolume(parseFloat(e.target.value))}
-                                    style={{ cursor: 'pointer', width: '160px' }}
-                                />
+                            <div className="fs-utility-right">
+                                <Volume2 size={20} opacity={0.6} />
+                                <div className="fs-volume-track" style={{ pointerEvents: 'auto', marginLeft: '10px' }}>
+                                    <div className="fs-volume-fill" style={{ width: `${volume * 100}%` }}></div>
+                                    <input
+                                        type="range" min="0" max="1" step="0.01"
+                                        value={volume}
+                                        onChange={(e) => setVolume(parseFloat(e.target.value))}
+                                        style={{ cursor: 'pointer', width: '160px' }}
+                                    />
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </main>
 

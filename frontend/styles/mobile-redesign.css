@@ -960,4 +960,8 @@
   body.on-genres-page .top-bar {
     display: none !important;
   }
+
+  .fullscreen-player-v3 .fs-utility-bar {
+    display: none !important;
+  }
 }
