@@ -24,6 +24,7 @@ import Legal from './pages/Legal';
 import About from './pages/About';
 import Stats from './pages/Stats';
 import Auth from './pages/Auth';
+import Genres from './pages/Genres';
 
 function AppContent() {
     const { user, checkAuth } = useAuthStore();
@@ -122,6 +123,7 @@ function AppContent() {
                     />
                     <Routes>
                         <Route path="/" element={<Home />} />
+                        <Route path="/genres" element={<Genres />} />
                         <Route path="/search" element={<SearchPage />} />
                         <Route path="/library" element={<Library />} />
                         <Route path="/downloads" element={<Library />} />

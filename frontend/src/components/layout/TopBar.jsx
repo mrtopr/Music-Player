@@ -410,6 +410,36 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                 }
             `}</style>
             
+            {/* Mobile Hamburger Toggle Button */}
+            <button 
+                type="button"
+                className="mobile-burger-toggle"
+                onClick={() => {
+                    document.querySelector('.sidebar')?.classList.add('open');
+                    document.querySelector('.mobile-overlay')?.classList.add('visible');
+                }}
+                style={{
+                    display: 'none',
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '50%',
+                    color: '#fff',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    flexShrink: 0
+                }}
+                aria-label="Open navigation menu"
+            >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                    <line x1="4" y1="7" x2="20" y2="7"></line>
+                    <line x1="4" y1="12" x2="20" y2="12"></line>
+                    <line x1="4" y1="17" x2="20" y2="17"></line>
+                </svg>
+            </button>
+
             {/* Mobile Brand Logo */}
             <div className="mobile-brand" onClick={() => navigate('/')} style={{ display: 'none', alignItems: 'center', gap: '8px', cursor: 'pointer', flexShrink: 0 }}>
                 <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover' }} />
