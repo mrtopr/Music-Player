@@ -19,7 +19,7 @@ export const app = new App([
 const port = Number(process.env.PORT) || 3000
 
 // Detect Edge / Cloudflare Workers runtime
-const isCloudflareWorker = typeof WebSocketPair !== 'undefined' || typeof caches !== 'undefined' && typeof process === 'undefined'
+const isCloudflareWorker = typeof (globalThis as any).WebSocketPair !== 'undefined' || (typeof caches !== 'undefined' && typeof process === 'undefined')
 const isNodeRuntime = typeof process !== 'undefined' && process.release?.name === 'node' && !process.env.VERCEL && !isCloudflareWorker
 
 // Start standalone HTTP server only when running in traditional Node.js (Render, Local dev)

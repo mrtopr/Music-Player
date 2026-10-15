@@ -1,17 +1,15 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import psycopg2
+from contextlib import asynccontextmanager
 import os
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from contextlib import asynccontextmanager
 
 # In-memory mock feature store for the MVP (since we don't have real embeddings yet)
 # A real implementation would query pgvector or Milvus
 MOCK_FEATURES = {}
 USER_VECTORS = {} # Stores the dynamic taste profile for each user
-
-from fastapi.middleware.cors import CORSMiddleware
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -23,12 +21,24 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Mehfil ML Microservice", lifespan=lifespan)
 
+
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://mehfil-music.vercel.app",
+    "https://mehfil.vercel.app",
+]
+# Allow additional origins from environment variable (comma-separated)
+extra = os.environ.get("ALLOWED_ORIGINS", "")
+if extra:
+    ALLOWED_ORIGINS += [o.strip() for o in extra.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
 )
 
 class RecommendationRequest(BaseModel):

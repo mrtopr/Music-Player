@@ -67,7 +67,8 @@ const connectWebSocket = (code, role) => {
     closeSyncSocket();
     
     try {
-        const ws = new WebSocket(`wss://free.blr2.piesocket.com/v3/${code}?api_key=az7W14MabuOslb5Pf6Wibho2A3zN5P1GRut26JL5&notify_self=1`);
+        const pieSocketKey = import.meta.env.VITE_PIESOCKET_API_KEY || 'VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9f6';
+        const ws = new WebSocket(`wss://free.blr2.piesocket.com/v3/${code}?api_key=${pieSocketKey}&notify_self=1`);
         setSyncSocket(ws);
         
         ws.onopen = () => {
