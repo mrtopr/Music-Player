@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
-    PlayCircle, Flame, ChevronRight, ChevronLeft, ListMusic, Mic2, Play, Pause, Music,
+    PlayCircle, Flame, ChevronRight, ChevronLeft, ChevronUp, ChevronDown, ListMusic, Mic2, Play, Pause, Music,
     History, Sparkles, Heart, Compass, Check, Users, SlidersHorizontal,
     Download, X, Smartphone, Activity, Frown, Award, Zap, Star, Mic, Calendar, Disc3
 } from '../components/common/LordIcon';
@@ -463,6 +463,7 @@ export default function Home() {
     const [isStandalone, setIsStandalone] = useState(false);
     const [isIOS, setIsIOS] = useState(false);
     const [showBanner, setShowBanner] = useState(false);
+    const [expandedGenre, setExpandedGenre] = useState(0);
 
     const navigate = useNavigate();
 
@@ -621,7 +622,7 @@ export default function Home() {
                 <GenreOnboarding onComplete={handleOnboardingComplete} />
             )}
 
-            {showBanner && (
+            {!isMobile && showBanner && (
                 <div style={{
                     margin: '1rem',
                     background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(192, 132, 252, 0.1) 100%)',
@@ -770,7 +771,33 @@ export default function Home() {
                 </div>
             )}
 
-            {/* Personalized Hero */}
+            {/* Mobile Hero / Upcoming Events Card (Matching Screenshots 1 & 3) */}
+            {isMobile && (
+                <div className="mobile-hero-banner">
+                    <div className="hero-tag">
+                        <Sparkles size={12} /> Upcoming Events
+                    </div>
+                    <div>
+                        <h2 className="hero-title">
+                            Listen to the <span>Best Music</span>, Everyday
+                        </h2>
+                        <p className="hero-subtitle">
+                            New year celebration & trending tracks curated for you
+                        </p>
+                    </div>
+                    <button 
+                        className="hero-cta-btn"
+                        onClick={() => {
+                            if (trending && trending.length > 0) playQueue(trending, 0);
+                        }}
+                    >
+                        <Play size={14} fill="#fff" /> Listen Now
+                    </button>
+                </div>
+            )}
+
+            {/* Personalized Hero (Desktop view) */}
+            {!isMobile && (
             <section className="mehfil-intro" style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -894,6 +921,7 @@ export default function Home() {
                     </div>
                 )}
             </section>
+            )}
 
             {/* Categories */}
             <div style={{ marginTop: '2.8rem', marginBottom: '2rem' }}>
@@ -967,16 +995,139 @@ export default function Home() {
             {/* Main Feed (only when All Music is active) */}
             {activeCategory === 0 && (
                 <>
-                    {/* Trending Picks (Moved to top) */}
+                    {/* Trending Picks */}
                     <div className="trending" style={{ marginBottom: '1.5rem' }}>
                         <SectionHeader
-                            title="Trending Picks"
+                            title={isMobile ? "Trending Tracks" : "Trending Picks"}
                             onShowMore={() => navigate('/section/trending')}
                         />
-                        {loading ? <LoadingSkeleton /> : <HorizontalScroll songs={trending} onPlay={playSong} currentId={currentId} isPlaying={isPlaying} />}
+                        {loading ? (
+                            <LoadingSkeleton />
+                        ) : isMobile ? (
+                            <div className="mobile-trending-list">
+                                {trending.slice(0, 5).map((song) => {
+                                    const isCurr = currentId === song.id;
+                                    return (
+                                        <div 
+                                            key={song.id} 
+                                            className={`mobile-track-card ${isCurr ? 'active-playing' : ''}`}
+                                            onClick={() => playSong(song)}
+                                        >
+                                            <img 
+                                                src={getImageUrl(song.image) || '/mehfil-logo.png'} 
+                                                alt={song.title} 
+                                                className="mobile-track-thumb" 
+                                                loading="lazy" 
+                                            />
+                                            <div className="mobile-track-info">
+                                                <span className="mobile-track-title">{song.title?.replace(/&quot;/g, '"')}</span>
+                                                <span className="mobile-track-artist">{song.subtitle || song.primaryArtists || 'Various Artists'}</span>
+                                            </div>
+                                            <button 
+                                                className="mobile-track-pill-action"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    playSong(song);
+                                                }}
+                                                aria-label={`Play ${song.title}`}
+                                            >
+                                                {isCurr && isPlaying ? <Pause size={12} /> : <Play size={12} fill="currentColor" />}
+                                                <span>{isCurr && isPlaying ? 'Playing' : 'Play'}</span>
+                                            </button>
+                                            <AddToPlaylist song={song} />
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <HorizontalScroll songs={trending} onPlay={playSong} currentId={currentId} isPlaying={isPlaying} />
+                        )}
                     </div>
 
+                    {/* Popular Artists */}
+                    <div className="artists-section" style={{ marginBottom: '1.5rem' }}>
+                        <SectionHeader title={isMobile ? "Trending Artists" : "Popular artists"} onShowMore={() => navigate('/artists')} />
+                        {loading ? (
+                            <LoadingSkeleton />
+                        ) : isMobile ? (
+                            <div className="mobile-artists-carousel">
+                                {artists.map((artist, idx) => (
+                                    <div 
+                                        key={artist.id || idx} 
+                                        className="mobile-artist-item"
+                                        onClick={() => handlePlayMedia(artist)}
+                                    >
+                                        <div className="mobile-artist-avatar-wrap">
+                                            <img 
+                                                src={getImageUrl(artist.image) || '/mehfil-logo.png'} 
+                                                alt={artist.name} 
+                                                className="mobile-artist-img" 
+                                                loading="lazy" 
+                                            />
+                                        </div>
+                                        <span className="mobile-artist-name">{artist.name}</span>
+                                        <span className="mobile-artist-tag">Artist</span>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <ArtistHorizontalScroll artists={artists} onPlay={handlePlayMedia} />
+                        )}
+                    </div>
 
+                    {/* Top Categories for Mobile - Exactly matching attached screenshot */}
+                    {isMobile && (
+                        <div className="mobile-genre-capsules">
+                            <h2 className="mobile-categories-title">Top Categories</h2>
+                            {[
+                                { 
+                                    name: 'POP & DANCE', 
+                                    searchQuery: 'pop dance hits',
+                                    tags: ['Party', 'Club', 'Top Hits', 'Viral'] 
+                                },
+                                { 
+                                    name: 'BOLLYWOOD ROMANCE', 
+                                    searchQuery: 'bollywood romantic hits',
+                                    tags: ['Soulful', 'Arijit', 'Melody', 'Lo-Fi'] 
+                                },
+                                { 
+                                    name: 'DESI HIP-HOP', 
+                                    searchQuery: 'desi hip hop rap',
+                                    tags: ['Rap', 'Underground', 'Divine', 'Gully'] 
+                                },
+                                { 
+                                    name: 'ROCK & METAL', 
+                                    searchQuery: 'rock metal classics',
+                                    tags: ['Classics', 'Alternative', 'Indie', 'Live'] 
+                                }
+                            ].map((genre, idx) => (
+                                <div 
+                                    key={idx} 
+                                    className="mobile-genre-card"
+                                    onClick={() => navigate(`/search?q=${encodeURIComponent(genre.searchQuery || genre.name)}`)}
+                                >
+                                    <div className="mobile-genre-header">
+                                        <h3 className="mobile-genre-title">{genre.name}</h3>
+                                        <ChevronRight size={18} strokeWidth={2.4} className="mobile-genre-arrow" />
+                                    </div>
+                                    <div className="mobile-genre-pills">
+                                        {genre.tags.map((tag, tIdx) => (
+                                            <span 
+                                                key={tIdx} 
+                                                className={`mobile-genre-pill-tag ${tIdx === 0 ? 'active' : ''}`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigate(`/search?q=${encodeURIComponent(tag)}`);
+                                                }}
+                                            >
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
                     {/* Personalized Sections */}
                     {personalizedSections.map((section, i) => (
@@ -987,13 +1138,6 @@ export default function Home() {
                             <HorizontalScroll songs={section.songs} onPlay={playSong} currentId={currentId} isPlaying={isPlaying} />
                         </div>
                     ))}
-
-
-                    {/* Popular Artists */}
-                    <div className="artists-section" style={{ marginBottom: '1.5rem' }}>
-                        <SectionHeader title="Popular artists" onShowMore={() => navigate('/artists')} />
-                        {loading ? <LoadingSkeleton /> : <ArtistHorizontalScroll artists={artists} onPlay={handlePlayMedia} />}
-                    </div>
 
                     {/* New Releases */}
                     <div className="nrelease" style={{ marginBottom: '1.5rem' }}>

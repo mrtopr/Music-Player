@@ -160,7 +160,7 @@ export default function CollectionDetails({ type }) {
     };
 
     return (
-        <div style={{ paddingBottom: '120px', minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-main, #0A0A0B)' }}>
+        <div className="collection-details-view" style={{ paddingBottom: '120px', minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-main, #0A0A0B)' }}>
             {/* Immersive Hero Header */}
             <div style={{
                 position: 'relative',

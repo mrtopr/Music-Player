@@ -399,12 +399,12 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                     .icon-btn { width: 38px !important; height: 38px !important; border-radius: 10px !important; }
                 }
                 @media (max-width: 500px) {
-                    .top-bar { padding: 10px 8px !important; gap: 4px !important; }
-                    .nav-right-controls { gap: 4px !important; flex-shrink: 0; }
+                    .top-bar { padding: 10px 8px !important; gap: 6px !important; }
+                    .nav-right-controls { gap: 6px !important; flex-shrink: 0; }
                     .icon-btn { width: 34px !important; height: 34px !important; border-radius: 8px !important; }
-                    .mobile-brand span { display: none !important; }
-                    .music-source-switcher { transform: scale(0.85); transform-origin: center; margin: 0 -4px; }
-                    .profile { padding: 4px 10px !important; height: 34px !important; }
+                    .mobile-brand span { display: inline-block !important; font-size: 1rem !important; }
+                    .music-source-switcher { transform: scale(0.85); transform-origin: center; margin: 0 -2px; }
+                    .profile { padding: 2px !important; width: 34px !important; height: 34px !important; }
                     .profile span, .profile svg { display: none !important; }
                     .profile img { margin: 0; }
                 }

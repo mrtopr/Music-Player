@@ -5,7 +5,7 @@ const cn = (...classes) => classes.filter(Boolean).join(" ");
 
 
 
-const RotateCCWIcon = forwardRef(
+const RotateCcwIcon = forwardRef(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
@@ -66,11 +66,8 @@ const RotateCCWIcon = forwardRef(
   }
 );
 
-RotateCCWIcon.displayName = "RotateCCWIcon";
+RotateCcwIcon.displayName = "RotateCcwIcon";
 
-export { RotateCCWIcon };
-
-
-const RotateCcwIcon = RotateCCWIcon;
+export const RotateCCWIcon = RotateCcwIcon;
 export { RotateCcwIcon };
 export default RotateCcwIcon;

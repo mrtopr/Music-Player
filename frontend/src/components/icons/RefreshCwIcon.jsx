@@ -5,7 +5,7 @@ const cn = (...classes) => classes.filter(Boolean).join(" ");
 
 
 
-const RefreshCWIcon = forwardRef(
+const RefreshCwIcon = forwardRef(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
@@ -68,11 +68,8 @@ const RefreshCWIcon = forwardRef(
   }
 );
 
-RefreshCWIcon.displayName = "RefreshCWIcon";
+RefreshCwIcon.displayName = "RefreshCwIcon";
 
-export { RefreshCWIcon };
-
-
-const RefreshCwIcon = RefreshCWIcon;
+export const RefreshCWIcon = RefreshCwIcon;
 export { RefreshCwIcon };
 export default RefreshCwIcon;

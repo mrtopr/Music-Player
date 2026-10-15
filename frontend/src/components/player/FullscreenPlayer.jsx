@@ -422,7 +422,7 @@ function FullscreenProgressSection() {
 }
 
 // ── Interactive Artwork Section (Handles swipe-to-skip & double-tap-to-seek) ──
-function FullscreenArtworkSection({ currentSong, title, prevSong, nextSong }) {
+function FullscreenArtworkSection({ currentSong, title, prevSong, nextSong, isPlaying }) {
     const seek = usePlayerStore(state => state.seek);
     const currentTime = usePlayerStore(state => state.currentTime);
     const duration = usePlayerStore(state => state.duration);
@@ -507,7 +507,7 @@ function FullscreenArtworkSection({ currentSong, title, prevSong, nextSong }) {
     return (
         <div className="fs-artwork-section" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', minHeight: '380px' }}>
             <div 
-                className="fs-artwork-wrapper" 
+                className={`fs-artwork-wrapper ${isPlaying ? 'playing' : ''}`} 
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -921,6 +921,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                         title={title} 
                         prevSong={prevSong} 
                         nextSong={nextSong} 
+                        isPlaying={isPlaying}
                     />
                 ) : (
                     <div className="fs-artwork-section" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', minHeight: '380px' }}>
@@ -962,6 +963,19 @@ export default function FullscreenPlayer({ visible, onClose }) {
                             />
                         </button>
                     </div>
+
+                    {/* Dynamic Sound Waveform Equalizer Display on Mobile (Matching Image 2 Center Phone) */}
+                    {isMobile && (
+                        <div className="mobile-waveform-visualizer">
+                            {Array.from({ length: 28 }).map((_, i) => (
+                                <div 
+                                    key={i} 
+                                    className="mobile-waveform-bar" 
+                                    style={{ animationPlayState: isPlaying ? 'running' : 'paused' }} 
+                                />
+                            ))}
+                        </div>
+                    )}
 
                     {/* Progress Bar Area */}
                     <FullscreenProgressSection />

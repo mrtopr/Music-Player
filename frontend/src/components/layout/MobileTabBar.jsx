@@ -1,44 +1,64 @@
 import React from 'react';
-import { Home, Search, Heart, Mic2, ListMusic, Download } from '../common/LordIcon';
 import { Link, useLocation } from 'react-router-dom';
+import { Home, Compass, ListMusic, User, Play, Pause, Disc } from '../common/LordIcon';
+import { usePlayerStore } from '../../store/usePlayerStore';
 
 export default function MobileTabBar() {
     const location = useLocation();
+    const currentSong = usePlayerStore(state => state.currentSong);
+    const isPlaying = usePlayerStore(state => state.isPlaying);
+    const togglePlay = usePlayerStore(state => state.togglePlay);
+    const setFullScreen = usePlayerStore(state => state.setFullScreen);
 
-    const tabs = [
-        { path: '/', icon: Home, label: 'Home' },
-        { path: '/search', icon: Search, label: 'Search' },
-        { path: '/library', icon: ListMusic, label: 'Library' },
-        { path: '/downloads', icon: Download, label: 'Downloads' },
-        { path: '/artists', icon: Mic2, label: 'Artists' },
-    ];
+    const handleCenterClick = (e) => {
+        e.preventDefault();
+        if (currentSong) {
+            setFullScreen(true);
+        } else {
+            // If no song, trigger play or open search
+            togglePlay();
+        }
+    };
 
     return (
-        <div className="mobile-tab-bar" style={{
-            position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 999,
-            display: 'none', justifyContent: 'space-around', alignItems: 'center',
-            background: 'var(--bg-card, #1a1a1a)', borderTop: '1px solid rgba(255,255,255,0.08)',
-            padding: '0.5rem 0 calc(0.5rem + env(safe-area-inset-bottom, 0px))',
-        }}>
-            {tabs.map(({ path, icon: Icon, label }) => {
-                const active = location.pathname === path;
-                return (
-                    <Link key={path} to={path} className={`tab-item ${active ? 'active' : ''}`} style={{
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem',
-                        textDecoration: 'none', color: active ? 'var(--accent-primary)' : 'var(--text-muted)',
-                        fontSize: '0.7rem', fontWeight: active ? 600 : 400, transition: 'all 0.2s',
-                    }}>
-                        <Icon size={22} strokeWidth={active ? 2.5 : 2} />
-                        <span>{label}</span>
-                    </Link>
-                );
-            })}
-            <style>{`
-        @media (max-width: 768px) {
-          .mobile-tab-bar { display: flex !important; }
-          .mini-player.visible { bottom: 60px !important; }
-        }
-      `}</style>
+        <div className="mobile-tab-bar">
+            {/* 1. Home */}
+            <Link to="/" className={`tab-item ${location.pathname === '/' ? 'active' : ''}`} aria-label="Home">
+                <Home size={22} strokeWidth={location.pathname === '/' ? 2.5 : 2} />
+                <span>Home</span>
+            </Link>
+
+            {/* 2. Explore / Search */}
+            <Link to="/search" className={`tab-item ${location.pathname === '/search' ? 'active' : ''}`} aria-label="Explore">
+                <Compass size={22} strokeWidth={location.pathname === '/search' ? 2.5 : 2} />
+                <span>Explore</span>
+            </Link>
+
+            {/* 3. Center Elevated Glowing Action Button */}
+            <div 
+                className={`tab-item-center ${isPlaying ? 'playing' : ''}`}
+                onClick={handleCenterClick}
+                title={currentSong ? (isPlaying ? 'Now Playing (Tap to view)' : 'Play / View Player') : 'Explore Music'}
+                aria-label="Now Playing"
+            >
+                {currentSong ? (
+                    isPlaying ? <Disc size={26} className="center-btn-icon spin-icon" /> : <Play size={24} fill="#fff" style={{ marginLeft: '3px' }} />
+                ) : (
+                    <Disc size={26} className="center-btn-icon" />
+                )}
+            </div>
+
+            {/* 4. Library */}
+            <Link to="/library" className={`tab-item ${['/library', '/playlists', '/favorites', '/downloads'].includes(location.pathname) ? 'active' : ''}`} aria-label="Library">
+                <ListMusic size={22} strokeWidth={['/library', '/playlists', '/favorites', '/downloads'].includes(location.pathname) ? 2.5 : 2} />
+                <span>Library</span>
+            </Link>
+
+            {/* 5. Profile / Settings */}
+            <Link to="/settings" className={`tab-item ${location.pathname === '/settings' ? 'active' : ''}`} aria-label="Profile">
+                <User size={22} strokeWidth={location.pathname === '/settings' ? 2.5 : 2} />
+                <span>Profile</span>
+            </Link>
         </div>
     );
 }

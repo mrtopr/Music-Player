@@ -15,7 +15,7 @@ const PATH_VARIANTS = {
   },
 };
 
-const LogInIcon = forwardRef(
+const LoginIcon = forwardRef(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
@@ -89,11 +89,8 @@ const LogInIcon = forwardRef(
   }
 );
 
-LogInIcon.displayName = "LogInIcon";
+LoginIcon.displayName = "LoginIcon";
 
-export { LogInIcon };
-
-
-const LoginIcon = LogInIcon;
+export const LogInIcon = LoginIcon;
 export { LoginIcon };
 export default LoginIcon;
