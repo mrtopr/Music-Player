@@ -832,7 +832,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
 
     if (!currentSong) return null;
 
-    const liked = likedSongs.some(s => s.id === (currentSong?.id || ''));
+    const liked = Boolean(currentSong && likedSongs.some(s => String(s.id) === String(currentSong.id)));
     const stats = getSongStats(currentSong);
     const title = currentSong ? decodeEntities(currentSong.title) : '';
     const artist = currentSong ? decodeEntities(currentSong.primaryArtists || currentSong.subtitle) : '';
@@ -1162,15 +1162,16 @@ export default function FullscreenPlayer({ visible, onClose }) {
 
                             <button
                                 type="button"
-                                className="fs-action-circle-btn"
+                                className={`fs-action-circle-btn ${liked ? 'liked' : ''}`}
                                 onClick={(e) => { e.stopPropagation(); toggleLike(currentSong); }}
                                 title={liked ? "Unlike" : "Like"}
                                 aria-label={liked ? "Unlike" : "Like"}
+                                style={liked ? { borderColor: 'rgba(239, 68, 68, 0.5)', background: 'rgba(239, 68, 68, 0.15)', boxShadow: '0 0 14px rgba(239, 68, 68, 0.4)' } : undefined}
                             >
                                 <Heart 
                                     size={21} 
-                                    fill={liked ? '#f43f5e' : 'none'} 
-                                    color={liked ? '#f43f5e' : 'rgba(255, 255, 255, 0.85)'} 
+                                    fill={liked ? '#ef4444' : 'none'} 
+                                    color={liked ? '#ef4444' : 'rgba(255, 255, 255, 0.85)'} 
                                 />
                             </button>
 

@@ -6,7 +6,7 @@ const cn = (...classes) => classes.filter(Boolean).join(" ");
 
 
 const HeartIcon = forwardRef(
-  ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+  ({ onMouseEnter, onMouseLeave, className, size = 28, fill = "none", color, stroke, strokeWidth = 2, style, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 
@@ -41,21 +41,25 @@ const HeartIcon = forwardRef(
       [controls, onMouseLeave]
     );
 
+    const resolvedStroke = stroke || color || "currentColor";
+    const resolvedFill = fill || "none";
+
     return (
       <div
         className={cn(className)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', ...style }}
         {...props}
       >
         <motion.svg
           animate={controls}
-          fill="none"
+          fill={resolvedFill}
           height={size}
-          stroke="currentColor"
+          stroke={resolvedStroke}
           strokeLinecap="round"
           strokeLinejoin="round"
-          strokeWidth="2"
+          strokeWidth={strokeWidth}
           transition={{
             duration: 0.45,
             repeat: 2,

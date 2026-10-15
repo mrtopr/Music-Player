@@ -318,7 +318,7 @@ export const usePlayerStore = create((set, get) => ({
     // ── Actions ──
     toggleLike: (song) => set((state) => {
         if (!song) return state;
-        const exists = state.likedSongs.findIndex(s => s.id === song.id);
+        const exists = state.likedSongs.findIndex(s => String(s.id) === String(song.id));
         const newLikes = [...state.likedSongs];
         if (exists >= 0) newLikes.splice(exists, 1);
         else newLikes.push(song);
