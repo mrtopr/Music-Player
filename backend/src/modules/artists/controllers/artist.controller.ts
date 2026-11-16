@@ -28,7 +28,7 @@ export class ArtistController implements Routes {
               title: 'Artist ID',
               description: 'Artist ID',
               type: 'string',
-              example: '1274170'
+              example: '1274170',
             }),
             link: z
               .string()
@@ -39,40 +39,40 @@ export class ArtistController implements Routes {
                 title: 'Artist Link',
                 description: 'A direct link to the artist on JioSaavn',
                 type: 'string',
-                example: 'https://www.jiosaavn.com/artist/dua-lipa-songs/r-OWIKgpX2I_'
+                example: 'https://www.jiosaavn.com/artist/dua-lipa-songs/r-OWIKgpX2I_',
               }),
             page: z.string().pipe(z.coerce.number()).optional().openapi({
               title: 'Page number',
               description: 'page number',
               type: 'number',
-              example: '1'
+              example: '1',
             }),
             songCount: z.string().pipe(z.coerce.number()).optional().openapi({
               title: 'Song count',
               description: 'Number of songs to fetch',
               type: 'number',
-              example: '10'
+              example: '10',
             }),
             albumCount: z.string().pipe(z.coerce.number()).optional().openapi({
               title: 'Album count',
               description: 'Number of albums to fetch',
               type: 'number',
-              example: '10'
+              example: '10',
             }),
             sortBy: z.enum(['popularity', 'latest', 'alphabetical']).optional().openapi({
               title: 'Sort by',
               description: 'sort by',
               type: 'string',
-              example: 'popularity'
+              example: 'popularity',
             }),
             sortOrder: z.enum(['asc', 'desc']).optional().openapi({
               title: 'Sort order',
               description: 'sort order',
               type: 'string',
               example: 'desc',
-              default: 'desc'
-            })
-          })
+              default: 'desc',
+            }),
+          }),
         },
         responses: {
           200: {
@@ -83,16 +83,16 @@ export class ArtistController implements Routes {
                   success: z.boolean().openapi({
                     description: 'Indicates whether the request was successful',
                     type: 'boolean',
-                    example: true
+                    example: true,
                   }),
                   data: ArtistModel.openapi({
-                    description: 'Artist details'
-                  })
-                })
-              }
-            }
-          }
-        }
+                    description: 'Artist details',
+                  }),
+                }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
         const {
@@ -102,7 +102,7 @@ export class ArtistController implements Routes {
           sortBy = 'popularity',
           sortOrder = 'asc',
           songCount = 10,
-          albumCount = 10
+          albumCount = 10,
         } = ctx.req.valid('query')
 
         const response = link
@@ -110,7 +110,7 @@ export class ArtistController implements Routes {
           : await this.artistService.getArtistById({ artistId: id!, page, songCount, albumCount, sortBy, sortOrder })
 
         return ctx.json({ success: true, data: response })
-      }
+      },
     )
 
     this.controller.openapi(
@@ -127,49 +127,41 @@ export class ArtistController implements Routes {
               title: 'Artist ID',
               description: 'ID of the artist to retrieve',
               type: 'string',
-              example: '1274170'
-            })
+              example: '1274170',
+            }),
           }),
           query: z.object({
             page: z.string().pipe(z.coerce.number()).optional().openapi({
               title: 'Page number',
               description: 'The page number of the results to retrieve',
               type: 'integer',
-              example: '0'
+              example: '0',
             }),
             songCount: z.string().pipe(z.coerce.number()).optional().openapi({
               title: 'Song count',
               description: 'The number of songs to retrieve for the artist',
               type: 'integer',
-              example: '10'
+              example: '10',
             }),
             albumCount: z.string().pipe(z.coerce.number()).optional().openapi({
               title: 'Album count',
               description: 'The number of albums to retrieve for the artist',
               type: 'integer',
-              example: '10'
+              example: '10',
             }),
-            sortBy: z
-              .enum(['popularity', 'latest', 'alphabetical'])
-              .optional()
-              .openapi({
-                title: 'Sort by',
-                description: 'The field to sort the results by',
-                type: 'string',
-                example: 'popularity',
-                enum: ['popularity', 'latest', 'alphabetical']
-              }),
-            sortOrder: z
-              .enum(['asc', 'desc'])
-              .optional()
-              .openapi({
-                title: 'Sort order',
-                description: 'The order to sort the results by',
-                type: 'string',
-                example: 'desc',
-                enum: ['asc', 'desc']
-              })
-          })
+            sortBy: z.enum(['popularity', 'latest', 'alphabetical']).optional().openapi({
+              title: 'Sort by',
+              description: 'The field to sort the results by',
+              type: 'string',
+              example: 'popularity',
+            }),
+            sortOrder: z.enum(['asc', 'desc']).optional().openapi({
+              title: 'Sort order',
+              description: 'The order to sort the results by',
+              type: 'string',
+              example: 'desc',
+            }),
+          }),
         },
         responses: {
           200: {
@@ -180,17 +172,17 @@ export class ArtistController implements Routes {
                   success: z.boolean().openapi({
                     description: 'Indicates whether the request was successful',
                     type: 'boolean',
-                    example: true
+                    example: true,
                   }),
-                  data: ArtistModel
-                })
-              }
-            }
+                  data: ArtistModel,
+                }),
+              },
+            },
           },
           404: {
-            description: 'Artist not found for the given ID'
-          }
-        }
+            description: 'Artist not found for the given ID',
+          },
+        },
       }),
       async (ctx) => {
         const artistId = ctx.req.param('id')
@@ -202,11 +194,11 @@ export class ArtistController implements Routes {
           songCount: songCount || 10,
           albumCount: albumCount || 10,
           sortBy: sortBy || 'popularity',
-          sortOrder: sortOrder || 'asc'
+          sortOrder: sortOrder || 'asc',
         })
 
         return ctx.json({ success: true, data: response })
-      }
+      },
     )
 
     this.controller.openapi(
@@ -223,15 +215,15 @@ export class ArtistController implements Routes {
               description: 'ID of the artist to retrieve the songs for',
               type: 'string',
               example: '1274170',
-              default: '1274170'
-            })
+              default: '1274170',
+            }),
           }),
           query: z.object({
             page: z.string().pipe(z.coerce.number()).optional().openapi({
               description: 'The page number of the results to retrieve',
               type: 'number',
               example: '0',
-              default: '0'
+              default: '0',
             }),
             sortBy: z
               .enum(['popularity', 'latest', 'alphabetical'])
@@ -241,7 +233,7 @@ export class ArtistController implements Routes {
                 type: 'string',
                 example: 'popularity',
                 enum: ['popularity', 'latest', 'alphabetical'],
-                default: 'popularity'
+                default: 'popularity',
               }),
             sortOrder: z
               .enum(['asc', 'desc'])
@@ -251,9 +243,9 @@ export class ArtistController implements Routes {
                 type: 'string',
                 example: 'desc',
                 enum: ['asc', 'desc'],
-                default: 'desc'
-              })
-          })
+                default: 'desc',
+              }),
+          }),
         },
         responses: {
           200: {
@@ -264,19 +256,19 @@ export class ArtistController implements Routes {
                   success: z.boolean().openapi({
                     description: 'Indicates whether the request was successful',
                     type: 'boolean',
-                    example: true
+                    example: true,
                   }),
                   data: ArtistSongModel.openapi({
-                    description: 'An array of songs associated with the artist'
-                  })
-                })
-              }
-            }
+                    description: 'An array of songs associated with the artist',
+                  }),
+                }),
+              },
+            },
           },
           404: {
-            description: 'Artist not found for the given ID'
-          }
-        }
+            description: 'Artist not found for the given ID',
+          },
+        },
       }),
       async (ctx) => {
         const artistId = ctx.req.param('id')
@@ -286,11 +278,11 @@ export class ArtistController implements Routes {
           artistId,
           page: page || 0,
           sortBy: sortBy || 'popularity',
-          sortOrder: sortOrder || 'desc'
+          sortOrder: sortOrder || 'desc',
         })
 
         return ctx.json({ success: true, data: response })
-      }
+      },
     )
 
     this.controller.openapi(
@@ -307,15 +299,15 @@ export class ArtistController implements Routes {
               description: 'ID of the artist to retrieve the albums for',
               type: 'string',
               example: '1274170',
-              default: '1274170'
-            })
+              default: '1274170',
+            }),
           }),
           query: z.object({
             page: z.string().pipe(z.coerce.number()).optional().openapi({
               description: 'The page number of the results to retrieve',
               type: 'number',
               example: '0',
-              default: '0'
+              default: '0',
             }),
             sortBy: z
               .enum(['popularity', 'latest', 'alphabetical'])
@@ -325,7 +317,7 @@ export class ArtistController implements Routes {
                 type: 'string',
                 example: 'popularity',
                 enum: ['popularity', 'latest', 'alphabetical'],
-                default: 'popularity'
+                default: 'popularity',
               }),
             sortOrder: z
               .enum(['asc', 'desc'])
@@ -335,9 +327,9 @@ export class ArtistController implements Routes {
                 type: 'string',
                 example: 'desc',
                 enum: ['asc', 'desc'],
-                default: 'desc'
-              })
-          })
+                default: 'desc',
+              }),
+          }),
         },
         responses: {
           200: {
@@ -348,19 +340,19 @@ export class ArtistController implements Routes {
                   success: z.boolean().openapi({
                     description: 'Indicates whether the request was successful',
                     type: 'boolean',
-                    example: true
+                    example: true,
                   }),
                   data: ArtistAlbumModel.openapi({
-                    description: 'An array of albums associated with the artist'
-                  })
-                })
-              }
-            }
+                    description: 'An array of albums associated with the artist',
+                  }),
+                }),
+              },
+            },
           },
           404: {
-            description: 'Artist not found for the given ID'
-          }
-        }
+            description: 'Artist not found for the given ID',
+          },
+        },
       }),
       async (ctx) => {
         const artistId = ctx.req.param('id')
@@ -370,11 +362,11 @@ export class ArtistController implements Routes {
           artistId,
           page: page || 0,
           sortBy: sortBy || 'popularity',
-          sortOrder: sortOrder || 'desc'
+          sortOrder: sortOrder || 'desc',
         })
 
         return ctx.json({ success: true, data: response })
-      }
+      },
     )
   }
 }

@@ -1,19 +1,40 @@
-import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
+import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
-import { prisma } from '../../../common/prisma'
+import jwt from 'jsonwebtoken'
+import { prisma } from '#common/prisma'
+import type { Routes } from '#common/types'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'mehfil-super-secret-jwt-key'
+const TOKEN_TTL = '7d'
 
-export class AuthController {
+const publicUser = (user: {
+  id: string
+  name?: string | null
+  email: string
+  profileImageUrl?: string | null
+}) => ({
+  id: user.id,
+  name: user.name,
+  email: user.email,
+  profileImageUrl: user.profileImageUrl,
+})
+
+export class AuthController implements Routes {
   public controller: OpenAPIHono
 
   constructor() {
     this.controller = new OpenAPIHono()
   }
 
+  private readBearer(ctx: any): string | null {
+    const header = ctx.req.header('Authorization')
+    if (!header || !header.startsWith('Bearer ')) return null
+    return header.slice('Bearer '.length).trim() || null
+  }
+
   public initRoutes() {
+    // ── Register ──────────────────────────────────────────────────────
     this.controller.openapi(
       createRoute({
         method: 'post',
@@ -27,11 +48,11 @@ export class AuthController {
                 schema: z.object({
                   name: z.string().min(2),
                   email: z.string().email(),
-                  password: z.string().min(6)
-                })
-              }
-            }
-          }
+                  password: z.string().min(6),
+                }),
+              },
+            },
+          },
         },
         responses: {
           201: {
@@ -42,55 +63,59 @@ export class AuthController {
                   success: z.boolean(),
                   token: z.string().optional(),
                   user: z.any().optional(),
-                  message: z.string().optional()
-                })
-              }
-            }
+                  message: z.string().optional(),
+                }),
+              },
+            },
           },
           400: {
             description: 'Bad Request',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), message: z.string() }),
+              },
+            },
           },
           500: {
             description: 'Internal Error',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
-          }
-        }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), message: z.string() }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
         const { name, email, password } = ctx.req.valid('json')
         const cleanEmail = email.trim().toLowerCase()
+
         try {
           const existing = await prisma.user.findFirst({
-            where: { email: { equals: cleanEmail, mode: 'insensitive' } }
+            where: { email: { equals: cleanEmail, mode: 'insensitive' } },
           })
           if (existing) return ctx.json({ success: false, message: 'Email already exists' }, 400)
 
-          const salt = await bcrypt.genSalt(10)
-          const passwordHash = await bcrypt.hash(password, salt)
-
+          const passwordHash = await bcrypt.hash(password, 10)
           const user = await prisma.user.create({
             data: {
               name: name.trim(),
               email: cleanEmail,
               passwordHash,
-              profileImageUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name.trim())}`
-            }
+              profileImageUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(name.trim())}`,
+            },
           })
 
-          const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' })
-          return ctx.json({
-            success: true,
-            token,
-            user: { id: user.id, name: user.name, email: user.email, profileImageUrl: user.profileImageUrl }
-          }, 201)
+          const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: TOKEN_TTL })
+          return ctx.json({ success: true, token, user: publicUser(user) }, 201)
         } catch (error) {
           console.error('[Auth Error] Register:', error)
           return ctx.json({ success: false, message: 'Internal server error' }, 500)
         }
-      }
+      },
     )
 
+    // ── Login ─────────────────────────────────────────────────────────
     this.controller.openapi(
       createRoute({
         method: 'post',
@@ -103,53 +128,69 @@ export class AuthController {
               'application/json': {
                 schema: z.object({
                   email: z.string().email(),
-                  password: z.string()
-                })
-              }
-            }
-          }
+                  password: z.string(),
+                }),
+              },
+            },
+          },
         },
         responses: {
           200: {
             description: 'Login successful',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), token: z.string().optional(), user: z.any().optional(), message: z.string().optional() }) } }
+            content: {
+              'application/json': {
+                schema: z.object({
+                  success: z.boolean(),
+                  token: z.string().optional(),
+                  user: z.any().optional(),
+                  message: z.string().optional(),
+                }),
+              },
+            },
           },
           401: {
             description: 'Unauthorized',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), message: z.string() }),
+              },
+            },
           },
           500: {
             description: 'Internal Error',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
-          }
-        }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), message: z.string() }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
         const { email, password } = ctx.req.valid('json')
         const cleanEmail = email.trim()
+
         try {
-          // Look up user by exact match or case-insensitive match
-          let user = await prisma.user.findFirst({
-            where: { email: { equals: cleanEmail, mode: 'insensitive' } }
+          const user = await prisma.user.findFirst({
+            where: { email: { equals: cleanEmail, mode: 'insensitive' } },
           })
-          if (!user) return ctx.json({ success: false, message: 'Invalid credentials' }, 401)
+          if (!user?.passwordHash) {
+            return ctx.json({ success: false, message: 'Invalid credentials' }, 401)
+          }
 
           const isMatch = await bcrypt.compare(password, user.passwordHash)
           if (!isMatch) return ctx.json({ success: false, message: 'Invalid credentials' }, 401)
 
-          const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' })
-          return ctx.json({
-            success: true,
-            token,
-            user: { id: user.id, name: user.name, email: user.email, profileImageUrl: user.profileImageUrl }
-          }, 200)
+          const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: TOKEN_TTL })
+          return ctx.json({ success: true, token, user: publicUser(user) }, 200)
         } catch (error) {
           console.error('[Auth Error] Login:', error)
           return ctx.json({ success: false, message: 'Internal server error' }, 500)
         }
-      }
+      },
     )
 
+    // ── Current user ──────────────────────────────────────────────────
     this.controller.openapi(
       createRoute({
         method: 'get',
@@ -159,41 +200,47 @@ export class AuthController {
         responses: {
           200: {
             description: 'User found',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), user: z.any() }) } }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), user: z.any() }),
+              },
+            },
           },
           401: {
             description: 'Unauthorized',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), message: z.string() }),
+              },
+            },
           },
           404: {
             description: 'User not found',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
-          }
-        }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), message: z.string() }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
-        const authHeader = ctx.req.header('Authorization')
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-          return ctx.json({ success: false, message: 'Unauthorized' }, 401)
-        }
+        const token = this.readBearer(ctx)
+        if (!token) return ctx.json({ success: false, message: 'Unauthorized' }, 401)
 
-        const token = authHeader.split(' ')[1]
         try {
           const decoded = jwt.verify(token, JWT_SECRET) as { userId: string }
           const user = await prisma.user.findUnique({ where: { id: decoded.userId } })
-
           if (!user) return ctx.json({ success: false, message: 'User not found' }, 404)
 
-          return ctx.json({
-            success: true,
-            user: { id: user.id, name: user.name, email: user.email, profileImageUrl: user.profileImageUrl }
-          }, 200)
+          return ctx.json({ success: true, user: publicUser(user) }, 200)
         } catch (error) {
           return ctx.json({ success: false, message: 'Invalid token' }, 401)
         }
-      }
+      },
     )
 
+    // ── Update profile ────────────────────────────────────────────────
     this.controller.openapi(
       createRoute({
         method: 'patch',
@@ -206,58 +253,64 @@ export class AuthController {
               'application/json': {
                 schema: z.object({
                   name: z.string().optional(),
-                  profileImageUrl: z.string().url().optional()
-                })
-              }
-            }
-          }
+                  profileImageUrl: z.string().url().optional(),
+                }),
+              },
+            },
+          },
         },
         responses: {
           200: {
             description: 'User updated',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), user: z.any() }) } }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), user: z.any() }),
+              },
+            },
           },
           401: {
             description: 'Unauthorized',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), message: z.string() }),
+              },
+            },
           },
           500: {
             description: 'Internal Error',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
-          }
-        }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), message: z.string() }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
-        const authHeader = ctx.req.header('Authorization')
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-          return ctx.json({ success: false, message: 'Unauthorized' }, 401)
-        }
+        const token = this.readBearer(ctx)
+        if (!token) return ctx.json({ success: false, message: 'Unauthorized' }, 401)
 
-        const token = authHeader.split(' ')[1]
         try {
           const decoded = jwt.verify(token, JWT_SECRET) as { userId: string }
           const { name, profileImageUrl } = ctx.req.valid('json')
-          
+
           const user = await prisma.user.update({
             where: { id: decoded.userId },
             data: {
               ...(name && { name }),
-              ...(profileImageUrl && { profileImageUrl })
-            }
+              ...(profileImageUrl && { profileImageUrl }),
+            },
           })
 
-          return ctx.json({
-            success: true,
-            user: { id: user.id, name: user.name, email: user.email, profileImageUrl: user.profileImageUrl }
-          }, 200)
+          return ctx.json({ success: true, user: publicUser(user) }, 200)
         } catch (error) {
           console.error('[Auth Error] Update Profile:', error)
           return ctx.json({ success: false, message: 'Internal server error' }, 500)
         }
-      }
+      },
     )
 
-    // ── Forgot Password ──────────────────────────────────────────────
+    // ── Forgot password ───────────────────────────────────────────────
     this.controller.openapi(
       createRoute({
         method: 'post',
@@ -268,63 +321,74 @@ export class AuthController {
           body: {
             content: {
               'application/json': {
-                schema: z.object({ email: z.string().email() })
-              }
-            }
-          }
+                schema: z.object({ email: z.string().email() }),
+              },
+            },
+          },
         },
         responses: {
           200: {
             description: 'Reset token generated',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), message: z.string() }),
+              },
+            },
           },
           500: {
             description: 'Internal Error',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
-          }
-        }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), message: z.string() }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
         const { email } = ctx.req.valid('json')
         try {
-          const user = await prisma.user.findUnique({ where: { email } })
-
-          // Always return success to prevent email enumeration
-          if (!user) {
-            console.log(`\n⚠️  [Password Reset] No account found for email: ${email}\n   → Make sure you use the exact email you registered with.\n`)
-            return ctx.json({ success: true, message: 'If that email exists, a reset link has been sent.' }, 200)
-          }
-
-          // Invalidate any existing unused tokens for this user
-          await prisma.passwordResetToken.updateMany({
-            where: { userId: user.id, used: false },
-            data: { used: true }
+          const user = await prisma.user.findFirst({
+            where: { email: { equals: email.trim(), mode: 'insensitive' } },
           })
 
-          // Generate a secure random token
+          // Always answer the same way so accounts cannot be enumerated.
+          if (!user) {
+            return ctx.json(
+              { success: true, message: 'If that email exists, a reset link has been sent.' },
+              200,
+            )
+          }
+
+          await prisma.passwordResetToken.updateMany({
+            where: { userId: user.id, used: false },
+            data: { used: true },
+          })
+
           const token = crypto.randomBytes(32).toString('hex')
           const expiresAt = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 
-          await prisma.passwordResetToken.create({
-            data: { token, userId: user.id, expiresAt }
-          })
+          await prisma.passwordResetToken.create({ data: { token, userId: user.id, expiresAt } })
 
-          // In production: send email. For now, log to console for testing.
-          const frontendOrigin = (process.env.FRONTEND_URL || 'http://localhost:5173').split(',')[0].trim()
-          const resetUrl = `${frontendOrigin}/auth?reset=${token}`
-          console.log('\n🔑 [Password Reset] Token for', email)
-          console.log('   Reset URL:', resetUrl)
-          console.log('   Token expires at:', expiresAt.toISOString(), '\n')
+          const frontendOrigin = (process.env.FRONTEND_URL || 'http://localhost:5173')
+            .split(',')[0]
+            .trim()
+          console.log('\n[Password Reset] Token for', user.email)
+          console.log('   Reset URL:', `${frontendOrigin}/auth?reset=${token}`)
+          console.log('   Expires at:', expiresAt.toISOString(), '\n')
 
-          return ctx.json({ success: true, message: 'If that email exists, a reset link has been sent.' }, 200)
+          return ctx.json(
+            { success: true, message: 'If that email exists, a reset link has been sent.' },
+            200,
+          )
         } catch (error) {
           console.error('[Auth Error] Forgot Password:', error)
           return ctx.json({ success: false, message: 'Internal server error' }, 500)
         }
-      }
+      },
     )
 
-    // ── Reset Password ───────────────────────────────────────────────
+    // ── Reset password ────────────────────────────────────────────────
     this.controller.openapi(
       createRoute({
         method: 'post',
@@ -337,26 +401,38 @@ export class AuthController {
               'application/json': {
                 schema: z.object({
                   token: z.string(),
-                  newPassword: z.string().min(6)
-                })
-              }
-            }
-          }
+                  newPassword: z.string().min(6),
+                }),
+              },
+            },
+          },
         },
         responses: {
           200: {
             description: 'Password reset',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), message: z.string() }),
+              },
+            },
           },
           400: {
             description: 'Invalid or expired token',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), message: z.string() }),
+              },
+            },
           },
           500: {
             description: 'Internal Error',
-            content: { 'application/json': { schema: z.object({ success: z.boolean(), message: z.string() }) } }
-          }
-        }
+            content: {
+              'application/json': {
+                schema: z.object({ success: z.boolean(), message: z.string() }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
         const { token, newPassword } = ctx.req.valid('json')
@@ -364,22 +440,34 @@ export class AuthController {
           const resetRecord = await prisma.passwordResetToken.findUnique({ where: { token } })
 
           if (!resetRecord || resetRecord.used || resetRecord.expiresAt < new Date()) {
-            return ctx.json({ success: false, message: 'This reset link is invalid or has expired.' }, 400)
+            return ctx.json(
+              { success: false, message: 'This reset link is invalid or has expired.' },
+              400,
+            )
           }
 
           const passwordHash = await bcrypt.hash(newPassword, 12)
 
           await prisma.$transaction([
-            prisma.user.update({ where: { id: resetRecord.userId }, data: { passwordHash } }),
-            prisma.passwordResetToken.update({ where: { id: resetRecord.id }, data: { used: true } })
+            prisma.user.update({
+              where: { id: resetRecord.userId },
+              data: { passwordHash },
+            }),
+            prisma.passwordResetToken.update({
+              where: { id: resetRecord.id },
+              data: { used: true },
+            }),
           ])
 
-          return ctx.json({ success: true, message: 'Password updated successfully. You can now log in.' }, 200)
+          return ctx.json(
+            { success: true, message: 'Password updated successfully. You can now log in.' },
+            200,
+          )
         } catch (error) {
           console.error('[Auth Error] Reset Password:', error)
           return ctx.json({ success: false, message: 'Internal server error' }, 500)
         }
-      }
+      },
     )
   }
 }

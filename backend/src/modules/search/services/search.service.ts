@@ -7,7 +7,7 @@ import {
   type SearchAlbumsArgs,
   type SearchArtistsArgs,
   type SearchPlaylistsArgs,
-  type SearchSongsArgs
+  type SearchSongsArgs,
 } from '#modules/search/use-cases'
 
 export class SearchService {

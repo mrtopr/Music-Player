@@ -1,37 +1,44 @@
 import { Endpoints } from '#common/constants'
 import { useFetch } from '#common/helpers'
 import { createSongPayload } from '#modules/songs/helpers'
-import { HTTPException } from 'hono/http-exception'
 import type { IUseCase } from '#common/types'
-import type { ArtistSongAPIResponseModel, ArtistSongModel } from '#modules/artists/models'
+import type { ArtistSongModel } from '#modules/artists/models'
 import type { z } from 'zod'
 
 export interface GetArtistSongsArgs {
   artistId: string
   page: number
-  sortBy: 'popularity' | 'latest' | 'alphabetical'
-  sortOrder: 'asc' | 'desc'
+  sortBy: string
+  sortOrder: string
 }
 
 export class GetArtistSongsUseCase implements IUseCase<GetArtistSongsArgs, z.infer<typeof ArtistSongModel>> {
   constructor() {}
 
-  async execute({ artistId, page, sortOrder, sortBy }: GetArtistSongsArgs) {
-    const { data } = await useFetch<z.infer<typeof ArtistSongAPIResponseModel>>({
+  async execute({ artistId, page, sortBy, sortOrder }: GetArtistSongsArgs) {
+    const { data } = await useFetch<any>({
       endpoint: Endpoints.artists.songs,
       params: {
         artistId,
         page,
-        sort_order: sortOrder,
-        category: sortBy
-      }
+        sortBy,
+        sortOrder,
+      },
     })
 
-    if (!data) throw new HTTPException(404, { message: 'artist songs not found' })
+    // JioSaavn answers `artist.getArtistMoreSong` with
+    //   { topSongs: { songs: [...], total, last_page } }
+    // and used to answer with a flat { total, start, results } envelope.
+    // Support both so the endpoint never silently returns an empty page.
+    const rawSongs: any[] = data?.topSongs?.songs ?? data?.results ?? []
+    const songs = rawSongs.map(createSongPayload)
 
     return {
-      total: data.topSongs.total,
-      songs: data.topSongs.songs.map((song) => createSongPayload(song))
+      total: Number(data?.topSongs?.total ?? data?.total ?? songs.length),
+      start: Number(data?.topSongs?.start ?? data?.start ?? 0),
+      results: songs,
+      // The list views read `songs`; `results` is kept for compatibility.
+      songs,
     }
   }
 }

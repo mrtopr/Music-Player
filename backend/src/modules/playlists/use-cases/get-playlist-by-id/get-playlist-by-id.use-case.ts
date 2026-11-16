@@ -21,8 +21,8 @@ export class GetPlaylistByIdUseCase implements IUseCase<GetPlaylistByIdArgs, z.i
       params: {
         listid: id,
         n: limit,
-        p: page
-      }
+        p: page,
+      },
     })
 
     if (!data) throw new HTTPException(404, { message: 'playlist not found' })
@@ -31,7 +31,7 @@ export class GetPlaylistByIdUseCase implements IUseCase<GetPlaylistByIdArgs, z.i
     return {
       ...playlist,
       songCount: playlist?.songs?.length || null,
-      songs: playlist?.songs?.slice(0, limit) || []
+      songs: playlist?.songs?.slice(0, limit) || [],
     }
   }
 }

@@ -257,7 +257,7 @@ export default function SearchPage() {
                 )}
 
                 {loading && page === 1 && (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1.25rem' }}>
+                    <div className="results-grid">
                         {[...Array(10)].map((_, i) => (
                             <div key={i} style={{ borderRadius: '12px', padding: '0.5rem', background: 'rgba(255,255,255,0.02)' }}>
                                 <div className="skeleton-pulse" style={{ aspectRatio: searchType === 'artists' ? '1/1' : '1/1', background: 'rgba(255,255,255,0.06)', borderRadius: searchType === 'artists' ? '50%' : '8px' }} />
@@ -277,7 +277,7 @@ export default function SearchPage() {
 
                 {results.length > 0 && (
                     <>
-                        <div className={searchType === 'songs' ? 'song-list-view' : 'results-grid'}>
+                        <div className={searchType === 'songs' ? 'list-view' : 'results-grid'}>
                             {results.map((item, i) => {
                                 const isSong = searchType === 'songs';
                                 const isCurrent = isSong && currentSong?.id === item.id;
@@ -288,36 +288,37 @@ export default function SearchPage() {
                                     return (
                                         <div 
                                             key={item.id + '-' + i} 
-                                            className={`song-list-item ${isCurrent ? 'playing' : ''}`} 
+                                            className={`list-row ${isCurrent ? 'playing' : ''}`} 
                                             onClick={() => handleContextClick(item)}
                                         >
-                                            <div className="song-art-container">
+                                            <div className="list-art">
                                                 <img src={getImageUrl(item.image) || '/mehfil-logo.png'} alt="" />
-                                                <div className="song-play-overlay">
+                                                <div className="list-art-overlay">
                                                     {isCurrentlyPlaying ? <Pause size={16} fill="#fff" /> : <Play size={16} fill="#fff" />}
                                                 </div>
                                             </div>
-                                            <div className="song-details">
-                                                <div className="song-name">{decodeEntities(item.title || item.name)}</div>
-                                                <div className="song-meta" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                    <span>{decodeEntities(item.primaryArtists || item.subtitle || (isSong ? 'Various' : ''))}</span>
+                                            <div className="list-info">
+                                                <div className="list-title">{decodeEntities(item.title || item.name)}</div>
+                                                <div className="list-sub">
+                                                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{decodeEntities(item.primaryArtists || item.subtitle || (isSong ? 'Various' : ''))}</span>
                                                     {item.source && (
                                                         <span style={{
-                                                            fontSize: '0.65rem',
-                                                            padding: '2px 6px',
+                                                            fontSize: '0.6rem',
+                                                            padding: '1px 5px',
                                                             borderRadius: '4px',
+                                                            flexShrink: 0,
                                                             background: item.source === 'youtube' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(212, 160, 83, 0.15)',
                                                             color: item.source === 'youtube' ? '#ef4444' : 'var(--accent-primary, #d4a053)',
                                                             fontWeight: 700,
                                                             textTransform: 'uppercase',
                                                             letterSpacing: '0.5px'
                                                         }}>
-                                                            {item.source === 'youtube' ? 'YT Music' : 'JioSaavn'}
+                                                            {item.source === 'youtube' ? 'YT' : 'JS'}
                                                         </span>
                                                     )}
                                                 </div>
                                             </div>
-                                            <div className="song-actions">
+                                            <div className="list-actions">
                                                 <AddToPlaylist song={item} />
                                             </div>
                                         </div>
@@ -373,38 +374,6 @@ export default function SearchPage() {
                 @keyframes spin { 100% { transform: rotate(360deg); } }
                 .spin { animation: spin 1s linear infinite; }
                 .search-tabs-container::-webkit-scrollbar { display: none; }
-                
-                .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.25rem; }
-                .song-list-view { display: flex; flex-direction: column; gap: 8px; }
-                
-                .song-list-item { 
-                    display: flex; align-items: center; gap: 12px; padding: 10px 14px; 
-                    background: rgba(255,255,255,0.03); border-radius: 12px; cursor: pointer; 
-                    transition: all 0.2s ease; border: 1px solid transparent;
-                }
-                .song-list-item:hover { background: rgba(255,255,255,0.08); transform: translateX(5px); }
-                .song-list-item.playing { background: rgba(var(--accent-primary-rgb), 0.1); border-color: rgba(var(--accent-primary-rgb), 0.2); }
-                
-                .song-art-container { width: 48px; height: 48px; border-radius: 8px; overflow: hidden; position: relative; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-                .song-art-container img { width: 100%; height: 100%; object-fit: cover; }
-                .song-play-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-                .song-list-item:hover .song-play-overlay { display: flex; }
-                .song-list-item.playing .song-play-overlay { display: flex; background: rgba(var(--accent-primary-rgb), 0.3); }
-                
-                .song-details { flex: 1; min-width: 0; }
-                .song-name { color: #fff; font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-                .song-meta { color: rgba(255,255,255,0.5); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
-                
-                .song-actions { opacity: 0.5; transition: opacity 0.2s; }
-                .song-list-item:hover .song-actions { opacity: 1; }
-                
-                @media (max-width: 768px) {
-                    .results-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-                    .song-list-item { padding: 8px 10px; }
-                    .song-art-container { width: 44px; height: 44px; }
-                    .song-name { font-size: 0.95rem; }
-                    .song-meta { font-size: 0.8rem; }
-                }
             `}</style>
         </div>
     );

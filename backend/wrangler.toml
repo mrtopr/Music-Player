@@ -1,7 +1,9 @@
-name = "mehfil-api"
-main = "./src/server.ts"
-compatibility_date = "2024-09-28"
-compatibility_flags = [ "nodejs_compat" ]
+name = "mehfil-backend"
+main = "src/server.ts"
+compatibility_date = "2026-01-01"
+
+[vars]
+FRONTEND_URL = "http://localhost:5173"
 
 [observability]
 enabled = true

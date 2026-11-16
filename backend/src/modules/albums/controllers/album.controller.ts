@@ -28,7 +28,7 @@ export class AlbumController implements Routes {
               description: 'The unique ID of the album',
               type: 'string',
               example: '23241654',
-              default: '23241654'
+              default: '23241654',
             }),
             link: z
               .string()
@@ -40,9 +40,9 @@ export class AlbumController implements Routes {
                 description: 'A direct link to the album on JioSaavn',
                 type: 'string',
                 example: 'https://www.jiosaavn.com/album/future-nostalgia/ITIyo-GDr7A_',
-                default: 'https://www.jiosaavn.com/album/future-nostalgia/ITIyo-GDr7A_'
-              })
-          })
+                default: 'https://www.jiosaavn.com/album/future-nostalgia/ITIyo-GDr7A_',
+              }),
+          }),
         },
         responses: {
           200: {
@@ -53,27 +53,37 @@ export class AlbumController implements Routes {
                   success: z.boolean().openapi({
                     description: 'Indicates the success status of the request.',
                     type: 'boolean',
-                    example: true
+                    example: true,
                   }),
                   data: AlbumModel.openapi({
                     title: 'Album Details',
-                    description: 'The detailed information of the album.'
-                  })
-                })
-              }
-            }
+                    description: 'The detailed information of the album.',
+                  }),
+                }),
+              },
+            },
           },
           400: { description: 'Bad request due to missing or invalid query parameters.' },
-          404: { description: 'The album could not be found with the provided ID or link.' }
-        }
+          404: { description: 'The album could not be found with the provided ID or link.' },
+        },
       }),
       async (ctx) => {
         const { id, link } = ctx.req.valid('query')
 
-        const response = link ? await this.albumService.getAlbumByLink(link) : await this.albumService.getAlbumById(id!)
+        if (!link && !id) {
+          return ctx.json({ success: false, message: 'Either album ID or link is required' }, 400)
+        }
+
+        // The use case expects an argument object — passing the bare id
+        // string silently produced `albumid=undefined` upstream, and
+        // JioSaavn answers that with its empty "NULL songs" placeholder
+        // instead of the album.
+        const response = link
+          ? await this.albumService.getAlbumByLink({ token: link })
+          : await this.albumService.getAlbumById({ id: id! })
 
         return ctx.json({ success: true, data: response })
-      }
+      },
     )
   }
 }

@@ -3,11 +3,9 @@ import { SongModel } from '#modules/songs/models'
 import { SongService } from '#modules/songs/services'
 import { z } from 'zod'
 import type { Routes } from '#common/types'
-import type { hc } from 'hono/client'
 
 export class SongController implements Routes {
   public controller: OpenAPIHono
-  public static songClient: typeof hc
   private songService: SongService
 
   constructor() {
@@ -30,7 +28,7 @@ export class SongController implements Routes {
               title: 'Song IDs',
               description: 'Comma-separated list of song IDs',
               type: 'string',
-              example: '3IoDK8qI,4IoDK8qI,5IoDK8qI'
+              example: '3IoDK8qI,4IoDK8qI,5IoDK8qI',
             }),
             link: z
               .string()
@@ -41,9 +39,9 @@ export class SongController implements Routes {
                 title: 'Song Link',
                 description: 'A direct link to the song on JioSaavn',
                 type: 'string',
-                example: 'https://www.jiosaavn.com/song/houdini/OgwhbhtDRwM'
-              })
-          })
+                example: 'https://www.jiosaavn.com/song/houdini/OgwhbhtDRwM',
+              }),
+          }),
         },
         responses: {
           200: {
@@ -54,19 +52,19 @@ export class SongController implements Routes {
                   success: z.boolean().openapi({
                     description: 'Indicates whether the request was successful',
                     type: 'boolean',
-                    example: true
+                    example: true,
                   }),
                   data: z.array(SongModel).openapi({
                     title: 'Song Details',
-                    description: 'Array of song details'
-                  })
-                })
-              }
-            }
+                    description: 'Array of song details',
+                  }),
+                }),
+              },
+            },
           },
           400: { description: 'Bad request when query parameters are missing or invalid' },
-          404: { description: 'Song not found with the given ID or link' }
-        }
+          404: { description: 'Song not found with the given ID or link' },
+        },
       }),
       async (ctx) => {
         const { link, ids } = ctx.req.valid('query')
@@ -80,7 +78,7 @@ export class SongController implements Routes {
           : await this.songService.getSongByIds({ songIds: ids! })
 
         return ctx.json({ success: true, data: response })
-      }
+      },
     )
 
     this.controller.openapi(
@@ -89,7 +87,7 @@ export class SongController implements Routes {
         path: '/songs/{id}',
         tags: ['Songs'],
         summary: 'Retrieve song by ID',
-        description: 'Retrieve a song by its ID. Optionally, include lyrics in the response.',
+        description: 'Retrieve a song by its ID.',
         operationId: 'getSongById',
         request: {
           params: z.object({
@@ -97,9 +95,9 @@ export class SongController implements Routes {
               title: 'Song ID',
               description: 'ID of the song to retrieve',
               type: 'string',
-              example: '3IoDK8qI'
-            })
-          })
+              example: '3IoDK8qI',
+            }),
+          }),
         },
         responses: {
           200: {
@@ -110,18 +108,18 @@ export class SongController implements Routes {
                   success: z.boolean().openapi({
                     description: 'Indicates whether the request was successful',
                     type: 'boolean',
-                    example: true
+                    example: true,
                   }),
                   data: z.array(SongModel).openapi({
-                    description: 'Array of songs'
-                  })
-                })
-              }
-            }
+                    description: 'Array of songs',
+                  }),
+                }),
+              },
+            },
           },
           400: { description: 'Bad request when query parameters are missing or invalid' },
-          404: { description: 'Song not found for the given ID' }
-        }
+          404: { description: 'Song not found for the given ID' },
+        },
       }),
       async (ctx) => {
         const songId = ctx.req.param('id')
@@ -129,7 +127,7 @@ export class SongController implements Routes {
         const response = await this.songService.getSongByIds({ songIds: songId })
 
         return ctx.json({ success: true, data: response })
-      }
+      },
     )
 
     this.controller.openapi(
@@ -138,16 +136,15 @@ export class SongController implements Routes {
         path: '/songs/{id}/suggestions',
         tags: ['Songs'],
         summary: 'Retrieve song suggestions',
-        description:
-          'Retrieve song suggestions based on the given song ID. This can be used to get similar songs to the one provided for infinite playback.',
+        description: 'Retrieve song suggestions based on the given song ID.',
         operationId: 'getSongSuggestions',
         request: {
           params: z.object({
             id: z.string().openapi({
               description: 'ID of the song to retrieve suggestions for',
               type: 'string',
-              example: 'yDeAS8Eh'
-            })
+              example: 'yDeAS8Eh',
+            }),
           }),
           query: z.object({
             limit: z.string().pipe(z.coerce.number()).optional().openapi({
@@ -155,9 +152,9 @@ export class SongController implements Routes {
               type: 'number',
               title: 'Limit',
               example: '10',
-              default: '10'
-            })
-          })
+              default: '10',
+            }),
+          }),
         },
         responses: {
           200: {
@@ -168,16 +165,16 @@ export class SongController implements Routes {
                   success: z.boolean().openapi({
                     description: 'Indicates whether the request was successful',
                     type: 'boolean',
-                    example: true
+                    example: true,
                   }),
                   data: z.array(SongModel).openapi({
-                    description: 'Array of song suggestions'
-                  })
-                })
-              }
-            }
-          }
-        }
+                    description: 'Array of song suggestions',
+                  }),
+                }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
         const songId = ctx.req.param('id')
@@ -186,7 +183,7 @@ export class SongController implements Routes {
         const suggestions = await this.songService.getSongSuggestions({ songId, limit: limit || 10 })
 
         return ctx.json({ success: true, data: suggestions })
-      }
+      },
     )
   }
 }

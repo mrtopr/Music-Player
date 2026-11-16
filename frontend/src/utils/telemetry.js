@@ -1,7 +1,7 @@
 // Utility to send telemetry events to our backend
 import { useAuthStore } from '../store/useAuthStore';
 
-// VITE_API_URL is empty in dev → relative path goes through Vite proxy to localhost:3000.
+// VITE_API_URL is empty in dev → relative path goes through the Vite proxy to the backend on :3001.
 // In production, set VITE_API_URL to your deployed backend URL.
 const API_BASE = import.meta.env.VITE_API_URL || '';
 const TELEMETRY_API_URL = `${API_BASE}/api/telemetry/events`;

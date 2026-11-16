@@ -4,7 +4,7 @@ import {
   SearchArtistModel,
   SearchModel,
   SearchPlaylistModel,
-  SearchSongModel
+  SearchSongModel,
 } from '#modules/search/models'
 import { SearchService } from '#modules/search/services'
 import type { Routes } from '#common/types'
@@ -33,9 +33,9 @@ export class SearchController implements Routes {
               title: 'Search query',
               description: 'Search query',
               type: 'string',
-              example: 'Imagine Dragons'
-            })
-          })
+              example: 'Imagine Dragons',
+            }),
+          }),
         },
         responses: {
           200: {
@@ -46,16 +46,16 @@ export class SearchController implements Routes {
                   success: z.boolean().openapi({
                     description: 'Indicates whether the search was successful',
                     type: 'boolean',
-                    example: true
+                    example: true,
                   }),
                   data: SearchModel.openapi({
-                    description: 'Search results including songs, albums, artists, and playlists'
-                  })
-                })
-              }
-            }
-          }
-        }
+                    description: 'Search results including songs, albums, artists, and playlists',
+                  }),
+                }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
         const { query } = ctx.req.valid('query')
@@ -63,7 +63,7 @@ export class SearchController implements Routes {
         const result = await this.searchService.searchAll(query)
 
         return ctx.json({ success: true, data: result })
-      }
+      },
     )
 
     this.controller.openapi(
@@ -80,23 +80,23 @@ export class SearchController implements Routes {
               title: 'Search query',
               description: 'Search query for songs',
               type: 'string',
-              example: 'Believer'
+              example: 'Believer',
             }),
             page: z.string().pipe(z.coerce.number()).optional().openapi({
               title: 'Page Number',
               description: 'The page number of the search results to retrieve',
               type: 'integer',
               example: '0',
-              default: '0'
+              default: '0',
             }),
             limit: z.string().pipe(z.coerce.number()).optional().openapi({
               title: 'Limit',
               description: 'Number of search results per page',
               type: 'integer',
               example: '10',
-              default: '10'
-            })
-          })
+              default: '10',
+            }),
+          }),
         },
         responses: {
           200: {
@@ -107,16 +107,16 @@ export class SearchController implements Routes {
                   success: z.boolean().openapi({
                     description: 'Indicates whether the song search was successful',
                     type: 'boolean',
-                    example: true
+                    example: true,
                   }),
                   data: SearchSongModel.openapi({
-                    description: 'Search results for songs'
-                  })
-                })
-              }
-            }
-          }
-        }
+                    description: 'Search results for songs',
+                  }),
+                }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
         const { query, page, limit } = ctx.req.valid('query')
@@ -124,7 +124,7 @@ export class SearchController implements Routes {
         const result = await this.searchService.searchSongs({ query, page: page || 0, limit: limit || 10 })
 
         return ctx.json({ success: true, data: result })
-      }
+      },
     )
 
     this.controller.openapi(
@@ -140,21 +140,21 @@ export class SearchController implements Routes {
             query: z.string().openapi({
               description: 'Search query for albums',
               type: 'string',
-              example: 'Evolve'
+              example: 'Evolve',
             }),
             page: z.string().pipe(z.coerce.number()).optional().openapi({
               description: 'The page number of the search results to retrieve',
               type: 'integer',
               example: '0',
-              default: '0'
+              default: '0',
             }),
             limit: z.string().pipe(z.coerce.number()).optional().openapi({
               description: 'The number of search results per page',
               type: 'integer',
               example: '10',
-              default: '10'
-            })
-          })
+              default: '10',
+            }),
+          }),
         },
         responses: {
           200: {
@@ -165,16 +165,16 @@ export class SearchController implements Routes {
                   success: z.boolean().openapi({
                     description: 'Indicates whether the album search was successful',
                     type: 'boolean',
-                    example: true
+                    example: true,
                   }),
                   data: SearchAlbumModel.openapi({
-                    description: 'Search results for albums'
-                  })
-                })
-              }
-            }
-          }
-        }
+                    description: 'Search results for albums',
+                  }),
+                }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
         const { query, page, limit } = ctx.req.valid('query')
@@ -182,7 +182,7 @@ export class SearchController implements Routes {
         const result = await this.searchService.searchAlbums({ query, page: page || 0, limit: limit || 10 })
 
         return ctx.json({ success: true, data: result })
-      }
+      },
     )
 
     this.controller.openapi(
@@ -199,23 +199,23 @@ export class SearchController implements Routes {
               title: 'Search query',
               description: 'Search query for artists',
               type: 'string',
-              example: 'Adele'
+              example: 'Adele',
             }),
             page: z.string().pipe(z.coerce.number()).optional().openapi({
               title: 'Page Number',
               description: 'The page number of the search results to retrieve',
               type: 'integer',
               example: '0',
-              default: '0'
+              default: '0',
             }),
             limit: z.string().pipe(z.coerce.number()).optional().openapi({
               title: 'Limit',
               description: 'Number of search results per page',
               type: 'integer',
               example: '10',
-              default: '10'
-            })
-          })
+              default: '10',
+            }),
+          }),
         },
         responses: {
           200: {
@@ -226,16 +226,16 @@ export class SearchController implements Routes {
                   success: z.boolean().openapi({
                     description: 'Indicates whether the artist search was successful',
                     type: 'boolean',
-                    example: true
+                    example: true,
                   }),
                   data: SearchArtistModel.openapi({
-                    description: 'Search results for artists'
-                  })
-                })
-              }
-            }
-          }
-        }
+                    description: 'Search results for artists',
+                  }),
+                }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
         const { query, page, limit } = ctx.req.valid('query')
@@ -243,7 +243,7 @@ export class SearchController implements Routes {
         const result = await this.searchService.searchArtists({ query, page: page || 0, limit: limit || 10 })
 
         return ctx.json({ success: true, data: result })
-      }
+      },
     )
 
     this.controller.openapi(
@@ -260,23 +260,23 @@ export class SearchController implements Routes {
               title: 'Search query',
               description: 'Search query for playlists',
               type: 'string',
-              example: 'Indie'
+              example: 'Indie',
             }),
             page: z.string().pipe(z.coerce.number()).optional().openapi({
               title: 'Page Number',
               description: 'The page number of the search results to retrieve',
               type: 'integer',
               example: '0',
-              default: '0'
+              default: '0',
             }),
             limit: z.string().pipe(z.coerce.number()).optional().openapi({
               title: 'Limit',
               description: 'Number of search results per page',
               type: 'integer',
               example: '10',
-              default: '10'
-            })
-          })
+              default: '10',
+            }),
+          }),
         },
         responses: {
           200: {
@@ -287,16 +287,16 @@ export class SearchController implements Routes {
                   success: z.boolean().openapi({
                     description: 'Indicates whether the playlist search was successful',
                     type: 'boolean',
-                    example: true
+                    example: true,
                   }),
                   data: SearchPlaylistModel.openapi({
-                    description: 'Search results for playlist'
-                  })
-                })
-              }
-            }
-          }
-        }
+                    description: 'Search results for playlist',
+                  }),
+                }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
         const { query, page, limit } = ctx.req.valid('query')
@@ -304,7 +304,7 @@ export class SearchController implements Routes {
         const result = await this.searchService.searchPlaylists({ query, page: page || 0, limit: limit || 10 })
 
         return ctx.json({ success: true, data: result })
-      }
+      },
     )
   }
 }

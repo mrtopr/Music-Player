@@ -28,7 +28,7 @@ export class PlaylistController implements Routes {
               description: 'The unique ID of the playlist',
               type: 'string',
               example: '82914609',
-              default: '82914609'
+              default: '82914609',
             }),
             link: z
               .string()
@@ -36,7 +36,7 @@ export class PlaylistController implements Routes {
               .optional()
               .transform((value) => {
                 const matches = value?.match(
-                  /(?:jiosaavn\.com|saavn\.com)\/(?:featured|s\/playlist)\/[^/]+\/([^/]+)$|\/([^/]+)$/
+                  /(?:jiosaavn\.com|saavn\.com)\/(?:featured|s\/playlist)\/[^/]+\/([^/]+)$|\/([^/]+)$/,
                 )
                 const filteredMatches = matches?.filter((each) => each !== undefined)
                 return (filteredMatches && filteredMatches[filteredMatches?.length - 1 || 0]) || undefined
@@ -46,23 +46,23 @@ export class PlaylistController implements Routes {
                 description: 'A direct link to the playlist on JioSaavn',
                 type: 'string',
                 example: 'https://www.jiosaavn.com/featured/its-indie-english/AMoxtXyKHoU_',
-                default: 'https://www.jiosaavn.com/featured/its-indie-english/AMoxtXyKHoU_'
+                default: 'https://www.jiosaavn.com/featured/its-indie-english/AMoxtXyKHoU_',
               }),
             page: z.string().pipe(z.coerce.number()).optional().openapi({
               title: 'Page Number',
               description: 'The page number of the songs to retrieve from the playlist',
               type: 'integer',
               example: '0',
-              default: '0'
+              default: '0',
             }),
             limit: z.string().pipe(z.coerce.number()).optional().openapi({
               title: 'Limit',
               description: 'Number of songs to retrieve per page',
               type: 'integer',
               example: '10',
-              default: '10'
-            })
-          })
+              default: '10',
+            }),
+          }),
         },
         responses: {
           200: {
@@ -73,19 +73,19 @@ export class PlaylistController implements Routes {
                   success: z.boolean().openapi({
                     description: 'Indicates the success status of the request.',
                     type: 'boolean',
-                    example: true
+                    example: true,
                   }),
                   data: PlaylistModel.openapi({
                     title: 'Playlist Details',
-                    description: 'The detailed information of the playlist.'
-                  })
-                })
-              }
-            }
+                    description: 'The detailed information of the playlist.',
+                  }),
+                }),
+              },
+            },
           },
           400: { description: 'Bad request due to missing or invalid query parameters.' },
-          404: { description: 'The playlist could not be found with the provided ID or link.' }
-        }
+          404: { description: 'The playlist could not be found with the provided ID or link.' },
+        },
       }),
       async (ctx) => {
         const { id, link, page, limit } = ctx.req.valid('query')
@@ -98,16 +98,16 @@ export class PlaylistController implements Routes {
           ? await this.playlistService.getPlaylistByLink({
               token: link,
               page: page || 0,
-              limit: limit || 10
+              limit: limit || 10,
             })
           : await this.playlistService.getPlaylistById({
               id: id!,
               page: page || 0,
-              limit: limit || 10
+              limit: limit || 10,
             })
 
         return ctx.json({ success: true, data: response })
-      }
+      },
     )
   }
 }

@@ -4,12 +4,12 @@ import { SongAPIResponseModel } from './song.model'
 const SongStationAPIResponseModel = z.record(
   z.string(),
   z.object({
-    song: SongAPIResponseModel
-  })
+    song: SongAPIResponseModel,
+  }),
 )
 
 export const SongSuggestionAPIResponseModel = z
   .object({
-    stationid: z.string()
+    stationid: z.string(),
   })
   .and(SongStationAPIResponseModel)

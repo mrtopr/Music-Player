@@ -405,14 +405,8 @@ export default function CollectionDetails({ type }) {
                                 <div 
                                     key={track.id + idx} 
                                     onClick={() => playSong(track)} 
+                                    className="track-row"
                                     style={{
-                                        display: 'grid', 
-                                        gridTemplateColumns: '40px 1fr 140px',
-                                        alignItems: 'center', 
-                                        padding: '0.7rem 1rem',
-                                        borderRadius: '10px', 
-                                        cursor: 'pointer', 
-                                        transition: 'all 0.15s ease',
                                         background: isCurrent ? 'rgba(139, 92, 246, 0.12)' : 'transparent',
                                         borderLeft: isCurrent ? '3px solid #8B5CF6' : '3px solid transparent'
                                     }} 
@@ -420,9 +414,9 @@ export default function CollectionDetails({ type }) {
                                     onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent'; }}
                                 >
                                     {/* Track Index / Play Indicator */}
-                                    <div style={{ fontSize: '0.85rem', fontWeight: 600, color: isCurrent ? '#8B5CF6' : 'var(--text-muted)' }}>
+                                    <div className="track-row-index" style={{ color: isCurrent ? '#8B5CF6' : undefined }}>
                                         {isCurrent && isPlaying ? (
-                                            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: '14px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: '14px', justifyContent: 'center' }}>
                                                 {[1, 2, 3].map(i => (
                                                     <div key={i} style={{ width: '2px', background: '#8B5CF6', borderRadius: '1px', animation: `eqBar 0.${4 + i}s ease-in-out infinite alternate` }} />
                                                 ))}
@@ -433,13 +427,13 @@ export default function CollectionDetails({ type }) {
                                     </div>
 
                                     {/* Track Info */}
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', minWidth: 0 }}>
-                                        <img src={getImageUrl(track.image)} alt="" style={{ width: '44px', height: '44px', borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }} />
-                                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                                            <div style={{ color: isCurrent ? '#8B5CF6' : '#F4F4F5', fontWeight: 600, fontSize: '0.92rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
+                                        <img className="track-row-art" src={getImageUrl(track.image)} alt="" />
+                                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                            <div style={{ color: isCurrent ? '#8B5CF6' : '#F4F4F5', fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {decodeEntities(track.title || track.name || 'Unknown Track')}
                                             </div>
-                                            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {track.primaryArtists || track.singers || (typeof track.subtitle === 'string' && track.subtitle !== 'Top Indian Artist' && track.subtitle !== 'Artist' ? track.subtitle : 'Unknown Artist')}
                                             </div>
 
@@ -447,7 +441,7 @@ export default function CollectionDetails({ type }) {
                                     </div>
 
                                     {/* Duration & Like Button */}
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1rem' }}>
+                                    <div className="track-row-actions">
                                         <button 
                                             onClick={(e) => { e.stopPropagation(); toggleLike(track); }}
                                             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', color: isLiked ? '#EF4444' : 'var(--text-muted)' }}
@@ -456,7 +450,7 @@ export default function CollectionDetails({ type }) {
                                             <Heart size={18} fill={isLiked ? '#EF4444' : 'none'} color={isLiked ? '#EF4444' : 'currentColor'} />
                                         </button>
                                         <AddToPlaylist song={track} />
-                                        <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', minWidth: '40px', textAlign: 'right' }}>
+                                        <div className="list-duration" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', minWidth: '40px', textAlign: 'right' }}>
                                             {formatTime(track.duration)}
                                         </div>
                                     </div>

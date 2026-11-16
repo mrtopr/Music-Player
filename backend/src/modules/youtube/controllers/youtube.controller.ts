@@ -12,8 +12,6 @@ export class YouTubeController implements Routes {
   }
 
   public initRoutes() {
-    // ── Search Route ──
-    // YouTube songs are now played via embedded iframe — no stream proxy needed
     this.controller.openapi(
       createRoute({
         method: 'get',
@@ -25,17 +23,17 @@ export class YouTubeController implements Routes {
           query: z.object({
             query: z.string().openapi({
               description: 'Search query',
-              example: 'Arijit Singh'
+              example: 'Arijit Singh',
             }),
             type: z.string().optional().openapi({
               description: 'Search type: songs | playlists | artists | albums',
-              example: 'songs'
+              example: 'songs',
             }),
             limit: z.string().optional().openapi({
               description: 'Result limit',
-              example: '20'
-            })
-          })
+              example: '20',
+            }),
+          }),
         },
         responses: {
           200: {
@@ -45,13 +43,13 @@ export class YouTubeController implements Routes {
                 schema: z.object({
                   success: z.boolean(),
                   data: z.object({
-                    results: z.array(z.any())
-                  })
-                })
-              }
-            }
-          }
-        }
+                    results: z.array(z.any()),
+                  }),
+                }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
         const { query, type = 'songs', limit } = ctx.req.valid('query')
@@ -69,8 +67,53 @@ export class YouTubeController implements Routes {
         }
 
         return ctx.json({ success: true, data: { results } })
-      }
+      },
+    )
+
+    this.controller.openapi(
+      createRoute({
+        method: 'get',
+        path: '/youtube/stream',
+        tags: ['YouTube'],
+        summary: 'Resolve YouTube stream URL',
+        description: 'Resolve a playable audio stream URL for a YouTube video ID using multi-tier fallback.',
+        request: {
+          query: z.object({
+            v: z.string().openapi({
+              description: 'YouTube video ID',
+              example: 'dQw4w9WgXcQ',
+            }),
+          }),
+        },
+        responses: {
+          200: {
+            description: 'Stream URL resolved',
+            content: {
+              'application/json': {
+                schema: z.object({
+                  success: z.boolean(),
+                  data: z.object({
+                    videoId: z.string(),
+                    streamUrl: z.string().nullable(),
+                    source: z.string(),
+                  }),
+                }),
+              },
+            },
+          },
+          404: { description: 'No stream URL could be resolved' },
+        },
+      }),
+      async (ctx) => {
+        const { v } = ctx.req.valid('query')
+        const streamUrl = await this.youtubeService.getStreamUrl(v)
+
+        if (!streamUrl) {
+          return ctx.json({ success: false, data: { videoId: v, streamUrl: null, source: null } }, 404)
+        }
+
+        return ctx.json({ success: true, data: { videoId: v, streamUrl, source: 'resolved' } })
+      },
     )
   }
 }
-

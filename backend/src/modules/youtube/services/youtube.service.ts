@@ -28,18 +28,18 @@ export class YouTubeService {
     'https://inv.tux.pizza',
     'https://yewtu.be',
     'https://invidious.nerdvpn.de',
-    'https://inv.nadeko.net'
+    'https://inv.nadeko.net',
   ]
 
   private pipedInstances = [
     'https://pipedapi.kavin.rocks',
     'https://api.piped.video',
-    'https://pipedapi.adminforge.de'
+    'https://pipedapi.adminforge.de',
   ]
 
   private headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept': 'application/json, text/plain, */*'
+    'Accept': 'application/json, text/plain, */*',
   }
 
   async searchSongs(query: string, limit = 20): Promise<YouTubeSongItem[]> {
@@ -50,26 +50,34 @@ export class YouTubeService {
       const streamEndpoint = `/api/youtube/stream?v=${videoId}`
       return {
         id: `yt_${videoId}`,
-        name: title, title, type: 'song',
+        name: title,
+        title,
+        type: 'song',
         album: { id: '', name: 'YouTube Music', url: '' },
-        year: '', releaseDate: '', duration,
+        year: '',
+        releaseDate: '',
+        duration,
         label: 'YouTube Music',
-        primaryArtists: author, primaryArtistsId: '',
-        featuredArtists: '', featuredArtistsId: '',
-        explicitContent: false, playCount: viewCount,
-        language: 'unknown', hasLyrics: false,
+        primaryArtists: author,
+        primaryArtistsId: '',
+        featuredArtists: '',
+        featuredArtistsId: '',
+        explicitContent: false,
+        playCount: viewCount,
+        language: 'unknown',
+        hasLyrics: false,
         url: `https://www.youtube.com/watch?v=${videoId}`,
         copyright: '',
         image: [
           { quality: '500x500', url: thumb, link: thumb },
           { quality: '150x150', url: thumb, link: thumb },
-          { quality: '50x50', url: thumb, link: thumb }
+          { quality: '50x50', url: thumb, link: thumb },
         ],
         downloadUrl: [
           { quality: '320kbps', url: streamEndpoint, link: streamEndpoint },
-          { quality: '160kbps', url: streamEndpoint, link: streamEndpoint }
+          { quality: '160kbps', url: streamEndpoint, link: streamEndpoint },
         ],
-        source: 'youtube' as const
+        source: 'youtube' as const,
       }
     }
 
@@ -78,7 +86,7 @@ export class YouTubeService {
         try {
           const res = await fetch(`${instance}/search?q=${encodeURIComponent(query)}&filter=music_songs`, {
             headers: { ...this.headers, 'Accept': 'application/json' },
-            signal: AbortSignal.timeout(3000)
+            signal: AbortSignal.timeout(3000),
           })
           if (!res.ok) continue
           const data: any = await res.json()
@@ -101,13 +109,13 @@ export class YouTubeService {
         try {
           const res = await fetch(`${instance}/api/v1/search?q=${encodeURIComponent(query)}&type=video`, {
             headers: this.headers,
-            signal: AbortSignal.timeout(3000)
+            signal: AbortSignal.timeout(3000),
           })
           if (!res.ok) continue
           const items: any = await res.json()
           if (!Array.isArray(items) || items.length === 0) continue
           const results = items.slice(0, limit).map((item: any) =>
-            makeItem(item.videoId, item.title || 'Unknown', item.author || 'YouTube Artist', item.lengthSeconds || 0, item.viewCount || 0)
+            makeItem(item.videoId, item.title || 'Unknown', item.author || 'YouTube Artist', item.lengthSeconds || 0, item.viewCount || 0),
           )
           if (results.length > 0) return results
         } catch { /* try next */ }
@@ -119,9 +127,9 @@ export class YouTubeService {
       const res = await fetch(`https://www.youtube.com/results?search_query=${encodeURIComponent(query + ' song')}`, {
         headers: {
           ...this.headers,
-          'Accept-Language': 'en-US,en;q=0.9'
+          'Accept-Language': 'en-US,en;q=0.9',
         },
-        signal: AbortSignal.timeout(5000)
+        signal: AbortSignal.timeout(5000),
       })
       const html = await res.text()
       const match = html.match(/var ytInitialData = ({.+?});<\/script>/)
@@ -138,19 +146,18 @@ export class YouTubeService {
           video.videoId,
           video.title?.runs?.[0]?.text || 'Unknown',
           video.ownerText?.runs?.[0]?.text || 'YouTube Artist',
-          0, 0
+          0, 0,
         ))
       }
       if (results.length === 0) throw new Error('No results from YouTube HTML')
       return results
     }
 
-    // Race all three search methods simultaneously — return whichever resolves first
     try {
       const results = await Promise.any([
         searchViaPiped(),
         searchViaInvidious(),
-        searchViaYouTubeHTML()
+        searchViaYouTubeHTML(),
       ])
       return results
     } catch {
@@ -166,7 +173,7 @@ export class YouTubeService {
         try {
           const res = await fetch(`${instance}/search?q=${encodeURIComponent(query)}&filter=playlists`, {
             headers: { ...this.headers, 'Accept': 'application/json' },
-            signal: AbortSignal.timeout(3000)
+            signal: AbortSignal.timeout(3000),
           })
           if (!res.ok) continue
           const data: any = await res.json()
@@ -180,7 +187,7 @@ export class YouTubeService {
               image: item.thumbnail ? [{ quality: '500x500', url: item.thumbnail, link: item.thumbnail }] : [],
               subtitle: `${item.videos || 0} songs • YouTube Playlist`,
               songCount: item.videos || 0,
-              source: 'youtube'
+              source: 'youtube',
             }))
           }
         } catch {}
@@ -196,7 +203,7 @@ export class YouTubeService {
         try {
           const res = await fetch(`${instance}/search?q=${encodeURIComponent(query)}&filter=channels`, {
             headers: { ...this.headers, 'Accept': 'application/json' },
-            signal: AbortSignal.timeout(3000)
+            signal: AbortSignal.timeout(3000),
           })
           if (!res.ok) continue
           const data: any = await res.json()
@@ -210,7 +217,7 @@ export class YouTubeService {
               image: item.thumbnail ? [{ quality: '500x500', url: item.thumbnail, link: item.thumbnail }] : [],
               subtitle: 'YouTube Artist',
               role: 'Artist',
-              source: 'youtube'
+              source: 'youtube',
             }))
           }
         } catch {}
@@ -221,13 +228,12 @@ export class YouTubeService {
 
   async searchAlbums(query: string, limit = 20): Promise<any[]> {
     if (!query || !query.trim()) return []
-    // Search albums on YouTube via music_albums filter
     try {
       for (const instance of this.pipedInstances) {
         try {
           const res = await fetch(`${instance}/search?q=${encodeURIComponent(query)}&filter=music_albums`, {
             headers: { ...this.headers, 'Accept': 'application/json' },
-            signal: AbortSignal.timeout(3000)
+            signal: AbortSignal.timeout(3000),
           })
           if (!res.ok) continue
           const data: any = await res.json()
@@ -241,7 +247,7 @@ export class YouTubeService {
               image: item.thumbnail ? [{ quality: '500x500', url: item.thumbnail, link: item.thumbnail }] : [],
               subtitle: `${item.uploaderName || 'YouTube'} • Album`,
               year: '',
-              source: 'youtube'
+              source: 'youtube',
             }))
           }
         } catch {}
@@ -250,13 +256,12 @@ export class YouTubeService {
     return []
   }
 
-  /** TIER 1A: Piped API — returns direct proxied audio URLs instantly */
   private async getPipedStream(videoId: string): Promise<string | null> {
     for (const instance of this.pipedInstances) {
       try {
         const res = await fetch(`${instance}/streams/${videoId}`, {
           headers: { ...this.headers, 'Accept': 'application/json' },
-          signal: AbortSignal.timeout(4000)
+          signal: AbortSignal.timeout(4000),
         })
         if (!res.ok) continue
         const data: any = await res.json()
@@ -264,9 +269,8 @@ export class YouTubeService {
         const audioStreams: any[] = data.audioStreams || []
         if (audioStreams.length === 0) continue
 
-        // Prefer m4a/mp4a (widest browser support), sort by bitrate
         const m4aStreams = audioStreams.filter((s: any) =>
-          s.mimeType?.includes('audio/mp4') || s.mimeType?.includes('m4a') || s.mimeType?.includes('mp4a')
+          s.mimeType?.includes('audio/mp4') || s.mimeType?.includes('m4a') || s.mimeType?.includes('mp4a'),
         )
         const candidates = m4aStreams.length > 0 ? m4aStreams : audioStreams
         candidates.sort((a: any, b: any) => (b.bitrate || 0) - (a.bitrate || 0))
@@ -283,12 +287,11 @@ export class YouTubeService {
     return null
   }
 
-  /** TIER 1B: JioSaavn Audio Matcher — matches YouTube title → 320kbps JioSaavn audio */
   private async getJioSaavnFallbackStream(videoId: string): Promise<string | null> {
     try {
       const oembedRes = await fetch(
         `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`,
-        { signal: AbortSignal.timeout(2500) }
+        { signal: AbortSignal.timeout(2500) },
       )
       if (!oembedRes.ok) return null
 
@@ -302,7 +305,7 @@ export class YouTubeService {
 
       const searchRes = await fetch(
         `https://saavn.dev/api/search/songs?query=${encodeURIComponent(cleanTitle)}&limit=1`,
-        { signal: AbortSignal.timeout(3000) }
+        { signal: AbortSignal.timeout(3000) },
       )
       if (!searchRes.ok) return null
 
@@ -327,21 +330,19 @@ export class YouTubeService {
     return null
   }
 
-  /** TIER 2: Invidious API — community YouTube proxy */
   private async getInvidiousStream(videoId: string): Promise<string | null> {
     for (const instance of this.invidiousInstances) {
       try {
         const res = await fetch(`${instance}/api/v1/videos/${videoId}`, {
           headers: this.headers,
-          signal: AbortSignal.timeout(3000)
+          signal: AbortSignal.timeout(3000),
         })
         if (!res.ok) continue
         const data: any = await res.json()
 
         const adaptive: any[] = data.adaptiveFormats || []
-        // Prefer mp4/m4a for browser compatibility
         const audioStreams = adaptive.filter((f: any) =>
-          f.type?.includes('audio/mp4') || f.type?.includes('audio/webm') || f.type?.includes('audio/mpeg')
+          f.type?.includes('audio/mp4') || f.type?.includes('audio/webm') || f.type?.includes('audio/mpeg'),
         )
         if (audioStreams.length === 0) continue
 
@@ -359,15 +360,13 @@ export class YouTubeService {
   async getStreamUrl(videoId: string): Promise<string | null> {
     const cleanId = videoId.replace('yt_', '')
 
-    // RACE Tier 1A vs 1B simultaneously — return whichever resolves first
     const raceResult = await Promise.any([
       this.getPipedStream(cleanId),
-      this.getJioSaavnFallbackStream(cleanId)
+      this.getJioSaavnFallbackStream(cleanId),
     ]).catch(() => null)
 
     if (raceResult) return raceResult
 
-    // Tier 2: Invidious (slower, but reliable)
     const invUrl = await this.getInvidiousStream(cleanId)
     if (invUrl) return invUrl
 

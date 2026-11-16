@@ -21,8 +21,8 @@ export class SearchPlaylistsUseCase implements IUseCase<SearchPlaylistsArgs, z.i
       params: {
         q: query,
         p: page,
-        n: limit
-      }
+        n: limit,
+      },
     })
 
     if (!data) throw new HTTPException(404, { message: 'playlist not found' })

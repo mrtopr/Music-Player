@@ -20,8 +20,8 @@ export class SearchAlbumsUseCase implements IUseCase<SearchAlbumsArgs, z.infer<t
       params: {
         q: query,
         p: page,
-        n: limit
-      }
+        n: limit,
+      },
     })
 
     return createSearchAlbumPayload(data)

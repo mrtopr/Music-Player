@@ -17,8 +17,8 @@ export class GetSongByIdUseCase implements IUseCase<GetSongByIdArgs, z.infer<typ
     const { data } = await useFetch<{ songs: z.infer<typeof SongAPIResponseModel>[] }>({
       endpoint: Endpoints.songs.id,
       params: {
-        pids: songIds
-      }
+        pids: songIds,
+      },
     })
 
     if (!data.songs?.length) throw new HTTPException(404, { message: 'song not found' })

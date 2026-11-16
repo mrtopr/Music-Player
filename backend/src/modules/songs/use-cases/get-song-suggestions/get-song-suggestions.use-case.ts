@@ -27,9 +27,9 @@ export class GetSongSuggestionsUseCase implements IUseCase<GetSongSuggestionsArg
       endpoint: Endpoints.songs.suggestions,
       params: {
         stationid: stationId,
-        k: limit
+        k: limit,
       },
-      context: ApiContextEnum.ANDROID
+      context: ApiContextEnum.ANDROID,
     })
 
     if (!data || !ok) {

@@ -2038,6 +2038,373 @@ body {
   margin-top: var(--spacing-md);
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   MOBILE-FIRST CARD + LIST SYSTEM
+   Phones get small, dense covers (two per row) and compact list rows.
+   From 768px up the layout grows into the roomier desktop presentation.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Cover cards (home feed, carousels) ─────────────────────────── */
+.cover-card {
+  min-width: 0;
+  width: 100%;
+  cursor: pointer;
+}
+
+.cover-card .cover-art {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  aspect-ratio: 1 / 1;
+  margin-bottom: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.cover-card .cover-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cover-card .cover-title {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+}
+
+.cover-card .cover-sub {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0.15rem 0 0 0;
+}
+
+/* Grid of covers — two columns on a phone */
+.cover-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+/* Horizontal carousel of covers */
+.cover-row {
+  display: flex;
+  gap: 0.9rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.cover-row::-webkit-scrollbar {
+  display: none;
+}
+
+.cover-row .cover-card {
+  flex: 0 0 46%;
+  width: auto;
+  max-width: 168px;
+}
+
+/* ── List rows (search results, playlists, albums) ──────────────── */
+.list-view {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 0.5rem;
+}
+
+.list-row {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.list-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.list-row.playing {
+  background: rgba(139, 92, 246, 0.12);
+}
+
+.list-art {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.list-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.list-art-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.list-row:hover .list-art-overlay,
+.list-row.playing .list-art-overlay {
+  opacity: 1;
+}
+
+.list-info {
+  min-width: 0;
+}
+
+.list-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-sub {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.list-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Duration is hidden on phones — the space is worth more to the title. */
+.list-duration {
+  display: none;
+}
+
+/* ── Grid of result cards (albums / playlists / artists) ─────────── */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-top: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .cover-card {
+    min-width: 200px;
+    max-width: 220px;
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  .cover-card .cover-art {
+    border-radius: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .cover-card .cover-title {
+    font-size: 0.95rem;
+  }
+
+  .cover-card .cover-sub {
+    font-size: 0.8rem;
+  }
+
+  .cover-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .cover-row {
+    gap: 1.5rem;
+    padding-bottom: 2rem;
+  }
+
+  .cover-row .cover-card {
+    flex: 0 0 auto;
+    max-width: 220px;
+  }
+
+  .list-view {
+    gap: 2px;
+    margin-top: 0.75rem;
+  }
+
+  .list-row {
+    grid-template-columns: 56px minmax(0, 1fr) auto;
+    gap: 16px;
+    padding: 10px 12px;
+  }
+
+  .list-art {
+    width: 56px;
+    height: 56px;
+  }
+
+  .list-title {
+    font-size: 0.95rem;
+  }
+
+  .list-sub {
+    font-size: 0.8rem;
+  }
+
+  .list-duration {
+    display: block;
+  }
+
+  .results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1rem;
+  }
+}
+
+/* On phones the album / playlist / artist results become compact rows
+   instead of cover cards — far easier to scan and to tap one-handed. */
+@media (max-width: 767px) {
+  .results-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .results-grid .card {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    grid-template-areas: "art title actions" "art sub actions";
+    align-items: center;
+    gap: 0 12px;
+    padding: 8px 10px;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 10px;
+    box-shadow: none;
+    text-align: left;
+  }
+
+  .results-grid .card:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 0 !important;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .results-grid .card > div:first-child {
+    grid-area: art;
+    width: 48px;
+    height: 48px;
+    aspect-ratio: auto;
+    box-shadow: none;
+  }
+
+  .results-grid .card h3 {
+    grid-area: title;
+    margin-top: 0 !important;
+    font-size: 0.9rem !important;
+  }
+
+  .results-grid .card p {
+    grid-area: sub;
+    font-size: 0.76rem !important;
+  }
+
+  .results-grid .card .card-actions {
+    grid-area: actions;
+    margin-top: 0 !important;
+    gap: 4px;
+  }
+
+  .results-grid .card .play-btn {
+    display: none;
+  }
+}
+
+/* ── Track rows inside a playlist / album ───────────────────────── */
+.track-row {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.track-row-index {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.track-row-art {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.track-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+@media (min-width: 768px) {
+  .track-row {
+    grid-template-columns: 40px minmax(0, 1fr) 140px;
+    gap: 16px;
+    padding: 0.7rem 1rem;
+  }
+
+  .track-row-index {
+    font-size: 0.85rem;
+  }
+
+  .track-row-art {
+    width: 44px;
+    height: 44px;
+  }
+
+  .track-row-actions {
+    gap: 1rem;
+  }
+}
+
 /* Load More Button */
 .load-more-btn {
   background: linear-gradient(135deg, var(--accent-primary) 0%, #C084FC 100%);

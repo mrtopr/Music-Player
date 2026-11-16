@@ -17,14 +17,14 @@ export const SearchAPIResponseModel = z.object({
           year: z.string(),
           is_movie: z.string(),
           language: z.string(),
-          song_pids: z.string()
+          song_pids: z.string(),
         }),
         explicit_content: z.string(),
         mini_obj: z.boolean(),
-        description: z.string()
-      })
+        description: z.string(),
+      }),
     ),
-    position: z.number()
+    position: z.number(),
   }),
   songs: z.object({
     data: z.array(
@@ -45,14 +45,14 @@ export const SearchAPIResponseModel = z.object({
           singers: z.string(),
           video_available: z.boolean(),
           triller_available: z.boolean(),
-          language: z.string()
+          language: z.string(),
         }),
         explicit_content: z.string(),
         mini_obj: z.boolean(),
-        description: z.string()
-      })
+        description: z.string(),
+      }),
     ),
-    position: z.number()
+    position: z.number(),
   }),
   playlists: z.object({
     data: z.array(
@@ -73,14 +73,14 @@ export const SearchAPIResponseModel = z.object({
           sub_types: z.any(),
           images: z.any(),
           lastname: z.string(),
-          language: z.string()
+          language: z.string(),
         }),
         explicit_content: z.string(),
         mini_obj: z.boolean(),
-        description: z.string()
-      })
+        description: z.string(),
+      }),
     ),
-    position: z.number()
+    position: z.number(),
   }),
   artists: z.object({
     data: z.array(
@@ -95,10 +95,10 @@ export const SearchAPIResponseModel = z.object({
         ctr: z.number(),
         entity: z.number(),
         description: z.string(),
-        position: z.number()
-      })
+        position: z.number(),
+      }),
     ),
-    position: z.number()
+    position: z.number(),
   }),
   topquery: z.object({
     data: z.array(
@@ -119,21 +119,21 @@ export const SearchAPIResponseModel = z.object({
           singers: z.string(),
           video_available: z.boolean(),
           triller_available: z.boolean(),
-          language: z.string()
+          language: z.string(),
         }),
         explicit_content: z.string().optional(),
         mini_obj: z.boolean(),
-        description: z.string()
-      })
+        description: z.string(),
+      }),
     ),
-    position: z.number()
-  })
+    position: z.number(),
+  }),
 })
 
 const SearchResponseModel = <T>(model: z.ZodType<T, any, any>) =>
   z.object({
     results: model,
-    position: z.number()
+    position: z.number(),
   })
 
 export const SearchModel = z.object({
@@ -149,9 +149,9 @@ export const SearchModel = z.object({
         description: z.string(),
         year: z.string(),
         language: z.string(),
-        songIds: z.string()
-      })
-    )
+        songIds: z.string(),
+      }),
+    ),
   ),
   songs: SearchResponseModel(
     z.array(
@@ -165,9 +165,9 @@ export const SearchModel = z.object({
         description: z.string(),
         primaryArtists: z.string(),
         singers: z.string(),
-        language: z.string()
-      })
-    )
+        language: z.string(),
+      }),
+    ),
   ),
   artists: SearchResponseModel(
     z.array(
@@ -177,9 +177,9 @@ export const SearchModel = z.object({
         image: z.array(DownloadLinkModel),
         type: z.string(),
         description: z.string(),
-        position: z.number()
-      })
-    )
+        position: z.number(),
+      }),
+    ),
   ),
   playlists: SearchResponseModel(
     z.array(
@@ -190,9 +190,9 @@ export const SearchModel = z.object({
         url: z.string(),
         language: z.string(),
         type: z.string(),
-        description: z.string()
-      })
-    )
+        description: z.string(),
+      }),
+    ),
   ),
   topQuery: SearchResponseModel(
     z.array(
@@ -206,8 +206,8 @@ export const SearchModel = z.object({
         description: z.string(),
         primaryArtists: z.string(),
         singers: z.string(),
-        language: z.string()
-      })
-    )
-  )
+        language: z.string(),
+      }),
+    ),
+  ),
 })

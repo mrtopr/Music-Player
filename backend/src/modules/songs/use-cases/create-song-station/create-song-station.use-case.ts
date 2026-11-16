@@ -14,9 +14,9 @@ export class CreateSongStationUseCase implements IUseCase<string, string> {
       endpoint: Endpoints.songs.station,
       params: {
         entity_id: encodedSongId,
-        entity_type: 'queue'
+        entity_type: 'queue',
       },
-      context: ApiContextEnum.ANDROID
+      context: ApiContextEnum.ANDROID,
     })
 
     if (!data || !ok || !data.stationid) throw new HTTPException(500, { message: 'could not create station' })

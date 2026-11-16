@@ -1,5 +1,4 @@
-import { createRoute, OpenAPIHono } from '@hono/zod-openapi'
-import { z } from 'zod'
+import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi'
 import type { Routes } from '#common/types'
 
 export class RecognitionController implements Routes {
@@ -26,15 +25,15 @@ export class RecognitionController implements Routes {
                   file: z.instanceof(File).openapi({
                     type: 'string',
                     format: 'binary',
-                    description: 'Audio file to identify (MP3, WAV, etc.)'
+                    description: 'Audio file to identify (MP3, WAV, etc.)',
                   }),
                   api_token: z.string().optional().default('test').openapi({
-                    description: 'AudD API token'
-                  })
-                })
-              }
-            }
-          }
+                    description: 'AudD API token',
+                  }),
+                }),
+              },
+            },
+          },
         },
         responses: {
           200: {
@@ -50,22 +49,21 @@ export class RecognitionController implements Routes {
                     release_date: z.string().optional(),
                     label: z.string().optional(),
                     timecode: z.string().optional(),
-                    song_link: z.string().optional()
-                  }).nullable()
-                })
-              }
-            }
+                    song_link: z.string().optional(),
+                  }).nullable(),
+                }),
+              },
+            },
           },
           400: { description: 'Bad request' },
-          500: { description: 'Internal server error' }
-        }
+          500: { description: 'Internal server error' },
+        },
       }),
       async (ctx) => {
         const formData = await ctx.req.formData()
         const file = formData.get('file') as File
         let apiToken = formData.get('api_token') as string
-        
-        // Use environment variable if provided, or fallback to 'test'
+
         const envToken = process.env.AUDD_API_TOKEN
         if (!apiToken || apiToken === 'test') {
           apiToken = envToken || 'test'
@@ -82,7 +80,7 @@ export class RecognitionController implements Routes {
         try {
           const response = await fetch('https://api.audd.io/', {
             method: 'POST',
-            body: auddFormData
+            body: auddFormData,
           })
 
           const data = await response.json()
@@ -91,7 +89,7 @@ export class RecognitionController implements Routes {
           console.error('AudD API error:', error)
           return ctx.json({ status: 'error', message: 'Failed to connect to AudD' }, 500)
         }
-      }
+      },
     )
   }
 }

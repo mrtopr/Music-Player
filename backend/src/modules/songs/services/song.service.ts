@@ -4,7 +4,7 @@ import {
   GetSongByLinkUseCase,
   GetSongSuggestionsUseCase,
   type GetSongByIdArgs,
-  type GetSongSuggestionsArgs
+  type GetSongSuggestionsArgs,
 } from '#modules/songs/use-cases'
 
 export class SongService {

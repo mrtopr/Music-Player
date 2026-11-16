@@ -20,14 +20,14 @@ export class SearchSongsUseCase implements IUseCase<SearchSongsArgs, z.infer<typ
       params: {
         q: query,
         p: page,
-        n: limit
-      }
+        n: limit,
+      },
     })
 
     return {
       total: data.total,
       start: data.start,
-      results: data.results?.map(createSongPayload).slice(0, limit) || []
+      results: data.results?.map(createSongPayload).slice(0, limit) || [],
     }
   }
 }

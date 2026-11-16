@@ -1,4 +1,4 @@
-import { userAgents, type Endpoints } from '#common/constants'
+import { Endpoints, userAgents } from '#common/constants'
 import type { ApiContextEnum } from '#common/enums'
 
 type EndpointValue = (typeof Endpoints)[keyof typeof Endpoints]
@@ -28,37 +28,32 @@ export const useFetch = async <T>({ endpoint, params, context }: FetchParams): P
   const randomUserAgent = userAgents[Math.floor(Math.random() * userAgents.length)]
 
   const response = await fetch(url.toString(), {
-    headers: { 'Content-Type': 'application/json', 'User-Agent': randomUserAgent }
+    headers: { 'Content-Type': 'application/json', 'User-Agent': randomUserAgent },
   })
 
   let rawData = await response.text()
-  
+
   // Clean up any garbage before first brace
   if (rawData.includes('{')) {
-      rawData = rawData.substring(rawData.indexOf('{'))
+    rawData = rawData.substring(rawData.indexOf('{'))
   }
-  
-  // Clean up typical JioSaavn JSON errors:
-  // Sometimes HTML or unescaped characters leak into the JSON
+
+  // Clean up typical JioSaavn JSON errors
   let data
   try {
     data = JSON.parse(rawData)
   } catch (err: any) {
     console.warn('JSON Parse error encountered. Attempting basic cleanup...', err.message)
     try {
-        // Attempt to fix common issues (e.g., unescaped quotes matching text)
-        // or just strip out the offending parts if it's minor... 
-        // For JioSaavn, typically there's just tailing garbage:
-        if (rawData.lastIndexOf('}') !== -1) {
-            const truncated = rawData.substring(0, rawData.lastIndexOf('}') + 1)
-            data = JSON.parse(truncated)
-        } else {
-            throw err
-        }
+      if (rawData.lastIndexOf('}') !== -1) {
+        const truncated = rawData.substring(0, rawData.lastIndexOf('}') + 1)
+        data = JSON.parse(truncated)
+      } else {
+        throw err
+      }
     } catch (rescueErr: any) {
-        console.error('JSON recovery failed, returning fallback empty object', rescueErr.message)
-        // Return a mock object to prevent breaking the flow so images/titles have a fallback
-        data = { success: false, data: {} }
+      console.error('JSON recovery failed, returning fallback empty object', rescueErr.message)
+      data = { success: false, data: {} }
     }
   }
 

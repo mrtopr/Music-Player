@@ -5,7 +5,7 @@ import type { PlaylistAPIResponseModel, PlaylistModel } from '#modules/playlists
 import type { z } from 'zod'
 
 export const createPlaylistPayload = (
-  playlist: z.infer<typeof PlaylistAPIResponseModel>
+  playlist: z.infer<typeof PlaylistAPIResponseModel>,
 ): z.infer<typeof PlaylistModel> => ({
   id: playlist.id,
   name: playlist.title,
@@ -19,5 +19,5 @@ export const createPlaylistPayload = (
   songCount: playlist.list_count ? Number(playlist.list_count) : null,
   artists: playlist.more_info.artists?.map(createArtistMapPayload) || null,
   image: createImageLinks(playlist.image),
-  songs: (playlist.list && playlist.list?.map(createSongPayload)) || null
+  songs: (playlist.list && playlist.list?.map(createSongPayload)) || null,
 })

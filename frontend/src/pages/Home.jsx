@@ -41,10 +41,10 @@ function getCleanGreeting() {
 function SongCard3D({ song, onPlay, isCurrentSong, isPlaying }) {
     const active = isCurrentSong ? 'playing' : '';
     return (
-        <Card3D onClick={() => onPlay(song)} elevation={2} style={{ minWidth: '200px', maxWidth: '220px', flex: '0 0 auto', cursor: 'pointer' }}>
-            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '16px', aspectRatio: '1/1', marginBottom: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
-                <img src={getImageUrl(song.image) || '/mehfil-logo.png'} alt={song.title || song.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.4) 100%)', borderRadius: '16px' }} />
+        <Card3D className="cover-card" onClick={() => onPlay(song)} elevation={2}>
+            <div className="cover-art">
+                <img src={getImageUrl(song.image) || '/mehfil-logo.png'} alt={song.title || song.name} loading="lazy" />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.4) 100%)', borderRadius: 'inherit' }} />
                 {isCurrentSong && isPlaying && (
                     <div style={{ position: 'absolute', bottom: '12px', left: '12px', display: 'flex', alignItems: 'flex-end', gap: '2px', height: '16px' }}>
                         {[1, 2, 3, 4].map(i => (
@@ -61,10 +61,10 @@ function SongCard3D({ song, onPlay, isCurrentSong, isPlaying }) {
                     <Play size={20} fill="#000" />
                 </button>
             </div>
-            <h3 style={{ marginTop: '0.75rem', fontSize: '0.95rem', fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2 }}>
+            <h3 className="cover-title">
                 {song.title?.replace(/&quot;/g, '"') || song.name?.replace(/&quot;/g, '"')}
             </h3>
-            <p style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'rgba(255,255,255,0.6)', margin: '0.25rem 0 0 0' }}>
+            <p className="cover-sub">
                 {song.subtitle || song.primaryArtists || 'Various Artists'}
             </p>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: 'auto', paddingTop: '8px' }}>
@@ -76,15 +76,15 @@ function SongCard3D({ song, onPlay, isCurrentSong, isPlaying }) {
 
 function AlbumCard3D({ album, onOpen }) {
     return (
-        <Card3D onClick={() => onOpen(album)} elevation={2} style={{ minWidth: '200px', maxWidth: '220px', flex: '0 0 auto', cursor: 'pointer' }}>
-            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '16px', aspectRatio: '1/1', marginBottom: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
-                <img src={getImageUrl(album.image) || '/mehfil-logo.png'} alt={album.name || album.title} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 100%)', borderRadius: '16px' }} />
+        <Card3D className="cover-card" onClick={() => onOpen(album)} elevation={2}>
+            <div className="cover-art">
+                <img src={getImageUrl(album.image) || '/mehfil-logo.png'} alt={album.name || album.title} loading="lazy" />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 100%)', borderRadius: 'inherit' }} />
             </div>
-            <h3 style={{ marginTop: '0.75rem', fontSize: '0.95rem', fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2 }}>
+            <h3 className="cover-title">
                 {(album.name || album.title || '').replace(/&quot;/g, '"')}
             </h3>
-            <p style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'rgba(255,255,255,0.6)', margin: '0.25rem 0 0 0' }}>
+            <p className="cover-sub">
                 {album.year ? `${album.year} • Album` : 'Album'}
             </p>
         </Card3D>
@@ -93,15 +93,15 @@ function AlbumCard3D({ album, onOpen }) {
 
 function PlaylistCard3D({ playlist, onOpen }) {
     return (
-        <Card3D onClick={() => onOpen(playlist)} elevation={2} style={{ minWidth: '200px', maxWidth: '220px', flex: '0 0 auto', cursor: 'pointer' }}>
-            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '16px', aspectRatio: '1/1', marginBottom: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
-                <img src={getImageUrl(playlist.image) || '/mehfil-logo.png'} alt={playlist.name || playlist.title} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 100%)', borderRadius: '16px' }} />
+        <Card3D className="cover-card" onClick={() => onOpen(playlist)} elevation={2}>
+            <div className="cover-art">
+                <img src={getImageUrl(playlist.image) || '/mehfil-logo.png'} alt={playlist.name || playlist.title} loading="lazy" />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 100%)', borderRadius: 'inherit' }} />
             </div>
-            <h3 style={{ marginTop: '0.75rem', fontSize: '0.95rem', fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2 }}>
+            <h3 className="cover-title">
                 {(playlist.name || playlist.title || '').replace(/&quot;/g, '"')}
             </h3>
-            <p style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'rgba(255,255,255,0.6)', margin: '0.25rem 0 0 0' }}>
+            <p className="cover-sub">
                 {playlist.songCount ? `${playlist.songCount} songs` : 'Playlist'}
             </p>
         </Card3D>
@@ -182,7 +182,7 @@ function HorizontalScroll3D({ songs, onPlay, currentId, isPlaying, sectionClass,
             <div
                 ref={scrollRef}
                 onScroll={handleScroll}
-                style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '2rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                className="cover-row"
             >
                 {songs.map(song => (
                     renderItem
@@ -214,15 +214,15 @@ function HorizontalScroll3D({ songs, onPlay, currentId, isPlaying, sectionClass,
 
 function ArtistCard3D({ artist, onPlay }) {
     return (
-        <Card3D onClick={() => onPlay(artist)} elevation={2} style={{ minWidth: '170px', maxWidth: '190px', flex: '0 0 auto', textAlign: 'center', cursor: 'pointer' }}>
-            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '50%', marginBottom: '1rem', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
-                <img src={getImageUrl(artist.image) || '/mehfil-logo.png'} alt={artist.title || artist.name} loading="lazy" style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }} />
+        <Card3D className="cover-card artist-card" onClick={() => onPlay(artist)} elevation={2}>
+            <div className="cover-art" style={{ borderRadius: '50%' }}>
+                <img src={getImageUrl(artist.image) || '/mehfil-logo.png'} alt={artist.title || artist.name} loading="lazy" />
                 <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
             </div>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff', margin: '0.5rem 0 0.25rem 0' }}>
+            <h3 className="cover-title">
                 {artist.title || artist.name?.replace(/&quot;/g, '"')}
             </h3>
-            <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', margin: 0 }}>Artist</p>
+            <p className="cover-sub">Artist</p>
         </Card3D>
     );
 }
@@ -269,7 +269,7 @@ function ArtistHorizontalScroll3D({ artists, onPlay }) {
             <div
                 ref={scrollRef}
                 onScroll={handleScroll}
-                style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '2rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                className="cover-row"
             >
                 {artists.map(artist => (
                     <ArtistCard3D key={artist.id} artist={artist} onPlay={onPlay} />
@@ -986,7 +986,7 @@ export default function Home() {
                     />
                     {activeCategory === 0 ? (
                         trending.length > 0 ? (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                            <div className="cover-grid">
                                 {trending.slice(0, 12).map(song => (
                                     <SongCard3D key={song.id} song={song} onPlay={playSong} isCurrentSong={currentId === song.id} isPlaying={isPlaying} />
                                 ))}
@@ -996,7 +996,7 @@ export default function Home() {
                         )
                     ) : categoryLoading ? <LoadingSkeleton /> : (
                         categorySongs.length > 0 ? (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                            <div className="cover-grid">
                                 {categorySongs.map(song => (
                                     <SongCard3D key={song.id} song={song} onPlay={playSong} isCurrentSong={currentId === song.id} isPlaying={isPlaying} />
                                 ))}

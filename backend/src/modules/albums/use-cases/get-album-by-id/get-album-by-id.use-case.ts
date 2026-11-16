@@ -6,13 +6,19 @@ import type { IUseCase } from '#common/types'
 import type { AlbumAPIResponseModel, AlbumModel } from '#modules/albums/models'
 import type { z } from 'zod'
 
-export class GetAlbumByIdUseCase implements IUseCase<string, z.infer<typeof AlbumModel>> {
+export interface GetAlbumByIdArgs {
+  id: string
+}
+
+export class GetAlbumByIdUseCase implements IUseCase<GetAlbumByIdArgs, z.infer<typeof AlbumModel>> {
   constructor() {}
 
-  async execute(id: string) {
+  async execute({ id }: GetAlbumByIdArgs) {
     const { data } = await useFetch<z.infer<typeof AlbumAPIResponseModel>>({
       endpoint: Endpoints.albums.id,
-      params: { albumid: id }
+      params: {
+        albumid: id,
+      },
     })
 
     if (!data) throw new HTTPException(404, { message: 'album not found' })

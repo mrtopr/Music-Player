@@ -1,4 +1,9 @@
-import { GetAlbumByIdUseCase, GetAlbumByLinkUseCase } from '#modules/albums/use-cases'
+import {
+  GetAlbumByIdUseCase,
+  GetAlbumByLinkUseCase,
+  type GetAlbumByIdArgs,
+  type GetAlbumByLinkArgs,
+} from '#modules/albums/use-cases'
 
 export class AlbumService {
   private readonly getAlbumByIdUseCase: GetAlbumByIdUseCase
@@ -9,11 +14,11 @@ export class AlbumService {
     this.getAlbumByLinkUseCase = new GetAlbumByLinkUseCase()
   }
 
-  getAlbumById = (albumId: string) => {
-    return this.getAlbumByIdUseCase.execute(albumId)
+  getAlbumById = (args: GetAlbumByIdArgs) => {
+    return this.getAlbumByIdUseCase.execute(args)
   }
 
-  getAlbumByLink = (albumLink: string) => {
-    return this.getAlbumByLinkUseCase.execute(albumLink)
+  getAlbumByLink = (args: GetAlbumByLinkArgs) => {
+    return this.getAlbumByLinkUseCase.execute(args)
   }
 }

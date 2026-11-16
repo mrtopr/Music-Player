@@ -11,8 +11,8 @@ export interface GetArtistByIdArgs {
   page: number
   songCount: number
   albumCount: number
-  sortBy: 'popularity' | 'latest' | 'alphabetical'
-  sortOrder: 'asc' | 'desc'
+  sortBy: string
+  sortOrder: string
 }
 
 export class GetArtistByIdUseCase implements IUseCase<GetArtistByIdArgs, z.infer<typeof ArtistModel>> {
@@ -23,12 +23,12 @@ export class GetArtistByIdUseCase implements IUseCase<GetArtistByIdArgs, z.infer
       endpoint: Endpoints.artists.id,
       params: {
         artistId,
-        n_song: songCount,
-        n_album: albumCount,
         page,
-        sort_order: sortOrder,
-        category: sortBy
-      }
+        songCount,
+        albumCount,
+        sortBy,
+        sortOrder,
+      },
     })
 
     if (!data) throw new HTTPException(404, { message: 'artist not found' })

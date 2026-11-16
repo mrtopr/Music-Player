@@ -33,7 +33,7 @@ export const SongAPIResponseModel = z.object({
       code: z.string(),
       cacheable: z.string(),
       delete_cached_object: z.string(),
-      reason: z.string()
+      reason: z.string(),
     }),
     cache_state: z.string(),
     has_lyrics: z.string(),
@@ -43,7 +43,7 @@ export const SongAPIResponseModel = z.object({
     artistMap: z.object({
       primary_artists: z.array(ArtistMapAPIResponseModel),
       featured_artists: z.array(ArtistMapAPIResponseModel),
-      artists: z.array(ArtistMapAPIResponseModel)
+      artists: z.array(ArtistMapAPIResponseModel),
     }),
     release_date: z.string(),
     label_url: z.string(),
@@ -52,8 +52,8 @@ export const SongAPIResponseModel = z.object({
     triller_available: z.boolean(),
     request_jiotune_flag: z.boolean(),
     webp: z.string(),
-    lyrics_id: z.string()
-  })
+    lyrics_id: z.string(),
+  }),
 })
 
 export const SongModel = z.object({
@@ -71,16 +71,18 @@ export const SongModel = z.object({
   lyricsId: z.string().nullable(),
   url: z.string(),
   copyright: z.string().nullable(),
+  /** Flat, comma separated artist names — e.g. "Arijit Singh, Pritam". */
+  primaryArtists: z.string(),
   album: z.object({
     id: z.string().nullable(),
     name: z.string().nullable(),
-    url: z.string().nullable()
+    url: z.string().nullable(),
   }),
   artists: z.object({
     primary: z.array(ArtistMapModel),
     featured: z.array(ArtistMapModel),
-    all: z.array(ArtistMapModel)
+    all: z.array(ArtistMapModel),
   }),
   image: z.array(DownloadLinkModel),
-  downloadUrl: z.array(DownloadLinkModel)
+  downloadUrl: z.array(DownloadLinkModel),
 })

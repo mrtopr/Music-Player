@@ -28,9 +28,9 @@ export class ModulesController implements Routes {
               description: 'Comma-separated list of languages',
               type: 'string',
               example: 'hindi,english',
-              default: 'hindi,english'
-            })
-          })
+              default: 'hindi,english',
+            }),
+          }),
         },
         responses: {
           200: {
@@ -39,18 +39,18 @@ export class ModulesController implements Routes {
               'application/json': {
                 schema: z.object({
                   success: z.boolean(),
-                  data: ModulesModel
-                })
-              }
-            }
-          }
-        }
+                  data: ModulesModel,
+                }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
         const { language } = ctx.req.valid('query')
         const response = await this.modulesService.getModules(language || 'hindi,english')
         return ctx.json({ success: true, data: response })
-      }
+      },
     )
 
     this.controller.openapi(
@@ -68,17 +68,17 @@ export class ModulesController implements Routes {
               'application/json': {
                 schema: z.object({
                   success: z.boolean(),
-                  data: TrendingModel
-                })
-              }
-            }
-          }
-        }
+                  data: TrendingModel,
+                }),
+              },
+            },
+          },
+        },
       }),
       async (ctx) => {
         const response = await this.modulesService.getTrending()
         return ctx.json({ success: true, data: response })
-      }
+      },
     )
   }
 }

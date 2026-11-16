@@ -16,9 +16,9 @@ export const SearchArtistAPIResponseModel = z.object({
       type: z.string(),
       mini_obj: z.boolean(),
       isRadioPresent: z.boolean(),
-      is_followed: z.boolean()
-    })
-  )
+      is_followed: z.boolean(),
+    }),
+  ),
 })
 
 export const SearchArtistModel = z.object({
@@ -31,7 +31,7 @@ export const SearchArtistModel = z.object({
       role: z.string(),
       type: z.string(),
       image: z.array(DownloadLinkModel),
-      url: z.string()
-    })
-  )
+      url: z.string(),
+    }),
+  ),
 })

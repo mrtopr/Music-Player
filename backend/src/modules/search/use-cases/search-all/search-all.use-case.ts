@@ -10,7 +10,7 @@ export class SearchAllUseCase implements IUseCase<string, z.infer<typeof SearchM
   async execute(query: string): Promise<z.infer<typeof SearchModel>> {
     const { data } = await useFetch<z.infer<typeof SearchAPIResponseModel>>({
       endpoint: Endpoints.search.all,
-      params: { query }
+      params: { query },
     })
 
     if (!data) throw new HTTPException(404, { message: `no results found for ${query}` })

@@ -25,14 +25,14 @@ export const API_BASE_URL = (() => {
 
     // 3. Auto-detection fallback
     if (!baseUrl) {
-        if (window.location.protocol === 'file:') baseUrl = 'http://localhost:3000';
+        if (window.location.protocol === 'file:') baseUrl = 'http://localhost:3001';
         else {
             const host = window.location.hostname;
             const isLocalHost = host === 'localhost' || host === '127.0.0.1' || host === '::1';
             const isPrivateIp = /^(10\.|172\.(1[6-9]|2\d|3[0-1])\.|192\.168\.)/.test(host);
 
             if (isLocalHost || isPrivateIp) {
-                baseUrl = `http://${host}:3000`;
+                baseUrl = `http://${host}:3001`;
             }
         }
     }
@@ -94,7 +94,7 @@ export async function apiFetch(path, params = {}) {
         // Fallback for YouTube endpoints if primary backend is remote and returns 404 or fails
         if ((!res || !res.ok) && path.startsWith('/api/youtube')) {
             try {
-                const localUrl = new URL('http://localhost:3000' + path);
+                const localUrl = new URL('http://localhost:3001' + path);
                 Object.entries(params).forEach(([k, v]) => localUrl.searchParams.set(k, v));
                 const localRes = await fetch(localUrl.toString());
                 if (localRes.ok) res = localRes;
@@ -173,11 +173,11 @@ export function getAudioUrl(downloadUrls) {
     if (!url) return null;
     // YouTube stream paths must go through the backend proxy with http (never https on localhost)
     if (url.startsWith('/api/youtube')) {
-        const base = (API_BASE_URL && !API_BASE_URL.includes('vercel.app')) ? API_BASE_URL : 'http://localhost:3000';
+        const base = (API_BASE_URL && !API_BASE_URL.includes('vercel.app')) ? API_BASE_URL : 'http://localhost:3001';
         return base + url;
     }
     if (url.startsWith('/')) {
-        return (API_BASE_URL || 'http://localhost:3000') + url;
+        return (API_BASE_URL || 'http://localhost:3001') + url;
     }
     // Never upgrade localhost URLs to https — the backend runs on plain HTTP
     if (url.includes('localhost')) return url;

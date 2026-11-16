@@ -22,8 +22,8 @@ export class GetPlaylistByLinkUseCase implements IUseCase<GetPlaylistByLinkArgs,
         token,
         n: limit,
         p: page,
-        type: 'playlist'
-      }
+        type: 'playlist',
+      },
     })
 
     if (!data) throw new HTTPException(404, { message: 'playlist not found' })
@@ -33,7 +33,7 @@ export class GetPlaylistByLinkUseCase implements IUseCase<GetPlaylistByLinkArgs,
     return {
       ...playlist,
       songCount: playlist?.songs?.length || null,
-      songs: playlist?.songs?.slice(0, limit) || []
+      songs: playlist?.songs?.slice(0, limit) || [],
     }
   }
 }
