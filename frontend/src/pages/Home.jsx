@@ -74,6 +74,40 @@ function SongCard3D({ song, onPlay, isCurrentSong, isPlaying }) {
     );
 }
 
+function AlbumCard3D({ album, onOpen }) {
+    return (
+        <Card3D onClick={() => onOpen(album)} elevation={2} style={{ minWidth: '200px', maxWidth: '220px', flex: '0 0 auto', cursor: 'pointer' }}>
+            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '16px', aspectRatio: '1/1', marginBottom: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
+                <img src={getImageUrl(album.image) || '/mehfil-logo.png'} alt={album.name || album.title} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 100%)', borderRadius: '16px' }} />
+            </div>
+            <h3 style={{ marginTop: '0.75rem', fontSize: '0.95rem', fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2 }}>
+                {(album.name || album.title || '').replace(/&quot;/g, '"')}
+            </h3>
+            <p style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'rgba(255,255,255,0.6)', margin: '0.25rem 0 0 0' }}>
+                {album.year ? `${album.year} • Album` : 'Album'}
+            </p>
+        </Card3D>
+    );
+}
+
+function PlaylistCard3D({ playlist, onOpen }) {
+    return (
+        <Card3D onClick={() => onOpen(playlist)} elevation={2} style={{ minWidth: '200px', maxWidth: '220px', flex: '0 0 auto', cursor: 'pointer' }}>
+            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '16px', aspectRatio: '1/1', marginBottom: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
+                <img src={getImageUrl(playlist.image) || '/mehfil-logo.png'} alt={playlist.name || playlist.title} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 100%)', borderRadius: '16px' }} />
+            </div>
+            <h3 style={{ marginTop: '0.75rem', fontSize: '0.95rem', fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2 }}>
+                {(playlist.name || playlist.title || '').replace(/&quot;/g, '"')}
+            </h3>
+            <p style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'rgba(255,255,255,0.6)', margin: '0.25rem 0 0 0' }}>
+                {playlist.songCount ? `${playlist.songCount} songs` : 'Playlist'}
+            </p>
+        </Card3D>
+    );
+}
+
 function SectionHeader3D({ title, onShowMore }) {
     return (
         <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', paddingLeft: '0.5rem' }}>
@@ -106,7 +140,7 @@ function SectionHeader3D({ title, onShowMore }) {
     );
 }
 
-function HorizontalScroll3D({ songs, onPlay, currentId, isPlaying, sectionClass }) {
+function HorizontalScroll3D({ songs, onPlay, currentId, isPlaying, sectionClass, renderItem }) {
     const scrollRef = React.useRef(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
@@ -151,7 +185,9 @@ function HorizontalScroll3D({ songs, onPlay, currentId, isPlaying, sectionClass 
                 style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '2rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {songs.map(song => (
-                    <SongCard3D key={song.id || song.title} song={song} onPlay={onPlay} isCurrentSong={currentId === song.id} isPlaying={isPlaying} />
+                    renderItem
+                        ? renderItem(song)
+                        : <SongCard3D key={song.id || song.title} song={song} onPlay={onPlay} isCurrentSong={currentId === song.id} isPlaying={isPlaying} />
                 ))}
             </div>
             <div style={{
@@ -412,8 +448,22 @@ export default function Home() {
             apiFetch('/api/modules', { language: 'hindi,english' })
                 .then(modules => {
                     if (modules) {
+                        // The backend normalises the browse shelves by type:
+                        // `trending.songs` are playable songs, `trending.albums`
+                        // and `newReleases.albums` are albums, `playlists` are
+                        // playlists.
                         setTrending(modules.trending?.songs || []);
-                        setNewReleases(modules.trending?.albums || modules.albums || []);
+                        // The two album shelves overlap upstream — same id in
+                        // both would break React's key uniqueness.
+                        const albumIds = new Set();
+                        setNewReleases([
+                            ...(modules.newReleases?.albums || []),
+                            ...(modules.trending?.albums || []),
+                        ].filter(album => {
+                            if (albumIds.has(album.id)) return false;
+                            albumIds.add(album.id);
+                            return true;
+                        }));
                         setPlaylists(modules.playlists || []);
                     }
                     setLoading(false);
@@ -479,16 +529,19 @@ export default function Home() {
     };
 
     const handleCategory = useCallback(async (index) => {
-        const category = CATEGORIES[index].label;
+        const category = CATEGORIES[index];
         setActiveCategory(index);
-        themeManager.applyTheme(category);
+        themeManager.applyTheme(category.label);
+        // "All Music" is the trending list that is already loaded — no need
+        // for a second request, and it keeps the page from being empty.
         if (index === 0) { setCategorySongs([]); return; }
         setCategoryLoading(true);
         try {
-            const res = await apiFetch('/api/search/songs', { query: CATEGORIES[index].query, language: 'hindi', limit: 15 });
+            const res = await apiFetch('/api/search/songs', { query: category.query, language: 'hindi', limit: 15 });
             setCategorySongs(res.results || []);
         } catch (err) {
             console.error('Category fetch failed:', err);
+            setCategorySongs([]);
         } finally {
             setCategoryLoading(false);
         }
@@ -925,16 +978,71 @@ export default function Home() {
                 </div>
             </div>
 
-            {activeCategory > 0 && (
+            {activeCategory >= 0 && (
                 <div style={{ marginBottom: '1.5rem', paddingLeft: '0.5rem' }}>
-                    <SectionHeader3D title={CATEGORIES[activeCategory].label} />
-                    {categoryLoading ? <LoadingSkeleton /> : (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.5rem' }}>
-                            {categorySongs.map(song => (
-                                <SongCard3D key={song.id} song={song} onPlay={playSong} isCurrentSong={currentId === song.id} isPlaying={isPlaying} />
-                            ))}
-                        </div>
+                    <SectionHeader3D
+                        title={activeCategory === 0 ? 'Trending Now' : CATEGORIES[activeCategory].label}
+                        onShowMore={activeCategory === 0 ? undefined : () => navigate(`/search?q=${encodeURIComponent(CATEGORIES[activeCategory].query)}`)}
+                    />
+                    {activeCategory === 0 ? (
+                        trending.length > 0 ? (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                                {trending.slice(0, 12).map(song => (
+                                    <SongCard3D key={song.id} song={song} onPlay={playSong} isCurrentSong={currentId === song.id} isPlaying={isPlaying} />
+                                ))}
+                            </div>
+                        ) : (
+                            <LoadingSkeleton />
+                        )
+                    ) : categoryLoading ? <LoadingSkeleton /> : (
+                        categorySongs.length > 0 ? (
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                                {categorySongs.map(song => (
+                                    <SongCard3D key={song.id} song={song} onPlay={playSong} isCurrentSong={currentId === song.id} isPlaying={isPlaying} />
+                                ))}
+                            </div>
+                        ) : (
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No songs found for this category right now.</p>
+                        )
                     )}
+                </div>
+            )}
+
+            {trending.length > 0 && (
+                <div style={{ marginBottom: '1.5rem', paddingLeft: '0.5rem' }}>
+                    <SectionHeader3D title="Hot Right Now" onShowMore={() => navigate('/section/trending')} />
+                    <HorizontalScroll3D songs={trending} onPlay={playSong} currentId={currentId} isPlaying={isPlaying} />
+                </div>
+            )}
+
+            {newReleases.length > 0 && (
+                <div style={{ marginBottom: '1.5rem', paddingLeft: '0.5rem' }}>
+                    <SectionHeader3D title="New Albums" onShowMore={() => navigate('/section/newReleases')} />
+                    <HorizontalScroll3D
+                        songs={newReleases}
+                        renderItem={album => (
+                            <AlbumCard3D key={album.id} album={album} onOpen={item => navigate(`/album/${item.id}`)} />
+                        )}
+                    />
+                </div>
+            )}
+
+            {playlists.length > 0 && (
+                <div style={{ marginBottom: '1.5rem', paddingLeft: '0.5rem' }}>
+                    <SectionHeader3D title="Featured Playlists" onShowMore={() => navigate('/playlists')} />
+                    <HorizontalScroll3D
+                        songs={playlists}
+                        renderItem={playlist => (
+                            <PlaylistCard3D key={playlist.id} playlist={playlist} onOpen={item => navigate(`/playlist/${item.id}`)} />
+                        )}
+                    />
+                </div>
+            )}
+
+            {artists.length > 0 && (
+                <div style={{ marginBottom: '1.5rem', paddingLeft: '0.5rem' }}>
+                    <SectionHeader3D title="Popular Artists" onShowMore={() => navigate('/artists')} />
+                    <ArtistHorizontalScroll3D artists={artists} onPlay={handlePlayMedia} />
                 </div>
             )}
         </div>
