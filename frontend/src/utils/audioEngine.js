@@ -1,145 +1,75 @@
 /**
- * Mehfil Pro Audio Engine (AutoMix Capable)
- * Singleton management of AudioContext and GainNodes to prevent re-creation errors.
+ * Compatibility shim.
+ *
+ * The AutoMix engine (`src/automix`) now owns the Web Audio graph and both
+ * decks. This module keeps the old `audioEngine.*` API working so the rest of
+ * the player code does not have to change all at once.
+ *
+ * @see ../automix/engine/AutoMixEngine.js
  */
 
-class ProAudioEngine {
-    constructor() {
-        this.ctx = null;
-        this.sourceA = null;
-        this.sourceB = null;
-        this.gainA = null;
-        this.gainB = null;
-        this.filters = null;
-        this.initialized = false;
-        this.currentFadeId = 0;
-    }
+import { autoMixEngine } from '../automix/index.js';
 
-    init(audioA, audioB) {
-        if (this.initialized) return;
+export const audioEngine = {
+    get initialized() {
+        return !!autoMixEngine.ctx;
+    },
 
-        try {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            this.ctx = new AudioContext();
+    get ctx() {
+        return autoMixEngine.ctx;
+    },
 
-            // Create Gain Nodes
-            this.gainA = this.ctx.createGain();
-            this.gainB = this.ctx.createGain();
-
-            this.gainA.gain.value = 1;
-            this.gainB.gain.value = 0;
-
-            // Sources
-            this.sourceA = this.ctx.createMediaElementSource(audioA);
-            this.sourceB = this.ctx.createMediaElementSource(audioB);
-
-            // Filters (EQ)
-            const bass = this.ctx.createBiquadFilter();
-            bass.type = 'lowshelf';
-            bass.frequency.value = 200;
-
-            const mid = this.ctx.createBiquadFilter();
-            mid.type = 'peaking';
-            mid.frequency.value = 1000;
-
-            const treble = this.ctx.createBiquadFilter();
-            treble.type = 'highshelf';
-            treble.frequency.value = 3000;
-
-            // Chain: Source → Gain → EQ → Destination
-            this.sourceA.connect(this.gainA);
-            this.sourceB.connect(this.gainB);
-
-            this.gainA.connect(bass);
-            this.gainB.connect(bass);
-
-            bass.connect(mid);
-            mid.connect(treble);
-            treble.connect(this.ctx.destination);
-
-            this.filters = { bass, mid, treble };
-            this.initialized = true;
-            console.log('[ProAudioEngine] Hard-initialized successfully.');
-        } catch (e) {
-            console.error('[ProAudioEngine] Initialization failed:', e);
-        }
-    }
+    init() {
+        autoMixEngine.init();
+    },
 
     async resume() {
-        if (this.ctx && this.ctx.state === 'suspended') {
-            await this.ctx.resume();
-        }
-    }
+        return autoMixEngine.resume();
+    },
 
+    /** Legacy even crossfade — now a scheduled pair of automation curves. */
     crossfade(fromChannel, toChannel, duration = 5000, targetVolume = 0.8) {
-        if (!this.initialized) return;
+        const from = autoMixEngine.decks?.[fromChannel];
+        const to = autoMixEngine.decks?.[toChannel];
+        if (!from || !to || !autoMixEngine.ctx) return;
 
-        const durationSec = duration / 1000;
-        const now = this.ctx.currentTime;
-        const fromGain = fromChannel === 'A' ? this.gainA : this.gainB;
-        const toGain = toChannel === 'A' ? this.gainA : this.gainB;
-
-        const target = Math.max(0.0001, targetVolume);
-
-        // Generate Smoothstep Curve (Ease-In-Out) [progress * progress * (3 - 2 * progress)]
+        const now = autoMixEngine.ctx.currentTime;
         const steps = 50;
         const outCurve = new Float32Array(steps);
         const inCurve = new Float32Array(steps);
-
         for (let i = 0; i < steps; i++) {
             const progress = i / (steps - 1);
-            const eased = progress * progress * (3 - 2 * progress);
-            outCurve[i] = Math.max(0.0001, targetVolume * (1 - eased));
-            inCurve[i] = Math.max(0.0001, targetVolume * eased);
+            // Equal-power law keeps the perceived loudness constant.
+            outCurve[i] = Math.max(0.0001, targetVolume * Math.cos((progress * Math.PI) / 2));
+            inCurve[i] = Math.max(0.0001, targetVolume * Math.sin((progress * Math.PI) / 2));
         }
 
-        fromGain.gain.cancelScheduledValues(now);
-        fromGain.gain.setValueCurveAtTime(outCurve, now, durationSec);
+        from.gain.gain.cancelScheduledValues(now);
+        from.gain.gain.setValueCurveAtTime(outCurve, now, duration / 1000);
+        to.gain.gain.cancelScheduledValues(now);
+        to.gain.gain.setValueCurveAtTime(inCurve, now, duration / 1000);
+    },
 
-        toGain.gain.cancelScheduledValues(now);
-        toGain.gain.setValueCurveAtTime(inCurve, now, durationSec);
-        
-        const fadeId = ++this.currentFadeId;
+    sync(channel, volume) {
+        autoMixEngine.syncDeck(channel, volume);
+    },
 
-        // Final Hard Snap
-        setTimeout(() => {
-            if (this.initialized && this.currentFadeId === fadeId) {
-                const nowSnap = this.ctx.currentTime;
-                fromGain.gain.cancelScheduledValues(nowSnap);
-                toGain.gain.cancelScheduledValues(nowSnap);
-                fromGain.gain.value = 0;
-                toGain.gain.value = target;
-            }
-        }, duration + 100);
-    }
+    setVolume(channel, volume) {
+        autoMixEngine.setMasterVolume(volume);
+        autoMixEngine.setDeckVolume(channel, volume);
+    },
 
+    get filters() {
+        return autoMixEngine.decks?.[autoMixEngine.activeDeckId]?.eq ?? null;
+    },
 
-    sync(activeChannel, volume) {
-        if (!this.initialized) return;
-        const now = this.ctx.currentTime;
+    setUserEq(key, value) {
+        autoMixEngine.setUserEq(key, value);
+    },
 
-        const active = activeChannel === 'A' ? this.gainA : this.gainB;
-        const idle = activeChannel === 'A' ? this.gainB : this.gainA;
+    resetChannel(channel) {
+        autoMixEngine.decks?.[channel]?.resetChain();
+    },
+};
 
-        active.gain.cancelScheduledValues(now);
-        active.gain.setTargetAtTime(volume, now, 0.05);
-
-        idle.gain.cancelScheduledValues(now);
-        idle.gain.setTargetAtTime(0, now, 0.05);
-    }
-
-
-
-    setVolume(activeChannel, vol) {
-        if (!this.initialized) return;
-        const activeGain = activeChannel === 'A' ? this.gainA : this.gainB;
-        const now = this.ctx.currentTime;
-        activeGain.gain.cancelScheduledValues(now);
-        activeGain.gain.setTargetAtTime(vol, now, 0.02);
-    }
-}
-
-
-
-
-export const audioEngine = new ProAudioEngine();
+export default audioEngine;

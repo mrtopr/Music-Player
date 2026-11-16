@@ -4,6 +4,7 @@ import { getPreferredGenres, savePreferredGenres, getGenreCounts } from '../util
 import { ALL_GENRES, GENRE_PROFILES } from '../utils/genreProfiles.js';
 import { usePlayerStore } from '../store/usePlayerStore.js';
 import { useAuthStore } from '../store/useAuthStore';
+import { getAvailableProviders, clearCache as clearLyricsCache } from '../utils/lyricsProvider.js';
 
 // Static list — defined outside component to avoid re-creation on every render
 const PRESET_AVATARS = [
@@ -43,6 +44,7 @@ export default function Settings() {
         }
     };
     const [auddToken, setAuddToken] = useState(localStorage.getItem('audd_api_token') || '');
+    const [lyricsProvider, setLyricsProvider] = useState(localStorage.getItem('mehfil_lyrics_provider') || 'auto');
     const [preferredGenres, setPreferredGenres] = useState(getPreferredGenres());
     const [genreCounts, setGenreCounts] = useState(getGenreCounts());
     const [editingGenres, setEditingGenres] = useState(false);
@@ -439,15 +441,64 @@ export default function Settings() {
                         )}
                     </section>
 
+                    {/* Lyrics Provider Card */}
+                    <section className="settings-card" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,255,255,0.08)' }}>
+                        <h3 style={{ margin: '0 0 1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>
+                            <Mic size={20} /> Lyrics Provider
+                        </h3>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+                            Lyrics are fetched from five sources — LRCLIB, NetEase Cloud Music, QQ Music, Kugou and
+                            lyrics.ovh. In Auto mode Mehfil asks them in parallel and falls back to the next source
+                            whenever one has no match, so the lyrics panel keeps working even if a provider goes down.
+                        </p>
+                        <div style={{ display: 'grid', gap: '0.75rem' }}>
+                            {getAvailableProviders().map(p => (
+                                <button
+                                    key={p.id}
+                                    onClick={() => {
+                                        setLyricsProvider(p.id);
+                                        try { localStorage.setItem('mehfil_lyrics_provider', p.id); } catch {}
+                                        // Drop cached lyrics so the new source is used immediately.
+                                        clearLyricsCache();
+                                        const activeSong = usePlayerStore.getState().currentSong;
+                                        if (activeSong) usePlayerStore.getState().fetchLyricsForSong(activeSong, true);
+                                    }}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        background: lyricsProvider === p.id ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.03)',
+                                        border: lyricsProvider === p.id ? '1px solid #8B5CF6' : '1px solid rgba(255,255,255,0.08)',
+                                        color: '#fff',
+                                        borderRadius: '12px',
+                                        padding: '1rem',
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s',
+                                        fontSize: '0.9rem',
+                                        fontWeight: 500
+                                    }}
+                                    onMouseEnter={(e) => { if (lyricsProvider !== p.id) e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
+                                    onMouseLeave={(e) => { if (lyricsProvider !== p.id) e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+                                >
+                                    <span style={{ fontWeight: 600 }}>{p.name}</span>
+                                    {lyricsProvider === p.id && <Check size={14} fill="#8B5CF6" color="#8B5CF6" />}
+                                </button>
+                            ))}
+                        </div>
+                    </section>
+
                     {/* Audio & Performance */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
                         <section className="settings-card" style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '24px', padding: '2rem', border: '1px solid rgba(255,255,255,0.08)' }}>
                             <h3 style={{ margin: '0 0 1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>
                                 <Mic size={20} /> Music Recognition
                             </h3>
-                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+                            {/* A <div>, not a <p>: the external-link icon renders a
+                                <div> wrapper and a <div> is not allowed inside a
+                                <p> (the browser reparents it and React warns). */}
+                            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
                                 Identify songs playing around you. Get your token at <a href="https://audd.io" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-primary)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>audd.io <ExternalLink size={12} /></a>
-                            </p>
+                            </div>
                             <div style={{ display: 'grid', gap: '0.8rem' }}>
                                 <label style={{ color: '#fff', fontSize: '0.85rem' }}>AudD API Token</label>
                                 <input 
@@ -491,14 +542,17 @@ export default function Settings() {
                                 <Sparkles size={20} /> Playback Settings
                             </h3>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                {/* `flexWrap` keeps the segmented control from being
+                                    pushed past the viewport on narrow screens —
+                                    it drops to its own line instead. */}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
                                     <div style={{ marginRight: '1rem' }}>
                                         <div style={{ color: '#fff', fontWeight: 600, fontSize: '1rem', marginBottom: '4px' }}>Music Source Provider</div>
                                         <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.4 }}>
                                             Select where songs are fetched from. Auto mode searches both JioSaavn and YouTube Music simultaneously.
                                         </div>
                                     </div>
-                                    <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '4px', gap: '4px' }}>
+                                    <div style={{ display: 'flex', flexShrink: 0, background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '4px', gap: '4px' }}>
                                         {[
                                             { id: 'auto', label: '✨ Auto' },
                                             { id: 'saavn', label: '🎵 Saavn' },

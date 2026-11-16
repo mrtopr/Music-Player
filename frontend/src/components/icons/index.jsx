@@ -198,6 +198,14 @@ import XIcon from './XIcon';
 import YoutubeIcon from './YoutubeIcon';
 import ZapIcon from './ZapIcon';
 
+// Volume state wrappers — ensure the mute glyph is always the muted variant
+const MutedVolumeGlyph = forwardRef((props, ref) => (
+  <VolumeToggleIcon ref={ref} {...props} isMuted={true} volume={0} />
+));
+const ActiveVolumeGlyph = forwardRef((props, ref) => (
+  <VolumeToggleIcon ref={ref} {...props} isMuted={false} />
+));
+
 // Comprehensive Icon Registry Map
 const ICON_MAP = {
   // Playback & Audio
@@ -213,12 +221,12 @@ const ICON_MAP = {
   'skipback': SkipBackIcon,
   'fast-forward': SkipForwardIcon,
   'rewind': SkipBackIcon,
-  'volume': VolumeIcon,
-  'volume-2': VolumeIcon,
-  'volume2': VolumeIcon,
-  'volume-x': VolumeToggleIcon,
-  'volumex': VolumeToggleIcon,
-  'volume-mute': VolumeToggleIcon,
+  'volume': ActiveVolumeGlyph,
+  'volume-2': ActiveVolumeGlyph,
+  'volume2': ActiveVolumeGlyph,
+  'volume-x': MutedVolumeGlyph,
+  'volumex': MutedVolumeGlyph,
+  'volume-mute': MutedVolumeGlyph,
   'shuffle': ShuffleIcon,
   'repeat': RepeatIcon,
   'repeat-1': RepeatIcon,
@@ -436,8 +444,8 @@ export const PauseCircle = forwardRef((props, ref) => <PauseIcon ref={ref} {...p
 export const SkipBack = forwardRef((props, ref) => <SkipBackIcon ref={ref} {...props} />);
 export const SkipForward = forwardRef((props, ref) => <SkipForwardIcon ref={ref} {...props} />);
 export const Volume = forwardRef((props, ref) => <VolumeIcon ref={ref} {...props} />);
-export const Volume2 = forwardRef((props, ref) => <VolumeIcon ref={ref} {...props} />);
-export const VolumeX = forwardRef((props, ref) => <VolumeToggleIcon ref={ref} {...props} />);
+export const Volume2 = forwardRef((props, ref) => <VolumeToggleIcon ref={ref} {...props} isMuted={false} />);
+export const VolumeX = forwardRef((props, ref) => <VolumeToggleIcon ref={ref} {...props} isMuted={true} />);
 export const Heart = forwardRef((props, ref) => <HeartIcon ref={ref} {...props} />);
 export const Shuffle = forwardRef((props, ref) => <ShuffleIcon ref={ref} {...props} />);
 export const Repeat = forwardRef((props, ref) => <RepeatIcon ref={ref} {...props} />);

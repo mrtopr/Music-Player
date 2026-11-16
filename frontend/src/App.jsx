@@ -25,6 +25,7 @@ import About from './pages/About';
 import Stats from './pages/Stats';
 import Auth from './pages/Auth';
 import Genres from './pages/Genres';
+import BackgroundAnimation from './components/common/BackgroundAnimation';
 
 function AppContent() {
     const { user, checkAuth } = useAuthStore();
@@ -110,6 +111,7 @@ function AppContent() {
     return (
         <>
             <div className="screen">
+                <BackgroundAnimation />
                 <div className="mobile-overlay" id="sidebarOverlay" onClick={() => {
                     document.querySelector('.sidebar')?.classList.remove('open');
                     document.querySelector('.mobile-overlay')?.classList.remove('visible');

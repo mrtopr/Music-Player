@@ -4041,6 +4041,23 @@ div.featured-playlists h2 {
   overflow: visible;
 }
 
+/* ── FULLSCREEN PLAYER (v3) — ALWAYS MOUNTED OVERLAY ─────────────────────
+   The v3 player stays mounted at all times so it can animate in and out.
+   While it is closed it must not touch the page underneath: several of its
+   children set `pointer-events: auto` inline, which re-enables hit-testing
+   for them even though the container says `pointer-events: none`. That made
+   the invisible player swallow taps meant for the mini player / page.
+
+   `visibility: hidden` (set inline by the component) keeps the whole
+   subtree out of hit-testing, and the rules below additionally make it inert
+   the moment the close animation starts, so taps pass straight through
+   during the 0.6 s fade-out instead of being swallowed.
+   `!important` is required to beat the inline `pointer-events: auto`. */
+.fullscreen-player-v3:not(.active),
+.fullscreen-player-v3:not(.active) * {
+  pointer-events: none !important;
+}
+
 /* ========== LOADING INDICATORS ========== */
 .loading-container {
   display: flex;

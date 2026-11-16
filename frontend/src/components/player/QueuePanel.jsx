@@ -49,7 +49,10 @@ export default function QueuePanel({ visible, onClose }) {
                 flexDirection: 'column', 
                 boxShadow: '-8px 0 32px rgba(0,0,0,0.4)', 
                 transform: visible ? 'translateX(0)' : 'translateX(100%)', 
-                transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s linear',
+                // Keeps the closed panel out of hit-testing and out of the
+                // keyboard tab order while it sits off-screen.
+                visibility: visible ? 'visible' : 'hidden',
                 pointerEvents: visible ? 'auto' : 'none'
             }}>
 

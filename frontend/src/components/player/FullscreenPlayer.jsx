@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
     ChevronDown, ChevronUp, ArrowLeft, Play, Pause, SkipBack, SkipForward,
-    Shuffle, Repeat, Repeat1, Volume2, VolumeX, Heart,
+    Shuffle, Repeat, Repeat1, Heart,
     MoreHorizontal, MoreVertical, Monitor, ListMusic, Sparkles,
     User, Disc, Share2, Download, Plus, Check, Loader2,
     SlidersHorizontal, Mic, Radio, CheckCircle, Tv,
     Clock, FolderPlus, X
 } from '../common/LordIcon';
+import { VolumeToggleIcon } from '../../components/icons/VolumeToggleIcon';
 
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { usePlaylistStore } from '../../store/usePlaylistStore';
-import { getImageUrl, getAudioUrl } from '../../api/client.js';
+import { getImageUrl, getAudioUrl, API_BASE_URL } from '../../api/client.js';
+import AutoMixOverlay from '../../automix/ui/AutoMixOverlay.jsx';
 import { useNavigate } from 'react-router-dom';
 import { formatTime, decodeEntities, getSafeImage } from '../../utils/helpers.js';
 import { useBackButtonClose } from '../../hooks/useBackButtonClose.js';
@@ -134,7 +136,7 @@ function FullscreenLyricsPanel() {
                     <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600 }}>Lyrics not available</p>
                     {currentSong && (
                         <button
-                            onClick={() => fetchLyricsForSong(currentSong)}
+                            onClick={() => fetchLyricsForSong(currentSong, true)}
                             style={{
                                 padding: '6px 16px', borderRadius: '20px',
                                 background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
@@ -554,6 +556,15 @@ function FullscreenArtworkSection({ currentSong, title, prevSong, nextSong, isPl
     const currentTime = usePlayerStore(state => state.currentTime);
     const duration = usePlayerStore(state => state.duration);
 
+    const [isMobile, setIsMobile] = useState(
+        () => typeof window !== 'undefined' && (window.innerWidth < 768 || 'ontouchstart' in window),
+    );
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const [dragOffset, setDragOffset] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
     const [showIndicator, setShowIndicator] = useState(null); // 'rewind' | 'forward' | null
@@ -632,7 +643,7 @@ function FullscreenArtworkSection({ currentSong, title, prevSong, nextSong, isPl
     const scale = 1 - Math.abs(dragOffset) / 1000; // Slight scale down during drag
 
     return (
-        <div className="fs-artwork-section" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', minHeight: '380px' }}>
+        <div className="fs-artwork-section" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', minHeight: isMobile ? '240px' : '380px', flexShrink: 1, overflow: 'hidden' }}>
             <div 
                 className={`fs-artwork-wrapper ${isPlaying ? 'playing' : ''}`} 
                 onTouchStart={handleTouchStart}
@@ -700,6 +711,8 @@ export default function FullscreenPlayer({ visible, onClose }) {
     const prevSong = usePlayerStore(state => state.prevSong);
     const volume = usePlayerStore(state => state.volume);
     const setVolume = usePlayerStore(state => state.setVolume);
+    const isMuted = usePlayerStore(state => state.isMuted);
+    const toggleMute = usePlayerStore(state => state.toggleMute);
     const shuffle = usePlayerStore(state => state.shuffle);
     const toggleShuffle = usePlayerStore(state => state.toggleShuffle);
     const repeat = usePlayerStore(state => state.repeat);
@@ -715,7 +728,13 @@ export default function FullscreenPlayer({ visible, onClose }) {
 
     const likedSongs = usePlayerStore(state => state.likedSongs);
     const toggleLike = usePlayerStore(state => state.toggleLike);
-    const toggleAutoMix = usePlayerStore(state => state.toggleAutoMix);
+    const mixEnabled = usePlayerStore(state => state.mixEnabled);
+    const automixPhase = usePlayerStore(state => state.automix?.phase);
+    // The AutoMix view takes over the player while the blend runs. The
+    // preparation happens in the background, so the normal player stays
+    // visible until the transition actually starts.
+    const automixTakingOver = mixEnabled
+        && (automixPhase === 'scheduled' || automixPhase === 'mixing' || automixPhase === 'done');    const toggleAutoMix = usePlayerStore(state => state.toggleAutoMix);
 
     const playlists = usePlaylistStore(state => state.playlists);
     const addSongToPlaylist = usePlaylistStore(state => state.addSongToPlaylist);
@@ -747,16 +766,15 @@ export default function FullscreenPlayer({ visible, onClose }) {
     useEffect(() => {
         if (!currentSong) return;
         const fetchFeatures = async () => {
-            const ML_API_URL = import.meta.env.VITE_ML_SERVICE_URL;
-            if (!ML_API_URL) {
-                setMlFeatures(null);
-                return;
-            }
+            // Goes through our own backend proxy — the ML microservice may be
+            // offline, in which case the backend answers 503 and the UI simply
+            // skips the generative elements.
             try {
-                const res = await fetch(`${ML_API_URL}/api/ml/features/${currentSong.id}`).catch(() => null);
+                const res = await fetch(`${API_BASE_URL}/api/ml/features/${encodeURIComponent(currentSong.id)}`).catch(() => null);
                 if (res && res.ok) {
-                    const data = await res.json().catch(() => null);
-                    if (data && data.success) {
+                    const payload = await res.json().catch(() => null);
+                    const data = payload?.data || payload;
+                    if (data && (data.success || data.features)) {
                         setMlFeatures(data);
                     } else {
                         setMlFeatures(null);
@@ -888,8 +906,19 @@ export default function FullscreenPlayer({ visible, onClose }) {
                 position: 'fixed', inset: 0, zIndex: 2000,
                 background: '#050508',
                 display: 'flex', flexDirection: 'column',
-                transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+                // `visibility` is part of the transition on purpose: it flips to
+                // "visible" immediately when opening and only becomes "hidden"
+                // once the fade-out has finished, so the animation still plays.
+                transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s linear',
                 opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(30px)',
+                // This overlay is always mounted, so it covers the whole screen
+                // even while it is invisible. `pointer-events: none` alone is
+                // NOT enough: several children set `pointer-events: auto`
+                // themselves, which re-enables hit-testing for them and makes
+                // the invisible player swallow taps meant for the page.
+                // `visibility: hidden` removes the whole subtree from
+                // hit-testing, which is what we actually need.
+                visibility: visible ? 'visible' : 'hidden',
                 pointerEvents: visible ? 'auto' : 'none',
                 color: '#fff', overflow: 'hidden'
             }}>
@@ -1084,7 +1113,24 @@ export default function FullscreenPlayer({ visible, onClose }) {
             </header>
 
             {/* Content Body */}
-            <main className="fs-content-body" style={{ position: 'relative', zIndex: 50 }}>
+            <main
+                className="fs-content-body"
+                style={{
+                    position: 'relative',
+                    zIndex: 50,
+                    // On short phone screens the content can exceed the
+                    // viewport — let it scroll instead of clipping the
+                    // controls off the bottom.
+                    overflowY: isMobile ? 'auto' : 'visible',
+                    overflowX: 'hidden',
+                    WebkitOverflowScrolling: 'touch',
+                    opacity: automixTakingOver ? 0 : 1,
+                    transform: automixTakingOver ? 'scale(0.96) translateY(-8px)' : 'none',
+                    filter: automixTakingOver ? 'blur(6px)' : 'none',
+                    transition: 'opacity 0.45s cubic-bezier(0.22,1,0.36,1), transform 0.45s cubic-bezier(0.22,1,0.36,1), filter 0.45s',
+                    pointerEvents: automixTakingOver ? 'none' : 'auto',
+                }}
+            >
                 {/* Left: Artwork or Synced Lyrics */}
                 {!showLyrics ? (
                     <FullscreenArtworkSection 
@@ -1095,7 +1141,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                         isPlaying={isPlaying}
                     />
                 ) : (
-                    <div className="fs-artwork-section" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', minHeight: '380px' }}>
+                    <div className="fs-artwork-section" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', minHeight: isMobile ? '240px' : '380px', flexShrink: 1, overflow: 'hidden' }}>
                         <FullscreenLyricsPanel />
                     </div>
                 )}
@@ -1128,7 +1174,25 @@ export default function FullscreenPlayer({ visible, onClose }) {
 
                     <div className="fs-info-row">
                         <div className="fs-meta">
-                            <h1 className="fs-title" title={title}>{title}</h1>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                <h1 className="fs-title" title={title}>{title}</h1>
+                                {mixEnabled && (
+                                    <span
+                                        title="Mix is on — tracks blend into each other"
+                                        style={{
+                                            display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                            padding: '3px 9px', borderRadius: '999px',
+                                            background: 'rgba(16,185,129,0.15)',
+                                            border: '1px solid rgba(16,185,129,0.4)',
+                                            color: '#34D399', fontSize: '0.62rem', fontWeight: 800,
+                                            letterSpacing: '0.08em',
+                                        }}
+                                    >
+                                        <Sparkles size={11} />
+                                        MIX
+                                    </span>
+                                )}
+                            </div>
                             <p className="fs-artist">{artist}</p>
                         </div>
                         {!isMobile && (
@@ -1242,7 +1306,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
 
                     {/* Bottom Utility Bar (Desktop only, mobile has dedicated 4-action circle row and Lyric drawer) */}
                     {!isMobile && (
-                        <div className="fs-utility-bar" style={{ position: 'relative', zIndex: 90, marginTop: '3.5rem' }}>
+                        <div className="fs-utility-bar" style={{ position: 'relative', zIndex: 90, marginTop: isMobile ? '1.25rem' : '3.5rem' }}>
                             <div className="fs-utility-left" style={{ display: 'flex', gap: '10px' }}>
                                 <button
                                     onClick={() => setQueueOpen(true)}
@@ -1328,7 +1392,25 @@ export default function FullscreenPlayer({ visible, onClose }) {
                             </div>
 
                             <div className="fs-utility-right">
-                                <Volume2 size={20} opacity={0.6} />
+                                <button
+                                    onClick={toggleMute}
+                                    aria-label={isMuted ? "Unmute" : "Mute"}
+                                    style={{
+                                        background: 'transparent',
+                                        border: 'none',
+                                        padding: '4px',
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        transition: 'background 0.2s',
+                                    }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                                >
+                                    <VolumeToggleIcon isMuted={isMuted} volume={volume} size={20} style={{ opacity: 0.8 }} />
+                                </button>
                                 <div className="fs-volume-track" style={{ pointerEvents: 'auto', marginLeft: '10px' }}>
                                     <div className="fs-volume-fill" style={{ width: `${volume * 100}%` }}></div>
                                     <input
@@ -1343,6 +1425,9 @@ export default function FullscreenPlayer({ visible, onClose }) {
                     )}
                 </div>
             </main>
+
+            {/* ── AutoMix: a full-screen takeover driven by the engine ── */}
+            <AutoMixOverlay visible={mixEnabled} />
 
         </div>
 

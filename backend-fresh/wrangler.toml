@@ -1,0 +1,9 @@
+name = "mehfil-backend-fresh"
+main = "src/server.ts"
+compatibility_date = "2026-01-01"
+
+[vars]
+FRONTEND_URL = "http://localhost:5173"
+
+[observability]
+enabled = true

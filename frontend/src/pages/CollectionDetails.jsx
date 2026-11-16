@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Play, Pause, Shuffle, ArrowLeft, Heart, MoreHorizontal, Clock, Loader2, Music, Share2, CheckCircle2 } from '../components/common/LordIcon';
+import { Play, Pause, Shuffle, ArrowLeft, Heart, MoreHorizontal, Clock, Loader2, Music, Share2, CheckCircle2, Sparkles } from '../components/common/LordIcon';
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
 import AddToPlaylist from '../components/common/AddToPlaylist';
@@ -26,6 +26,9 @@ export default function CollectionDetails({ type }) {
     const isPlaying = usePlayerStore(s => s.isPlaying);
     const likedSongs = usePlayerStore(s => s.likedSongs);
     const toggleLike = usePlayerStore(s => s.toggleLike);
+    const mixEnabled = usePlayerStore(s => s.mixEnabled);
+    const startMix = usePlayerStore(s => s.startMix);
+    const isStartingMix = usePlayerStore(s => s.isStartingMix);
 
     const loadMore = useCallback(async () => {
         if (loadingMore || !hasMore || type === 'album') return;
@@ -36,7 +39,7 @@ export default function CollectionDetails({ type }) {
 
             if (type === 'artist') {
                 const res = await apiFetch(`/api/artists/${id}/songs`, { page: nextPage });
-                newTracks = res.songs || [];
+                newTracks = res.songs || res.results || [];
             } else if (type === 'playlist') {
                 const res = await apiFetch(`/api/playlists`, { id, page: nextPage, limit: 50 });
                 newTracks = res.songs || res.list || [];
@@ -95,7 +98,7 @@ export default function CollectionDetails({ type }) {
                 if (type === 'artist') {
                     try {
                         const songRes = await apiFetch(`/api/artists/${id}/songs`, { page: 0 });
-                        initialTracks = songRes.songs || res.topSongs || [];
+                        initialTracks = songRes.songs || songRes.results || res.topSongs || [];
                     } catch (e) {
                         initialTracks = res.topSongs || [];
                     }
@@ -157,6 +160,20 @@ export default function CollectionDetails({ type }) {
             const shuffled = [...tracks].sort(() => Math.random() - 0.5);
             playQueue(shuffled);
         }
+    };
+
+    /**
+     * The single "Mix" button.
+     *
+     * It starts the playlist from the first track and turns AutoMix on. How
+     * the *next* track is chosen then depends on the shuffle mode:
+     *   • off → the next track in playlist order
+     *   • on  → the track that mixes best with the current one
+     */
+    const handleStartMix = async () => {
+        if (!tracks?.length) return;
+        // startMix turns AutoMix on, plays the first track and opens the player.
+        await startMix(tracks);
     };
 
     return (
@@ -298,7 +315,7 @@ export default function CollectionDetails({ type }) {
                 </button>
 
                 {type === 'playlist' && (
-                    <button 
+                    <button
                         onClick={() => {
                             try {
                                 const payload = { name: title, songs: tracks };
@@ -311,18 +328,50 @@ export default function CollectionDetails({ type }) {
                                 console.error(err);
                                 alert('Could not generate share link.');
                             }
-                        }} 
+                        }}
                         style={{
                             width: '42px', height: '42px', borderRadius: '50%',
                             background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             color: 'var(--text-secondary)', cursor: 'pointer', transition: 'all 0.2s'
-                        }} 
-                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }} 
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = '#fff'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
                         title="Share Playlist"
                     >
                         <Share2 size={18} />
+                    </button>
+                )}
+
+                {/* ── Mix: one button that starts the mix ── */}
+                {(type === 'playlist' || type === 'album') && tracks?.length > 1 && (
+                    <button
+                        onClick={handleStartMix}
+                        disabled={isStartingMix}
+                        style={{
+                            display: 'flex', alignItems: 'center', gap: '0.5rem',
+                            height: '42px', padding: '0 1.1rem', borderRadius: '999px',
+                            background: mixEnabled
+                                ? 'linear-gradient(135deg, rgba(16,185,129,0.22), rgba(139,92,246,0.22))'
+                                : 'rgba(255,255,255,0.04)',
+                            border: `1px solid ${mixEnabled ? 'rgba(16,185,129,0.55)' : 'rgba(255,255,255,0.08)'}`,
+                            color: mixEnabled ? '#34D399' : 'var(--text-secondary)',
+                            fontWeight: 700, fontSize: '0.82rem', cursor: isStartingMix ? 'progress' : 'pointer',
+                            opacity: isStartingMix ? 0.75 : 1,
+                            transition: 'all 0.2s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(139,92,246,0.5)'; e.currentTarget.style.color = '#C4B5FD'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = mixEnabled ? 'rgba(16,185,129,0.55)' : 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = mixEnabled ? '#34D399' : 'var(--text-secondary)'; }}
+                        title="Mix — play this playlist with seamless transitions between every track"
+                    >
+                        {isStartingMix ? <Loader2 size={16} className="spin" /> : <Sparkles size={16} />}
+                        {isStartingMix ? 'Mixing…' : 'Mix'}
+                        {mixEnabled && !isStartingMix && (
+                            <span style={{
+                                width: '7px', height: '7px', borderRadius: '50%',
+                                background: '#10B981', boxShadow: '0 0 8px #10B981',
+                            }} />
+                        )}
                     </button>
                 )}
             </div>

@@ -139,7 +139,7 @@ export default function MiniPlayer({ onExpand, onQueue }) {
                     <div className="mini-volume-control">
                         <Tooltip content={isMuted ? "Unmute" : "Mute"}>
                             <button id="miniVolumeButton" onClick={toggleMute} aria-label={isMuted ? "Unmute" : "Mute"}>
-                                <VolumeToggleIcon size={18} isMuted={isMuted} />
+                                <VolumeToggleIcon size={18} isMuted={isMuted} volume={volume} />
                             </button>
                         </Tooltip>
                         <Tooltip content={`Volume: ${isMuted ? 0 : Math.round(volume * 100)}%`}>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mehfil-v4';
+const CACHE_NAME = 'mehfil-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -71,7 +71,26 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 4. Static UI assets (JS, CSS, local images) -> Cache First, falling back to network
+  // 4. Code assets (JS / CSS) -> Network First.
+  //    Cache-first here used to pin stale bundles, so UI fixes never reached
+  //    users until they manually cleared site data.
+  const dest = request.destination;
+  if (dest === 'script' || dest === 'style' || dest === 'worker') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request).then((cached) => cached || new Response('Asset Unavailable', { status: 404 })))
+    );
+    return;
+  }
+
+  // 5. Other static assets (images, fonts) -> Cache First, falling back to network
   if (request.method === 'GET') {
     event.respondWith(
       caches.match(request).then((cached) => {

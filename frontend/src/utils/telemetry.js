@@ -3,7 +3,10 @@ import { useAuthStore } from '../store/useAuthStore';
 
 // VITE_API_URL is empty in dev → relative path goes through Vite proxy to localhost:3000.
 // In production, set VITE_API_URL to your deployed backend URL.
-const TELEMETRY_API_URL = `${import.meta.env.VITE_API_URL || ''}/api/telemetry/events`
+const API_BASE = import.meta.env.VITE_API_URL || '';
+const TELEMETRY_API_URL = `${API_BASE}/api/telemetry/events`;
+// ML microservice calls are proxied by our own backend (same origin, no CORS).
+const ML_PROFILE_API_URL = `${API_BASE}/api/ml/update-profile`;
 
 // In a real app, generate/store a real UUID for the user and session
 export const getUserId = () => {
@@ -58,9 +61,10 @@ export const logPlaybackEvent = async ({
     })
 
     // 2. Send to Python ML Microservice (Update Taste Profile)
-    if ((eventType === 'play_completed' || eventType === 'skipped') && import.meta.env.VITE_ML_SERVICE_URL) {
-      const ML_API_URL = import.meta.env.VITE_ML_SERVICE_URL;
-      await fetch(`${ML_API_URL}/api/ml/update-profile`, {
+    //    Proxied through our own backend so the browser never needs CORS access
+    //    to the microservice; a 503 simply means the ML service is offline.
+    if (eventType === 'play_completed' || eventType === 'skipped') {
+      await fetch(ML_PROFILE_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

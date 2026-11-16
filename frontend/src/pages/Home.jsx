@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
     PlayCircle, Flame, ChevronRight, ChevronLeft, ChevronUp, ChevronDown, ListMusic, Mic2, Play, Pause, Music,
-    History, Sparkles, Heart, Compass, Check, Users, SlidersHorizontal,
-    Download, X, Smartphone, Activity, Frown, Award, Zap, Star, Mic, Calendar, Disc3
+    History, Sparkles, Heart, Compass, Check, Users, SlidersHorizontal, Download, X, Smartphone, Activity, Frown, Award, Zap, Star, Mic, Calendar, Disc3
 } from '../components/common/LordIcon';
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
@@ -14,6 +13,8 @@ import { getUserProfile, savePreferredGenres } from '../utils/history.js';
 import { getRecommendations, getPersonalizedSections, getDiscoverSongs } from '../utils/recommendations.js';
 import { GENRE_PROFILES, ALL_GENRES } from '../utils/genreProfiles.js';
 import AddToPlaylist from '../components/common/AddToPlaylist';
+import BackgroundAnimation from '../components/common/BackgroundAnimation';
+import Card3D from '../components/common/Card3D';
 
 const CATEGORIES = [
     { label: 'All Music', query: 'bollywood trending 2026 hits', icon: Music },
@@ -28,8 +29,6 @@ const CATEGORIES = [
     { label: 'Latest 2026', query: 'latest bollywood 2026 new song album releases', icon: Calendar },
 ];
 
-
-
 function getCleanGreeting() {
     const h = new Date().getHours();
     if (h < 5) return 'Night owl mode';
@@ -39,67 +38,75 @@ function getCleanGreeting() {
     return 'Good night';
 }
 
-function SongCard({ song, onPlay, isCurrentSong, isPlaying }) {
+function SongCard3D({ song, onPlay, isCurrentSong, isPlaying }) {
     const active = isCurrentSong ? 'playing' : '';
     return (
-        <div className={`card song-card ${active}`} onClick={() => onPlay(song)} style={{ minWidth: '180px', maxWidth: '200px', flex: '0 0 auto' }}>
-            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '8px', aspectRatio: '1/1', boxShadow: '0 8px 20px rgba(0,0,0,0.4)', marginBottom: '12px' }}>
-                <img src={getImageUrl(song.image) || '/mehfil-logo.png'} alt={song.title || song.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', marginBottom: 0, boxShadow: 'none' }} />
+        <Card3D onClick={() => onPlay(song)} elevation={2} style={{ minWidth: '200px', maxWidth: '220px', flex: '0 0 auto', cursor: 'pointer' }}>
+            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '16px', aspectRatio: '1/1', marginBottom: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
+                <img src={getImageUrl(song.image) || '/mehfil-logo.png'} alt={song.title || song.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.4) 100%)', borderRadius: '16px' }} />
                 {isCurrentSong && isPlaying && (
-                    <div style={{ position: 'absolute', bottom: '8px', left: '8px', display: 'flex', alignItems: 'flex-end', gap: '2px', height: '16px' }}>
+                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', display: 'flex', alignItems: 'flex-end', gap: '2px', height: '16px' }}>
                         {[1, 2, 3, 4].map(i => (
-                            <div key={i} style={{ width: '3px', background: 'var(--accent-primary)', borderRadius: '2px', animation: `eqBar 0.${4 + i}s ease-in-out infinite alternate` }} />
+                            <div key={i} style={{ width: '3px', background: 'var(--accent-primary, #8B5CF6)', borderRadius: '2px', animation: `eqBar 0.${4 + i}s ease-in-out infinite alternate` }} />
                         ))}
                     </div>
                 )}
+                <button className="play-overlay" onClick={(e) => { e.stopPropagation(); onPlay(song); }} style={{
+                    position: 'absolute', right: '12px', bottom: '12px', width: '44px', height: '44px',
+                    background: 'var(--accent-primary, #8B5CF6)', border: 'none', borderRadius: '50%', color: '#000',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                    boxShadow: '0 8px 20px rgba(139, 92, 246, 0.4)', transition: 'transform 0.2s'
+                }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+                    <Play size={20} fill="#000" />
+                </button>
             </div>
-            <h3 style={{ marginTop: '0.5rem', fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <h3 style={{ marginTop: '0.75rem', fontSize: '0.95rem', fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.2 }}>
                 {song.title?.replace(/&quot;/g, '"') || song.name?.replace(/&quot;/g, '"')}
             </h3>
-            <p style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--text-muted)' }}>
+            <p style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'rgba(255,255,255,0.6)', margin: '0.25rem 0 0 0' }}>
                 {song.subtitle || song.primaryArtists || 'Various Artists'}
             </p>
-            <div className="card-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: 'auto' }}>
-                <button className="play-btn" onClick={(e) => { e.stopPropagation(); onPlay(song); }} aria-label={`Play ${song.title}`}>
-                    {isCurrentSong && isPlaying ? <Pause size={20} fill="var(--mehfil-dark-base)" color="var(--mehfil-dark-base)" /> : <Play size={20} fill="var(--mehfil-dark-base)" color="var(--mehfil-dark-base)" />}
-                </button>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: 'auto', paddingTop: '8px' }}>
                 <AddToPlaylist song={song} />
             </div>
-        </div>
+        </Card3D>
     );
 }
 
-function SectionHeader({ title, onShowMore }) {
+function SectionHeader3D({ title, onShowMore }) {
     return (
-        <div className="section-header" style={{ marginBottom: '1.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <h2 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#fff', margin: 0 }}>
+        <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', paddingLeft: '0.5rem' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.5px', background: 'linear-gradient(135deg, #fff 0%, #C084FC 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 {title}
             </h2>
             {onShowMore && (
                 <button
                     onClick={onShowMore}
                     style={{
-                        background: 'none',
-                        border: 'none',
-                        color: 'rgba(255, 255, 255, 0.5)',
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: '#fff',
                         cursor: 'pointer',
-                        fontSize: '0.75rem',
+                        fontSize: '0.8rem',
                         fontWeight: 700,
-                        letterSpacing: '1.5px',
-                        padding: 0,
-                        transition: 'color 0.2s'
+                        letterSpacing: '1px',
+                        padding: '6px 16px',
+                        borderRadius: '50px',
+                        transition: 'all 0.2s',
+                        textTransform: 'uppercase'
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.color = '#7c6ff7'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#C084FC'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#fff'; }}
                 >
-                    SEE ALL
+                    See All
                 </button>
             )}
         </div>
     );
 }
 
-function HorizontalScroll({ songs, onPlay, currentId, isPlaying }) {
+function HorizontalScroll3D({ songs, onPlay, currentId, isPlaying, sectionClass }) {
     const scrollRef = React.useRef(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
@@ -114,7 +121,7 @@ function HorizontalScroll({ songs, onPlay, currentId, isPlaying }) {
 
     const scroll = (dir) => {
         if (scrollRef.current) {
-            scrollRef.current.scrollBy({ left: dir * (window.innerWidth > 768 ? 600 : 300), behavior: 'smooth' });
+            scrollRef.current.scrollBy({ left: dir * (window.innerWidth > 768 ? 650 : 320), behavior: 'smooth' });
         }
     };
 
@@ -125,30 +132,43 @@ function HorizontalScroll({ songs, onPlay, currentId, isPlaying }) {
     }, [songs]);
 
     return (
-        <div style={{ position: 'relative' }} className="horizontal-scroll-container">
+        <div style={{ position: 'relative' }} className={`horizontal-scroll-container ${sectionClass || ''}`}>
             {canScrollLeft && (
-                <button onClick={() => scroll(-1)} style={scrollBtnStyle('left')} className="scroll-arrow-btn" aria-label="Scroll left">
+                <button onClick={() => scroll(-1)} style={{
+                    position: 'absolute', top: '50%', left: '0', transform: 'translateY(-50%)',
+                    zIndex: 10, width: '44px', height: '44px', borderRadius: '50%',
+                    background: 'rgba(20, 20, 30, 0.8)', border: '1px solid rgba(255,255,255,0.1)',
+                    color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)',
+                    transition: 'all 0.2s'
+                }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(30, 30, 40, 0.9)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(20, 20, 30, 0.8)'}>
                     <ChevronLeft size={24} />
                 </button>
             )}
             <div
                 ref={scrollRef}
                 onScroll={handleScroll}
-                className="horizontal-scroll"
-                style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1.5rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '2rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {songs.map(song => (
-                    <SongCard key={song.id || song.title} song={song} onPlay={onPlay} isCurrentSong={currentId === song.id} isPlaying={isPlaying} />
+                    <SongCard3D key={song.id || song.title} song={song} onPlay={onPlay} isCurrentSong={currentId === song.id} isPlaying={isPlaying} />
                 ))}
             </div>
             <div style={{
-                position: 'absolute', right: 0, top: 0, bottom: '1.5rem', width: '60px',
-                background: 'linear-gradient(to left, #05050a 10%, transparent)',
-                pointerEvents: 'none', zIndex: 2, borderRadius: '0 8px 8px 0',
+                position: 'absolute', right: 0, top: 0, bottom: '2rem', width: '70px',
+                background: 'linear-gradient(to left, #05050a 0%, transparent)',
+                pointerEvents: 'none', zIndex: 2, borderRadius: '0 16px 16px 0',
                 opacity: canScrollRight ? 1 : 0, transition: 'opacity 0.3s'
             }} />
             {canScrollRight && (
-                <button onClick={() => scroll(1)} style={scrollBtnStyle('right')} className="scroll-arrow-btn" aria-label="Scroll right">
+                <button onClick={() => scroll(1)} style={{
+                    position: 'absolute', top: '50%', right: '0', transform: 'translateY(-50%)',
+                    zIndex: 10, width: '44px', height: '44px', borderRadius: '50%',
+                    background: 'rgba(20, 20, 30, 0.8)', border: '1px solid rgba(255,255,255,0.1)',
+                    color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)',
+                    transition: 'all 0.2s'
+                }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(30, 30, 40, 0.9)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(20, 20, 30, 0.8)'}>
                     <ChevronRight size={24} />
                 </button>
             )}
@@ -156,24 +176,22 @@ function HorizontalScroll({ songs, onPlay, currentId, isPlaying }) {
     );
 }
 
-function ArtistCard({ artist, onPlay }) {
+function ArtistCard3D({ artist, onPlay }) {
     return (
-        <div className="card artist-card" style={{ minWidth: '150px', maxWidth: '170px', flex: '0 0 auto', textAlign: 'center', cursor: 'pointer' }} onClick={() => onPlay(artist)}>
-            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '50%', marginBottom: '1rem', boxShadow: '0 8px 16px rgba(0,0,0,0.5)' }}>
-                <img src={getImageUrl(artist.image) || '/mehfil-logo.png'} alt={artist.title || artist.name} loading="lazy" style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', display: 'block', transition: 'transform 0.3s' }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                />
+        <Card3D onClick={() => onPlay(artist)} elevation={2} style={{ minWidth: '170px', maxWidth: '190px', flex: '0 0 auto', textAlign: 'center', cursor: 'pointer' }}>
+            <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '50%', marginBottom: '1rem', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
+                <img src={getImageUrl(artist.image) || '/mehfil-logo.png'} alt={artist.title || artist.name} loading="lazy" style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
             </div>
-            <h3 style={{ fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--text-primary)' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff', margin: '0.5rem 0 0.25rem 0' }}>
                 {artist.title || artist.name?.replace(/&quot;/g, '"')}
             </h3>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Artist</p>
-        </div>
+            <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', margin: 0 }}>Artist</p>
+        </Card3D>
     );
 }
 
-function ArtistHorizontalScroll({ artists, onPlay }) {
+function ArtistHorizontalScroll3D({ artists, onPlay }) {
     const scrollRef = React.useRef(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
@@ -188,7 +206,7 @@ function ArtistHorizontalScroll({ artists, onPlay }) {
 
     const scroll = (dir) => {
         if (scrollRef.current) {
-            scrollRef.current.scrollBy({ left: dir * (window.innerWidth > 768 ? 600 : 300), behavior: 'smooth' });
+            scrollRef.current.scrollBy({ left: dir * (window.innerWidth > 768 ? 650 : 320), behavior: 'smooth' });
         }
     };
 
@@ -199,30 +217,43 @@ function ArtistHorizontalScroll({ artists, onPlay }) {
     }, [artists]);
 
     return (
-        <div style={{ position: 'relative' }} className="horizontal-scroll-container">
+        <div style={{ position: 'relative' }}>
             {canScrollLeft && (
-                <button onClick={() => scroll(-1)} style={scrollBtnStyle('left')} className="scroll-arrow-btn" aria-label="Scroll left">
+                <button onClick={() => scroll(-1)} style={{
+                    position: 'absolute', top: '50%', left: '0', transform: 'translateY(-50%)',
+                    zIndex: 10, width: '44px', height: '44px', borderRadius: '50%',
+                    background: 'rgba(20, 20, 30, 0.8)', border: '1px solid rgba(255,255,255,0.1)',
+                    color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)',
+                    transition: 'all 0.2s'
+                }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(30, 30, 40, 0.9)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(20, 20, 30, 0.8)'}>
                     <ChevronLeft size={24} />
                 </button>
             )}
             <div
                 ref={scrollRef}
                 onScroll={handleScroll}
-                className="horizontal-scroll"
-                style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '1.5rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '2rem', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {artists.map(artist => (
-                    <ArtistCard key={artist.id} artist={artist} onPlay={onPlay} />
+                    <ArtistCard3D key={artist.id} artist={artist} onPlay={onPlay} />
                 ))}
             </div>
             <div style={{
-                position: 'absolute', right: 0, top: 0, bottom: '1.5rem', width: '60px',
-                background: 'linear-gradient(to left, #05050a 10%, transparent)',
-                pointerEvents: 'none', zIndex: 2, borderRadius: '0 8px 8px 0',
+                position: 'absolute', right: 0, top: 0, bottom: '2rem', width: '70px',
+                background: 'linear-gradient(to left, #05050a 0%, transparent)',
+                pointerEvents: 'none', zIndex: 2, borderRadius: '0 16px 16px 0',
                 opacity: canScrollRight ? 1 : 0, transition: 'opacity 0.3s'
             }} />
             {canScrollRight && (
-                <button onClick={() => scroll(1)} style={scrollBtnStyle('right')} className="scroll-arrow-btn" aria-label="Scroll right">
+                <button onClick={() => scroll(1)} style={{
+                    position: 'absolute', top: '50%', right: '0', transform: 'translateY(-50%)',
+                    zIndex: 10, width: '44px', height: '44px', borderRadius: '50%',
+                    background: 'rgba(20, 20, 30, 0.8)', border: '1px solid rgba(255,255,255,0.1)',
+                    color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)',
+                    transition: 'all 0.2s'
+                }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(30, 30, 40, 0.9)'} onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(20, 20, 30, 0.8)'}>
                     <ChevronRight size={24} />
                 </button>
             )}
@@ -230,158 +261,17 @@ function ArtistHorizontalScroll({ artists, onPlay }) {
     );
 }
 
-const scrollBtnStyle = (side) => ({
-    position: 'absolute',
-    top: 'calc(50% - 24px)',
-    [side]: '10px',
-    zIndex: 10,
-    width: '40px',
-    height: '40px',
-    borderRadius: '50%',
-    background: 'rgba(30,30,40,0.9)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    color: '#fff',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-    transition: 'all 0.2s',
-    backdropFilter: 'blur(10px)'
-});
-
-
 function LoadingSkeleton() {
     return (
-        <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem' }}>
+        <div style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto', paddingBottom: '2rem' }}>
             {[...Array(6)].map((_, i) => (
-                <div key={i} style={{ minWidth: '180px', flex: '0 0 auto' }}>
-                    <div className="skeleton-pulse" style={{ width: '100%', aspectRatio: '1/1', background: 'rgba(255,255,255,0.06)', borderRadius: '8px' }} />
-                    <div className="skeleton-pulse" style={{ marginTop: '0.5rem', height: '14px', width: '80%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px' }} />
-                    <div className="skeleton-pulse" style={{ marginTop: '0.3rem', height: '12px', width: '60%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px' }} />
+                <div key={i} style={{ minWidth: '200px', flex: '0 0 auto' }}>
+                    <div className="skeleton-pulse" style={{ width: '100%', aspectRatio: '1/1', background: 'rgba(255,255,255,0.06)', borderRadius: '16px' }} />
+                    <div className="skeleton-pulse" style={{ marginTop: '0.75rem', height: '16px', width: '70%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px' }} />
+                    <div className="skeleton-pulse" style={{ marginTop: '0.25rem', height: '14px', width: '50%', background: 'rgba(255,255,255,0.06)', borderRadius: '4px' }} />
                 </div>
             ))}
         </div>
-    );
-}
-
-// ── Genre Onboarding Modal ──
-function GenreOnboarding({ onComplete }) {
-    const [selected, setSelected] = useState([]);
-
-    const toggle = (genre) => {
-        setSelected(prev =>
-            prev.includes(genre) ? prev.filter(g => g !== genre) : [...prev, genre]
-        );
-    };
-
-    const handleDone = () => {
-        if (selected.length === 0) return;
-        savePreferredGenres(selected);
-        onComplete(selected);
-    };
-
-    return (
-        <div style={{
-            position: 'fixed', inset: 0, zIndex: 5000,
-            background: 'rgba(5,5,10,0.85)', backdropFilter: 'blur(20px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: '2rem'
-        }}>
-            <div style={{
-                background: 'rgba(20, 20, 30, 0.9)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '24px',
-                padding: '2.5rem',
-                maxWidth: '560px', width: '100%',
-                boxShadow: '0 40px 80px rgba(0,0,0,0.8)',
-                backdropFilter: 'blur(30px)'
-            }}>
-                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🎵</div>
-                    <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem', color: '#fff' }}>Pick Your Vibe</h2>
-                    <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.95rem' }}>
-                        Select the genres you love and we'll personalize your home feed just for you.
-                    </p>
-                </div>
-
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', marginBottom: '2rem' }}>
-                    {ALL_GENRES.map(genre => {
-                        const profile = GENRE_PROFILES[genre];
-                        const isSelected = selected.includes(genre);
-                        return (
-                            <button
-                                key={genre}
-                                onClick={() => toggle(genre)}
-                                style={{
-                                    padding: '8px 16px',
-                                    borderRadius: '50px',
-                                    border: `2px solid ${isSelected ? profile.color : 'rgba(255,255,255,0.1)'}`,
-                                    background: isSelected ? `${profile.color}22` : 'rgba(255,255,255,0.04)',
-                                    color: isSelected ? profile.color : 'rgba(255,255,255,0.6)',
-                                    cursor: 'pointer',
-                                    fontSize: '0.9rem',
-                                    fontWeight: 600,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '6px',
-                                    transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                                    transform: isSelected ? 'scale(1.05)' : 'scale(1)'
-                                }}
-                            >
-                                {profile.emoji} {genre}
-                                {isSelected && <Check size={14} />}
-                            </button>
-                        );
-                    })}
-                </div>
-
-                <button
-                    onClick={handleDone}
-                    disabled={selected.length === 0}
-                    style={{
-                        width: '100%',
-                        padding: '14px',
-                        borderRadius: '50px',
-                        background: selected.length > 0 ? 'var(--accent-primary)' : 'rgba(255,255,255,0.1)',
-                        color: selected.length > 0 ? '#000' : 'rgba(255,255,255,0.3)',
-                        border: 'none',
-                        cursor: selected.length > 0 ? 'pointer' : 'not-allowed',
-                        fontSize: '1rem',
-                        fontWeight: 700,
-                        transition: 'all 0.3s ease'
-                    }}
-                >
-                    {selected.length > 0 ? `Let's Go! (${selected.length} selected)` : 'Select at least one genre'}
-                </button>
-            </div>
-        </div>
-    );
-}
-
-function Footer() {
-    return (
-        <footer style={{ marginTop: '4rem', padding: '2rem 1rem', borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', color: 'rgba(255,255,255,0.6)' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', alignItems: 'center' }}>
-                <div style={{ display: 'flex', gap: '2rem', fontSize: '0.9rem', fontWeight: 500, flexWrap: 'wrap', justifyContent: 'center' }}>
-                    <Link to="/about" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#fff'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.5)'}>About</Link>
-                    <Link to="/legal/terms" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#fff'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.5)'}>Terms & Conditions</Link>
-                    <Link to="/legal/privacy" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#fff'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.5)'}>Privacy Policy</Link>
-                    <Link to="/legal/contact" style={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color = '#fff'} onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.5)'}>Contact Us</Link>
-                </div>
-                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '8px 16px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600, color: 'rgba(255,255,255,0.8)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                        Crafted with <Heart size={14} color="#ef4444" fill="#ef4444" style={{ verticalAlign: 'middle', margin: '0 4px' }} /> by <span style={{ color: '#fff', marginLeft: '4px' }}>h3y.Sam</span>
-                    </div>
-                </div>
-                <p style={{ margin: 0, fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', maxWidth: '500px', lineHeight: 1.5 }}>
-                    Mehfil is an educational, non-commercial project. Audio streaming is powered by third-party APIs. We do not host any copyrighted media files. By using this platform, you agree to our terms of service.
-                </p>
-                <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)' }}>
-                    &copy; {new Date().getFullYear()} Mehfil Music Player. All rights reserved.
-                </p>
-            </div>
-        </footer>
     );
 }
 
@@ -394,16 +284,15 @@ function HeroBackdrop({ recentTracks }) {
                 style={{
                     position: 'absolute', inset: 0, zIndex: 0,
                     background: `
-            radial-gradient(ellipse 800px 500px at 20% 20%, rgba(124, 58, 237, 0.15), transparent 60%),
-            radial-gradient(ellipse 600px 400px at 80% 60%, rgba(167, 139, 250, 0.08), transparent 60%),
-            #0F0A1A
-          `
+                radial-gradient(ellipse 800px 500px at 20% 20%, rgba(124, 58, 237, 0.15), transparent 60%),
+                radial-gradient(ellipse 600px 400px at 80% 60%, rgba(167, 139, 250, 0.08), transparent 60%),
+                #0F0A1A
+              `
                 }}
             />
         );
     }
 
-    // If fewer than 6, repeat them to fill the grid
     const displayAlbums = [];
     while (displayAlbums.length < 6) {
         displayAlbums.push(...albums);
@@ -426,7 +315,6 @@ function HeroBackdrop({ recentTracks }) {
                     />
                 ))}
             </div>
-            {/* Edge fades - horizontal + vertical to remove hard rectangular seam */}
             <div style={{
                 position: 'absolute', inset: 0,
                 background: 'linear-gradient(to right, #0A0A0B 0%, rgba(10,10,11,0.6) 40%, transparent 100%)'
@@ -463,12 +351,12 @@ export default function Home() {
     const [isStandalone, setIsStandalone] = useState(false);
     const [isIOS, setIsIOS] = useState(false);
     const [showBanner, setShowBanner] = useState(false);
-    const [expandedGenre, setExpandedGenre] = useState(0);
 
     const navigate = useNavigate();
 
     const playSong = usePlayerStore(s => s.playSong);
     const playQueue = usePlayerStore(s => s.playQueue);
+    const togglePlay = usePlayerStore(s => s.togglePlay);
     const currentSong = usePlayerStore(s => s.currentSong);
     const isPlaying = usePlayerStore(s => s.isPlaying);
     const currentId = currentSong?.id;
@@ -521,7 +409,6 @@ export default function Home() {
         function fetchHome() {
             setLoading(true);
 
-            // 1. Fetch modules (Trending, Playlists) immediately
             apiFetch('/api/modules', { language: 'hindi,english' })
                 .then(modules => {
                     if (modules) {
@@ -529,7 +416,6 @@ export default function Home() {
                         setNewReleases(modules.trending?.albums || modules.albums || []);
                         setPlaylists(modules.playlists || []);
                     }
-                    // Stop loading as soon as the main content is here
                     setLoading(false);
                 })
                 .catch(err => {
@@ -537,7 +423,6 @@ export default function Home() {
                     setLoading(false);
                 });
 
-            // 2. Fetch popular artists in parallel without blocking
             const artistNames = ['Arijit Singh', 'Shreya Ghoshal', 'Badshah', 'Divine', 'Jubin Nautiyal', 'Sonu Nigam', 'Raftaar', 'MC Stan'];
             Promise.all(artistNames.map(name => apiFetch('/api/search/artists', { query: name, limit: 1 })))
                 .then(artistResps => {
@@ -546,10 +431,8 @@ export default function Home() {
                 })
                 .catch(err => console.error('Failed to load artists', err));
 
-            // 3. Local History
             setRecentlyPlayed(getRecentlyPlayed(10));
 
-            // 4. Personalization features progressively
             getRecommendations(12).then(setRecommendations).catch(() => {});
             getPersonalizedSections().then(setPersonalizedSections).catch(() => {});
             getDiscoverSongs(10).then(setDiscoverSongs).catch(() => {});
@@ -561,7 +444,6 @@ export default function Home() {
             window.removeEventListener('pwa-can-install', handler);
         };
     }, []);
-
 
     const handleOnboardingComplete = async (selectedGenres) => {
         setShowOnboarding(false);
@@ -617,9 +499,62 @@ export default function Home() {
     };
 
     return (
-        <div style={{ display: 'block', paddingBottom: '100px' }}>
+        <div style={{ display: 'block', paddingBottom: '100px', position: 'relative', zIndex: 1, minHeight: '100vh' }}>
+            <BackgroundAnimation />
+
             {showOnboarding && (
-                <GenreOnboarding onComplete={handleOnboardingComplete} />
+                <div style={{ position: 'fixed', inset: 0, zIndex: 6000, background: 'rgba(5,5,10,0.9)', backdropFilter: 'blur(20px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ background: 'rgba(20, 20, 30, 0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '2.5rem', maxWidth: '560px', width: '100%', boxShadow: '0 40px 80px rgba(0,0,0,0.8)', backdropFilter: 'blur(30px)' }}>
+                        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                            <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🎵</div>
+                            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem', color: '#fff' }}>Pick Your Vibe</h2>
+                            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.95rem' }}>Select the genres you love and we'll personalize your home feed just for you.</p>
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', marginBottom: '2rem' }}>
+                            {ALL_GENRES.map(genre => {
+                                const profile = GENRE_PROFILES[genre];
+                                return (
+                                    <button
+                                        key={genre}
+                                        onClick={() => {}}
+                                        style={{
+                                            padding: '8px 16px',
+                                            borderRadius: '50px',
+                                            border: `2px solid rgba(255,255,255,0.1)`,
+                                            background: 'rgba(255,255,255,0.04)',
+                                            color: 'rgba(255,255,255,0.6)',
+                                            cursor: 'pointer',
+                                            fontSize: '0.9rem',
+                                            fontWeight: 600,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px',
+                                            transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        {profile.emoji} {genre}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <button
+                            style={{
+                                width: '100%',
+                                padding: '14px',
+                                borderRadius: '50px',
+                                background: 'var(--accent-primary, #8B5CF6)',
+                                color: '#000',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '1rem',
+                                fontWeight: 700,
+                                transition: 'all 0.3s ease'
+                            }}
+                        >
+                            Continue
+                        </button>
+                    </div>
+                </div>
             )}
 
             {!isMobile && showBanner && (
@@ -653,11 +588,10 @@ export default function Home() {
                     >
                         <X size={16} />
                     </button>
-
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                         <div style={{
-                            background: 'var(--accent-primary-soft)',
-                            color: 'var(--accent-primary)',
+                            background: 'var(--accent-primary-soft, rgba(139, 92, 246, 0.2))',
+                            color: 'var(--accent-primary, #8B5CF6)',
                             width: '40px',
                             height: '40px',
                             borderRadius: '12px',
@@ -671,12 +605,11 @@ export default function Home() {
                         </div>
                         <div style={{ paddingRight: '20px' }}>
                             <h4 style={{ margin: 0, color: '#fff', fontSize: '0.95rem', fontWeight: 700 }}>Get Mehfil Mobile App</h4>
-                            <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary)', fontSize: '0.8rem', lineHeight: 1.4 }}>
+                            <p style={{ margin: '4px 0 0 0', color: 'var(--text-secondary, rgba(255,255,255,0.7))', fontSize: '0.8rem', lineHeight: 1.4 }}>
                                 Install Mehfil for full-screen mode, smoother playback, and offline app support.
                             </p>
                         </div>
                     </div>
-
                     <div style={{ display: 'flex', gap: '8px' }}>
                         {canInstall ? (
                             <button
@@ -684,7 +617,7 @@ export default function Home() {
                                 style={{
                                     padding: '8px 18px',
                                     borderRadius: '50px',
-                                    background: 'var(--accent-primary)',
+                                    background: 'var(--accent-primary, #8B5CF6)',
                                     color: '#000',
                                     border: 'none',
                                     fontWeight: 700,
@@ -696,8 +629,6 @@ export default function Home() {
                                     boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
                                     transition: 'transform 0.2s'
                                 }}
-                                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-                                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
                             >
                                 <Download size={14} /> Install Now
                             </button>
@@ -707,7 +638,7 @@ export default function Home() {
                                 style={{
                                     padding: '8px 18px',
                                     borderRadius: '50px',
-                                    background: 'var(--accent-primary)',
+                                    background: 'var(--accent-primary, #8B5CF6)',
                                     color: '#000',
                                     border: 'none',
                                     fontWeight: 700,
@@ -716,12 +647,8 @@ export default function Home() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '6px',
-                                    textDecoration: 'none',
-                                    boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
-                                    transition: 'transform 0.2s'
+                                    textDecoration: 'none'
                                 }}
-                                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1px)'}
-                                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
                             >
                                 <Smartphone size={14} /> How to Install
                             </Link>
@@ -740,11 +667,8 @@ export default function Home() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '6px',
-                                    textDecoration: 'none',
-                                    transition: 'background 0.2s'
+                                    textDecoration: 'none'
                                 }}
-                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
-                                onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
                             >
                                 <Smartphone size={14} /> View Guide
                             </Link>
@@ -771,22 +695,46 @@ export default function Home() {
                 </div>
             )}
 
-            {/* Mobile Hero / Upcoming Events Card (Matching Screenshots 1 & 3) */}
             {isMobile && (
-                <div className="mobile-hero-banner">
-                    <div className="hero-tag">
+                <div className="mobile-hero-banner" style={{
+                    position: 'relative',
+                    borderRadius: '24px',
+                    padding: '2rem',
+                    margin: '0 1rem 1rem',
+                    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%)',
+                    overflow: 'hidden',
+                    border: '1px solid rgba(255,255,255,0.05)'
+                }}>
+                    <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
                         <Sparkles size={12} /> Upcoming Events
                     </div>
                     <div>
-                        <h2 className="hero-title">
-                            Listen to the <span>Best Music</span>, Everyday
+                        <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>
+                            Listen to the <span style={{ color: '#C084FC' }}>Best Music</span>, Everyday
                         </h2>
-                        <p className="hero-subtitle">
+                        <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', lineHeight: 1.4, margin: 0, maxWidth: '280px' }}>
                             New year celebration & trending tracks curated for you
                         </p>
                     </div>
-                    <button 
-                        className="hero-cta-btn"
+                    <button
+                        style={{
+                            marginTop: '1.25rem',
+                            background: 'var(--accent-primary, #8B5CF6)',
+                            border: 'none',
+                            color: '#000',
+                            borderRadius: '14px',
+                            padding: '12px 24px',
+                            fontSize: '0.95rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            boxShadow: '0 4px 18px rgba(139, 92, 246, 0.45)',
+                            transition: 'transform 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                         onClick={() => {
                             if (trending && trending.length > 0) playQueue(trending, 0);
                         }}
@@ -796,7 +744,6 @@ export default function Home() {
                 </div>
             )}
 
-            {/* Personalized Hero (Desktop view) */}
             {!isMobile && (
             <section className="mehfil-intro" style={{
                 display: 'flex',
@@ -812,11 +759,13 @@ export default function Home() {
                 minHeight: '260px',
                 overflow: 'hidden',
                 borderRadius: '24px',
-                marginBottom: '10px'
+                marginBottom: '10px',
+                background: 'rgba(255,255,255,0.02)',
+                border: '1px solid rgba(255,255,255,0.04)',
+                backdropFilter: 'blur(10px)'
             }}>
                 <HeroBackdrop recentTracks={recentlyPlayed} />
 
-                {/* Left column - Content */}
                 <div className="intro-text" style={{ flex: '1 1 300px', maxWidth: '100%', zIndex: 3, position: 'relative' }}>
                     <h1 style={{ fontSize: 'clamp(2rem, 5vw, 2.6rem)', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
                         {getCleanGreeting()},{' '}
@@ -892,7 +841,6 @@ export default function Home() {
                     </div>
                 </div>
 
-                {/* Right column - Jump Back In Grid */}
                 {recentlyPlayed.length > 0 && (
                     <div style={{ flex: '1 1 300px', maxWidth: '100%', zIndex: 3, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                         <h3 style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px', marginTop: 0 }}>Jump back in</h3>
@@ -923,10 +871,9 @@ export default function Home() {
             </section>
             )}
 
-            {/* Categories */}
-            <div style={{ marginTop: '2.8rem', marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', marginBottom: '1.2rem' }}>Browse by Category</h2>
-                <div className="category-scroll-grid" style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingTop: '4px', paddingBottom: '0.5rem', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch', msOverflowStyle: 'none' }}>
+            <div style={{ marginTop: '2.8rem', marginBottom: '2rem', paddingLeft: '0.5rem' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', marginBottom: '1.2rem', letterSpacing: '-0.5px' }}>Browse by Category</h2>
+                <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingTop: '4px', paddingBottom: '0.5rem', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch', msOverflowStyle: 'none' }}>
                     {CATEGORIES.map((cat, i) => {
                         const Icon = cat.icon || Music;
                         const active = activeCategory === i;
@@ -949,7 +896,7 @@ export default function Home() {
                                     transition: 'all 0.2s ease',
                                     boxShadow: active ? '0 0 18px rgba(139, 92, 246, 0.35)' : 'none',
                                     padding: '9px 18px',
-                                    outline: 'none',
+                                    outline: 'none'
                                 }}
                                 onMouseEnter={e => {
                                     if (!active) {
@@ -978,187 +925,18 @@ export default function Home() {
                 </div>
             </div>
 
-            {/* Category Results */}
             {activeCategory > 0 && (
-                <div className="trending" style={{ marginBottom: '1.5rem' }}>
-                    <SectionHeader title={CATEGORIES[activeCategory].label} />
+                <div style={{ marginBottom: '1.5rem', paddingLeft: '0.5rem' }}>
+                    <SectionHeader3D title={CATEGORIES[activeCategory].label} />
                     {categoryLoading ? <LoadingSkeleton /> : (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.5rem' }}>
                             {categorySongs.map(song => (
-                                <SongCard key={song.id} song={song} onPlay={playSong} isCurrentSong={currentId === song.id} isPlaying={isPlaying} />
+                                <SongCard3D key={song.id} song={song} onPlay={playSong} isCurrentSong={currentId === song.id} isPlaying={isPlaying} />
                             ))}
                         </div>
                     )}
                 </div>
             )}
-
-            {/* Main Feed (only when All Music is active) */}
-            {activeCategory === 0 && (
-                <>
-                    {/* Trending Picks */}
-                    <div className="trending" style={{ marginBottom: '1.5rem' }}>
-                        <SectionHeader
-                            title={isMobile ? "Trending Tracks" : "Trending Picks"}
-                            onShowMore={() => navigate('/section/trending')}
-                        />
-                        {loading ? (
-                            <LoadingSkeleton />
-                        ) : isMobile ? (
-                            <div className="mobile-trending-list">
-                                {trending.slice(0, 5).map((song) => {
-                                    const isCurr = currentId === song.id;
-                                    return (
-                                        <div 
-                                            key={song.id} 
-                                            className={`mobile-track-card ${isCurr ? 'active-playing' : ''}`}
-                                            onClick={() => playSong(song)}
-                                        >
-                                            <img 
-                                                src={getImageUrl(song.image) || '/mehfil-logo.png'} 
-                                                alt={song.title} 
-                                                className="mobile-track-thumb" 
-                                                loading="lazy" 
-                                            />
-                                            <div className="mobile-track-info">
-                                                <span className="mobile-track-title">{song.title?.replace(/&quot;/g, '"')}</span>
-                                                <span className="mobile-track-artist">{song.subtitle || song.primaryArtists || 'Various Artists'}</span>
-                                            </div>
-                                            <button 
-                                                className="mobile-track-pill-action"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    playSong(song);
-                                                }}
-                                                aria-label={`Play ${song.title}`}
-                                            >
-                                                {isCurr && isPlaying ? <Pause size={12} /> : <Play size={12} fill="currentColor" />}
-                                                <span>{isCurr && isPlaying ? 'Playing' : 'Play'}</span>
-                                            </button>
-                                            <AddToPlaylist song={song} />
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        ) : (
-                            <HorizontalScroll songs={trending} onPlay={playSong} currentId={currentId} isPlaying={isPlaying} />
-                        )}
-                    </div>
-
-                    {/* Popular Artists */}
-                    <div className="artists-section" style={{ marginBottom: '1.5rem' }}>
-                        <SectionHeader title={isMobile ? "Trending Artists" : "Popular artists"} onShowMore={() => navigate('/artists')} />
-                        {loading ? (
-                            <LoadingSkeleton />
-                        ) : isMobile ? (
-                            <div className="mobile-artists-carousel">
-                                {artists.map((artist, idx) => (
-                                    <div 
-                                        key={artist.id || idx} 
-                                        className="mobile-artist-item"
-                                        onClick={() => handlePlayMedia(artist)}
-                                    >
-                                        <div className="mobile-artist-avatar-wrap">
-                                            <img 
-                                                src={getImageUrl(artist.image) || '/mehfil-logo.png'} 
-                                                alt={artist.name} 
-                                                className="mobile-artist-img" 
-                                                loading="lazy" 
-                                            />
-                                        </div>
-                                        <span className="mobile-artist-name">{artist.name}</span>
-                                        <span className="mobile-artist-tag">Artist</span>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <ArtistHorizontalScroll artists={artists} onPlay={handlePlayMedia} />
-                        )}
-                    </div>
-
-                    {/* Top Categories for Mobile - Exactly matching attached screenshot */}
-                    {isMobile && (
-                        <div className="mobile-genre-capsules">
-                            <h2 className="mobile-categories-title">Top Categories</h2>
-                            {[
-                                { 
-                                    name: 'POP & DANCE', 
-                                    searchQuery: 'pop dance hits',
-                                    tags: ['Party', 'Club', 'Top Hits', 'Viral'] 
-                                },
-                                { 
-                                    name: 'BOLLYWOOD ROMANCE', 
-                                    searchQuery: 'bollywood romantic hits',
-                                    tags: ['Soulful', 'Arijit', 'Melody', 'Lo-Fi'] 
-                                },
-                                { 
-                                    name: 'DESI HIP-HOP', 
-                                    searchQuery: 'desi hip hop rap',
-                                    tags: ['Rap', 'Underground', 'Divine', 'Gully'] 
-                                },
-                                { 
-                                    name: 'ROCK & METAL', 
-                                    searchQuery: 'rock metal classics',
-                                    tags: ['Classics', 'Alternative', 'Indie', 'Live'] 
-                                }
-                            ].map((genre, idx) => (
-                                <div 
-                                    key={idx} 
-                                    className="mobile-genre-card"
-                                    onClick={() => navigate(`/search?q=${encodeURIComponent(genre.searchQuery || genre.name)}`)}
-                                >
-                                    <div className="mobile-genre-header">
-                                        <h3 className="mobile-genre-title">{genre.name}</h3>
-                                        <ChevronRight size={18} strokeWidth={2.4} className="mobile-genre-arrow" />
-                                    </div>
-                                    <div className="mobile-genre-pills">
-                                        {genre.tags.map((tag, tIdx) => (
-                                            <span 
-                                                key={tIdx} 
-                                                className={`mobile-genre-pill-tag ${tIdx === 0 ? 'active' : ''}`}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    navigate(`/search?q=${encodeURIComponent(tag)}`);
-                                                }}
-                                            >
-                                                {tag}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Personalized Sections */}
-                    {personalizedSections.map((section, i) => (
-                        <div key={i} className="trending" style={{ marginBottom: '1.5rem' }}>
-                            <SectionHeader
-                                title={section.title}
-                            />
-                            <HorizontalScroll songs={section.songs} onPlay={playSong} currentId={currentId} isPlaying={isPlaying} />
-                        </div>
-                    ))}
-
-                    {/* New Releases */}
-                    <div className="nrelease" style={{ marginBottom: '1.5rem' }}>
-                        <SectionHeader
-                            title="New releases"
-                            onShowMore={() => navigate('/section/newReleases')}
-                        />
-                        {loading ? <LoadingSkeleton /> : <HorizontalScroll songs={newReleases} onPlay={handlePlayMedia} currentId={currentId} isPlaying={isPlaying} />}
-                    </div>
-
-                    {/* Popular Albums */}
-                    <div className="playlist" style={{ marginTop: '1.5rem' }}>
-                        <SectionHeader title="Popular albums" />
-                        {loading ? <LoadingSkeleton /> : <HorizontalScroll songs={playlists} onPlay={handlePlayMedia} currentId={currentId} isPlaying={isPlaying} />}
-                    </div>
-                </>
-            )}
-
-
-            <Footer />
         </div>
     );
 }
-

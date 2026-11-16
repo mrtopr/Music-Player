@@ -1,11 +1,23 @@
 import { create } from 'zustand';
-import { getAudioUrl, getImageUrl, apiFetch } from '../api/client.js';
+import { getAudioUrl, getImageUrl, apiFetch, API_BASE_URL } from '../api/client.js';
 import { addToHistory, addGenrePlay } from '../utils/history.js';
 import { pickBestNext } from '../utils/autoMix.js';
 import { audioEngine } from '../utils/audioEngine.js';
+import { autoMixEngine } from '../automix/index.js';
+import { ENGINE_EVENTS } from '../automix/engine/events.js';
 import { getOfflineTracks, saveTrackOffline, removeTrackOffline, isTrackOffline } from '../utils/offlineStorage.js';
-import { parseLrc, decodeEntities } from '../utils/helpers.js';
 import { logPlaybackEvent, getUserId } from '../utils/telemetry.js';
+import { fetchLyrics as fetchLyricsMulti } from '../utils/lyricsProvider.js';
+import {
+    planTransition,
+    serializeTransition,
+    deserializeTransition,
+    transitionKey,
+    buildTransitionCurves,
+    findTransitionPoint,
+} from '../utils/transitions.js';
+import { analyzeTracks, getAnalysis } from '../utils/audioAnalysis.js';
+import { transitionScore } from '../automix/scoring/compatibility.js';
 
 // Singleton audio elements shared across HMR
 if (!window.__mehfilAudioA) {
@@ -245,13 +257,172 @@ const handleIncomingSyncMessage = async (data) => {
     }
 };
 
-// Hard-init the pro engine once
-audioEngine.init(audioA, audioB);
+// ── The AutoMix engine owns both decks (audio graph + mixing) ──
+autoMixEngine.init();
+// Restore the persisted AutoMix preference (the engine is not persisted).
+try {
+    autoMixEngine.setEnabled(localStorage.getItem('mehfil_mix_enabled') === 'true');
+} catch {
+    autoMixEngine.setEnabled(false);
+}
 
 
+
+// ── AutoMix engine → store bridge ────────────────────────────────────────
+// The engine is the source of truth; the store mirrors its state so React
+// can render it. Every visual state in the UI comes from these events.
+
+const describeTrack = (track, analysis) => ({
+    id: track?.id,
+    title: track?.title || track?.name || 'Unknown',
+    artist:
+        track?.primaryArtists ||
+        track?.subtitle ||
+        track?.artist ||
+        (Array.isArray(track?.artists) ? track.artists.map((a) => a?.name).filter(Boolean).join(', ') : ''),
+    image: track?.image || null,
+    bpm: analysis?.bpm ?? null,
+    camelot: analysis?.camelot ?? null,
+    key: analysis?.key ?? null,
+    energy: analysis?.energy ?? null,
+});
+
+autoMixEngine.on(ENGINE_EVENTS.STATE, ({ state }) => {
+    usePlayerStore.setState((s) => ({
+        automix: {
+            ...s.automix,
+            state,
+            // The engine went back to idle → retire the overlay.
+            phase: state === 'idle' ? 'idle' : s.automix.phase,
+            progress: state === 'idle' ? 0 : s.automix.progress,
+        },
+    }));
+});
+
+autoMixEngine.on(ENGINE_EVENTS.ANALYSIS_READY, ({ track, analysis }) => {
+    if (!track?.id || !analysis) return;
+    usePlayerStore.setState((s) => ({
+        mixAnalysis: { ...s.mixAnalysis, [track.id]: analysis },
+        automix: {
+            ...s.automix,
+            outgoing: s.currentSong?.id === track.id
+                ? describeTrack(track, analysis)
+                : s.automix.outgoing,
+        },
+    }));
+});
+
+autoMixEngine.on(ENGINE_EVENTS.DECK_LOADING, ({ track, title }) => {
+    usePlayerStore.setState((s) => ({
+        automix: {
+            ...s.automix,
+            phase: 'loading',
+            outgoing: describeTrack(s.currentSong, s.mixAnalysis?.[s.currentSong?.id]),
+            incoming: { ...describeTrack(track || { title }), title: track?.title || title },
+            error: null,
+        },
+    }));
+});
+
+autoMixEngine.on(ENGINE_EVENTS.DECK_ANALYZING, () => {
+    usePlayerStore.setState((s) => ({ automix: { ...s.automix, phase: 'analyzing' } }));
+});
+
+autoMixEngine.on(ENGINE_EVENTS.DECK_SYNCING, ({ bpm, targetBpm }) => {
+    usePlayerStore.setState((s) => ({
+        automix: {
+            ...s.automix,
+            phase: 'syncing',
+            tempoRatio: bpm && targetBpm ? targetBpm / bpm : null,
+        },
+    }));
+});
+
+autoMixEngine.on(ENGINE_EVENTS.DECK_READY, ({ track, analysis, ratio, plan, score }) => {
+    usePlayerStore.setState((s) => ({
+        automix: {
+            ...s.automix,
+            phase: 'ready',
+            incoming: describeTrack(track, analysis),
+            style: plan?.style ?? null,
+            reason: plan?.reason ?? null,
+            tempoRatio: ratio ?? null,
+            keyCompatibility: plan?.keyCompatibility ?? null,
+            score: score ?? null,
+        },
+        mixAnalysis: analysis && track ? { ...s.mixAnalysis, [track.id]: analysis } : s.mixAnalysis,
+    }));
+});
+
+autoMixEngine.on(ENGINE_EVENTS.DECK_FAILED, ({ reason }) => {
+    usePlayerStore.setState((s) => ({
+        automix: { ...s.automix, phase: 'error', error: reason },
+    }));
+});
+
+autoMixEngine.on(ENGINE_EVENTS.TRANSITION_SCHEDULED, ({ plan, track, analysis, ratio }) => {
+    usePlayerStore.setState((s) => ({
+        automix: {
+            ...s.automix,
+            phase: 'scheduled',
+            style: plan?.style ?? null,
+            reason: plan?.reason ?? null,
+            incoming: describeTrack(track, analysis),
+            tempoRatio: ratio ?? null,
+            outgoing: describeTrack(s.currentSong, s.mixAnalysis?.[s.currentSong?.id]),
+        },
+    }));
+});
+
+autoMixEngine.on(ENGINE_EVENTS.TRANSITION_STARTING, ({ track, analysis }) => {
+    usePlayerStore.setState((s) => ({
+        automix: {
+            ...s.automix,
+            phase: 'mixing',
+            progress: 0,
+            incoming: describeTrack(track, analysis),
+        },
+    }));
+});
+
+autoMixEngine.on(ENGINE_EVENTS.TRANSITION_MIXING, ({ progress }) => {
+    usePlayerStore.setState((s) => ({ automix: { ...s.automix, progress } }));
+});
+
+autoMixEngine.on(ENGINE_EVENTS.TRANSITION_COMPLETE, ({ track }) => {
+    usePlayerStore.setState((s) => ({
+        automix: { ...s.automix, phase: 'done', progress: 1, error: null },
+    }));
+    usePlayerStore.getState().commitMixHandover(track);
+});
 
 // ── Lyrics Cache (keyed by song ID, survives song changes within a session) ──
 const lyricsCache = new Map();
+
+// How long before the blend starts the AutoMix takeover appears, so the
+// handover is signposted instead of arriving suddenly.
+const MIX_APPROACH_SECONDS = 6;
+
+// ── Mix transition persistence (per playlist) ──
+const persistMixTransitions = (playlistId, transitions) => {
+    if (!playlistId) return;
+    try {
+        localStorage.setItem(`mehfil_mix_${playlistId}`, JSON.stringify(transitions));
+    } catch (e) {
+        console.warn('[Mix] Could not persist transitions:', e);
+    }
+};
+
+// Curve edits fire on every pointer move — debounce the disk write.
+let mixPersistTimer = null;
+const persistMixTransitionsDebounced = (playlistId, transitions) => {
+    if (!playlistId) return;
+    if (mixPersistTimer) clearTimeout(mixPersistTimer);
+    mixPersistTimer = setTimeout(() => {
+        mixPersistTimer = null;
+        persistMixTransitions(playlistId, transitions);
+    }, 400);
+};
 
 export const usePlayerStore = create((set, get) => ({
 
@@ -291,6 +462,32 @@ export const usePlayerStore = create((set, get) => ({
 
     // Equalizer State
     equalizer: { bass: 0, mid: 0, treble: 0 },
+
+    // ── Mix State (Spotify-style seamless transitions) ──
+    mixEnabled: (() => { try { return localStorage.getItem('mehfil_mix_enabled') === 'true'; } catch { return false; } })(),
+    mixPlaylistId: null,
+    mixTransitions: {},        // { 'fromId->toId': transitionSpec }
+    mixAnalysis: {},           // { trackId: { bpm, camelot, waveform, ... } }
+    mixAnalyzing: false,
+    mixProgress: { done: 0, total: 0 },
+    /** True while the "Mix" button is starting a mix. */
+    isStartingMix: false,
+    /** Ids of the tracks already played in this mix (shuffle mode). */
+    mixPlayedIds: [],
+
+    // ── AutoMix engine state (mirrors the real engine, drives the UI) ──
+    automix: {
+        state: 'idle',           // engine FSM state
+        phase: 'idle',           // 'idle' | 'loading' | 'analyzing' | 'syncing' | 'ready' | 'mixing' | 'done' | 'error'
+        outgoing: null,          // { title, artist, image, bpm, camelot }
+        incoming: null,          // { title, artist, image, bpm, camelot }
+        progress: 0,             // 0..1 during the blend
+        style: null,             // transition style currently used
+        reason: null,            // why the engine picked it
+        error: null,
+        tempoRatio: null,
+        keyCompatibility: null,
+    },
 
 
 
@@ -399,44 +596,44 @@ export const usePlayerStore = create((set, get) => ({
         set(s => ({ participants: s.participants.filter(p => p.id !== targetId) }));
     },
 
-    fetchLyricsForSong: async (song) => {
+    fetchLyricsForSong: async (song, force = false) => {
         if (!song) return;
 
         // Return immediately from cache — no re-fetch for songs already resolved
         const cacheKey = song.id || song.title;
-        if (cacheKey && lyricsCache.has(cacheKey)) {
-            set({ lyrics: lyricsCache.get(cacheKey), lyricsLoading: false, lyricsError: false });
+        if (!force && cacheKey && lyricsCache.has(cacheKey)) {
+            const cached = lyricsCache.get(cacheKey);
+            set({ lyrics: cached, lyricsLoading: false, lyricsError: false });
             return;
         }
 
-        // Decode HTML entities (e.g. &amp; &quot; from JioSaavn) so lrclib gets a clean query
-        const rawTitle = decodeEntities(song.title || '');
-        const rawArtist = decodeEntities(song.primaryArtists || song.subtitle || '');
-        const query = `${rawTitle} ${rawArtist}`.trim();
+        set({ lyricsLoading: true, lyricsError: false });
 
         try {
-            const res = await fetch(`https://lrclib.net/api/search?q=${encodeURIComponent(query)}`);
-            if (!res.ok) throw new Error(`lrclib responded ${res.status}`);
-            const data = await res.json();
-            const match = data && data[0];
-            if (match) {
-                const parsedSynced = match.syncedLyrics ? parseLrc(match.syncedLyrics) : [];
-                const lyricsPayload = {
-                    plain: match.plainLyrics || null,
-                    synced: parsedSynced,
-                    isSynced: parsedSynced.length > 0,
-                    instrumental: match.instrumental || false
-                };
-                if (cacheKey) lyricsCache.set(cacheKey, lyricsPayload);
-                set({ lyrics: lyricsPayload, lyricsLoading: false, lyricsError: false });
+            // Read user's preferred provider from localStorage, fall back to auto-select
+            const preferredProvider = typeof localStorage !== 'undefined'
+                ? localStorage.getItem('mehfil_lyrics_provider') || 'auto'
+                : 'auto';
+
+            // Multi-source chain: backend aggregator first, then direct providers.
+            const result = await fetchLyricsMulti(song, preferredProvider, { force });
+
+            if (result) {
+                if (cacheKey) lyricsCache.set(cacheKey, result);
+                set({
+                    lyrics: result,
+                    lyricsLoading: false,
+                    lyricsError: false,
+                });
+                console.log(`[Lyrics] Source: ${result.sourceName} (${result.isSynced ? "synced" : "plain"})`);
             } else {
-                // No results — cache the "not found" result too to prevent repeated hits
+                // No results from any provider — cache null
                 if (cacheKey) lyricsCache.set(cacheKey, null);
                 set({ lyrics: null, lyricsLoading: false, lyricsError: false });
             }
         } catch (err) {
             console.warn('Lyrics fetch failed:', err);
-            // Don't cache errors — a transient network issue should be retried on next visit
+            // Don't cache errors — transient network issue should be retried
             set({ lyrics: null, lyricsLoading: false, lyricsError: true });
         }
     },
@@ -508,7 +705,7 @@ export const usePlayerStore = create((set, get) => ({
         broadcastHostState();
     },
 
-    playSong: async (rawSong, autoOpen = false, isFromQueue = false, isSync = false) => {
+    playSong: async (rawSong, autoOpen = false, isFromQueue = false, isSync = false, mixOptions = null) => {
 
         const state = get();
         if (!rawSong) return;
@@ -586,6 +783,22 @@ export const usePlayerStore = create((set, get) => ({
         if (cachedLyrics === undefined) {
             get().fetchLyricsForSong(song);
         }
+
+        // The AutoMix engine needs the current track's tempo and key to plan
+        // the transition into the next one.
+        autoMixEngine.setCurrentTrack(song);
+        // Keep the engine's active deck in sync with the store's transport.
+        autoMixEngine.setActiveDeck(nextChannel);
+        if (get().mixEnabled) {
+            autoMixEngine.ensureAnalysis(song);
+            // Remember what has played — shuffle mode picks the next track
+            // from the ones that have not been played yet.
+            set((s) => ({
+                mixPlayedIds: s.mixPlayedIds.includes(song.id)
+                    ? s.mixPlayedIds
+                    : [...s.mixPlayedIds, song.id],
+            }));
+        }
         if (!isSync) {
             broadcastHostState();
         }
@@ -646,16 +859,27 @@ export const usePlayerStore = create((set, get) => ({
         nextAudio.load();
 
         // 🎯 Manual clicks (autoOpen=true) use 800ms fade. Auto-mix uses 5s fade.
+        //    A "Mix" transition overrides both with its own automation curves.
         const CROSSFADE_TIME = autoOpen ? 800 : 5000;
+        const transition = mixOptions?.transition || null;
 
-        if (state.currentSong) {
-            audioEngine.crossfade(state.activeChannel, nextChannel, CROSSFADE_TIME, state.volume);
+        if (transition) {
+            // ── Mix transition: the incoming track starts early and both
+            //    channels are automated (volume, EQ, filter) until the blend ends.
+            audioEngine.applyTransition(state.activeChannel, nextChannel, transition, state.volume);
+            await nextAudio.play().catch(e => console.warn('Play blocked:', e));
         } else {
+            if (state.currentSong) {
+                audioEngine.crossfade(state.activeChannel, nextChannel, CROSSFADE_TIME, state.volume);
+            } else {
+                audioEngine.sync(nextChannel, state.volume);
+            }
+
+            await nextAudio.play().catch(e => console.warn('Play blocked:', e));
             audioEngine.sync(nextChannel, state.volume);
         }
 
-        await nextAudio.play().catch(e => console.warn('Play blocked:', e));
-        audioEngine.sync(nextChannel, state.volume);
+        const blendMs = transition ? transition.durationMs : CROSSFADE_TIME;
 
         setTimeout(() => {
             const freshState = usePlayerStore.getState();
@@ -663,8 +887,10 @@ export const usePlayerStore = create((set, get) => ({
             if (freshState.activeChannel === nextChannel) {
                 currentAudio.pause();
                 currentAudio.currentTime = 0;
+                // Restore a flat chain on the channel that just went idle.
+                audioEngine.resetChannel(state.activeChannel);
             }
-        }, CROSSFADE_TIME + 200);
+        }, blendMs + 200);
 
         // Update Media Session
         if ('mediaSession' in navigator) {
@@ -737,7 +963,7 @@ export const usePlayerStore = create((set, get) => ({
 
 
 
-    nextSong: async () => {
+    nextSong: async (options = {}) => {
         const { queue, queueIndex, shuffle, repeat, activeChannel, sessionCode, isAutoMixEnabled, currentSong } = get();
         if (!queue.length && !currentSong) return;
 
@@ -746,6 +972,22 @@ export const usePlayerStore = create((set, get) => ({
         }
 
         const audio = activeChannel === 'A' ? audioA : audioB;
+
+        // ── Mix mode: follow the playlist order and blend into the next track ──
+        if (options.mix) {
+            const nextIndex = queueIndex < queue.length - 1
+                ? queueIndex + 1
+                : (repeat === 'all' ? 0 : -1);
+
+            if (nextIndex >= 0 && queue[nextIndex]) {
+                const nextTrack = queue[nextIndex];
+                set({ queueIndex: nextIndex });
+                const transition = get().resolveMixTransition(currentSong, nextTrack);
+                console.log('[Mix] Blending into:', nextTrack.title || nextTrack.name, '·', transition?.presetId, `${transition?.durationMs}ms`);
+                get().playSong(nextTrack, false, true, false, transition ? { transition } : null);
+                return;
+            }
+        }
 
         // Repeat One handling: replay current song
         if (repeat === 'one') {
@@ -868,6 +1110,269 @@ export const usePlayerStore = create((set, get) => ({
         broadcastHostState();
     },
 
+    // ── Mix Engine (Spotify-style seamless transitions) ──
+    setMixEnabled: (enabled, playlistId = null) => {
+        set({
+            mixEnabled: enabled,
+            mixPlaylistId: playlistId !== null ? playlistId : get().mixPlaylistId,
+        });
+        try { localStorage.setItem('mehfil_mix_enabled', enabled ? 'true' : 'false'); } catch {}
+        get().setMixEngineEnabled(enabled);
+    },
+
+    /** Load the saved transition map for a playlist. */    loadMixTransitions: (playlistId) => {
+        if (!playlistId) {
+            set({ mixTransitions: {}, mixPlaylistId: null });
+            return;
+        }
+        let saved = {};
+        try {
+            saved = JSON.parse(localStorage.getItem(`mehfil_mix_${playlistId}`) || '{}');
+        } catch { saved = {}; }
+
+        const mixTransitions = {};
+        Object.entries(saved).forEach(([key, raw]) => {
+            const spec = deserializeTransition(raw);
+            if (spec) mixTransitions[key] = spec;
+        });
+        set({ mixTransitions, mixPlaylistId: playlistId });
+    },
+
+    /** Save (or clear, when spec is null) the transition between two tracks. */
+    setMixTransition: (fromId, toId, spec) => {
+        if (!fromId || !toId) return;
+        const key = transitionKey(fromId, toId);
+        const mixTransitions = { ...get().mixTransitions };
+        if (spec) mixTransitions[key] = serializeTransition(spec);
+        else delete mixTransitions[key];
+        set({ mixTransitions });
+        persistMixTransitionsDebounced(get().mixPlaylistId, mixTransitions);
+    },
+
+    resetMixTransition: (fromId, toId) => get().setMixTransition(fromId, toId, null),
+
+    clearMixTransitions: () => {
+        set({ mixTransitions: {} });
+        persistMixTransitions(get().mixPlaylistId, {});
+    },
+
+    /** Build a transition from a preset + duration (used by the mix editor). */
+    createMixTransition: (presetId, durationMs, fromId, toId) => {
+        const spec = buildTransitionCurves(presetId, { durationMs });
+        return spec;
+    },
+
+    /** Analyse a list of tracks (BPM / key / waveform). */
+    analyzeMixTracks: async (songs) => {
+        const list = (songs || []).filter((song) => song && song.id);
+        if (!list.length) return;
+        set({ mixAnalyzing: true, mixProgress: { done: 0, total: list.length } });
+        try {
+            const results = await analyzeTracks(list, {
+                concurrency: 2,
+                // Apply every result as soon as it lands so the list fills in live.
+                onResult: (id, result) => {
+                    if (!result) return;
+                    set((state) => ({ mixAnalysis: { ...state.mixAnalysis, [id]: result } }));
+                },
+                onProgress: (done, total) => set({ mixProgress: { done, total } }),
+            });
+            const mixAnalysis = { ...get().mixAnalysis };
+            for (const [id, result] of results) {
+                if (result) mixAnalysis[id] = result;
+            }
+            set({
+                mixAnalysis,
+                mixAnalyzing: false,
+                mixProgress: { done: list.length, total: list.length },
+            });
+        } catch (err) {
+            console.warn('[Mix] Analysis failed:', err);
+            set({ mixAnalyzing: false });
+        }
+    },
+
+    /** The transition that will be used between two tracks (saved or auto). */
+    resolveMixTransition: (fromSong, toSong) => {
+        const { mixEnabled, mixTransitions, mixAnalysis } = get();
+        if (!mixEnabled || !fromSong || !toSong) return null;
+        if (fromSong.id === toSong.id) return null;
+
+        const saved = mixTransitions[transitionKey(fromSong.id, toSong.id)];
+        if (saved) return saved;
+
+        return planTransition(mixAnalysis[fromSong.id], mixAnalysis[toSong.id]);
+    },
+
+    /** How many seconds before the end of a track the blend has to start. */
+    getMixLeadTime: () => {
+        const { mixEnabled, currentSong, queue, queueIndex, mixTransitions, mixAnalysis } = get();
+        if (!mixEnabled || !currentSong) return 0;
+        const next = queue[queueIndex + 1];
+        if (!next) return 0;
+
+        const saved = mixTransitions[transitionKey(currentSong.id, next.id)];
+        if (saved) return Math.max(0.5, saved.durationMs / 1000);
+
+        const planned = planTransition(mixAnalysis[currentSong.id], mixAnalysis[next.id]);
+        return Math.max(0.5, planned.durationMs / 1000);
+    },
+
+    /** Beat-aligned spot inside the outgoing track where the blend starts. */
+    getMixTransitionPoint: (fromSong, durationMs) => {
+        const { mixAnalysis, mixTransitions, queue, queueIndex } = get();
+        const analysis = mixAnalysis[fromSong?.id];
+        if (!analysis) return null;
+
+        // A saved transition may pin the blend to a manually chosen spot.
+        const next = queue[queueIndex + 1];
+        const saved = next ? mixTransitions[transitionKey(fromSong.id, next.id)] : null;
+        if (saved && typeof saved.transitionPoint === 'number') return saved.transitionPoint;
+
+        return findTransitionPoint(analysis, durationMs, analysis.duration);
+    },
+
+    /** The track that will play next (used by the AutoMix preparation). */
+    getNextQueueTrack: () => {
+        const {
+            queue, queueIndex, repeat, shuffle,
+            mixAnalysis, mixPlayedIds, currentSong,
+        } = get();
+
+        if (!queue.length) return null;
+
+        // ── Shuffle mode: the next track is the one that MIXES BEST ──
+        if (shuffle) {
+            const played = new Set(mixPlayedIds || []);
+            const candidates = queue.filter(
+                (song) => song && !played.has(song.id) && song.id !== currentSong?.id,
+            );
+            if (!candidates.length) {
+                return repeat === 'all' ? queue[0] : null;
+            }
+
+            const currentAnalysis = currentSong ? mixAnalysis[currentSong.id] : null;
+            if (!currentAnalysis) {
+                // Nothing analysed yet — pick at random.
+                return candidates[Math.floor(Math.random() * candidates.length)];
+            }
+
+            let best = candidates[0];
+            let bestScore = -Infinity;
+            for (const candidate of candidates) {
+                const analysis = mixAnalysis[candidate.id];
+                let score = analysis ? transitionScore(currentAnalysis, analysis).total : 0;
+                // A little jitter so the order is not identical every time.
+                score += Math.random() * 8;
+                if (score > bestScore) {
+                    bestScore = score;
+                    best = candidate;
+                }
+            }
+            return best;
+        }
+
+        // ── Sequence mode: the next track in playlist order ──
+        if (queueIndex < queue.length - 1) return queue[queueIndex + 1];
+        if (repeat === 'all') return queue[0];
+        return null;
+    },
+
+    /**
+     * Starts a mix for a playlist: AutoMix on, playing from the first track.
+     * The next track then follows the shuffle mode (see getNextQueueTrack).
+     */
+    startMix: async (tracks) => {
+        const list = (tracks || []).filter(Boolean);
+        if (!list.length) return;
+
+        set({ isStartingMix: true, mixEnabled: true, mixPlayedIds: [] });
+        get().setMixEngineEnabled(true);
+
+        // Play the first track of the playlist and open the player.
+        get().playQueue(list, 0, true);
+
+        // Analyse it right away so the very first transition can be planned,
+        // and keep analysing the rest in the background — in shuffle mode the
+        // next track is chosen by how well it mixes.
+        autoMixEngine.ensureAnalysis(list[0]);
+        get().analyzeMixTracks(list);
+
+        // Give the button a moment of feedback, then hand over to the player.
+        setTimeout(() => set({ isStartingMix: false }), 900);
+    },
+
+    /** Stops the mix (the queue keeps playing normally). */
+    stopMix: () => {
+        get().setMixEngineEnabled(false);
+        set({ mixEnabled: false, mixPlayedIds: [] });
+    },
+
+    /* ── AutoMix engine bridge ────────────────────────────────────────── */
+
+    /** Starts (or stops) the intelligent AutoMix engine. */
+    setMixEngineEnabled: (enabled) => {
+        autoMixEngine.setEnabled(enabled);
+        if (enabled) {
+            // The track that is already playing needs its tempo/key too.
+            const current = get().currentSong;
+            if (current) autoMixEngine.ensureAnalysis(current);
+        } else {
+            set({
+                automix: { ...get().automix, state: 'idle', phase: 'idle', progress: 0, incoming: null, error: null },
+                isTransitioning: false,
+            });
+        }
+    },
+
+    /**
+     * Commits the handover after the engine finished a blend: the engine has
+     * already started the incoming deck, so this only updates state and the
+     * per-track side effects.
+     */
+    commitMixHandover: (track) => {
+        if (!track) return;
+        const state = get();
+
+        const index = state.queue.findIndex((song) => song.id === track.id);
+        const normalised = { ...track };
+        if (!normalised.title && normalised.name) normalised.title = normalised.name;
+        if (!normalised.primaryArtists && normalised.artists?.primary) {
+            normalised.primaryArtists = normalised.artists.primary.map((a) => a.name).join(', ');
+        }
+
+        set({
+            currentSong: normalised,
+            queueIndex: index >= 0 ? index : state.queueIndex + 1,
+            // The engine swapped the decks when the blend finished — the
+            // store must follow, otherwise every handler keeps watching the
+            // deck that was just released.
+            activeChannel: autoMixEngine.activeDeckId,
+            // The incoming deck is already playing (it started during the
+            // blend), so the player must not be marked as stopped.
+            isPlaying: true,
+            isTransitioning: false,
+            isPrepared: false,
+            progress: 0,
+            currentTime: 0,
+            mixPlayedIds: state.mixPlayedIds?.includes(normalised.id)
+                ? state.mixPlayedIds
+                : [...(state.mixPlayedIds || []), normalised.id],
+        });
+
+        addToHistory(normalised);
+        logPlaybackEvent({ track: normalised, eventType: 'play_started' });
+        get().fetchLyricsForSong(normalised);
+
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: normalised.title?.replace(/&quot;/g, '"') || 'Unknown',
+                artist: normalised.primaryArtists || normalised.subtitle || 'Unknown',
+                artwork: [{ src: getImageUrl(normalised.image), sizes: '500x500' }],
+            });
+        }
+    },
+
     // ── AutoMix Engine Handlers ──
     prepareNextSong: async () => {
         const state = get();
@@ -887,9 +1392,11 @@ export const usePlayerStore = create((set, get) => ({
 
         let next = null;
         try {
-            // Attempt to get recommendation from ML Microservice
-            const ML_API_URL = import.meta.env.VITE_ML_SERVICE_URL || 'http://localhost:8000';
-            const mlRes = await fetch(`${ML_API_URL}/api/ml/recommend`, {
+            // ML recommendations are proxied through our own backend so the
+            // browser never talks to the microservice directly (no CORS noise).
+            // When the microservice is offline the backend answers 503 and we
+            // fall through to the local auto-mix scoring below.
+            const mlRes = await fetch(`${API_BASE_URL}/api/ml/recommend`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -899,13 +1406,17 @@ export const usePlayerStore = create((set, get) => ({
                     client_hour: new Date().getHours()
                 })
             });
-            const mlData = await mlRes.json();
-            
-            if (mlData.success && mlData.recommendations.length > 0) {
-                const recommendedId = mlData.recommendations[0].track_id;
-                const found = pool.find(s => s && s.id === recommendedId);
-                if (found) {
-                    next = { ...found, mlQueued: true };
+
+            if (mlRes.ok) {
+                const mlData = await mlRes.json();
+                const recommendations = mlData?.data?.recommendations || mlData?.recommendations || [];
+
+                if (recommendations.length > 0) {
+                    const recommendedId = recommendations[0].track_id;
+                    const found = pool.find(s => s && s.id === recommendedId);
+                    if (found) {
+                        next = { ...found, mlQueued: true };
+                    }
                 }
             }
         } catch (mlErr) {
@@ -944,13 +1455,19 @@ export const usePlayerStore = create((set, get) => ({
 
     toggleMute: () => {
         const { isMuted, volume, activeChannel, currentSong } = get();
+        // Unmuting from volume 0 must restore an audible level, otherwise the
+        // button reports "on" while playback stays silent.
+        const restoreTo = volume > 0 ? volume : 0.8;
         // Sync to YT player if applicable
         if (currentSong?.id?.startsWith('yt_') && window.__ytPlayerInstance) {
             if (!isMuted) window.__ytPlayerInstance.mute?.();
-            else { window.__ytPlayerInstance.unMute?.(); window.__ytPlayerInstance.setVolume?.(Math.round(volume * 100)); }
+            else {
+                window.__ytPlayerInstance.unMute?.();
+                window.__ytPlayerInstance.setVolume?.(Math.round(restoreTo * 100));
+            }
         }
-        audioEngine.setVolume(activeChannel, !isMuted ? 0 : volume);
-        set({ isMuted: !isMuted });
+        audioEngine.setVolume(activeChannel, !isMuted ? 0 : restoreTo);
+        set({ isMuted: !isMuted, volume: isMuted ? restoreTo : volume });
     },
 
 
@@ -978,8 +1495,12 @@ export const usePlayerStore = create((set, get) => ({
     },
 
     // ── Equalizer Actions ──
+    // The engine keeps per-channel EQ, so the user's values are applied to both
+    // chains and restored automatically after a Mix transition.
     setEqualizer: (key, val) => {
-        if (audioEngine.filters && audioEngine.filters[key]) {
+        if (audioEngine.initialized) {
+            audioEngine.setUserEq(key, val);
+        } else if (audioEngine.filters && audioEngine.filters[key]) {
             audioEngine.filters[key].gain.value = val;
         }
         set(state => ({ equalizer: { ...state.equalizer, [key]: val } }));
@@ -988,11 +1509,8 @@ export const usePlayerStore = create((set, get) => ({
 
     setEqualizerAll: (vals) => {
         if (!audioEngine.initialized) audioEngine.init(audioA, audioB);
-        const filters = audioEngine.filters;
-        if (!filters) return;
-        Object.entries(vals).forEach(([key, val]) => {
-            if (filters[key]) filters[key].gain.value = val;
-        });
+        if (!audioEngine.filters) return;
+        audioEngine.setUserEqAll(vals);
         set({ equalizer: vals });
     },
 
@@ -1021,6 +1539,12 @@ export const usePlayerStore = create((set, get) => ({
         set({ sleepTimer: { active: false, remaining: 0, label: '' } });
     },
 }));
+
+// Dev-only debug handle — lets you inspect the live player state from the
+// browser console (stripped from production builds).
+if (import.meta.env?.DEV && typeof window !== 'undefined') {
+    window.__mehfilStore = usePlayerStore;
+}
 
 // ── Global Maintenance Interval ──
 let lastTick = Date.now();
@@ -1054,19 +1578,119 @@ const attachAudioListeners = () => {
         const store = usePlayerStore.getState();
         const audio = e.target;
         const channel = audio === audioA ? 'A' : 'B';
+
+        // The engine's blend progress is driven from here — but it must run
+        // for BOTH decks: once the outgoing track ends it stops firing
+        // timeupdate, and the blend would never be completed.
+        autoMixEngine.tick();
+
         if (store.activeChannel !== channel) return;
         const progress = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
         const remaining = audio.duration ? audio.duration - audio.currentTime : 0;
 
         // 🎯 STEP 1: PRELOAD NEXT SONG (Early trigger at 10s, bypassed when repeating current track)
-        if (store.isAutoMixEnabled && store.repeat !== 'one' && audio.duration && remaining < 10 && !store.isPrepared) {
+        //    The Mix feature runs its own handover, so the AutoMix preload is skipped there.
+        if (store.isAutoMixEnabled && !store.mixEnabled && store.repeat !== 'one' && audio.duration && remaining < 10 && !store.isPrepared) {
             store.prepareNextSong();
         }
 
         // 🎯 STEP 2: START NEXT SONG (overlap at 6s, bypassed when repeating current track)
-        if (store.isAutoMixEnabled && store.repeat !== 'one' && audio.duration && remaining < 6 && !store.isTransitioning && store.isPlaying) {
+        //    When "Mix" is on, the mix transition below takes over the handover.
+        if (store.isAutoMixEnabled && !store.mixEnabled && store.repeat !== 'one' && audio.duration && remaining < 6 && !store.isTransitioning && store.isPlaying) {
             usePlayerStore.setState({ isTransitioning: true });
             store.nextSong();
+        }
+
+        // 🎯 STEP 2b: AutoMix — the engine prepares the next deck and schedules
+        //    a beat-aligned blend. Everything below is driven by engine events.
+        if (store.mixEnabled && store.repeat !== 'one' && audio.duration && remaining > 0) {
+            const nextTrack = store.getNextQueueTrack();
+
+            if (nextTrack) {
+                // 1. Prepare the incoming deck while the current track plays.
+                //    The engine works in the background, so this starts as
+                //    early as possible — the analysis and the time-stretch
+                //    need a few seconds before the blend can be armed.
+                if (!autoMixEngine.prepared && !autoMixEngine.active) {
+                    const saved = store.mixTransitions?.[transitionKey(store.currentSong?.id, nextTrack.id)];
+                    autoMixEngine.prepareNext(
+                        nextTrack,
+                        autoMixEngine.getAnalysis(store.currentSong?.id),
+                        saved ? { override: saved } : undefined,
+                    );
+                }
+
+                // 2. Schedule the blend once the deck is armed.
+                //    A preparation that no longer matches the next track (the
+                //    queue changed, or the preparation finished late) is
+                //    discarded rather than used.
+                const prepared = autoMixEngine.prepared;
+                if (prepared && prepared.track?.id !== nextTrack.id) {
+                    autoMixEngine.cancelScheduled();
+                }
+                const armed = prepared && prepared.track?.id === nextTrack.id ? prepared : null;
+
+                if (armed && !autoMixEngine.active && audio.duration) {
+                    const analysis = autoMixEngine.getAnalysis(store.currentSong?.id);
+                    const lead = armed.plan.durationMs / 1000;
+
+                    // Where the blend starts. Spotify snaps the transition to a
+                    // position where the beats of both tracks overlap and the
+                    // default length is eight bars.
+                    const point = findTransitionPoint(analysis, armed.plan.durationMs, {
+                        duration: audio.duration,
+                    });
+                    const target = Number.isFinite(point)
+                        ? point
+                        : Math.max(0, (audio.duration || 0) - lead);
+
+                    const untilBlend = target - audio.currentTime;
+
+                    // Signal the approach a few seconds before the blend so the
+                    // transition is signposted instead of appearing suddenly.
+                    if (untilBlend <= MIX_APPROACH_SECONDS && untilBlend > 0.25) {
+                        const incomingInfo = describeTrack(nextTrack, autoMixEngine.getAnalysis(nextTrack.id));
+                        usePlayerStore.setState((s) => ({
+                            automix: {
+                                ...s.automix,
+                                phase: 'approaching',
+                                incoming: incomingInfo,
+                                style: armed.plan.style,
+                                reason: armed.plan.reason,
+                                progress: 0,
+                            },
+                        }));
+                    }
+
+                    if (untilBlend <= 0.25) {
+                        const rate = audio.playbackRate || 1;
+                        const when = autoMixEngine.ctx.currentTime + untilBlend / rate;
+
+                        // The overlap is the real distance to the end of the
+                        // track, so the curves match what is actually heard.
+                        const overlapMs = Math.max(
+                            armed.plan.durationMs,
+                            (audio.duration - target) * 1000,
+                        );
+
+                        autoMixEngine.scheduleNext(
+                            Math.max(autoMixEngine.ctx.currentTime + 0.03, when),
+                            target,
+                            { durationMs: overlapMs },
+                        );
+                        usePlayerStore.setState({ isTransitioning: true });
+                    }
+                }
+            }
+        }
+
+        // 4. Fallback — if the engine could not mix this pair (a YouTube track
+        //    for example) hand over normally so the music never stops.
+        if (store.mixEnabled && store.repeat !== 'one' && audio.duration && remaining < 5 && !store.isTransitioning && store.isPlaying) {
+            if (!autoMixEngine.active) {
+                usePlayerStore.setState({ isTransitioning: true });
+                store.nextSong();
+            }
         }
 
         usePlayerStore.setState({
