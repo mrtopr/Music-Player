@@ -16,40 +16,40 @@ export default function About() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
                 <FeatureCard 
-                    icon={<Users size={32} color="#c084fc" />} 
+                    icon={<Users size={32} color="#06B6D4" />} 
                     title="Listen Together" 
                     description="Sync playback with friends globally. Everyone connected in the room can control the music and listen at the exact same timeline. A fully collaborated, real-time social listening experience."
-                    glowColor="rgba(192, 132, 252, 0.2)"
+                    glowColor="rgba(6, 182, 212, 0.2)"
                 />
                 <FeatureCard 
-                    icon={<Sparkles size={32} color="#818cf8" />} 
+                    icon={<Sparkles size={32} color="#14B8A6" />} 
                     title="AI AutoMix" 
                     description="Smart recommendations that flawlessly crossfade into the next track based on your listening vibe. Our algorithms ensure the party never stops and the transitions are seamless."
-                    glowColor="rgba(129, 140, 248, 0.2)"
+                    glowColor="rgba(20, 184, 166, 0.2)"
                 />
                 <FeatureCard 
-                    icon={<Mic2 size={32} color="#f472b6" />} 
+                    icon={<Mic2 size={32} color="#06B6D4" />} 
                     title="Song Recognition" 
                     description="Tap the mic to instantly identify any song playing around you. Discover new music in the real world and add it directly to your digital library."
-                    glowColor="rgba(244, 114, 182, 0.2)"
+                    glowColor="rgba(6, 182, 212, 0.2)"
                 />
                 <FeatureCard 
-                    icon={<SlidersHorizontal size={32} color="#34d399" />} 
+                    icon={<SlidersHorizontal size={32} color="#14B8A6" />} 
                     title="Pro Equalizer & Sleep Timer" 
                     description="Fine-tune your audio experience with our built-in frequency equalizer. Set a sleep timer with our modern bed icon to drift off to your favorite melodies without draining your battery."
-                    glowColor="rgba(52, 211, 153, 0.2)"
+                    glowColor="rgba(20, 184, 166, 0.2)"
                 />
                 <FeatureCard 
-                    icon={<Music size={32} color="#fbbf24" />} 
+                    icon={<Music size={32} color="#10B981" />} 
                     title="High-Quality Streaming" 
                     description="Immerse yourself in crystal clear audio. We fetch the best available quality for your tracks, ensuring every beat and lyric is delivered in pristine condition."
-                    glowColor="rgba(251, 191, 36, 0.2)"
+                    glowColor="rgba(16, 185, 129, 0.2)"
                 />
                 <FeatureCard 
-                    icon={<Heart size={32} color="#ef4444" />} 
+                    icon={<Heart size={32} color="#06B6D4" />} 
                     title="Personalized Experience" 
                     description="From picking your preferred genres during onboarding to getting a tailored 'Made For You' feed, Mehfil adapts to your unique taste."
-                    glowColor="rgba(239, 68, 68, 0.2)"
+                    glowColor="rgba(6, 182, 212, 0.2)"
                 />
             </div>
             
@@ -59,7 +59,7 @@ export default function About() {
                     Every pixel, every animation, and every feature has been carefully designed to give you the most premium music listening experience on the web.
                 </p>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', padding: '12px 24px', borderRadius: '50px', fontSize: '1.1rem', fontWeight: 600, color: '#fff' }}>
-                    <Heart size={20} color="#ef4444" fill="#ef4444" /> by h3y.Sam
+                    <Heart size={20} color="#06B6D4" fill="#06B6D4" /> by @mrtopr
                 </div>
             </div>
         </div>

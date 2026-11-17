@@ -15,7 +15,7 @@ export default function Legal() {
                     <section style={{ marginBottom: '2rem' }}>
                         <h2 style={{ fontSize: '1.5rem', color: '#c084fc', marginBottom: '1rem' }}>1. Acceptance of Terms</h2>
                         <p style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
-                            By accessing and using Mehfil Music, you accept and agree to be bound by the terms and provision of this agreement.
+                            By accessing and using Mehfil Music by @mrtopr, you accept and agree to be bound by the terms and provision of this agreement.
                             Mehfil is an educational, non-commercial project designed to showcase modern web development capabilities.
                         </p>
                     </section>
@@ -23,7 +23,7 @@ export default function Legal() {
                         <h2 style={{ fontSize: '1.5rem', color: '#c084fc', marginBottom: '1rem' }}>2. Content Disclaimer</h2>
                         <p style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
                             All audio content, album arts, and metadata are fetched in real-time from third-party public APIs. 
-                            Mehfil Music does not host, upload, or store any copyrighted media files on its servers. We act solely as a client-side interface.
+                            Mehfil Music by @mrtopr does not host, upload, or store any copyrighted media files on its servers. We act solely as a client-side interface.
                         </p>
                     </section>
                     <section style={{ marginBottom: '2rem' }}>
@@ -45,7 +45,7 @@ export default function Legal() {
                     <section style={{ marginBottom: '2rem' }}>
                         <h2 style={{ fontSize: '1.5rem', color: '#818cf8', marginBottom: '1rem' }}>1. Information We Collect</h2>
                         <p style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
-                            Mehfil Music prioritizes your privacy. We do not require account creation, and all your data—including your listening history, 
+                            Mehfil Music by @mrtopr prioritizes your privacy. We do not require account creation, and all your data—including your listening history, 
                             favorite songs, and custom playlists—is stored locally on your device using browser storage. 
                             We do not collect or transmit your personal data to external servers.
                         </p>

@@ -11,7 +11,7 @@ const GENRES_DATA = [
         name: 'POP',
         count: '20,831 Music',
         bg: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&auto=format&fit=crop&q=80',
-        color: '#a855f7',
+        color: '#14B8A6',
         tags: [
             { id: 'happy', label: 'Happy' },
             { id: 'sad', label: 'Sad' },
@@ -226,7 +226,7 @@ export default function Genres() {
                     border-radius: 50%;
                     object-fit: cover;
                     border: 2px solid rgba(168, 85, 247, 0.6);
-                    box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+                    box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
                     display: block;
                 }
 
@@ -335,8 +335,8 @@ export default function Genres() {
                 }
 
                 .genre-capsule-toggle-btn:hover {
-                    background: rgba(168, 85, 247, 0.3);
-                    border-color: rgba(168, 85, 247, 0.5);
+                    background: rgba(6, 182, 212, 0.3);
+                    border-color: rgba(6, 182, 212, 0.5);
                 }
 
                 /* Sub-tags Pill Cloud */
@@ -389,8 +389,8 @@ export default function Genres() {
             {/* Mobile Header */}
             <div className="genres-mobile-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => navigate('/')}>
-                    <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: '30px', height: '30px', borderRadius: '50%', border: '1.5px solid rgba(168, 85, 247, 0.5)', boxShadow: '0 0 12px rgba(168, 85, 247, 0.4)' }} />
-                    <span style={{ fontFamily: "'Merienda', cursive", fontSize: '1.35rem', fontWeight: 700, background: 'linear-gradient(135deg, #c084fc 0%, #a855f7 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mehfil</span>
+                    <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: '30px', height: '30px', borderRadius: '50%', border: '1.5px solid rgba(6, 182, 212, 0.5)', boxShadow: '0 0 12px rgba(6, 182, 212, 0.4)' }} />
+                    <span style={{ fontFamily: "'Merienda', cursive", fontSize: '1.35rem', fontWeight: 700, background: 'linear-gradient(135deg, #06B6D4 0%, #14B8A6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mehfil</span>
                 </div>
 
                 <div className="genres-header-right">

@@ -1,63 +1,64 @@
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Merienda:wght@300..900&family=Tagesschrift&family=Yatra+One&display=swap');
 
 /* ========== COLOR VARIABLES ========== */
-/* Theme: Mehfil Purple — inspired by the brand logo gradient */
+/* Theme: Modern Glassmorphic — clean dark theme with cyan accent */
 :root {
-  /* Backgrounds - Deep Dark with subtle purple undertone */
-  --bg-main: #09080F;
-  --bg-sidebar: #0D0B16;
-  --bg-card: #130F1E;
-  --bg-hover: #1B1530;
+  /* Backgrounds - Deep Dark */
+  --bg-main: #0a0a0f;
+  --bg-sidebar: #111119;
+  --bg-card: #14141e;
+  --bg-hover: #181822;
 
   /* Legacy background variables (for compatibility) */
-  --primary-bg: #09080F;
-  --secondary-bg: #130F1E;
-  --tertiary-bg: #0D0B16;
-  --card-bg: #130F1E;
+  --primary-bg: #0a0a0f;
+  --secondary-bg: #14141e;
+  --tertiary-bg: #111119;
+  --card-bg: #14141e;
 
-  /* Primary Accent - Rich Purple (Logo Brand Color) */
-  --accent-primary: #8B5CF6;
-  --accent-primary-rgb: 139, 92, 246;
-  --accent-primary-soft: rgba(139, 92, 246, 0.15);
-  --accent-hover: #A78BFA;
+  /* Primary Accent - Modern Cyan (replaces purple) */
+  --accent-primary: #06B6D4;
+  --accent-primary-rgb: 6, 182, 212;
+  --accent-primary-soft: rgba(6, 182, 212, 0.15);
+  --accent-hover: #0891b2;
 
-  /* Secondary Accent - Violet Pink (Logo Gradient End) */
-  --accent-secondary: #C084FC;
-  --accent-secondary-rgb: 192, 132, 252;
-  --accent-secondary-soft: rgba(192, 132, 252, 0.12);
+  /* Secondary Accent - Soft Teal */
+  --accent-secondary: #14B8A6;
+  --accent-secondary-rgb: 20, 184, 166;
+  --accent-secondary-soft: rgba(20, 184, 166, 0.12);
 
   /* Text */
-  --text-primary: #EDEDED;
-  --text-secondary: #A89CC8;
-  --text-muted: #6B5F8A;
-  --text-tertiary: #A89CC8;
-  --text-disabled: #4E4569;
-  --text-artist: #A89CC8;
+  --text-primary: #F8F9FA;
+  --text-secondary: #8892B0;
+  --text-muted: #6B7280;
+  --text-tertiary: #8892B0;
+  --text-disabled: #4B5563;
+  --text-artist: #8892B0;
 
   /* Borders */
-  --border-subtle: rgba(139, 92, 246, 0.08);
-  --border-light: rgba(139, 92, 246, 0.08);
-  --border-medium: rgba(139, 92, 246, 0.15);
-  --border-accent: rgba(139, 92, 246, 0.5);
+  --border-subtle: rgba(6, 182, 212, 0.08);
+  --border-light: rgba(6, 182, 212, 0.08);
+  --border-medium: rgba(6, 182, 212, 0.15);
+  --border-accent: rgba(6, 182, 212, 0.3);
 
-  /* Shadow Colors - Purple Tinted */
-  --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.4);
+  /* Shadow Colors - Modern, subtle, no purple */
+  --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.3);
   --shadow-medium: 0 6px 16px rgba(0, 0, 0, 0.35);
-  --shadow-heavy: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-accent: 0 8px 25px rgba(139, 92, 246, 0.3);
-  --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.25);
+  --shadow-heavy: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-accent: rgba(6, 182, 212, 0.15);
+  --shadow-glow: rgba(6, 182, 212, 0.1);
 
   /* Status Colors */
   --success: #10B981;
   --warning: #F59E0B;
   --error: #EF4444;
-  --info: #8B5CF6;
+  --info: #06B6D4;
 
-  /* Gradients - Purple Brand Gradient */
-  --gradient-primary: linear-gradient(180deg, #0D0B16 0%, #09080F 100%);
-  --gradient-accent: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(192, 132, 252, 0.05));
-  --gradient-text: linear-gradient(90deg, #C084FC 0%, #8B5CF6 50%, #7C3AED 100%);
-  --gradient-brand: linear-gradient(135deg, #7C3AED 0%, #9333EA 50%, #C084FC 100%);
+  /* Gradients - Modern Cyan/Teal Gradient */
+  --gradient-primary: linear-gradient(180deg, #0f172a 0%, #0a0a0f 100%);
+  --gradient-accent: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(20, 184, 166, 0.05));
+  --gradient-text: linear-gradient(90deg, #10B981 0%, #06B6D4 50%, #14B8A6 100%);
+  --gradient-brand: linear-gradient(135deg, #06B6D4 0%, #14B8A6 50%, #0891b2 100%);
+  --gradient-brand-hover: linear-gradient(135deg, #0891b2 0%, #06B6D4 50%, #14B8A6 100%);
 
 
   /* Spacing */
@@ -83,8 +84,8 @@
   /* Fullscreen Player Variables */
   --fullscreen-bg: linear-gradient(135deg, #0D0B16 0%, #09080F 50%, #130F1E 100%);
   --fullscreen-overlay: rgba(0, 0, 0, 0.85);
-  --fullscreen-accent: #8B5CF6;
-  --fullscreen-accent-secondary: #C084FC;
+  --fullscreen-accent: #06B6D4;
+  --fullscreen-accent-secondary: #14B8A6;
   --fullscreen-text: #EDEDED;
   --fullscreen-text-secondary: rgba(237, 237, 237, 0.9);
   --fullscreen-text-muted: rgba(237, 237, 237, 0.7);
@@ -356,7 +357,7 @@ body {
 
 .sidebar ul li.active {
   background: rgba(139, 92, 246, 0.15);
-  color: #8B5CF6;
+  color: #06B6D4;
   opacity: 1;
   box-shadow: none;
   transform: none;
@@ -900,9 +901,9 @@ body {
 }
 
 .category-scroll button.active {
-  background: #8B5CF6;
+  background: #06B6D4;
   color: #000;
-  border-color: #8B5CF6;
+  border-color: #06B6D4;
   box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 }
 
@@ -1541,7 +1542,7 @@ body {
 
 
 .primary-cta-btn {
-  background: linear-gradient(135deg, #7C3AED, #9333EA);
+  background: linear-gradient(135deg, #10B981, #14B8A6);
   color: #fff;
   padding: 10px 24px;
   border-radius: 50px;
@@ -1559,7 +1560,7 @@ body {
 
 .primary-cta-btn:hover {
   transform: scale(1.05);
-  background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+  background: linear-gradient(135deg, #06B6D4, #0891b2);
   box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
 }
 
@@ -2407,7 +2408,7 @@ body {
 
 /* Load More Button */
 .load-more-btn {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, #C084FC 100%);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #14B8A6 100%);
   color: var(--text-primary);
   border: none;
   padding: 12px var(--spacing-lg);
@@ -2422,7 +2423,7 @@ body {
 .load-more-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
-  background: linear-gradient(135deg, #C084FC 0%, var(--accent-primary) 100%);
+  background: linear-gradient(135deg, #14B8A6 0%, var(--accent-primary) 100%);
 }
 
 .load-more-container {
@@ -2742,7 +2743,7 @@ img[src^="https://"] {
 }
 
 .pagination-btn {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, #C084FC 100%);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #14B8A6 100%);
   color: var(--text-primary);
   border: none;
   padding: 10px 20px;
@@ -2762,7 +2763,7 @@ img[src^="https://"] {
 .pagination-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
-  background: linear-gradient(135deg, #C084FC 0%, var(--accent-primary) 100%);
+  background: linear-gradient(135deg, #14B8A6 0%, var(--accent-primary) 100%);
 }
 
 .pagination-btn:active:not(:disabled) {
@@ -3314,8 +3315,8 @@ img[src^="https://"] {
 
 .mini-volume-control input[type="range"][data-volume="medium"] {
   background: linear-gradient(to right,
-      #8B5CF6 0%,
-      #8B5CF6 var(--volume-percent, 60%),
+      #06B6D4 0%,
+      #06B6D4 var(--volume-percent, 60%),
       rgba(255, 255, 255, 0.2) var(--volume-percent, 60%),
       rgba(255, 255, 255, 0.2) 100%);
 }
@@ -3962,7 +3963,7 @@ div.featured-playlists h2 {
 }
 
 .about-info strong {
-  color: #8B5CF6 !important;
+  color: #06B6D4 !important;
 }
 
 /* Hero CTA Buttons */
@@ -6568,4 +6569,4 @@ div.featured-playlists h2 {
     width: 50px;
   }
 }
-
+

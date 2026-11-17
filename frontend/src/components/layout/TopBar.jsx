@@ -410,11 +410,35 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                 }
             `}</style>
 
-            {/* Mobile Brand Logo */}
+            {/* Mobile Brand Logo - @mrtopr branding */}
             <div className="mobile-brand" onClick={() => navigate('/')} style={{ display: 'none', alignItems: 'center', gap: '8px', cursor: 'pointer', flexShrink: 0 }}>
                 <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover' }} />
-                <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, var(--accent-primary, #d4a053), #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mehfil</span>
+                <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, var(--accent-primary, #06B6D4), #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mehfil</span>
             </div>
+
+            {/* Like Repo Button */}
+            <button 
+                className="icon-btn like-repo-btn" 
+                title="Like this repo on GitHub" 
+                style={{
+                    background: 'var(--accent-primary, #06B6D4)',
+                    border: '1px solid var(--accent-primary, #06B6D4)',
+                    color: '#000',
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '12px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s ease',
+                    flexShrink: 0
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#0891b2'; e.currentTarget.style.transform = 'scale(1.1)'; window.open('https://github.com/mrtopr/Music-Player', '_blank'); }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--accent-primary, #06B6D4)'; e.currentTarget.style.transform = 'scale(1)'; }}
+            >
+                <Heart size={20} fill="#000" />
+            </button>
 
             <div className="search" style={{ display: 'flex', alignItems: 'center', flex: 1, maxWidth: '480px' }}>
 
@@ -481,7 +505,7 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                         style={{
                             display: 'flex',
                             alignItems: 'center',
-                            background: 'var(--accent-primary, #d4a053)',
+                            background: 'var(--accent-primary, #06B6D4)',
                             border: '1px solid rgba(255, 255, 255, 0.08)',
                             borderRadius: '12px',
                             padding: '6px 8px',
@@ -489,7 +513,7 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                             color: '#000',
                             fontSize: '1rem',
                             cursor: 'pointer',
-                            boxShadow: '0 4px 10px rgba(212, 160, 83, 0.2)',
+                            boxShadow: '0 4px 10px rgba(6, 182, 212, 0.2)',
                             transition: 'all 0.2s ease'
                         }}
                     >
@@ -561,9 +585,9 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   onClick={startRecognition}
                   title="Identify Song"
                   style={{
-                      background: isListening ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.04)',
-                      border: isListening ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
-                      color: isListening ? 'var(--accent-primary, #8B5CF6)' : 'var(--text-secondary)',
+                      background: isListening ? 'rgba(6, 182, 212, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                      border: isListening ? '1px solid rgba(6, 182, 212, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                      color: isListening ? 'var(--accent-primary, #06B6D4)' : 'var(--text-secondary)',
                       width: '42px',
                       height: '42px',
                       borderRadius: '12px',
@@ -600,9 +624,9 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   aria-label="Sleep Timer" 
                   onClick={onOpenSleep}
                   style={{
-                      borderColor: sleepTimer?.active ? 'rgba(139, 92, 246, 0.4)' : 'rgba(255,255,255,0.08)',
-                      background: sleepTimer?.active ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.04)',
-                      color: sleepTimer?.active ? 'var(--accent-primary, #8B5CF6)' : 'var(--text-secondary)',
+                      borderColor: sleepTimer?.active ? 'rgba(6, 182, 212, 0.4)' : 'rgba(255,255,255,0.08)',
+                      background: sleepTimer?.active ? 'rgba(6, 182, 212, 0.15)' : 'rgba(255,255,255,0.04)',
+                      color: sleepTimer?.active ? 'var(--accent-primary, #06B6D4)' : 'var(--text-secondary)',
                       width: '42px',
                       height: '42px',
                       borderRadius: '12px',
@@ -610,7 +634,7 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   }}
                 >
                     <img 
-                        src={`https://img.icons8.com/?size=40&id=10772&format=png&color=${sleepTimer?.active ? '8B5CF6' : 'FFFFFF'}`} 
+                        src={`https://img.icons8.com/?size=40&id=10772&format=png&color=${sleepTimer?.active ? '06B6D4' : 'FFFFFF'}`} 
                         alt="Sleep Timer" 
                         style={{ 
                             width: '18px', 
@@ -628,9 +652,9 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                       onClick={() => setSyncPanelOpen(!syncPanelOpen)}
                       title="Listen Together"
                       style={{
-                          background: sessionCode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.04)',
-                          border: sessionCode ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid rgba(255,255,255,0.08)',
-                          color: sessionCode ? 'var(--accent-primary, #8B5CF6)' : 'var(--text-secondary)',
+                          background: sessionCode ? 'rgba(6, 182, 212, 0.15)' : 'rgba(255,255,255,0.04)',
+                          border: sessionCode ? '1px solid rgba(6, 182, 212, 0.4)' : '1px solid rgba(255,255,255,0.08)',
+                          color: sessionCode ? 'var(--accent-primary, #06B6D4)' : 'var(--text-secondary)',
                           transition: 'all 0.3s ease',
                           display: 'flex',
                           alignItems: 'center',

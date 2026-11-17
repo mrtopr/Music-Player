@@ -354,7 +354,7 @@ export default function Settings() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                             <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: '56px', height: '56px', objectFit: 'contain', filter: 'drop-shadow(0 0 12px rgba(139,92,246,0.5))' }} />
                             <div>
-                                <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff', marginBottom: '4px' }}>Mehfil Purple Theme</div>
+                                <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff', marginBottom: '4px' }}>Modern Glassmorphic Theme</div>
                                 <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>A consistent brand experience across the entire app</div>
                                 <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                                     <span className="theme-swatch" style={{ background: '#7C3AED', boxShadow: '0 0 12px rgba(124,58,237,0.6)' }} title="Deep Purple"></span>
