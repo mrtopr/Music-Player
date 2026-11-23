@@ -54,20 +54,21 @@ export default function AddToPlaylist({ song, className = "" }) {
     };
 
     return (
-        <div className={`add-to-playlist ${className}`} style={{ position: 'relative' }} ref={dropdownRef}>
+        <div className={`add-to-playlist ${className}`} style={{ position: 'relative', flexShrink: 0 }} ref={dropdownRef}>
             <button 
                 className="add-pl-trigger-btn" 
                 onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); setIsCreating(false); }}
                 title="Add to Playlist"
                 style={{ 
-                    background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', 
-                    color: 'var(--text-muted)', cursor: 'pointer', 
-                    width: '32px', height: '32px', borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', 
+                    color: 'var(--text-muted, rgba(255,255,255,0.6))', cursor: 'pointer', 
+                    width: '28px', height: '28px', borderRadius: '50%',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    flexShrink: 0
                 }}
             >
-                <Plus size={18} />
+                <Plus size={16} />
             </button>
 
             {isOpen && (

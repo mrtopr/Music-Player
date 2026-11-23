@@ -98,15 +98,15 @@ function AppContent() {
         themeManager.init();
     }, []);
 
-    // ── Auth page: completely standalone, no sidebar/topbar/player ──
-    if (isAuthPage) {
-        return <Auth />;
-    }
-
     const handleCloseFs = React.useCallback(() => setFsVisible(false), [setFsVisible]);
     const handleCloseEq = React.useCallback(() => setEqVisible(false), [setEqVisible]);
     const handleCloseSleep = React.useCallback(() => setSleepVisible(false), [setSleepVisible]);
     const handleCloseQueue = React.useCallback(() => setQueueVisible(false), [setQueueVisible]);
+
+    // ── Auth page: completely standalone, no sidebar/topbar/player ──
+    if (isAuthPage) {
+        return <Auth />;
+    }
 
     return (
         <>

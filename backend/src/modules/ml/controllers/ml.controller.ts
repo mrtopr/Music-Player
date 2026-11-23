@@ -106,23 +106,14 @@ export class MlController implements Routes {
         },
         responses: {
           200: {
-            description: 'Recommendation payload from the ML service',
+            description: 'Recommendation payload from the ML service or fallback',
             content: {
               'application/json': {
                 schema: z.object({
                   success: z.boolean(),
                   recommendations: z.array(z.any()).optional(),
-                }),
-              },
-            },
-          },
-          503: {
-            description: 'ML service unavailable',
-            content: {
-              'application/json': {
-                schema: z.object({
-                  success: z.boolean(),
-                  message: z.string(),
+                  data: z.any().optional(),
+                  message: z.string().optional(),
                 }),
               },
             },
@@ -147,14 +138,13 @@ export class MlController implements Routes {
           })
 
           if (!res.ok) {
-            return ctx.json({ success: false, message: 'ML service returned error' }, 503)
+            return ctx.json({ success: false, data: null, message: 'ML service returned error' }, 200)
           }
 
           const data = await res.json()
           return ctx.json({ success: true, data })
-        } catch (error) {
-          console.error('[ML] Recommend error:', error)
-          return ctx.json({ success: false, message: 'ML service unavailable' }, 503)
+        } catch {
+          return ctx.json({ success: false, data: null, message: 'ML service unavailable' }, 200)
         }
       },
     )
@@ -177,23 +167,14 @@ export class MlController implements Routes {
         },
         responses: {
           200: {
-            description: 'Feature payload from the ML service',
+            description: 'Feature payload from the ML service or fallback',
             content: {
               'application/json': {
                 schema: z.object({
                   success: z.boolean(),
                   features: z.any().optional(),
-                }),
-              },
-            },
-          },
-          503: {
-            description: 'ML service unavailable',
-            content: {
-              'application/json': {
-                schema: z.object({
-                  success: z.boolean(),
-                  message: z.string(),
+                  data: z.any().optional(),
+                  message: z.string().optional(),
                 }),
               },
             },
@@ -210,14 +191,13 @@ export class MlController implements Routes {
           })
 
           if (!res.ok) {
-            return ctx.json({ success: false, message: 'ML service returned error' }, 503)
+            return ctx.json({ success: false, data: null, message: 'ML service returned error' }, 200)
           }
 
           const data = await res.json()
           return ctx.json({ success: true, data })
-        } catch (error) {
-          console.error('[ML] Features error:', error)
-          return ctx.json({ success: false, message: 'ML service unavailable' }, 503)
+        } catch {
+          return ctx.json({ success: false, data: null, message: 'ML service unavailable' }, 200)
         }
       },
     )
@@ -246,22 +226,13 @@ export class MlController implements Routes {
         },
         responses: {
           200: {
-            description: 'Profile update result',
+            description: 'Profile update result or fallback',
             content: {
               'application/json': {
                 schema: z.object({
                   success: z.boolean(),
-                }),
-              },
-            },
-          },
-          503: {
-            description: 'ML service unavailable',
-            content: {
-              'application/json': {
-                schema: z.object({
-                  success: z.boolean(),
-                  message: z.string(),
+                  data: z.any().optional(),
+                  message: z.string().optional(),
                 }),
               },
             },
@@ -285,14 +256,13 @@ export class MlController implements Routes {
           })
 
           if (!res.ok) {
-            return ctx.json({ success: false, message: 'ML service returned error' }, 503)
+            return ctx.json({ success: false, message: 'ML service returned error' }, 200)
           }
 
           const data = await res.json()
           return ctx.json({ success: true, data })
-        } catch (error) {
-          console.error('[ML] Update-profile error:', error)
-          return ctx.json({ success: false, message: 'ML service unavailable' }, 503)
+        } catch {
+          return ctx.json({ success: false, message: 'ML service unavailable' }, 200)
         }
       },
     )

@@ -39,7 +39,7 @@ function OptionItem({ icon, label, onClick }) {
 }
 
 // ── Synced Lyrics Sub-component (Ultra-clean, borderless Apple Music typography) ──
-function FullscreenLyricsPanel() {
+function FullscreenLyricsPanel({ isMobile }) {
     const lyrics = usePlayerStore(state => state.lyrics);
     const lyricsLoading = usePlayerStore(state => state.lyricsLoading);
     const lyricsError = usePlayerStore(state => state.lyricsError);
@@ -87,7 +87,7 @@ function FullscreenLyricsPanel() {
         if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
         scrollTimeoutRef.current = setTimeout(() => {
             setIsUserScrolling(false);
-        }, 4000);
+        }, 2500);
     };
 
     const scrollToActive = () => {
@@ -107,7 +107,6 @@ function FullscreenLyricsPanel() {
     const containerStyle = {
         width: '100%',
         height: '100%',
-        maxHeight: '520px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -121,8 +120,8 @@ function FullscreenLyricsPanel() {
         return (
             <div style={containerStyle}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', color: 'rgba(255,255,255,0.7)' }}>
-                    <Loader2 className="spin" size={32} style={{ color: 'var(--accent-primary)' }} />
-                    <span style={{ fontSize: '0.9rem', fontWeight: 600, opacity: 0.8 }}>Loading lyrics...</span>
+                    <Loader2 className="spin" size={32} style={{ color: '#C084FC' }} />
+                    <span style={{ fontSize: '0.9rem', fontWeight: 600, opacity: 0.85, letterSpacing: '0.3px' }}>Loading lyrics...</span>
                 </div>
             </div>
         );
@@ -131,16 +130,16 @@ function FullscreenLyricsPanel() {
     if (!lyrics || lyricsError) {
         return (
             <div style={containerStyle}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'rgba(255,255,255,0.45)', textAlign: 'center', gap: '12px' }}>
-                    <Mic size={36} style={{ opacity: 0.3 }} />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'rgba(255,255,255,0.5)', textAlign: 'center', gap: '12px', padding: '0 20px' }}>
+                    <Mic size={36} style={{ opacity: 0.35, color: '#C084FC' }} />
                     <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600 }}>Lyrics not available</p>
                     {currentSong && (
                         <button
                             onClick={() => fetchLyricsForSong(currentSong, true)}
                             style={{
-                                padding: '6px 16px', borderRadius: '20px',
-                                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-                                color: 'rgba(255,255,255,0.8)', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer',
+                                padding: '6px 18px', borderRadius: '20px',
+                                background: 'rgba(168, 85, 247, 0.15)', border: '1px solid rgba(168, 85, 247, 0.35)',
+                                color: '#E9D5FF', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer',
                                 transition: 'all 0.2s ease'
                             }}
                         >
@@ -160,12 +159,12 @@ function FullscreenLyricsPanel() {
                         {[0.4, 0.8, 0.5, 1, 0.6, 0.9, 0.3].map((h, i) => (
                             <div key={i} style={{
                                 width: '3px', height: `${h * 100}%`, borderRadius: '3px',
-                                background: 'var(--accent-primary)',
+                                background: 'linear-gradient(to top, #8B5CF6, #C084FC)',
                                 animation: `pulseBar 1.2s ease-in-out ${i * 0.15}s infinite alternate`
                             }} />
                         ))}
                     </div>
-                    <div style={{ fontSize: '1.3rem', fontWeight: 700, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.5px' }}>
+                    <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'rgba(255,255,255,0.85)', letterSpacing: '0.5px' }}>
                         ♫ Instrumental ♫
                     </div>
                 </div>
@@ -184,13 +183,13 @@ function FullscreenLyricsPanel() {
                         width: '100%',
                         height: '100%',
                         overflowY: 'auto',
-                        padding: '160px 20px',
+                        padding: isMobile ? '50px 16px 70px 16px' : '90px 24px 100px 24px',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '1.6rem',
+                        gap: isMobile ? '1.1rem' : '1.5rem',
                         alignItems: 'center',
-                        maskImage: 'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)',
-                        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)',
+                        maskImage: 'linear-gradient(to bottom, transparent 0%, black 12%, black 86%, transparent 100%)',
+                        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 12%, black 86%, transparent 100%)',
                         scrollbarWidth: 'none',
                         msOverflowStyle: 'none',
                         boxSizing: 'border-box'
@@ -205,26 +204,44 @@ function FullscreenLyricsPanel() {
                                 className={`fs-lyric-line ${isActive ? 'active' : ''}`}
                                 onClick={() => duration > 0 && seek((line.time / duration) * 100)}
                                 style={{
-                                    fontSize: isActive ? '1.85rem' : '1.35rem',
+                                    fontSize: isActive
+                                        ? (isMobile ? '1.45rem' : '1.95rem')
+                                        : (isMobile ? '1.15rem' : '1.35rem'),
                                     fontWeight: isActive ? 800 : 600,
+                                    fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
                                     textAlign: 'center',
-                                    lineHeight: '1.45',
-                                    color: isActive ? '#ffffff' : isPast ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.25)',
+                                    lineHeight: isMobile ? '1.4' : '1.45',
+                                    letterSpacing: '0.01em',
+                                    color: isActive
+                                        ? '#ffffff'
+                                        : isPast
+                                            ? 'rgba(255, 255, 255, 0.42)'
+                                            : 'rgba(255, 255, 255, 0.3)',
                                     transform: isActive ? 'scale(1.04)' : 'scale(1)',
-                                    transition: 'all 0.35s cubic-bezier(0.25, 1, 0.5, 1)',
+                                    transformOrigin: 'center center',
+                                    textShadow: isActive
+                                        ? '0 0 24px rgba(192, 132, 252, 0.5), 0 2px 10px rgba(0,0,0,0.7)'
+                                        : 'none',
+                                    filter: isActive ? 'none' : 'blur(0.25px)',
+                                    transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
                                     cursor: 'pointer',
-                                    padding: '4px 16px',
-                                    maxWidth: '96%',
+                                    padding: isMobile ? '5px 14px' : '7px 22px',
+                                    borderRadius: '16px',
+                                    background: isActive ? 'rgba(168, 85, 247, 0.12)' : 'transparent',
+                                    border: isActive ? '1px solid rgba(192, 132, 252, 0.22)' : '1px solid transparent',
+                                    maxWidth: '94%',
                                     userSelect: 'none'
                                 }}
                                 onMouseEnter={e => {
                                     if (!isActive) {
-                                        e.currentTarget.style.color = 'rgba(255,255,255,0.75)';
+                                        e.currentTarget.style.color = 'rgba(255,255,255,0.85)';
+                                        e.currentTarget.style.filter = 'none';
                                     }
                                 }}
                                 onMouseLeave={e => {
                                     if (!isActive) {
-                                        e.currentTarget.style.color = isPast ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.25)';
+                                        e.currentTarget.style.color = isPast ? 'rgba(255,255,255,0.42)' : 'rgba(255,255,255,0.3)';
+                                        e.currentTarget.style.filter = 'blur(0.25px)';
                                     }
                                 }}
                             >
@@ -238,10 +255,12 @@ function FullscreenLyricsPanel() {
                     width: '100%',
                     height: '100%',
                     overflowY: 'auto',
-                    padding: '20px 30px',
-                    fontSize: '1.2rem',
-                    lineHeight: '1.9',
+                    padding: isMobile ? '24px 20px' : '30px 40px',
+                    fontSize: isMobile ? '1.15rem' : '1.3rem',
+                    lineHeight: '1.85',
                     color: 'rgba(255,255,255,0.85)',
+                    fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
+                    fontWeight: 500,
                     whiteSpace: 'pre-wrap',
                     textAlign: 'center',
                     scrollbarWidth: 'none',
@@ -251,30 +270,36 @@ function FullscreenLyricsPanel() {
                 </div>
             )}
 
-            {/* Minimal floating sync button */}
+            {/* Elegant floating sync badge */}
             {isUserScrolling && lyrics.isSynced && (
                 <button
                     onClick={scrollToActive}
                     style={{
                         position: 'absolute',
-                        bottom: '20px',
+                        bottom: '10px',
                         left: '50%',
                         transform: 'translateX(-50%)',
-                        background: 'rgba(20, 22, 34, 0.85)',
-                        backdropFilter: 'blur(16px)',
-                        border: '1px solid rgba(255,255,255,0.12)',
-                        color: '#ffffff',
-                        padding: '6px 16px',
-                        borderRadius: '20px',
-                        fontSize: '0.78rem',
+                        background: 'rgba(26, 20, 46, 0.92)',
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(192, 132, 252, 0.4)',
+                        color: '#E9D5FF',
+                        padding: '5px 14px',
+                        borderRadius: '999px',
+                        fontSize: '0.75rem',
                         fontWeight: 700,
+                        letterSpacing: '0.3px',
                         cursor: 'pointer',
-                        zIndex: 30,
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
-                        animation: 'sep-in 0.2s ease'
+                        zIndex: 50,
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.6), 0 0 12px rgba(168,85,247,0.3)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        animation: 'fadeIn 0.2s ease'
                     }}
                 >
-                    🎯 Sync
+                    <Sparkles size={12} color="#C084FC" />
+                    <span>Sync with song</span>
                 </button>
             )}
         </div>
@@ -282,16 +307,6 @@ function FullscreenLyricsPanel() {
 }
 
 
-
-// 54 normalized audio waveform bar heights for authentic music waveform visualization
-const WAVEFORM_HEIGHTS = [
-    0.28, 0.42, 0.35, 0.65, 0.50, 0.82, 0.60, 0.95, 0.72, 0.45,
-    0.85, 0.68, 0.92, 0.55, 0.78, 1.00, 0.65, 0.88, 0.52, 0.74,
-    0.90, 0.62, 0.48, 0.76, 0.98, 0.70, 0.58, 0.84, 0.92, 0.64,
-    0.46, 0.72, 0.86, 0.54, 0.80, 0.94, 0.66, 0.82, 0.50, 0.75,
-    0.88, 0.62, 0.44, 0.68, 0.82, 0.56, 0.48, 0.65, 0.40, 0.32,
-    0.26, 0.38, 0.28, 0.22
-];
 
 function getSongStats(song) {
     if (!song) return { plays: '6,454', likes: '32.1K' };
@@ -307,7 +322,7 @@ function getSongStats(song) {
     return { plays, likes };
 }
 
-// ── Progress & Time Section (Handles drag-to-seek, click-to-seek, and real-time updates) ──
+// ── Progress & Time Section (Unified modern capsule scrubber for Desktop & Mobile) ──
 function FullscreenProgressSection({ isMobile }) {
     const progress = usePlayerStore(state => state.progress);
     const currentTime = usePlayerStore(state => state.currentTime);
@@ -315,6 +330,7 @@ function FullscreenProgressSection({ isMobile }) {
     const seek = usePlayerStore(state => state.seek);
 
     const [dragPct, setDragPct] = useState(null); // null means not dragging
+    const [isHovering, setIsHovering] = useState(false);
     const trackRef = useRef(null);
 
     const calculatePct = (clientX) => {
@@ -341,7 +357,6 @@ function FullscreenProgressSection({ isMobile }) {
         }
     };
 
-    // Mouse support for desktop drag-to-seek
     const handleMouseDown = (e) => {
         const pct = calculatePct(e.clientX);
         setDragPct(pct);
@@ -364,7 +379,6 @@ function FullscreenProgressSection({ isMobile }) {
     };
 
     const handleTrackClick = (e) => {
-        // Only seek if not drag-seeking
         if (dragPct === null) {
             const pct = calculatePct(e.clientX);
             seek(pct);
@@ -373,179 +387,93 @@ function FullscreenProgressSection({ isMobile }) {
 
     const displayProgress = dragPct !== null ? dragPct : (progress || 0);
     const displayTime = dragPct !== null ? (dragPct / 100) * duration : currentTime;
+    const isSeeking = dragPct !== null;
 
-    // Mobile Waveform Scrubber matching reference UI
-    if (isMobile) {
-        const totalBars = WAVEFORM_HEIGHTS.length;
-        return (
-            <div className="fs-waveform-scrubber-wrap" style={{ width: '100%', margin: '14px 0 4px 0', userSelect: 'none' }}>
-                <div
-                    ref={trackRef}
-                    onClick={handleTrackClick}
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
-                    onMouseDown={handleMouseDown}
-                    style={{
-                        position: 'relative',
-                        height: '50px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: '2.5px',
-                        cursor: 'pointer',
-                        padding: '6px 0',
-                        pointerEvents: 'auto'
-                    }}
-                >
-                    {WAVEFORM_HEIGHTS.map((heightRatio, i) => {
-                        const barPct = (i / (totalBars - 1)) * 100;
-                        const isPlayed = barPct <= displayProgress;
-                        return (
-                            <div
-                                key={i}
-                                style={{
-                                    flex: 1,
-                                    height: `${Math.max(14, Math.round(heightRatio * 44))}px`,
-                                    borderRadius: '3px',
-                                    background: isPlayed ? '#a3e635' : 'rgba(255, 255, 255, 0.22)',
-                                    boxShadow: isPlayed ? '0 0 6px rgba(163, 230, 53, 0.45)' : 'none',
-                                    transition: dragPct !== null ? 'none' : 'background 0.15s ease'
-                                }}
-                            />
-                        );
-                    })}
-
-                    {/* Vertical Playhead Cursor Line + Pointer Triangle */}
-                    <div
-                        style={{
-                            position: 'absolute',
-                            left: `${displayProgress}%`,
-                            top: 0,
-                            bottom: 0,
-                            transform: 'translateX(-50%)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            pointerEvents: 'none',
-                            zIndex: 20
-                        }}
-                    >
-                        <div
-                            style={{
-                                width: '2px',
-                                height: '100%',
-                                background: '#ffffff',
-                                boxShadow: '0 0 8px rgba(255, 255, 255, 0.85)'
-                            }}
-                        />
-                        <div
-                            style={{
-                                position: 'absolute',
-                                bottom: '-7px',
-                                width: 0,
-                                height: 0,
-                                borderLeft: '5px solid transparent',
-                                borderRight: '5px solid transparent',
-                                borderBottom: '6px solid #ffffff',
-                                filter: 'drop-shadow(0 0 3px rgba(255, 255, 255, 0.9))'
-                            }}
-                        />
-                    </div>
-                </div>
-
-                {/* Time Row */}
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        color: 'rgba(255, 255, 255, 0.65)',
-                        marginTop: '8px',
-                        fontVariantNumeric: 'tabular-nums',
-                        letterSpacing: '0.5px'
-                    }}
-                >
-                    <span>{formatTime(displayTime)}</span>
-                    <span>{formatTime(duration)}</span>
-                </div>
-            </div>
-        );
-    }
-
-    // Desktop Classic Bar
     return (
-        <div className="fs-progress-area" style={{ position: 'relative', zIndex: 70 }}>
-            {/* Progress Track */}
-            <div 
+        <div className="fs-progress-area" style={{ width: '100%', margin: isMobile ? '8px 0 2px 0' : '0 0 1.2rem 0', position: 'relative', zIndex: 70, userSelect: 'none' }}>
+            {/* Interactive Touch/Click Hit Area */}
+            <div
                 ref={trackRef}
-                className="fs-progress-track"
                 onClick={handleTrackClick}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
                 onMouseDown={handleMouseDown}
-                style={{ 
-                    pointerEvents: 'auto', 
-                    cursor: 'pointer',
-                    height: '6px',
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                style={{
+                    position: 'relative',
+                    height: isMobile ? '24px' : '20px',
                     display: 'flex',
                     alignItems: 'center',
-                    background: 'rgba(255, 255, 255, 0.12)',
-                    borderRadius: '4px',
-                    transition: 'height 0.2s ease',
-                    position: 'relative'
+                    cursor: 'pointer',
+                    pointerEvents: 'auto',
+                    width: '100%'
                 }}
             >
-                <div 
-                    className="fs-progress-fill" 
-                    style={{ 
-                        width: `${displayProgress}%`,
-                        height: '100%',
-                        background: 'var(--accent-primary)',
-                        borderRadius: '4px',
-                        position: 'relative'
+                {/* Background Capsule Rail */}
+                <div
+                    style={{
+                        position: 'relative',
+                        width: '100%',
+                        height: isSeeking || isHovering ? '6px' : (isMobile ? '5px' : '4px'),
+                        background: 'rgba(255, 255, 255, 0.14)',
+                        borderRadius: '999px',
+                        overflow: 'visible',
+                        transition: 'height 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
                     }}
                 >
-                    {/* Premium Thumb Indicator that shows on hover or drag */}
-                    <div style={{
-                        position: 'absolute',
-                        right: '-6px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        width: '12px',
-                        height: '12px',
-                        borderRadius: '50%',
-                        background: '#fff',
-                        boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
-                        opacity: dragPct !== null ? 1 : 0,
-                        transition: 'opacity 0.2s ease, transform 0.2s ease',
-                        pointerEvents: 'none'
-                    }} 
-                    className="fs-progress-thumb"
-                    />
+                    {/* Active Progress Fill */}
+                    <div
+                        style={{
+                            width: `${displayProgress}%`,
+                            height: '100%',
+                            background: 'linear-gradient(90deg, #8B5CF6 0%, #C084FC 100%)',
+                            borderRadius: '999px',
+                            boxShadow: '0 0 10px rgba(168, 85, 247, 0.5)',
+                            position: 'relative',
+                            transition: isSeeking ? 'none' : 'width 0.1s linear'
+                        }}
+                    >
+                        {/* Glowing Pill Scrubber Thumb */}
+                        <div
+                            style={{
+                                position: 'absolute',
+                                right: '-6px',
+                                top: '50%',
+                                transform: `translateY(-50%) scale(${isSeeking ? 1.3 : isMobile || isHovering ? 1 : 0})`,
+                                width: '13px',
+                                height: '13px',
+                                borderRadius: '50%',
+                                background: '#ffffff',
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.6), 0 0 10px rgba(192, 132, 252, 0.9)',
+                                border: '1.5px solid rgba(139, 92, 246, 0.8)',
+                                opacity: isSeeking || isMobile || isHovering ? 1 : 0,
+                                transition: isSeeking ? 'none' : 'transform 0.2s ease, opacity 0.2s ease',
+                                pointerEvents: 'none'
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
-            
+
             {/* Time Row */}
-            <div className="fs-time-row" style={{ fontVariantNumeric: 'tabular-nums' }}>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    fontSize: isMobile ? '11.5px' : '12px',
+                    fontWeight: 600,
+                    color: 'rgba(255, 255, 255, 0.55)',
+                    marginTop: '2px',
+                    fontVariantNumeric: 'tabular-nums',
+                    letterSpacing: '0.4px'
+                }}
+            >
                 <span>{formatTime(displayTime)}</span>
                 <span>{formatTime(duration)}</span>
             </div>
-
-            {/* Custom thumb hover style */}
-            <style>{`
-                .fs-progress-track:hover {
-                    height: 8px !important;
-                }
-                .fs-progress-track:hover .fs-progress-thumb {
-                    opacity: 1 !important;
-                    transform: translateY(-50%) scale(1.1) !important;
-                }
-            `}</style>
         </div>
     );
 }
@@ -643,57 +571,105 @@ function FullscreenArtworkSection({ currentSong, title, prevSong, nextSong, isPl
     const scale = 1 - Math.abs(dragOffset) / 1000; // Slight scale down during drag
 
     return (
-        <div className="fs-artwork-section" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', minHeight: isMobile ? '240px' : '380px', flexShrink: 1, overflow: 'hidden' }}>
-            <div 
-                className={`fs-artwork-wrapper ${isPlaying ? 'playing' : ''}`} 
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-                onClick={handleArtworkClick}
-                style={{ 
-                    cursor: 'pointer',
-                    transform: `translateX(${dragOffset}px) rotate(${rotation}deg) scale(${scale})`,
-                    transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)', // Elastic snap
-                    position: 'relative',
-                    userSelect: 'none'
-                }}
-            >
-                <img 
-                    src={getSafeImage(currentSong.image, getImageUrl)} 
-                    alt={title} 
-                    className="fs-artwork-img" 
-                    draggable="false"
-                />
-
-                {/* Double Tap Visual Indicator overlay */}
-                {showIndicator && (
-                    <div style={{
-                        position: 'absolute',
-                        inset: 0,
-                        background: 'rgba(0, 0, 0, 0.55)',
-                        backdropFilter: 'blur(4px)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: '24px',
-                        animation: 'fadeInOut 0.8s ease',
-                        pointerEvents: 'none',
-                        zIndex: 10
-                    }}>
-                        {showIndicator === 'rewind' ? (
-                            <div style={{ textAlign: 'center', color: '#fff' }}>
-                                <div style={{ fontSize: '2.5rem', fontWeight: 800 }}>-10s</div>
-                                <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', opacity: 0.6 }}>Rewind</div>
-                            </div>
-                        ) : (
-                            <div style={{ textAlign: 'center', color: '#fff' }}>
-                                <div style={{ fontSize: '2.5rem', fontWeight: 800 }}>+10s</div>
-                                <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', opacity: 0.6 }}>Fast Forward</div>
-                            </div>
-                        )}
+        <div className="fs-artwork-section" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: isMobile ? 'auto' : '100%', width: '100%', minHeight: isMobile ? '0' : '380px', maxHeight: isMobile ? '44vh' : 'none', flexShrink: 1, overflow: 'visible' }}>
+            <div className={`fs-artwork-container ${isPlaying ? 'playing' : ''}`} style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {/* Vinyl Record on Desktop that slides out and spins when playing */}
+                {!isMobile && (
+                    <div 
+                        className={`fs-vinyl-disc ${isPlaying ? 'spinning' : ''}`}
+                        style={{
+                            position: 'absolute',
+                            width: '94%',
+                            height: '94%',
+                            borderRadius: '50%',
+                            background: 'radial-gradient(circle at center, #0b0a12 0%, #161424 16%, #0d0c16 32%, #191729 48%, #0d0c16 64%, #161424 80%, #08070d 100%)',
+                            boxShadow: '0 25px 50px rgba(0,0,0,0.85), inset 0 0 15px rgba(0,0,0,0.95)',
+                            border: '2px solid rgba(255,255,255,0.08)',
+                            transform: isPlaying ? 'translateX(34%)' : 'translateX(0)',
+                            transition: 'transform 0.85s cubic-bezier(0.16, 1, 0.3, 1)',
+                            zIndex: 1,
+                            pointerEvents: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    >
+                        {/* Grooves light reflection highlight */}
+                        <div style={{
+                            position: 'absolute', inset: 0, borderRadius: '50%',
+                            background: 'conic-gradient(from 45deg, transparent 0deg, rgba(255,255,255,0.07) 50deg, transparent 100deg, rgba(255,255,255,0.07) 230deg, transparent 280deg)',
+                            pointerEvents: 'none'
+                        }} />
+                        {/* Center Vinyl Label with miniature song cover */}
+                        <div style={{
+                            width: '36%',
+                            height: '36%',
+                            borderRadius: '50%',
+                            overflow: 'hidden',
+                            border: '2.5px solid rgba(255,255,255,0.3)',
+                            boxShadow: '0 0 14px rgba(0,0,0,0.8)',
+                            position: 'relative',
+                            animation: isPlaying ? 'spinVinyl 12s linear infinite' : 'none'
+                        }}>
+                            <img src={getSafeImage(currentSong.image, getImageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '12px', height: '12px', borderRadius: '50%', background: '#0a0a0f', border: '2px solid rgba(255,255,255,0.5)' }} />
+                        </div>
                     </div>
                 )}
+
+                {/* Album Cover Card */}
+                <div 
+                    className={`fs-artwork-wrapper ${isPlaying ? 'playing' : ''}`} 
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                    onClick={handleArtworkClick}
+                    style={{ 
+                        cursor: 'pointer',
+                        transform: `translateX(${dragOffset}px) rotate(${rotation}deg) scale(${scale})`,
+                        transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)', // Elastic snap
+                        position: 'relative',
+                        zIndex: 2,
+                        userSelect: 'none'
+                    }}
+                >
+                    <img 
+                        src={getSafeImage(currentSong.image, getImageUrl)} 
+                        alt={title} 
+                        className="fs-artwork-img" 
+                        draggable="false"
+                    />
+
+                    {/* Double Tap Visual Indicator overlay */}
+                    {showIndicator && (
+                        <div style={{
+                            position: 'absolute',
+                            inset: 0,
+                            background: 'rgba(0, 0, 0, 0.55)',
+                            backdropFilter: 'blur(4px)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: '24px',
+                            animation: 'fadeInOut 0.8s ease',
+                            pointerEvents: 'none',
+                            zIndex: 10
+                        }}>
+                            {showIndicator === 'rewind' ? (
+                                <div style={{ textAlign: 'center', color: '#fff' }}>
+                                    <div style={{ fontSize: '2.5rem', fontWeight: 800 }}>-10s</div>
+                                    <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', opacity: 0.6 }}>Rewind</div>
+                                </div>
+                            ) : (
+                                <div style={{ textAlign: 'center', color: '#fff' }}>
+                                    <div style={{ fontSize: '2.5rem', fontWeight: 800 }}>+10s</div>
+                                    <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', opacity: 0.6 }}>Fast Forward</div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
@@ -728,6 +704,9 @@ export default function FullscreenPlayer({ visible, onClose }) {
 
     const likedSongs = usePlayerStore(state => state.likedSongs);
     const toggleLike = usePlayerStore(state => state.toggleLike);
+    const queue = usePlayerStore(state => state.queue);
+    const queueIndex = usePlayerStore(state => state.queueIndex);
+    const nextTrack = queue && queueIndex >= 0 && queueIndex + 1 < queue.length ? queue[queueIndex + 1] : null;
     const mixEnabled = usePlayerStore(state => state.mixEnabled);
     const automixPhase = usePlayerStore(state => state.automix?.phase);
     // The AutoMix view takes over the player while the blend runs. The
@@ -853,7 +832,12 @@ export default function FullscreenPlayer({ visible, onClose }) {
     const liked = Boolean(currentSong && likedSongs.some(s => String(s.id) === String(currentSong.id)));
     const stats = getSongStats(currentSong);
     const title = currentSong ? decodeEntities(currentSong.title) : '';
+    const cleanTitle = title
+        .replace(/\s*[\(\[](?:From\s+["']?[^"'\]\)]+["']?|Original Motion Picture Soundtrack|Soundtrack Version|Lyrical Video|Official Video|Audio Song|Video Song)[\)\]]/gi, '')
+        .trim() || title;
     const artist = currentSong ? decodeEntities(currentSong.primaryArtists || currentSong.subtitle) : '';
+    const artistList = (artist || '').split(',').map(s => s.trim()).filter(Boolean);
+    const shortArtist = artistList.length > 2 ? `${artistList[0]}, ${artistList[1]}` : artist;
 
     // Smart album resolution
     const albumId = currentSong?.album?.id || currentSong?.albumId || currentSong?.album_id;
@@ -861,6 +845,8 @@ export default function FullscreenPlayer({ visible, onClose }) {
         ? currentSong.album
         : (currentSong?.album?.name || currentSong?.album?.title || '');
     const cleanAlbum = rawAlbumName ? decodeEntities(rawAlbumName).trim() : '';
+    const isAlbumSameAsTitle = cleanAlbum && cleanAlbum.toLowerCase() === title.toLowerCase();
+    const displayAlbum = (!isAlbumSameAsTitle && cleanAlbum) ? cleanAlbum : '';
     const hasAlbum = Boolean(albumId || (cleanAlbum && cleanAlbum.toLowerCase() !== 'unknown' && cleanAlbum.toLowerCase() !== 'single'));
 
     // Smart artist resolution
@@ -956,7 +942,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
             {/* Header Area */}
             <header style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                padding: isMobile ? '1.2rem 1.4rem 0.5rem 1.4rem' : '2rem 4rem', position: 'relative', zIndex: 100
+                padding: isMobile ? '14px 20px 6px 20px' : '2rem 4rem', position: 'relative', zIndex: 100
             }}>
 
                 <button 
@@ -972,16 +958,29 @@ export default function FullscreenPlayer({ visible, onClose }) {
                 </button>
 
                 {!isMobile && (
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '2px', opacity: 0.5, textTransform: 'uppercase', marginBottom: '4px' }}>Now Playing</div>
-                        {currentSong.mlQueued && (
+                    <div style={{ textAlign: 'center', maxWidth: '65%', pointerEvents: 'none' }}>
+                        <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '2px', opacity: 0.5, textTransform: 'uppercase', marginBottom: '2px' }}>
+                            Now Playing
+                        </div>
+                        {currentSong.mlQueued ? (
                             <div style={{
                                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                                 background: 'rgba(198, 161, 91, 0.15)', color: 'var(--accent-primary)',
-                                padding: '4px 10px', borderRadius: '20px', fontSize: '10px', fontWeight: 600,
+                                padding: '3px 9px', borderRadius: '20px', fontSize: '9px', fontWeight: 600,
                                 border: '1px solid rgba(198, 161, 91, 0.3)'
                             }}>
-                                <Sparkles size={10} /> Queued via Taste Profile
+                                <Sparkles size={9} /> Queued via Taste Profile
+                            </div>
+                        ) : (
+                            <div style={{
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                color: 'rgba(255, 255, 255, 0.75)',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                            }}>
+                                {displayAlbum || 'Mehfil Music'}
                             </div>
                         )}
                     </div>
@@ -1141,8 +1140,8 @@ export default function FullscreenPlayer({ visible, onClose }) {
                         isPlaying={isPlaying}
                     />
                 ) : (
-                    <div className="fs-artwork-section" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', minHeight: isMobile ? '240px' : '380px', flexShrink: 1, overflow: 'hidden' }}>
-                        <FullscreenLyricsPanel />
+                    <div className="fs-artwork-section" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: isMobile ? 'auto' : '100%', width: '100%', minHeight: isMobile ? '0' : '380px', maxHeight: isMobile ? '44vh' : 'none', flexShrink: 1, overflow: 'hidden' }}>
+                        <FullscreenLyricsPanel isMobile={isMobile} />
                     </div>
                 )}
 
@@ -1159,23 +1158,33 @@ export default function FullscreenPlayer({ visible, onClose }) {
 
                             <div className="fs-source-badge">
                                 <span className="source-dot"></span>
-                                <span>Hi-Fi Audio</span>
+                                <span>Hi-Fi • Lossless</span>
+                            </div>
+
+                            {/* Live Audio Visualizer Equalizer Badge */}
+                            <div className={`fs-soundwave-badge ${isPlaying ? 'active' : ''}`} title={isPlaying ? "High fidelity audio stream active" : "Playback paused"}>
+                                <div className="fs-eq-bars">
+                                    <span className="bar bar-1"></span>
+                                    <span className="bar bar-2"></span>
+                                    <span className="bar bar-3"></span>
+                                    <span className="bar bar-4"></span>
+                                </div>
+                                <span>{isPlaying ? 'Live Audio' : 'Paused'}</span>
                             </div>
                         </div>
                     )}
 
-                    {/* On Mobile: Plays and Likes Stats Row matching Screenshot 1 */}
-                    {isMobile && (
-                        <div className="fs-mobile-stats-row">
-                            <span>▷ {stats.plays} Plays</span>
-                            <span>♡ {stats.likes}</span>
-                        </div>
-                    )}
-
                     <div className="fs-info-row">
-                        <div className="fs-meta">
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                                <h1 className="fs-title" title={title}>{title}</h1>
+                        <div className="fs-meta" style={{ width: '100%', minWidth: 0, textAlign: isMobile ? 'center' : 'left' }}>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: isMobile ? 'center' : 'flex-start',
+                                gap: '0.6rem',
+                                width: '100%',
+                                minWidth: 0
+                            }}>
+                                <h1 className="fs-title" title={title}>{isMobile ? cleanTitle : title}</h1>
                                 {mixEnabled && (
                                     <span
                                         title="Mix is on — tracks blend into each other"
@@ -1185,7 +1194,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                             background: 'rgba(16,185,129,0.15)',
                                             border: '1px solid rgba(16,185,129,0.4)',
                                             color: '#34D399', fontSize: '0.62rem', fontWeight: 800,
-                                            letterSpacing: '0.08em',
+                                            letterSpacing: '0.08em', flexShrink: 0
                                         }}
                                     >
                                         <Sparkles size={11} />
@@ -1193,25 +1202,66 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                     </span>
                                 )}
                             </div>
-                            <p className="fs-artist">{artist}</p>
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: isMobile ? 'center' : 'flex-start',
+                                gap: '6px',
+                                marginTop: '4px',
+                                width: '100%',
+                                minWidth: 0,
+                                overflow: 'hidden'
+                            }}>
+                                <span className="fs-artist" style={{
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    maxWidth: isMobile ? '92vw' : 'auto'
+                                }}>
+                                    {isMobile ? shortArtist : artist}
+                                </span>
+                                {displayAlbum && !isMobile && (
+                                    <>
+                                        <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '1rem', flexShrink: 0 }}>•</span>
+                                        <span 
+                                            className="fs-album-link" 
+                                            onClick={handleGoToAlbum}
+                                            title={`Go to album: ${displayAlbum}`}
+                                            style={{ color: 'rgba(255,255,255,0.65)', fontSize: '1.05rem', fontWeight: 500, cursor: 'pointer', transition: 'color 0.2s', flexShrink: 0 }}
+                                            onMouseEnter={e => e.currentTarget.style.color = '#C084FC'}
+                                            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.65)'}
+                                        >
+                                            {displayAlbum}
+                                        </span>
+                                    </>
+                                )}
+                                {currentSong?.year && !isMobile && (
+                                    <>
+                                        <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '1rem', flexShrink: 0 }}>•</span>
+                                        <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.95rem', fontWeight: 500, flexShrink: 0 }}>
+                                            {currentSong.year}
+                                        </span>
+                                    </>
+                                )}
+                            </div>
                         </div>
                         {!isMobile && (
                             <button
                                 onClick={(e) => { e.stopPropagation(); toggleLike(currentSong); }}
                                 className={`fs-like-btn ${liked ? 'liked' : ''}`}
-                                style={{ cursor: 'pointer', pointerEvents: 'auto', padding: '10px', background: 'none', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                                 aria-label={liked ? "Unlike song" : "Like song"}
+                                title={liked ? "Remove from Favorites" : "Save to Favorites"}
                             >
                                 <Heart 
-                                    size={32} 
+                                    size={24} 
                                     fill={liked ? '#EF4444' : 'none'} 
-                                    color={liked ? '#EF4444' : 'rgba(255, 255, 255, 0.75)'} 
+                                    color={liked ? '#EF4444' : 'currentColor'} 
                                 />
                             </button>
                         )}
                     </div>
 
-                    {/* Quick 4-Action Row on Mobile matching Screenshot 1 */}
+                    {/* Quick 4-Action Row on Mobile */}
                     {isMobile && (
                         <div className="fs-mobile-action-row">
                             <button
@@ -1221,7 +1271,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                 title="Add to Playlist"
                                 aria-label="Add to Playlist"
                             >
-                                <FolderPlus size={19} />
+                                <FolderPlus size={20} />
                             </button>
 
                             <button
@@ -1230,12 +1280,12 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                 onClick={(e) => { e.stopPropagation(); toggleLike(currentSong); }}
                                 title={liked ? "Unlike" : "Like"}
                                 aria-label={liked ? "Unlike" : "Like"}
-                                style={liked ? { borderColor: 'rgba(239, 68, 68, 0.5)', background: 'rgba(239, 68, 68, 0.15)', boxShadow: '0 0 14px rgba(239, 68, 68, 0.4)' } : undefined}
+                                style={liked ? { borderColor: 'rgba(239, 68, 68, 0.55)', background: 'rgba(239, 68, 68, 0.18)', boxShadow: '0 0 16px rgba(239, 68, 68, 0.45)' } : undefined}
                             >
                                 <Heart 
                                     size={21} 
-                                    fill={liked ? '#ef4444' : 'none'} 
-                                    color={liked ? '#ef4444' : 'rgba(255, 255, 255, 0.85)'} 
+                                    fill={liked ? '#EF4444' : 'none'} 
+                                    color={liked ? '#EF4444' : 'rgba(255, 255, 255, 0.9)'} 
                                 />
                             </button>
 
@@ -1246,7 +1296,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                 title="Audio Equalizer"
                                 aria-label="Audio Equalizer"
                             >
-                                <SlidersHorizontal size={19} />
+                                <SlidersHorizontal size={20} />
                             </button>
 
                             <button
@@ -1256,7 +1306,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                 title="Queue"
                                 aria-label="Queue"
                             >
-                                <ListMusic size={19} />
+                                <ListMusic size={20} />
                             </button>
                         </div>
                     )}
@@ -1266,24 +1316,39 @@ export default function FullscreenPlayer({ visible, onClose }) {
 
                     {/* Main Controls Overlay */}
                     <div className="fs-main-controls" style={{ position: 'relative', zIndex: 80 }}>
-                        <button onClick={(e) => { e.stopPropagation(); toggleShuffle(); }} className={`fs-ctrl-btn ${shuffle ? 'active' : ''}`}>
+                        <button onClick={(e) => { e.stopPropagation(); toggleShuffle(); }} className={`fs-ctrl-btn ${shuffle ? 'active' : ''}`} title="Shuffle">
                             <Shuffle size={20} />
                         </button>
-                        <button onClick={(e) => { e.stopPropagation(); prevSong(); }} className="fs-ctrl-btn large">
-                            <SkipBack size={32} fill="currentColor" />
+                        <button onClick={(e) => { e.stopPropagation(); prevSong(); }} className="fs-ctrl-btn large" title="Previous Track">
+                            <SkipBack size={30} fill="currentColor" />
                         </button>
-                        <button onClick={(e) => { e.stopPropagation(); togglePlay(); }} className="fs-play-btn" style={{ transform: 'scale(1.1)' }}>
-                            {isPlaying ? <Pause size={34} fill="currentColor" /> : <Play size={34} fill="currentColor" style={{ marginLeft: '4px' }} />}
+                        <button onClick={(e) => { e.stopPropagation(); togglePlay(); }} className="fs-play-btn" title={isPlaying ? "Pause" : "Play"}>
+                            {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" style={{ marginLeft: '4px' }} />}
                         </button>
-                        <button onClick={(e) => { e.stopPropagation(); nextSong(); }} className="fs-ctrl-btn large">
-                            <SkipForward size={32} fill="currentColor" />
+                        <button onClick={(e) => { e.stopPropagation(); nextSong(); }} className="fs-ctrl-btn large" title="Next Track">
+                            <SkipForward size={30} fill="currentColor" />
                         </button>
-                        <button onClick={(e) => { e.stopPropagation(); cycleRepeat(); }} className={`fs-ctrl-btn ${repeat !== 'off' ? 'active' : ''}`}>
+                        <button onClick={(e) => { e.stopPropagation(); cycleRepeat(); }} className={`fs-ctrl-btn ${repeat !== 'off' ? 'active' : ''}`} title="Repeat">
                             {repeat === 'one' ? <Repeat1 size={20} /> : <Repeat size={20} />}
                         </button>
                     </div>
 
-                    {/* Bottom Lyric Drawer indicator on Mobile matching Screenshot 1 */}
+                    {/* Up Next Peek Banner (Desktop only — keep mobile clean) */}
+                    {!isMobile && nextTrack && (
+                        <div 
+                            onClick={() => setQueueOpen(true)}
+                            className="fs-up-next-banner"
+                            title="Open Playback Queue"
+                        >
+                            <span className="up-next-label">UP NEXT</span>
+                            <span className="up-next-title">{decodeEntities(nextTrack.title || nextTrack.name)}</span>
+                            <span className="up-next-bullet" style={{ opacity: 0.35 }}>•</span>
+                            <span className="up-next-artist">{decodeEntities(nextTrack.artist || '')}</span>
+                            <ChevronDown size={14} style={{ transform: 'rotate(-90deg)', opacity: 0.6, marginLeft: 'auto' }} />
+                        </div>
+                    )}
+
+                    {/* Minimalist Apple Music-style Lyrics Handle on Mobile */}
                     {isMobile && (
                         <div 
                             className="fs-mobile-lyrics-drawer-trigger"
@@ -1292,55 +1357,57 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
-                                gap: '2px',
+                                gap: '3px',
                                 cursor: 'pointer',
-                                padding: '8px 0 2px 0',
-                                color: showLyrics ? '#a855f7' : 'rgba(255, 255, 255, 0.7)',
+                                padding: '10px 0 2px 0',
+                                color: showLyrics ? '#C084FC' : 'rgba(255, 255, 255, 0.5)',
                                 userSelect: 'none'
                             }}
+                            title="Toggle Lyrics"
                         >
-                            <ChevronUp size={18} style={{ transform: showLyrics ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s ease' }} />
-                            <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.5px' }}>Lyric</span>
+                            <div
+                                style={{
+                                    width: '32px',
+                                    height: '3.5px',
+                                    borderRadius: '999px',
+                                    background: showLyrics ? '#C084FC' : 'rgba(255, 255, 255, 0.28)',
+                                    marginBottom: '3px',
+                                    transition: 'background 0.3s'
+                                }}
+                            />
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', color: showLyrics ? '#C084FC' : 'rgba(255, 255, 255, 0.65)' }}>
+                                {showLyrics ? <ChevronDown size={12} /> : <Mic size={11} />}
+                                <span>{showLyrics ? 'Hide Lyrics' : 'Lyrics'}</span>
+                            </div>
                         </div>
                     )}
 
-                    {/* Bottom Utility Bar (Desktop only, mobile has dedicated 4-action circle row and Lyric drawer) */}
+                    {/* Bottom Utility Bar (Desktop only) */}
                     {!isMobile && (
-                        <div className="fs-utility-bar" style={{ position: 'relative', zIndex: 90, marginTop: isMobile ? '1.25rem' : '3.5rem' }}>
-                            <div className="fs-utility-left" style={{ display: 'flex', gap: '10px' }}>
+                        <div className="fs-utility-bar" style={{ position: 'relative', zIndex: 90, marginTop: '2rem' }}>
+                            <div className="fs-utility-left">
                                 <button
                                     onClick={() => setQueueOpen(true)}
                                     className="fs-util-btn"
-                                    style={{ cursor: 'pointer', pointerEvents: 'auto', padding: '12px' }}
+                                    title="Open Playback Queue"
                                 >
-                                    <ListMusic size={22} /> <span>Queue</span>
+                                    <ListMusic size={17} /> <span>Queue</span>
                                 </button>
                                 <button
                                     onClick={() => setEqualizerOpen(true)}
                                     className="fs-util-btn"
-                                    style={{ cursor: 'pointer', pointerEvents: 'auto', padding: '12px' }}
+                                    title="Equalizer Settings"
                                 >
-                                    <SlidersHorizontal size={22} /> <span>EQ</span>
+                                    <SlidersHorizontal size={17} /> <span>EQ</span>
                                 </button>
 
                                 {/* Lyrics Button */}
                                 <button
                                     onClick={() => setShowLyrics(!showLyrics)}
                                     className={`fs-util-btn ${showLyrics ? 'active' : ''}`}
-                                    style={{ 
-                                        cursor: 'pointer', 
-                                        pointerEvents: 'auto', 
-                                        padding: '12px',
-                                        color: showLyrics ? 'var(--accent-primary)' : '#fff',
-                                        background: showLyrics ? 'rgba(212,160,83,0.15)' : 'transparent',
-                                        borderRadius: '8px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px'
-                                    }}
-                                    title="Lyrics"
+                                    title="View Synchronized Lyrics"
                                 >
-                                    <Mic size={22} /> <span>Lyrics</span>
+                                    <Mic size={17} /> <span>Lyrics</span>
                                 </button>
 
                                 {/* YouTube Video Mode Button */}
@@ -1352,20 +1419,13 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                         }}
                                         className="fs-util-btn"
                                         style={{
-                                            cursor: 'pointer',
-                                            pointerEvents: 'auto',
-                                            padding: '12px',
                                             color: '#c084fc',
                                             background: 'rgba(168,85,247,0.15)',
-                                            borderRadius: '8px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '6px',
                                             border: '1px solid rgba(168,85,247,0.3)'
                                         }}
                                         title="Switch to Video Player"
                                     >
-                                        <Tv size={22} /> <span>Watch Video</span>
+                                        <Tv size={17} /> <span>Watch Video</span>
                                     </button>
                                 )}
 
@@ -1373,20 +1433,9 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                 <button
                                     onClick={handleDownload}
                                     className={`fs-util-btn ${isOfflineSaved ? 'active' : ''}`}
-                                    style={{
-                                        cursor: 'pointer',
-                                        pointerEvents: 'auto',
-                                        padding: '12px',
-                                        color: isOfflineSaved ? '#10b981' : '#fff',
-                                        background: isOfflineSaved ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
-                                        borderRadius: '8px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px'
-                                    }}
                                     title={isOfflineSaved ? "Saved for Offline Playback" : "Download for Offline"}
                                 >
-                                    {downloading ? <Loader2 className="spin" size={22} /> : isOfflineSaved ? <CheckCircle size={22} /> : <Download size={22} />}
+                                    {downloading ? <Loader2 className="spin" size={17} /> : isOfflineSaved ? <CheckCircle size={17} color="#10b981" /> : <Download size={17} />}
                                     <span>{isOfflineSaved ? "Saved" : "Download"}</span>
                                 </button>
                             </div>
@@ -1399,25 +1448,26 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                         background: 'transparent',
                                         border: 'none',
                                         padding: '4px',
-                                        borderRadius: '6px',
+                                        borderRadius: '50%',
                                         cursor: 'pointer',
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
+                                        color: '#fff',
                                         transition: 'background 0.2s',
                                     }}
-                                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
                                     onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                                 >
-                                    <VolumeToggleIcon isMuted={isMuted} volume={volume} size={20} style={{ opacity: 0.8 }} />
+                                    <VolumeToggleIcon isMuted={isMuted} volume={volume} size={17} style={{ opacity: 0.85 }} />
                                 </button>
-                                <div className="fs-volume-track" style={{ pointerEvents: 'auto', marginLeft: '10px' }}>
+                                <div className="fs-volume-track" style={{ pointerEvents: 'auto' }}>
                                     <div className="fs-volume-fill" style={{ width: `${volume * 100}%` }}></div>
                                     <input
                                         type="range" min="0" max="1" step="0.01"
                                         value={volume}
                                         onChange={(e) => setVolume(parseFloat(e.target.value))}
-                                        style={{ cursor: 'pointer', width: '160px' }}
+                                        style={{ cursor: 'pointer', width: '100%' }}
                                     />
                                 </div>
                             </div>

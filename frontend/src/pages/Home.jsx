@@ -41,33 +41,32 @@ function getCleanGreeting() {
 function SongCard3D({ song, onPlay, isCurrentSong, isPlaying }) {
     const active = isCurrentSong ? 'playing' : '';
     return (
-        <Card3D className="cover-card" onClick={() => onPlay(song)} elevation={2}>
+        <Card3D className={`cover-card song-card ${active}`} onClick={() => onPlay(song)} elevation={2}>
             <div className="cover-art">
                 <img src={getImageUrl(song.image) || '/mehfil-logo.png'} alt={song.title || song.name} loading="lazy" />
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.4) 100%)', borderRadius: 'inherit' }} />
                 {isCurrentSong && isPlaying && (
-                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', display: 'flex', alignItems: 'flex-end', gap: '2px', height: '16px' }}>
+                    <div style={{ position: 'absolute', bottom: '10px', left: '10px', display: 'flex', alignItems: 'flex-end', gap: '2px', height: '16px', zIndex: 3 }}>
                         {[1, 2, 3, 4].map(i => (
                             <div key={i} style={{ width: '3px', background: 'var(--accent-primary, #8B5CF6)', borderRadius: '2px', animation: `eqBar 0.${4 + i}s ease-in-out infinite alternate` }} />
                         ))}
                     </div>
                 )}
-                <button className="play-overlay" onClick={(e) => { e.stopPropagation(); onPlay(song); }} style={{
-                    position: 'absolute', right: '12px', bottom: '12px', width: '44px', height: '44px',
-                    background: 'var(--accent-primary, #8B5CF6)', border: 'none', borderRadius: '50%', color: '#000',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-                    boxShadow: '0 8px 20px rgba(139, 92, 246, 0.4)', transition: 'transform 0.2s'
-                }} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
-                    <Play size={20} fill="#000" />
+                <button
+                    className="card-play-btn"
+                    onClick={(e) => { e.stopPropagation(); onPlay(song); }}
+                    title={isCurrentSong && isPlaying ? "Pause" : "Play"}
+                >
+                    {isCurrentSong && isPlaying ? <Pause size={18} fill="#000" /> : <Play size={18} fill="#000" />}
                 </button>
             </div>
             <h3 className="cover-title">
                 {song.title?.replace(/&quot;/g, '"') || song.name?.replace(/&quot;/g, '"')}
             </h3>
-            <p className="cover-sub">
-                {song.subtitle || song.primaryArtists || 'Various Artists'}
-            </p>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: 'auto', paddingTop: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px', marginTop: '2px' }}>
+                <p className="cover-sub" style={{ margin: 0, flex: 1, minWidth: 0 }}>
+                    {song.subtitle || song.primaryArtists || 'Various Artists'}
+                </p>
                 <AddToPlaylist song={song} />
             </div>
         </Card3D>
@@ -76,7 +75,7 @@ function SongCard3D({ song, onPlay, isCurrentSong, isPlaying }) {
 
 function AlbumCard3D({ album, onOpen }) {
     return (
-        <Card3D className="cover-card" onClick={() => onOpen(album)} elevation={2}>
+        <Card3D className="cover-card album-card" onClick={() => onOpen(album)} elevation={2}>
             <div className="cover-art">
                 <img src={getImageUrl(album.image) || '/mehfil-logo.png'} alt={album.name || album.title} loading="lazy" />
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 100%)', borderRadius: 'inherit' }} />
@@ -93,7 +92,7 @@ function AlbumCard3D({ album, onOpen }) {
 
 function PlaylistCard3D({ playlist, onOpen }) {
     return (
-        <Card3D className="cover-card" onClick={() => onOpen(playlist)} elevation={2}>
+        <Card3D className="cover-card playlist-card" onClick={() => onOpen(playlist)} elevation={2}>
             <div className="cover-art">
                 <img src={getImageUrl(playlist.image) || '/mehfil-logo.png'} alt={playlist.name || playlist.title} loading="lazy" />
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 100%)', borderRadius: 'inherit' }} />
@@ -214,15 +213,15 @@ function HorizontalScroll3D({ songs, onPlay, currentId, isPlaying, sectionClass,
 
 function ArtistCard3D({ artist, onPlay }) {
     return (
-        <Card3D className="cover-card artist-card" onClick={() => onPlay(artist)} elevation={2}>
-            <div className="cover-art" style={{ borderRadius: '50%' }}>
-                <img src={getImageUrl(artist.image) || '/mehfil-logo.png'} alt={artist.title || artist.name} loading="lazy" />
+        <Card3D className="cover-card artist-card" onClick={() => onPlay(artist)} elevation={2} style={{ textAlign: 'center' }}>
+            <div className="cover-art" style={{ borderRadius: '50%', margin: '0 auto 10px auto', maxWidth: '160px' }}>
+                <img src={getImageUrl(artist.image) || '/mehfil-logo.png'} alt={artist.title || artist.name} loading="lazy" style={{ borderRadius: '50%' }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 70%)', borderRadius: '50%', pointerEvents: 'none' }} />
             </div>
-            <h3 className="cover-title">
+            <h3 className="cover-title" style={{ textAlign: 'center' }}>
                 {artist.title || artist.name?.replace(/&quot;/g, '"')}
             </h3>
-            <p className="cover-sub">Artist</p>
+            <p className="cover-sub" style={{ textAlign: 'center' }}>Artist</p>
         </Card3D>
     );
 }

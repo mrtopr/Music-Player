@@ -37,15 +37,16 @@ export default function Card3D({ children, className, style, onClick, elevation 
       className={className}
       style={{
         position: "relative",
-        borderRadius: "20px",
+        borderRadius: "16px",
         background: "rgba(255,255,255,0.03)",
         backdropFilter: "blur(12px)",
         border: elevationStyles.border,
         boxShadow: elevationStyles.shadow,
-        transition: "transform 0.1s cubic-bezier(0.23, 1, 0.32, 1)",
+        transition: "transform 0.1s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.2s ease, border-color 0.2s ease",
         transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale3d(1, 1, 1)`,
         cursor: onClick ? "pointer" : "default",
         overflow: "hidden",
+        boxSizing: "border-box",
         ...style,
       }}
     >

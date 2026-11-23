@@ -14,7 +14,7 @@
     --mob-accent-purple: #8B5CF6;
     --mob-accent-violet: #A855F7;
     --mob-accent-pink: #EC4899;
-    --mob-accent-cyan: #06B6D4;
+    --mob-accent-cyan: #A855F7;
     --mob-gradient-btn: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
     --mob-gradient-card: linear-gradient(135deg, rgba(168, 85, 247, 0.18) 0%, rgba(236, 72, 153, 0.12) 100%);
     --mob-gradient-pill: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
@@ -534,9 +534,9 @@
     border-radius: 20px;
     font-size: 11px;
     font-weight: 600;
-    color: #06b6d4;
-    background: rgba(6, 182, 212, 0.12);
-    border: 1px solid rgba(6, 182, 212, 0.28);
+    color: #a855f7;
+    background: rgba(168, 85, 247, 0.12);
+    border: 1px solid rgba(168, 85, 247, 0.28);
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
@@ -721,38 +721,65 @@
     pointer-events: none;
   }
 
-  /* Circular Hero Artwork Disc */
+  /* Balanced Mobile Layout Container */
+  .fs-content-body {
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    padding: 0 1.4rem calc(12px + env(safe-area-inset-bottom, 0px)) 1.4rem !important;
+    height: calc(100% - 60px) !important;
+    max-height: calc(100vh - 60px) !important;
+    flex: 1 1 auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Hero Artwork Sleeve (Premium Rounded Squircle with Ambient Aura) */
   .fs-artwork-section {
-    min-height: unset !important;
-    padding: 6px 0 2px 0 !important;
-    flex: 1.1 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: 42vh !important;
+    padding: 4px 0 10px 0 !important;
+    flex: 1 1 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: visible !important;
+  }
+
+  .fs-artwork-container {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
   }
 
   .fs-artwork-wrapper {
-    width: min(220px, 58vw) !important;
-    height: min(220px, 58vw) !important;
-    border-radius: 50% !important;
-    box-shadow: 0 0 0 3.5px rgba(244, 63, 94, 0.45), 0 0 35px rgba(168, 85, 247, 0.5) !important;
-    border: 2px solid rgba(255, 255, 255, 0.2) !important;
+    width: min(280px, 72vw, 34vh) !important;
+    height: min(280px, 72vw, 34vh) !important;
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 24px !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 40px rgba(139, 92, 246, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
     overflow: hidden !important;
     position: relative !important;
     margin: 0 auto !important;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease !important;
   }
 
   .fs-artwork-img {
     width: 100% !important;
     height: 100% !important;
-    border-radius: 50% !important;
+    border-radius: 24px !important;
     object-fit: cover !important;
+    display: block !important;
   }
 
   .fs-artwork-wrapper.playing {
-    animation: vinylSpin 25s linear infinite !important;
-  }
-
-  @keyframes vinylSpin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    animation: none !important;
+    transform: scale(1.025) !important;
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.9), 0 0 55px rgba(168, 85, 247, 0.5) !important;
   }
 
   /* No center spindle dot on portrait artwork */
@@ -774,23 +801,22 @@
     border-radius: 20px !important;
   }
 
-  /* Controls Section in Fullscreen */
+  /* Controls Section in Fullscreen — structured cleanly with natural flex sizing */
   .fs-controls-section {
-    padding: 0 16px !important;
+    padding: 0 !important;
     z-index: 60 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
   }
 
-  /* Plays and Likes Row */
-  .fs-mobile-stats-row {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 16px !important;
-    font-size: 11.5px !important;
-    font-weight: 600 !important;
-    color: rgba(255, 255, 255, 0.55) !important;
-    letter-spacing: 0.5px !important;
-    margin: 4px 0 2px 0 !important;
+  /* Hide noisy stat badges & up next banner on mobile */
+  .fs-mobile-stats-row,
+  .fs-up-next-banner {
+    display: none !important;
   }
 
   .fs-info-row {
@@ -798,25 +824,53 @@
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    margin-bottom: 4px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 4px 0 !important;
+    overflow: hidden !important;
+  }
+
+  .fs-meta {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    text-align: center !important;
   }
 
   .fs-title {
-    font-size: 1.55rem !important;
+    font-size: clamp(1.3rem, 4.8vw, 1.6rem) !important;
     font-weight: 800 !important;
     text-align: center !important;
-    color: #fff !important;
-    margin-bottom: 2px !important;
-    letter-spacing: -0.3px !important;
+    color: #ffffff !important;
+    margin: 0 0 4px 0 !important;
+    letter-spacing: -0.025em !important;
     line-height: 1.25 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    white-space: normal !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    word-break: break-word !important;
   }
 
   .fs-artist {
-    font-size: 0.95rem !important;
-    color: rgba(255, 255, 255, 0.55) !important;
+    font-size: 0.96rem !important;
+    color: rgba(255, 255, 255, 0.65) !important;
     text-align: center !important;
     font-weight: 500 !important;
     margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   /* Quick Action Row (4 icons) */
@@ -824,27 +878,31 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 28px !important;
-    margin: 8px 0 2px 0 !important;
+    gap: 26px !important;
+    margin: 6px 0 !important;
+    width: 100% !important;
   }
 
   .fs-action-circle-btn {
-    width: 44px !important;
-    height: 44px !important;
+    width: 48px !important;
+    height: 48px !important;
     border-radius: 50% !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(14px) !important;
     color: rgba(255, 255, 255, 0.85) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
 
   .fs-action-circle-btn:active {
-    transform: scale(0.9) !important;
-    background: rgba(255, 255, 255, 0.12) !important;
+    transform: scale(0.92) !important;
+    background: rgba(168, 85, 247, 0.25) !important;
+    border-color: rgba(168, 85, 247, 0.5) !important;
   }
 
   .fs-main-controls {
@@ -852,7 +910,7 @@
     border: none !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
-    padding: 4px 8px !important;
+    padding: 6px 12px !important;
     justify-content: space-between !important;
     align-items: center !important;
     width: 100% !important;
@@ -862,9 +920,9 @@
     width: 66px !important;
     height: 66px !important;
     border-radius: 50% !important;
-    background: linear-gradient(135deg, #f43f5e 0%, #a855f7 100%) !important;
+    background: linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%) !important;
     color: #fff !important;
-    box-shadow: 0 8px 24px rgba(244, 63, 94, 0.6), 0 0 16px rgba(168, 85, 247, 0.45) !important;
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.6), 0 0 16px rgba(192, 132, 252, 0.45) !important;
     border: none !important;
     display: flex !important;
     align-items: center !important;
@@ -881,8 +939,8 @@
   }
 
   .fs-ctrl-btn.active {
-    color: #f43f5e !important;
-    filter: drop-shadow(0 0 8px rgba(244, 63, 94, 0.7)) !important;
+    color: #C084FC !important;
+    filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.7)) !important;
   }
 
   .fs-utility-bar {

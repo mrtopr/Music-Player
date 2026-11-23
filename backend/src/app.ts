@@ -42,6 +42,9 @@ export class App {
         if (!origin || allowedOrigins.has(origin)) {
           return origin || '*'
         }
+        if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+          return origin
+        }
         return null
       },
       allowHeaders: ['Content-Type', 'Authorization'],

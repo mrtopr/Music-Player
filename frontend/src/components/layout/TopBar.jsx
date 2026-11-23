@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, SlidersHorizontal, Moon, Mic, Loader2, Radio, Users, ChevronDown } from '../common/LordIcon';
+import { Search, SlidersHorizontal, Moon, Mic, Loader2, Radio, Users, ChevronDown, Sparkles } from '../common/LordIcon';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -410,35 +410,11 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                 }
             `}</style>
 
-            {/* Mobile Brand Logo - @mrtopr branding */}
+            {/* Mobile Brand Logo */}
             <div className="mobile-brand" onClick={() => navigate('/')} style={{ display: 'none', alignItems: 'center', gap: '8px', cursor: 'pointer', flexShrink: 0 }}>
                 <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover' }} />
-                <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, var(--accent-primary, #06B6D4), #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mehfil</span>
+                <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, var(--accent-primary, #8B5CF6), #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mehfil</span>
             </div>
-
-            {/* Like Repo Button */}
-            <button 
-                className="icon-btn like-repo-btn" 
-                title="Like this repo on GitHub" 
-                style={{
-                    background: 'var(--accent-primary, #06B6D4)',
-                    border: '1px solid var(--accent-primary, #06B6D4)',
-                    color: '#000',
-                    width: '42px',
-                    height: '42px',
-                    borderRadius: '12px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.2s ease',
-                    flexShrink: 0
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = '#0891b2'; e.currentTarget.style.transform = 'scale(1.1)'; window.open('https://github.com/mrtopr/Music-Player', '_blank'); }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--accent-primary, #06B6D4)'; e.currentTarget.style.transform = 'scale(1)'; }}
-            >
-                <Heart size={20} fill="#000" />
-            </button>
 
             <div className="search" style={{ display: 'flex', alignItems: 'center', flex: 1, maxWidth: '480px' }}>
 
@@ -495,30 +471,30 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                 </div>
             </div>
 
-            <div className="nav-right-controls" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <div className="nav-right-controls" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                 {/* Music Source Switcher Dropdown */}
                 <div className="music-source-switcher" ref={dropdownRef} style={{ position: 'relative', flexShrink: 0 }}>
                     <button
                         type="button"
+                        className="icon-btn tooltip-btn"
                         onClick={() => setSourceDropdownOpen(!sourceDropdownOpen)}
-                        title={`Current Source: ${musicSource.toUpperCase()}`}
+                        title={`Audio Source: ${musicSource === 'auto' ? 'Auto (Best)' : musicSource === 'saavn' ? 'JioSaavn' : 'YouTube'}`}
                         style={{
                             display: 'flex',
                             alignItems: 'center',
-                            background: 'var(--accent-primary, #06B6D4)',
-                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            justifyContent: 'center',
+                            background: sourceDropdownOpen ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                            border: sourceDropdownOpen ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
                             borderRadius: '12px',
-                            padding: '6px 8px',
-                            gap: '4px',
-                            color: '#000',
+                            width: '42px',
+                            height: '42px',
+                            color: sourceDropdownOpen ? 'var(--accent-primary, #8B5CF6)' : 'var(--text-secondary)',
                             fontSize: '1rem',
                             cursor: 'pointer',
-                            boxShadow: '0 4px 10px rgba(6, 182, 212, 0.2)',
                             transition: 'all 0.2s ease'
                         }}
                     >
-                        {musicSource === 'auto' ? '✨' : musicSource === 'saavn' ? '🎵' : '📺'}
-                        <ChevronDown size={14} style={{ opacity: 0.8 }} />
+                        <Sparkles size={19} />
                     </button>
 
                     {sourceDropdownOpen && (
@@ -537,7 +513,7 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                             gap: '4px',
                             zIndex: 100,
                             boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                            minWidth: '120px'
+                            minWidth: '130px'
                         }}>
                             {[
                                 { id: 'auto', icon: '✨', label: 'Auto (Best)' },
@@ -554,7 +530,7 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '8px',
-                                        background: musicSource === src.id ? 'rgba(255,255,255,0.1)' : 'transparent',
+                                        background: musicSource === src.id ? 'rgba(139, 92, 246, 0.2)' : 'transparent',
                                         color: musicSource === src.id ? '#fff' : 'rgba(255,255,255,0.7)',
                                         border: 'none',
                                         borderRadius: '8px',
@@ -585,13 +561,17 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   onClick={startRecognition}
                   title="Identify Song"
                   style={{
-                      background: isListening ? 'rgba(6, 182, 212, 0.15)' : 'rgba(255, 255, 255, 0.04)',
-                      border: isListening ? '1px solid rgba(6, 182, 212, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
-                      color: isListening ? 'var(--accent-primary, #06B6D4)' : 'var(--text-secondary)',
+                      background: isListening ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                      border: isListening ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                      color: isListening ? 'var(--accent-primary, #8B5CF6)' : 'var(--text-secondary)',
                       width: '42px',
                       height: '42px',
                       borderRadius: '12px',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s ease'
                   }}
                 >
                   {isListening ? <Loader2 className="spin" size={20} /> : <Mic size={20} />}
@@ -611,7 +591,11 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                         width: '42px',
                         height: '42px',
                         borderRadius: '12px',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.2s ease'
                     }}
                 >
                     <SlidersHorizontal size={20} />
@@ -622,27 +606,23 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   id="openSleepBtn" 
                   className={`icon-btn tooltip-btn ${sleepTimer?.active ? 'active' : ''}`} 
                   aria-label="Sleep Timer" 
+                  title={sleepTimer?.active ? `Sleep Timer: ${Math.ceil(sleepTimer.remaining / 60)}m` : "Sleep Timer"}
                   onClick={onOpenSleep}
                   style={{
-                      borderColor: sleepTimer?.active ? 'rgba(6, 182, 212, 0.4)' : 'rgba(255,255,255,0.08)',
-                      background: sleepTimer?.active ? 'rgba(6, 182, 212, 0.15)' : 'rgba(255,255,255,0.04)',
-                      color: sleepTimer?.active ? 'var(--accent-primary, #06B6D4)' : 'var(--text-secondary)',
+                      borderColor: sleepTimer?.active ? 'rgba(139, 92, 246, 0.4)' : 'rgba(255,255,255,0.08)',
+                      background: sleepTimer?.active ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.04)',
+                      color: sleepTimer?.active ? 'var(--accent-primary, #8B5CF6)' : 'var(--text-secondary)',
                       width: '42px',
                       height: '42px',
                       borderRadius: '12px',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s ease'
                   }}
                 >
-                    <img 
-                        src={`https://img.icons8.com/?size=40&id=10772&format=png&color=${sleepTimer?.active ? '06B6D4' : 'FFFFFF'}`} 
-                        alt="Sleep Timer" 
-                        style={{ 
-                            width: '18px', 
-                            height: '18px',
-                            opacity: sleepTimer?.active ? 1 : 0.7,
-                            transition: 'opacity 0.2s'
-                        }} 
-                    />
+                    <Moon size={20} />
                 </button>
 
                 {/* Listen Together Tool */}
@@ -652,9 +632,9 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                       onClick={() => setSyncPanelOpen(!syncPanelOpen)}
                       title="Listen Together"
                       style={{
-                          background: sessionCode ? 'rgba(6, 182, 212, 0.15)' : 'rgba(255,255,255,0.04)',
-                          border: sessionCode ? '1px solid rgba(6, 182, 212, 0.4)' : '1px solid rgba(255,255,255,0.08)',
-                          color: sessionCode ? 'var(--accent-primary, #06B6D4)' : 'var(--text-secondary)',
+                          background: sessionCode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.04)',
+                          border: sessionCode ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid rgba(255,255,255,0.08)',
+                          color: sessionCode ? 'var(--accent-primary, #8B5CF6)' : 'var(--text-secondary)',
                           transition: 'all 0.3s ease',
                           display: 'flex',
                           alignItems: 'center',
