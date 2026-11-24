@@ -303,7 +303,8 @@ body {
   width: 44px;
   height: 44px;
   object-fit: contain;
-  transition: transform var(--transition-normal);
+  filter: var(--logo-filter, none);
+  transition: filter 0.3s ease, transform var(--transition-normal);
 }
 
 .mlogo:hover img {
@@ -314,14 +315,14 @@ body {
   font-family: "Merienda", cursive;
   font-size: 22px;
   font-weight: 500;
-  color: var(--accent-primary);
-  text-shadow: 0 0 5px rgba(139, 92, 246, 0.4);
+  color: var(--accent-secondary, var(--accent-primary));
+  text-shadow: 0 0 10px var(--shadow-accent);
   transition: var(--transition-normal);
 }
 
 
 .mlogo:hover span {
-  text-shadow: 0 0 12px rgba(139, 92, 246, 0.9);
+  text-shadow: 0 0 18px var(--shadow-accent);
 }
 
 .sidebar ul {
@@ -372,7 +373,7 @@ body {
   width: 4px;
   background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary));
   border-radius: 0 2px 2px 0;
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.8);
+  box-shadow: 0 0 10px var(--shadow-accent);
   animation: glowPulse 2s ease-in-out infinite;
 }
 
@@ -380,11 +381,11 @@ body {
 
   0%,
   100% {
-    box-shadow: 0 0 10px rgba(139, 92, 246, 0.8);
+    box-shadow: 0 0 10px var(--shadow-accent);
   }
 
   50% {
-    box-shadow: 0 0 20px rgba(139, 92, 246, 1);
+    box-shadow: 0 0 20px var(--shadow-accent);
   }
 }
 
@@ -398,7 +399,7 @@ body {
   height: 6px;
   background: var(--accent-primary);
   border-radius: 50%;
-  box-shadow: 0 0 8px rgba(139, 92, 246, 0.8);
+  box-shadow: 0 0 8px var(--shadow-accent);
   animation: dotPulse 1.5s ease-in-out infinite;
 }
 
@@ -482,6 +483,11 @@ body {
   color: var(--accent-primary);
   text-shadow: none;
   font-weight: 600;
+}
+
+img[src*="mehfil-logo"] {
+  filter: var(--logo-filter, none);
+  transition: filter 0.3s ease;
 }
 
 /* ========== MAIN AREA ========== */
@@ -3530,10 +3536,10 @@ img[src^="https://"] {
 .create-playlist-btn {
   width: 100%;
   padding: 10px 12px;
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: var(--accent-primary-soft, rgba(16, 185, 129, 0.1));
+  border: 1px solid var(--border-accent, rgba(16, 185, 129, 0.3));
   border-radius: 8px;
-  color: var(--accent-primary);
+  color: var(--accent-secondary, var(--accent-primary));
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -3546,7 +3552,7 @@ img[src^="https://"] {
 }
 
 .create-playlist-btn:hover {
-  background: rgba(139, 92, 246, 0.2);
+  background: var(--accent-primary-soft);
   border-color: var(--accent-primary);
   transform: translateY(-1px);
 }

@@ -172,8 +172,10 @@ export default function Sidebar() {
                                     {/* Thumbnail */}
                                     <div style={{
                                         width: '32px', height: '32px', borderRadius: '6px',
-                                        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#c084fc', flexShrink: 0
+                                        background: 'var(--accent-primary-soft, rgba(255,255,255,0.05))',
+                                        border: '1px solid var(--border-accent, rgba(255,255,255,0.08))',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        color: 'var(--accent-secondary, var(--accent-primary))', flexShrink: 0
                                     }}>
                                         <Music size={14} />
                                     </div>
@@ -200,10 +202,10 @@ export default function Sidebar() {
                         onClick={handleInstall}
                         style={{
                             width: '100%', padding: '0.8rem', borderRadius: '12px',
-                            background: 'var(--accent-primary)', color: '#000',
+                            background: 'var(--gradient-brand, var(--accent-primary))', color: '#fff',
                             border: 'none', fontWeight: 700, fontSize: '0.85rem',
                             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                            cursor: 'pointer', boxShadow: '0 4px 15px rgba(var(--accent-primary-rgb), 0.3)',
+                            cursor: 'pointer', boxShadow: '0 4px 15px var(--shadow-accent, rgba(var(--accent-primary-rgb), 0.3))',
                             transition: 'transform 0.2s'
                         }}
                         onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}

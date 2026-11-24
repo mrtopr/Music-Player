@@ -91,8 +91,8 @@ body::after {
 
 .search-box:focus-within {
     background: rgba(255, 255, 255, 0.08);
-    border-color: #7c6ff7 !important;
-    box-shadow: 0 0 0 3px rgba(124, 111, 247, 0.2), 0 4px 12px rgba(0,0,0,0.3) !important;
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 0 3px var(--accent-primary-soft), 0 4px 12px rgba(0,0,0,0.3) !important;
     transform: none !important;
 }
 
@@ -142,34 +142,34 @@ body::after {
 }
 
 .primary-cta-btn {
-    background: #7c6ff7 !important;
+    background: var(--gradient-brand, var(--accent-primary)) !important;
     color: white !important;
     border: none !important;
     border-radius: 10px !important;
     font-weight: 600 !important;
-    box-shadow: 0 4px 15px rgba(124, 111, 247, 0.3) !important;
+    box-shadow: 0 4px 15px var(--shadow-accent) !important;
     transition: all 0.2s ease !important;
     transform: none !important;
 }
 
 .primary-cta-btn:hover {
-    background: #6d5df4 !important;
-    box-shadow: 0 6px 20px rgba(124, 111, 247, 0.45) !important;
+    background: var(--accent-hover, var(--accent-primary)) !important;
+    box-shadow: 0 6px 20px var(--shadow-accent) !important;
     transform: translateY(-2px) !important;
 }
 
 /* Active Navigation Item */
 .sidebar li.active {
-    background: rgba(124, 111, 247, 0.08) !important;
-    border-left: 2px solid #7c6ff7 !important;
-    color: #7c6ff7 !important;
+    background: var(--accent-primary-soft, rgba(16, 185, 129, 0.12)) !important;
+    border-left: 3px solid var(--accent-primary) !important;
+    color: var(--accent-secondary, var(--accent-primary)) !important;
     border-radius: 0 8px 8px 0 !important;
 }
 
 .sidebar li.active a,
 .sidebar li.active i,
 .sidebar li.active .icon-svg {
-    color: #7c6ff7 !important;
+    color: var(--accent-secondary, var(--accent-primary)) !important;
     font-weight: 600 !important;
     text-shadow: none !important;
 }
@@ -231,9 +231,9 @@ h1, h2, h3, h4, h5, h6 { color: var(--mehfil-text-primary); }
 }
 
 .secondary-cta-btn {
-    background: rgba(124, 111, 247, 0.08) !important;
+    background: var(--accent-primary-soft) !important;
     color: white !important;
-    border: 1px solid rgba(124, 111, 247, 0.3) !important;
+    border: 1px solid var(--border-accent) !important;
     border-radius: 10px !important;
     font-weight: 600 !important;
     backdrop-filter: blur(10px) !important;
@@ -242,11 +242,11 @@ h1, h2, h3, h4, h5, h6 { color: var(--mehfil-text-primary); }
 }
 
 .secondary-cta-btn:hover {
-    background: rgba(124, 111, 247, 0.15) !important;
-    border-color: rgba(124, 111, 247, 0.6) !important;
-    color: #c084fc !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: var(--accent-primary) !important;
+    color: var(--accent-secondary) !important;
     transform: translateY(-2px) !important;
-    box-shadow: 0 4px 15px rgba(124, 111, 247, 0.15) !important;
+    box-shadow: 0 4px 15px var(--shadow-accent) !important;
 }
 
 /* === MINI PLAYER === */
@@ -295,10 +295,10 @@ h1, h2, h3, h4, h5, h6 { color: var(--mehfil-text-primary); }
 
 .category-scroll button.active,
 .category-scroll .btn.active {
-    background: #7c6ff7 !important;
-    color: #fff !important;
-    border-color: #7c6ff7 !important;
-    box-shadow: none !important;
+    background: var(--accent-primary-soft) !important;
+    color: var(--accent-secondary, #fff) !important;
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 15px var(--shadow-accent) !important;
     transform: none !important;
 }
 

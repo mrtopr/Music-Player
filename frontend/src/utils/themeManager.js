@@ -25,6 +25,7 @@ export const THEMES = [
         textMuted: '#8BA89B',
         border: 'rgba(16, 185, 129, 0.15)',
         glow: 'rgba(16, 185, 129, 0.35)',
+        logoFilter: 'hue-rotate(245deg) saturate(1.2)',
         blobs: [
             'rgba(16, 185, 129, 0.32)',
             'rgba(5, 150, 105, 0.22)',
@@ -49,6 +50,7 @@ export const THEMES = [
         textMuted: '#A89CC8',
         border: 'rgba(139, 92, 246, 0.15)',
         glow: 'rgba(139, 92, 246, 0.35)',
+        logoFilter: 'none',
         blobs: [
             'rgba(139, 92, 246, 0.32)',
             'rgba(124, 58, 237, 0.22)',
@@ -73,6 +75,7 @@ export const THEMES = [
         textMuted: '#BFA0A9',
         border: 'rgba(244, 63, 94, 0.15)',
         glow: 'rgba(244, 63, 94, 0.35)',
+        logoFilter: 'hue-rotate(85deg) saturate(1.2)',
         blobs: [
             'rgba(244, 63, 94, 0.32)',
             'rgba(225, 29, 72, 0.22)',
@@ -97,6 +100,7 @@ export const THEMES = [
         textMuted: '#BDB399',
         border: 'rgba(245, 158, 11, 0.15)',
         glow: 'rgba(245, 158, 11, 0.35)',
+        logoFilter: 'hue-rotate(135deg) saturate(1.4) brightness(1.05)',
         blobs: [
             'rgba(245, 158, 11, 0.32)',
             'rgba(217, 119, 6, 0.22)',
@@ -121,6 +125,7 @@ export const THEMES = [
         textMuted: '#A1A1AA',
         border: 'rgba(255, 255, 255, 0.12)',
         glow: 'rgba(255, 255, 255, 0.25)',
+        logoFilter: 'grayscale(1) brightness(1.2)',
         blobs: [
             'rgba(255, 255, 255, 0.14)',
             'rgba(200, 200, 200, 0.10)',
@@ -233,6 +238,9 @@ class ThemeManager {
         root.style.setProperty('--fullscreen-accent', theme.primary);
         root.style.setProperty('--fullscreen-accent-secondary', theme.secondary);
         root.style.setProperty('--fullscreen-glow', `0 0 25px rgba(${theme.primaryRgb}, 0.35)`);
+
+        // Logo dynamic theme filter
+        root.style.setProperty('--logo-filter', theme.logoFilter || 'none');
 
         // Ambient Mesh Blobs
         if (theme.blobs && theme.blobs.length >= 5) {
