@@ -298,7 +298,7 @@ function FullscreenLyricsPanel({ isMobile }) {
                         animation: 'fadeIn 0.2s ease'
                     }}
                 >
-                    <Sparkles size={12} color="#34D399" />
+                    <Sparkles size={12} color="var(--accent-secondary, #34D399)" />
                     <span>Sync with song</span>
                 </button>
             )}
@@ -428,9 +428,9 @@ function FullscreenProgressSection({ isMobile }) {
                         style={{
                             width: `${displayProgress}%`,
                             height: '100%',
-                            background: 'linear-gradient(90deg, #10B981 0%, #34D399 100%)',
+                            background: 'linear-gradient(90deg, var(--accent-primary, #10B981) 0%, var(--accent-secondary, #34D399) 100%)',
                             borderRadius: '999px',
-                            boxShadow: '0 0 10px rgba(16, 185, 129, 0.5)',
+                            boxShadow: '0 0 10px var(--shadow-accent, rgba(16, 185, 129, 0.5))',
                             position: 'relative',
                             transition: isSeeking ? 'none' : 'width 0.1s linear'
                         }}
@@ -1191,9 +1191,9 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                         style={{
                                             display: 'inline-flex', alignItems: 'center', gap: '5px',
                                             padding: '3px 9px', borderRadius: '999px',
-                                            background: 'rgba(16,185,129,0.15)',
-                                            border: '1px solid rgba(16,185,129,0.4)',
-                                            color: '#34D399', fontSize: '0.62rem', fontWeight: 800,
+                                            background: 'var(--accent-primary-soft, rgba(16,185,129,0.15))',
+                                            border: '1px solid var(--border-accent, rgba(16,185,129,0.4))',
+                                            color: 'var(--accent-secondary, #34D399)', fontSize: '0.62rem', fontWeight: 800,
                                             letterSpacing: '0.08em', flexShrink: 0
                                         }}
                                     >
@@ -1228,7 +1228,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                             onClick={handleGoToAlbum}
                                             title={`Go to album: ${displayAlbum}`}
                                             style={{ color: 'rgba(255,255,255,0.65)', fontSize: '1.05rem', fontWeight: 500, cursor: 'pointer', transition: 'color 0.2s', flexShrink: 0 }}
-                                            onMouseEnter={e => e.currentTarget.style.color = '#C084FC'}
+                                            onMouseEnter={e => e.currentTarget.style.color = 'var(--accent-secondary, #C084FC)'}
                                             onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.65)'}
                                         >
                                             {displayAlbum}
@@ -1360,7 +1360,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                 gap: '3px',
                                 cursor: 'pointer',
                                 padding: '10px 0 2px 0',
-                                color: showLyrics ? '#C084FC' : 'rgba(255, 255, 255, 0.5)',
+                                color: showLyrics ? 'var(--accent-secondary, #C084FC)' : 'rgba(255, 255, 255, 0.5)',
                                 userSelect: 'none'
                             }}
                             title="Toggle Lyrics"
@@ -1370,12 +1370,12 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                     width: '32px',
                                     height: '3.5px',
                                     borderRadius: '999px',
-                                    background: showLyrics ? '#C084FC' : 'rgba(255, 255, 255, 0.28)',
+                                    background: showLyrics ? 'var(--accent-secondary, #C084FC)' : 'rgba(255, 255, 255, 0.28)',
                                     marginBottom: '3px',
                                     transition: 'background 0.3s'
                                 }}
                             />
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', color: showLyrics ? '#34D399' : 'rgba(255, 255, 255, 0.65)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', color: showLyrics ? 'var(--accent-secondary, #34D399)' : 'rgba(255, 255, 255, 0.65)' }}>
                                 {showLyrics ? <ChevronDown size={12} /> : <Mic size={11} />}
                                 <span>{showLyrics ? 'Hide Lyrics' : 'Lyrics'}</span>
                             </div>

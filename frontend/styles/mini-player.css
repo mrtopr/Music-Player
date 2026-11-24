@@ -309,14 +309,14 @@
   top: 0;
   bottom: 0;
   border-radius: 9999px;
-  background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.45);
+  background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  box-shadow: 0 0 10px var(--shadow-accent, rgba(16, 185, 129, 0.45));
   pointer-events: none;
   transition: background 0.2s ease;
 }
 
 .mini-center-timeline:hover .mini-seekbar-filled {
-  background: linear-gradient(90deg, #059669 0%, #10B981 100%);
+  background: linear-gradient(90deg, var(--accent-hover, var(--accent-primary)) 0%, var(--accent-secondary) 100%);
 }
 
 .mini-center-slider {
@@ -446,8 +446,8 @@
   border-radius: 9999px;
   background: linear-gradient(
     to right,
-    var(--album-accent, var(--accent-primary, #8B5CF6)) 0%,
-    var(--album-accent, var(--accent-primary, #8B5CF6)) var(--volume-percent, 80%),
+    var(--accent-primary) 0%,
+    var(--accent-primary) var(--volume-percent, 80%),
     rgba(255, 255, 255, 0.18) var(--volume-percent, 80%),
     rgba(255, 255, 255, 0.18) 100%
   );
@@ -464,8 +464,8 @@
   height: 6px;
   background: linear-gradient(
     to right,
-    var(--album-accent, var(--accent-primary, #a78bfa)) 0%,
-    var(--album-accent, var(--accent-primary, #a78bfa)) var(--volume-percent, 80%),
+    var(--accent-secondary) 0%,
+    var(--accent-secondary) var(--volume-percent, 80%),
     rgba(255, 255, 255, 0.3) var(--volume-percent, 80%),
     rgba(255, 255, 255, 0.3) 100%
   );

@@ -223,7 +223,7 @@ export default function SectionPage() {
                         marginBottom: '1.5rem', transition: 'all 0.2s',
                         backdropFilter: 'blur(12px)'
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.25)'; e.currentTarget.style.borderColor = '#8B5CF6'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-primary-soft, rgba(139,92,246,0.25))'; e.currentTarget.style.borderColor = 'var(--accent-primary, #8B5CF6)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
                 >
                     <ArrowLeft size={18} />
@@ -258,14 +258,14 @@ export default function SectionPage() {
                             onClick={handlePlayAll}
                             style={{
                                 display: 'flex', alignItems: 'center', gap: '10px',
-                                background: 'linear-gradient(135deg, #7C3AED, #9333EA)',
+                                background: 'var(--gradient-brand, var(--accent-primary))',
                                 color: '#fff', border: 'none', borderRadius: '50px',
                                 padding: '12px 24px', cursor: 'pointer', fontWeight: 700,
-                                fontSize: '0.95rem', boxShadow: '0 4px 16px rgba(139,92,246,0.4)',
+                                fontSize: '0.95rem', boxShadow: '0 4px 16px var(--shadow-accent, rgba(139,92,246,0.4))',
                                 transition: 'all 0.2s'
                             }}
-                            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(139,92,246,0.5)'; }}
-                            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(139,92,246,0.4)'; }}
+                            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px var(--shadow-accent, rgba(139,92,246,0.5))'; }}
+                            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px var(--shadow-accent, rgba(139,92,246,0.4))'; }}
                         >
                             <PlayCircle size={20} /> Play All
                         </button>

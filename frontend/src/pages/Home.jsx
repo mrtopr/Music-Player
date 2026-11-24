@@ -15,6 +15,7 @@ import { GENRE_PROFILES, ALL_GENRES } from '../utils/genreProfiles.js';
 import AddToPlaylist from '../components/common/AddToPlaylist';
 import BackgroundAnimation from '../components/common/BackgroundAnimation';
 import Card3D from '../components/common/Card3D';
+import { decodeEntities, cleanTrackTitle } from '../utils/helpers.js';
 
 const CATEGORIES = [
     { label: 'All Music', query: 'bollywood trending 2026 hits', icon: Music },
@@ -110,7 +111,7 @@ function PlaylistCard3D({ playlist, onOpen }) {
 function SectionHeader3D({ title, onShowMore }) {
     return (
         <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', paddingLeft: '0.5rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.5px', background: 'linear-gradient(135deg, #fff 0%, #C084FC 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.5px', background: 'linear-gradient(135deg, #fff 0%, var(--accent-secondary, #C084FC) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 {title}
             </h2>
             {onShowMore && (
@@ -129,7 +130,7 @@ function SectionHeader3D({ title, onShowMore }) {
                         transition: 'all 0.2s',
                         textTransform: 'uppercase'
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#C084FC'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'var(--accent-secondary, #C084FC)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#fff'; }}
                 >
                     See All
@@ -762,7 +763,7 @@ export default function Home() {
                     </div>
                     <div>
                         <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>
-                            Listen to the <span style={{ color: '#C084FC' }}>Best Music</span>, Everyday
+                            Listen to the <span style={{ color: 'var(--accent-secondary, #C084FC)' }}>Best Music</span>, Everyday
                         </h2>
                         <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', lineHeight: 1.4, margin: 0, maxWidth: '280px' }}>
                             New year celebration & trending tracks curated for you
@@ -822,8 +823,8 @@ export default function Home() {
                     <h1 style={{ fontSize: 'clamp(2rem, 5vw, 2.6rem)', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
                         {getCleanGreeting()},{' '}
                         <span style={{
-                            color: '#34D399',
-                            textShadow: '0 0 30px rgba(16, 185, 129, 0.45)'
+                            color: 'var(--accent-secondary, var(--accent-primary))',
+                            textShadow: '0 0 30px var(--shadow-accent, rgba(16, 185, 129, 0.45))'
                         }}>
                             {userName ? (userName.charAt(0).toUpperCase() + userName.slice(1)) : 'Friend'}
                         </span>
@@ -852,7 +853,7 @@ export default function Home() {
                                 }
                             }
                         }} style={{
-                            background: '#7C3AED',
+                            background: 'var(--gradient-brand, var(--accent-primary))',
                             border: 'none',
                             color: '#fff',
                             borderRadius: '12px',
@@ -862,7 +863,7 @@ export default function Home() {
                             display: 'flex',
                             alignItems: 'center',
                             gap: '8px',
-                            boxShadow: '0 4px 18px rgba(139, 92, 246, 0.45)',
+                            boxShadow: '0 4px 18px var(--shadow-accent, rgba(16, 185, 129, 0.45))',
                             cursor: 'pointer'
                         }}>
                             <PlayCircle size={18} />
@@ -897,26 +898,30 @@ export default function Home() {
                     <div style={{ flex: '1 1 340px', maxWidth: '100%', zIndex: 3, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                         <h3 style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px', marginTop: 0 }}>Jump back in</h3>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-                            {recentlyPlayed.slice(0, 4).map((track, i) => (
-                                <div key={i} onClick={() => playSong(track)} style={{
-                                    display: 'flex', alignItems: 'center', gap: '12px',
-                                    background: 'rgba(25, 25, 30, 0.65)',
-                                    backdropFilter: 'blur(12px)',
-                                    border: '1px solid rgba(255,255,255,0.06)',
-                                    borderRadius: '12px', padding: '10px',
-                                    cursor: 'pointer', transition: 'all 0.2s ease',
-                                    boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
-                                }}
-                                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(40, 40, 45, 0.9)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.4)'; }}
-                                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(25, 25, 30, 0.65)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)'; }}
-                                >
-                                    <img src={getImageUrl(track.image) || '/music.png'} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }} />
-                                    <div style={{ overflow: 'hidden', minWidth: 0, flex: 1 }}>
-                                        <div style={{ fontSize: '0.95rem', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginBottom: '2px' }}>{track.title}</div>
-                                        <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{track.artist}</div>
+                            {recentlyPlayed.slice(0, 4).map((track, i) => {
+                                const cleanTitle = cleanTrackTitle(track.title || track.name || '');
+                                const cleanArtist = decodeEntities(track.artist || track.primaryArtists || 'Unknown Artist');
+                                return (
+                                    <div key={i} onClick={() => playSong(track)} style={{
+                                        display: 'flex', alignItems: 'center', gap: '12px',
+                                        background: 'rgba(25, 25, 30, 0.65)',
+                                        backdropFilter: 'blur(12px)',
+                                        border: '1px solid rgba(255,255,255,0.06)',
+                                        borderRadius: '12px', padding: '10px',
+                                        cursor: 'pointer', transition: 'all 0.2s ease',
+                                        boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(40, 40, 45, 0.9)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.4)'; e.currentTarget.style.borderColor = 'var(--border-accent, rgba(255,255,255,0.15))'; }}
+                                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(25, 25, 30, 0.65)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
+                                    >
+                                        <img src={getImageUrl(track.image) || '/music.png'} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }} />
+                                        <div style={{ overflow: 'hidden', minWidth: 0, flex: 1 }}>
+                                            <div style={{ fontSize: '0.95rem', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginBottom: '2px' }} title={rawTitle}>{cleanTitle}</div>
+                                            <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }} title={cleanArtist}>{cleanArtist}</div>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 )}
@@ -937,16 +942,16 @@ export default function Home() {
                                 style={{
                                     flex: '0 0 auto',
                                     borderRadius: '50px',
-                                    background: active ? 'rgba(16, 185, 129, 0.18)' : 'rgba(255,255,255,0.04)',
-                                    border: active ? '1px solid #10B981' : '1px solid rgba(255,255,255,0.08)',
-                                    color: active ? '#34D399' : 'rgba(255,255,255,0.7)',
+                                    background: active ? 'var(--accent-primary-soft, rgba(16, 185, 129, 0.18))' : 'rgba(255,255,255,0.04)',
+                                    border: active ? '1px solid var(--accent-primary)' : '1px solid rgba(255,255,255,0.08)',
+                                    color: active ? 'var(--accent-secondary, #fff)' : 'rgba(255,255,255,0.7)',
                                     display: 'flex',
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     gap: '8px',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s ease',
-                                    boxShadow: active ? '0 0 18px rgba(16, 185, 129, 0.35)' : 'none',
+                                    boxShadow: active ? '0 0 18px var(--shadow-accent, rgba(16, 185, 129, 0.35))' : 'none',
                                     padding: '9px 18px',
                                     outline: 'none'
                                 }}
@@ -967,7 +972,7 @@ export default function Home() {
                                     }
                                 }}
                             >
-                                <Icon size={16} style={{ color: active ? '#34D399' : 'var(--text-secondary)' }} />
+                                <Icon size={16} style={{ color: active ? 'var(--accent-secondary, var(--accent-primary))' : 'var(--text-secondary)' }} />
                                 <span style={{ fontSize: '0.85rem', fontWeight: 600, letterSpacing: '-0.1px', whiteSpace: 'nowrap' }}>
                                     {cat.label}
                                 </span>

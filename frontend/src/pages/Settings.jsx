@@ -566,8 +566,8 @@ export default function Settings() {
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
-                                        background: lyricsProvider === p.id ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.03)',
-                                        border: lyricsProvider === p.id ? '1px solid #8B5CF6' : '1px solid rgba(255,255,255,0.08)',
+                                        background: lyricsProvider === p.id ? 'var(--accent-primary-soft, rgba(139, 92, 246, 0.15))' : 'rgba(255,255,255,0.03)',
+                                        border: lyricsProvider === p.id ? '1px solid var(--accent-primary, #8B5CF6)' : '1px solid rgba(255,255,255,0.08)',
                                         color: '#fff',
                                         borderRadius: '12px',
                                         padding: '1rem',
@@ -580,7 +580,7 @@ export default function Settings() {
                                     onMouseLeave={(e) => { if (lyricsProvider !== p.id) e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
                                 >
                                     <span style={{ fontWeight: 600 }}>{p.name}</span>
-                                    {lyricsProvider === p.id && <Check size={14} fill="#8B5CF6" color="#8B5CF6" />}
+                                    {lyricsProvider === p.id && <Check size={14} fill="var(--accent-primary, #8B5CF6)" color="var(--accent-primary, #8B5CF6)" />}
                                 </button>
                             ))}
                         </div>

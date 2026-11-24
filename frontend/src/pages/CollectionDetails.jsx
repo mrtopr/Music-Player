@@ -286,9 +286,9 @@ export default function CollectionDetails({ type }) {
                     onClick={handlePlayAll} 
                     style={{
                         width: '56px', height: '56px', borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #7C3AED, #8B5CF6)', border: 'none',
+                        background: 'var(--gradient-brand, var(--accent-primary))', border: 'none',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        cursor: 'pointer', boxShadow: '0 8px 25px rgba(139, 92, 246, 0.45)',
+                        cursor: 'pointer', boxShadow: '0 8px 25px var(--shadow-accent, rgba(139, 92, 246, 0.45))',
                         transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
                     }} 
                     onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'} 
@@ -352,16 +352,16 @@ export default function CollectionDetails({ type }) {
                             display: 'flex', alignItems: 'center', gap: '0.5rem',
                             height: '42px', padding: '0 1.1rem', borderRadius: '999px',
                             background: mixEnabled
-                                ? 'linear-gradient(135deg, rgba(16,185,129,0.22), rgba(139,92,246,0.22))'
+                                ? 'var(--accent-primary-soft, rgba(16,185,129,0.22))'
                                 : 'rgba(255,255,255,0.04)',
-                            border: `1px solid ${mixEnabled ? 'rgba(16,185,129,0.55)' : 'rgba(255,255,255,0.08)'}`,
-                            color: mixEnabled ? '#34D399' : 'var(--text-secondary)',
+                            border: `1px solid ${mixEnabled ? 'var(--border-accent, rgba(16,185,129,0.55))' : 'rgba(255,255,255,0.08)'}`,
+                            color: mixEnabled ? 'var(--accent-secondary, #34D399)' : 'var(--text-secondary)',
                             fontWeight: 700, fontSize: '0.82rem', cursor: isStartingMix ? 'progress' : 'pointer',
                             opacity: isStartingMix ? 0.75 : 1,
                             transition: 'all 0.2s',
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(139,92,246,0.5)'; e.currentTarget.style.color = '#C4B5FD'; }}
-                        onMouseLeave={e => { e.currentTarget.style.borderColor = mixEnabled ? 'rgba(16,185,129,0.55)' : 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = mixEnabled ? '#34D399' : 'var(--text-secondary)'; }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-accent, rgba(139,92,246,0.5))'; e.currentTarget.style.color = 'var(--accent-secondary, #C4B5FD)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = mixEnabled ? 'var(--border-accent, rgba(16,185,129,0.55))' : 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = mixEnabled ? 'var(--accent-secondary, #34D399)' : 'var(--text-secondary)'; }}
                         title="Mix — play this playlist with seamless transitions between every track"
                     >
                         {isStartingMix ? <Loader2 size={16} className="spin" /> : <Sparkles size={16} />}
@@ -369,7 +369,7 @@ export default function CollectionDetails({ type }) {
                         {mixEnabled && !isStartingMix && (
                             <span style={{
                                 width: '7px', height: '7px', borderRadius: '50%',
-                                background: '#10B981', boxShadow: '0 0 8px #10B981',
+                                background: 'var(--accent-primary, #10B981)', boxShadow: '0 0 8px var(--shadow-accent, #10B981)',
                             }} />
                         )}
                     </button>
@@ -407,18 +407,18 @@ export default function CollectionDetails({ type }) {
                                     onClick={() => playSong(track)} 
                                     className="track-row"
                                     style={{
-                                        background: isCurrent ? 'rgba(139, 92, 246, 0.12)' : 'transparent',
-                                        borderLeft: isCurrent ? '3px solid #8B5CF6' : '3px solid transparent'
+                                        background: isCurrent ? 'var(--accent-primary-soft, rgba(139, 92, 246, 0.12))' : 'transparent',
+                                        borderLeft: isCurrent ? '3px solid var(--accent-primary, #8B5CF6)' : '3px solid transparent'
                                     }} 
                                     onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }} 
                                     onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent'; }}
                                 >
                                     {/* Track Index / Play Indicator */}
-                                    <div className="track-row-index" style={{ color: isCurrent ? '#8B5CF6' : undefined }}>
+                                    <div className="track-row-index" style={{ color: isCurrent ? 'var(--accent-primary, #8B5CF6)' : undefined }}>
                                         {isCurrent && isPlaying ? (
                                             <div style={{ display: 'flex', alignItems: 'flex-end', gap: '2px', height: '14px', justifyContent: 'center' }}>
                                                 {[1, 2, 3].map(i => (
-                                                    <div key={i} style={{ width: '2px', background: '#8B5CF6', borderRadius: '1px', animation: `eqBar 0.${4 + i}s ease-in-out infinite alternate` }} />
+                                                    <div key={i} style={{ width: '2px', background: 'var(--accent-primary, #8B5CF6)', borderRadius: '1px', animation: `eqBar 0.${4 + i}s ease-in-out infinite alternate` }} />
                                                 ))}
                                             </div>
                                         ) : (
@@ -430,7 +430,7 @@ export default function CollectionDetails({ type }) {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
                                         <img className="track-row-art" src={getImageUrl(track.image)} alt="" />
                                         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                            <div style={{ color: isCurrent ? '#8B5CF6' : '#F4F4F5', fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            <div style={{ color: isCurrent ? 'var(--accent-secondary, #8B5CF6)' : '#F4F4F5', fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {decodeEntities(track.title || track.name || 'Unknown Track')}
                                             </div>
                                             <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

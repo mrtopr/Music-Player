@@ -483,12 +483,12 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            background: sourceDropdownOpen ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.04)',
-                            border: sourceDropdownOpen ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                            background: sourceDropdownOpen ? 'var(--accent-primary-soft, rgba(16, 185, 129, 0.15))' : 'rgba(255, 255, 255, 0.04)',
+                            border: sourceDropdownOpen ? '1px solid var(--border-accent, rgba(16, 185, 129, 0.4))' : '1px solid rgba(255, 255, 255, 0.08)',
                             borderRadius: '12px',
                             width: '42px',
                             height: '42px',
-                            color: sourceDropdownOpen ? 'var(--accent-primary, #8B5CF6)' : 'var(--text-secondary)',
+                            color: sourceDropdownOpen ? 'var(--accent-primary)' : 'var(--text-secondary)',
                             fontSize: '1rem',
                             cursor: 'pointer',
                             transition: 'all 0.2s ease'
@@ -561,9 +561,9 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   onClick={startRecognition}
                   title="Identify Song"
                   style={{
-                      background: isListening ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255, 255, 255, 0.04)',
-                      border: isListening ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
-                      color: isListening ? 'var(--accent-primary, #8B5CF6)' : 'var(--text-secondary)',
+                      background: isListening ? 'var(--accent-primary-soft, rgba(16, 185, 129, 0.15))' : 'rgba(255, 255, 255, 0.04)',
+                      border: isListening ? '1px solid var(--border-accent, rgba(16, 185, 129, 0.4))' : '1px solid rgba(255, 255, 255, 0.08)',
+                      color: isListening ? 'var(--accent-primary)' : 'var(--text-secondary)',
                       width: '42px',
                       height: '42px',
                       borderRadius: '12px',
@@ -609,9 +609,9 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                   title={sleepTimer?.active ? `Sleep Timer: ${Math.ceil(sleepTimer.remaining / 60)}m` : "Sleep Timer"}
                   onClick={onOpenSleep}
                   style={{
-                      borderColor: sleepTimer?.active ? 'rgba(139, 92, 246, 0.4)' : 'rgba(255,255,255,0.08)',
-                      background: sleepTimer?.active ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.04)',
-                      color: sleepTimer?.active ? 'var(--accent-primary, #8B5CF6)' : 'var(--text-secondary)',
+                      borderColor: sleepTimer?.active ? 'var(--border-accent, rgba(16, 185, 129, 0.4))' : 'rgba(255,255,255,0.08)',
+                      background: sleepTimer?.active ? 'var(--accent-primary-soft, rgba(16, 185, 129, 0.15))' : 'rgba(255,255,255,0.04)',
+                      color: sleepTimer?.active ? 'var(--accent-primary)' : 'var(--text-secondary)',
                       width: '42px',
                       height: '42px',
                       borderRadius: '12px',

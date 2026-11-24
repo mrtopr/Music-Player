@@ -356,8 +356,8 @@ body {
 }
 
 .sidebar ul li.active {
-  background: rgba(139, 92, 246, 0.15);
-  color: #C084FC;
+  background: var(--accent-primary-soft, rgba(16, 185, 129, 0.15));
+  color: var(--accent-secondary, var(--accent-primary));
   opacity: 1;
   box-shadow: none;
   transform: none;

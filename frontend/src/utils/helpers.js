@@ -9,11 +9,31 @@ export function formatTime(seconds) {
 
 export function decodeEntities(text) {
     if (!text) return '';
-    // Use the browser's built-in HTML parser — handles every named and numeric
-    // entity (&amp; &#8211; &#x2019; &quot; etc.) without maintaining a manual list.
-    const textarea = document.createElement('textarea');
-    textarea.innerHTML = text;
-    return textarea.value;
+    if (typeof document !== 'undefined') {
+        const textarea = document.createElement('textarea');
+        textarea.innerHTML = text;
+        let decoded = textarea.value;
+        if (decoded && decoded.includes('&')) {
+            textarea.innerHTML = decoded;
+            decoded = textarea.value;
+        }
+        return decoded;
+    }
+    return text
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, '&')
+        .replace(/&#039;/g, "'")
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>');
+}
+
+export function cleanTrackTitle(title) {
+    if (!title) return '';
+    const decoded = decodeEntities(title);
+    return decoded
+        .replace(/\s*[\(\[](?:From\s+[^)\]]+|Original Motion Picture Soundtrack|Soundtrack Version|Lyrical Video|Official Video|Audio Song|Video Song)[\)\]]/gi, '')
+        .replace(/^["'“”«»]+|["'“”«»]+$/g, '')
+        .trim() || decoded;
 }
 
 export function getSafeImage(image, getImageUrlFn) {
