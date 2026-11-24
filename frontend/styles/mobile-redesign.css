@@ -6,18 +6,18 @@
 
 @media (max-width: 768px) {
   :root {
-    --mob-bg-base: #07080f;
-    --mob-bg-surface: rgba(18, 22, 38, 0.75);
-    --mob-bg-surface-elevated: rgba(24, 29, 52, 0.85);
-    --mob-border-subtle: rgba(255, 255, 255, 0.08);
-    --mob-border-accent: rgba(168, 85, 247, 0.28);
-    --mob-accent-purple: #8B5CF6;
-    --mob-accent-violet: #A855F7;
-    --mob-accent-pink: #EC4899;
-    --mob-accent-cyan: #A855F7;
-    --mob-gradient-btn: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
-    --mob-gradient-card: linear-gradient(135deg, rgba(168, 85, 247, 0.18) 0%, rgba(236, 72, 153, 0.12) 100%);
-    --mob-gradient-pill: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
+    --mob-bg-base: var(--bg-main, #07080f);
+    --mob-bg-surface: var(--bg-card, rgba(18, 22, 38, 0.75));
+    --mob-bg-surface-elevated: var(--bg-hover, rgba(24, 29, 52, 0.85));
+    --mob-border-subtle: var(--border-subtle, rgba(255, 255, 255, 0.08));
+    --mob-border-accent: var(--border-accent, rgba(16, 185, 129, 0.28));
+    --mob-accent-purple: var(--accent-primary, #10B981);
+    --mob-accent-violet: var(--accent-primary, #10B981);
+    --mob-accent-pink: var(--accent-secondary, #34D399);
+    --mob-accent-cyan: var(--accent-secondary, #34D399);
+    --mob-gradient-btn: var(--gradient-brand, linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%));
+    --mob-gradient-card: var(--gradient-accent, linear-gradient(135deg, var(--accent-primary-soft) 0%, rgba(255, 255, 255, 0.03) 100%));
+    --mob-gradient-pill: var(--gradient-brand, linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%));
   }
 
   /* ── 1. GLOBAL MOBILE RESETS & BASE ── */
@@ -43,7 +43,7 @@
     -webkit-overflow-scrolling: touch !important;
     padding: 0 16px calc(180px + env(safe-area-inset-bottom, 20px)) 16px !important;
     box-sizing: border-box !important;
-    background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.14) 0%, transparent 70%), var(--mob-bg-base) !important;
+    background: radial-gradient(circle at 50% 0%, var(--accent-primary-soft, rgba(16, 185, 129, 0.14)) 0%, transparent 70%), var(--mob-bg-base) !important;
   }
 
   /* ── 2. MOBILE TOPBAR (Clean Header matching Reference Screenshots) ── */
@@ -75,8 +75,9 @@
     width: 32px !important;
     height: 32px !important;
     border-radius: 50% !important;
-    box-shadow: 0 0 14px rgba(168, 85, 247, 0.5) !important;
-    border: 1.5px solid rgba(168, 85, 247, 0.5) !important;
+    box-shadow: 0 0 14px var(--shadow-accent) !important;
+    border: 1.5px solid var(--border-accent) !important;
+    filter: var(--logo-filter, none) !important;
   }
 
   .top-bar .mobile-brand span {
@@ -86,11 +87,11 @@
     font-weight: 700 !important;
     letter-spacing: 0.5px !important;
     text-transform: none !important;
-    color: #10b981 !important;
-    background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
+    color: var(--accent-secondary, var(--accent-primary)) !important;
+    background: var(--gradient-brand) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
-    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.65)) !important;
+    filter: drop-shadow(0 0 10px var(--shadow-accent)) !important;
   }
 
   /* Hide header clutter tools on mobile (they belong in settings or player) */
@@ -119,8 +120,8 @@
   }
 
   .mobile-only-search form:focus-within {
-    border-color: rgba(168, 85, 247, 0.5) !important;
-    box-shadow: 0 0 16px rgba(168, 85, 247, 0.25) !important;
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 16px var(--shadow-accent) !important;
   }
 
   .top-bar .search-box {
@@ -152,10 +153,10 @@
 
   .top-bar .profile {
     padding: 2px !important;
-    border: 2px solid rgba(168, 85, 247, 0.6) !important;
+    border: 2px solid var(--border-accent) !important;
     border-radius: 50% !important;
     background: transparent !important;
-    box-shadow: 0 0 12px rgba(168, 85, 247, 0.4) !important;
+    box-shadow: 0 0 12px var(--shadow-accent) !important;
     width: 36px !important;
     height: 36px !important;
     display: flex !important;
@@ -179,12 +180,12 @@
     left: 14px !important;
     right: 14px !important;
     height: 64px !important;
-    background: rgba(14, 18, 32, 0.92) !important;
+    background: var(--bg-sidebar, rgba(14, 18, 32, 0.92)) !important;
     backdrop-filter: blur(28px) !important;
     -webkit-backdrop-filter: blur(28px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1)) !important;
     border-radius: 34px !important;
-    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(168, 85, 247, 0.15) !important;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.7), 0 0 20px var(--shadow-accent) !important;
     z-index: 1000 !important;
     padding: 0 14px !important;
     justify-content: space-between !important;
@@ -216,8 +217,8 @@
   }
 
   .mobile-tab-bar .tab-item.active svg {
-    color: #c084fc !important;
-    filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.7)) !important;
+    color: var(--accent-secondary, var(--accent-primary)) !important;
+    filter: drop-shadow(0 0 8px var(--shadow-accent)) !important;
     transform: translateY(-2px) !important;
   }
 
@@ -228,8 +229,8 @@
     width: 14px !important;
     height: 3px !important;
     border-radius: 3px !important;
-    background: var(--mob-gradient-btn) !important;
-    box-shadow: 0 0 8px #a855f7 !important;
+    background: var(--gradient-brand) !important;
+    box-shadow: 0 0 8px var(--shadow-accent) !important;
   }
 
   /* Center Elevated Action Button in Mobile Dock */
@@ -239,12 +240,12 @@
     width: 54px !important;
     height: 54px !important;
     border-radius: 50% !important;
-    background: var(--mob-gradient-btn) !important;
+    background: var(--gradient-brand) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.65), 0 0 15px rgba(236, 72, 153, 0.4) !important;
-    border: 3px solid #0b0e1b !important;
+    box-shadow: 0 8px 24px var(--shadow-accent) !important;
+    border: 3px solid var(--bg-main, #0b0e1b) !important;
     color: #fff !important;
     cursor: pointer !important;
     transition: all 0.25s ease !important;
@@ -252,7 +253,7 @@
 
   .mobile-tab-bar .tab-item-center:active {
     transform: scale(0.92) !important;
-    box-shadow: 0 4px 14px rgba(168, 85, 247, 0.5) !important;
+    box-shadow: 0 4px 14px var(--shadow-accent) !important;
   }
 
   .mobile-tab-bar .tab-item-center.playing {
@@ -261,10 +262,10 @@
 
   @keyframes dockPulse {
     0%, 100% {
-      box-shadow: 0 8px 24px rgba(168, 85, 247, 0.65), 0 0 0 0 rgba(168, 85, 247, 0.5);
+      box-shadow: 0 8px 24px var(--shadow-accent), 0 0 0 0 var(--shadow-accent);
     }
     50% {
-      box-shadow: 0 8px 28px rgba(236, 72, 153, 0.8), 0 0 0 8px rgba(168, 85, 247, 0);
+      box-shadow: 0 8px 28px var(--shadow-accent), 0 0 0 8px transparent;
     }
   }
 
@@ -275,11 +276,11 @@
     right: 12px !important;
     border-radius: 20px !important;
     height: 64px !important;
-    background: rgba(18, 22, 38, 0.94) !important;
+    background: var(--bg-card, rgba(18, 22, 38, 0.94)) !important;
     backdrop-filter: blur(24px) !important;
     -webkit-backdrop-filter: blur(24px) !important;
-    border: 1px solid rgba(168, 85, 247, 0.25) !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 16px rgba(168, 85, 247, 0.15) !important;
+    border: 1px solid var(--border-accent, rgba(168, 85, 247, 0.25)) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 16px var(--shadow-accent) !important;
     z-index: 995 !important;
     overflow: hidden !important;
     padding: 0 !important;
@@ -291,8 +292,8 @@
   }
 
   .mini-player .progress-bar {
-    background: var(--mob-gradient-btn) !important;
-    box-shadow: 0 0 8px #ec4899 !important;
+    background: var(--gradient-brand) !important;
+    box-shadow: 0 0 8px var(--shadow-accent) !important;
   }
 
   .mini-player-content {
@@ -338,7 +339,7 @@
 
   #miniPlayerArtist {
     font-size: 11px !important;
-    color: #a78bfa !important;
+    color: var(--accent-secondary, #34D399) !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
@@ -358,13 +359,13 @@
     width: 40px !important;
     height: 40px !important;
     border-radius: 50% !important;
-    background: var(--mob-gradient-btn) !important;
+    background: var(--gradient-brand) !important;
     border: none !important;
     color: #fff !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    box-shadow: 0 4px 14px rgba(168, 85, 247, 0.5) !important;
+    box-shadow: 0 4px 14px var(--shadow-accent) !important;
     cursor: pointer !important;
   }
 
@@ -391,9 +392,8 @@
     overflow: hidden;
     margin-bottom: 24px;
     padding: 24px 20px;
-    background: linear-gradient(135deg, rgba(88, 28, 135, 0.72) 0%, rgba(190, 24, 93, 0.58) 55%, rgba(11, 14, 26, 0.95) 100%),
-                url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80') center/cover no-repeat !important;
-    border: 1px solid rgba(168, 85, 247, 0.35);
+    background: linear-gradient(135deg, var(--accent-primary-soft, rgba(16, 185, 129, 0.35)) 0%, rgba(0, 0, 0, 0.6) 55%, var(--bg-main, #0b0e1a) 100%) !important;
+    border: 1px solid var(--border-accent);
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.2);
     display: flex;
     flex-direction: column;
@@ -409,11 +409,11 @@
     font-weight: 700;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: #c084fc;
-    background: rgba(168, 85, 247, 0.18);
+    color: var(--accent-secondary);
+    background: var(--accent-primary-soft);
     padding: 5px 12px;
     border-radius: 20px;
-    border: 1px solid rgba(168, 85, 247, 0.3);
+    border: 1px solid var(--border-accent);
     align-self: flex-start;
   }
 
@@ -426,7 +426,7 @@
   }
 
   .mobile-hero-banner .hero-title span {
-    background: linear-gradient(135deg, #f472b6, #c084fc);
+    background: var(--gradient-brand);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -444,13 +444,13 @@
     gap: 8px;
     padding: 10px 22px;
     border-radius: 9999px;
-    background: var(--mob-gradient-btn);
+    background: var(--gradient-brand);
     color: #fff;
     font-size: 13px;
     font-weight: 700;
     border: none;
     cursor: pointer;
-    box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+    box-shadow: 0 6px 20px var(--shadow-accent);
     transition: transform 0.2s ease;
   }
 
@@ -472,24 +472,24 @@
     gap: 12px;
     padding: 10px 14px;
     border-radius: 16px;
-    background: rgba(20, 24, 42, 0.65);
+    background: var(--bg-card, rgba(20, 24, 42, 0.65));
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
     transition: all 0.2s ease;
     cursor: pointer;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
   }
 
   .mobile-track-card:active {
-    background: rgba(30, 36, 62, 0.85);
+    background: var(--bg-hover, rgba(30, 36, 62, 0.85));
     transform: scale(0.98);
   }
 
   .mobile-track-card.active-playing {
-    background: linear-gradient(90deg, rgba(168, 85, 247, 0.18), rgba(236, 72, 153, 0.12));
-    border-color: rgba(168, 85, 247, 0.4);
-    box-shadow: 0 4px 18px rgba(168, 85, 247, 0.2);
+    background: var(--accent-primary-soft);
+    border-color: var(--accent-primary);
+    box-shadow: 0 4px 18px var(--shadow-accent);
   }
 
   .mobile-track-thumb {
@@ -520,7 +520,7 @@
 
   .mobile-track-artist {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.55);
+    color: var(--text-muted, rgba(255, 255, 255, 0.55));
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -534,16 +534,16 @@
     border-radius: 20px;
     font-size: 11px;
     font-weight: 600;
-    color: #a855f7;
-    background: rgba(168, 85, 247, 0.12);
-    border: 1px solid rgba(168, 85, 247, 0.28);
+    color: var(--accent-secondary, var(--accent-primary));
+    background: var(--accent-primary-soft);
+    border: 1px solid var(--border-accent);
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
   }
 
   .mobile-track-pill-action:active {
-    background: rgba(6, 182, 212, 0.25);
+    background: var(--accent-primary-soft);
     transform: scale(0.95);
   }
 
@@ -579,8 +579,8 @@
     height: 76px;
     border-radius: 20px;
     padding: 3px;
-    background: linear-gradient(135deg, #a855f7, #ec4899);
-    box-shadow: 0 6px 16px rgba(168, 85, 247, 0.35);
+    background: var(--gradient-brand);
+    box-shadow: 0 6px 16px var(--shadow-accent);
     transition: transform 0.25s ease;
   }
 
@@ -608,7 +608,7 @@
 
   .mobile-artist-tag {
     font-size: 10px;
-    color: #c084fc;
+    color: var(--accent-secondary);
     opacity: 0.8;
   }
 
@@ -633,8 +633,8 @@
     position: relative;
     border-radius: 22px;
     padding: 18px 20px;
-    background: #17152d;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--bg-card, #17152d);
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.06));
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     display: flex;
     flex-direction: column;
@@ -645,8 +645,8 @@
 
   .mobile-genre-card:active {
     transform: scale(0.985);
-    background: #1c1836;
-    border-color: rgba(168, 85, 247, 0.25);
+    background: var(--bg-hover, #1c1836);
+    border-color: var(--border-accent);
   }
 
   .mobile-genre-header {
@@ -686,20 +686,20 @@
     border-radius: 9999px;
     font-size: 12.5px;
     font-weight: 500;
-    background: #25223c;
-    color: #d1cfe2;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--bg-hover, #25223c);
+    color: var(--text-muted, #d1cfe2);
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.05));
     transition: all 0.2s ease;
     cursor: pointer;
     user-select: none;
   }
 
   .mobile-genre-pill-tag.active {
-    background: linear-gradient(135deg, #c026d3 0%, #ec4899 100%);
+    background: var(--gradient-brand);
     color: #ffffff;
     font-weight: 600;
     border-color: transparent;
-    box-shadow: 0 0 16px rgba(217, 70, 239, 0.45);
+    box-shadow: 0 0 16px var(--shadow-accent);
   }
 
   .mobile-genre-pill-tag:active {
@@ -708,15 +708,15 @@
 
   /* ── 9. FULLSCREEN PLAYER MOBILE OVERHAUL (Screenshot 2 Center Phone) ── */
   .fullscreen-player-v3 {
-    background: #060a08 !important;
+    background: var(--bg-main, #07080f) !important;
   }
 
-  /* Deep Emerald Aurora Gradient Atmosphere Overlay */
+  /* Deep Aurora Gradient Atmosphere Overlay */
   .fullscreen-player-v3::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.28) 0%, rgba(7, 10, 8, 0.94) 65%, #050806 100%) !important;
+    background: radial-gradient(circle at 50% 25%, var(--accent-primary-soft) 0%, var(--bg-main) 70%, var(--bg-main) 100%) !important;
     z-index: 2;
     pointer-events: none;
   }
@@ -760,8 +760,8 @@
     height: min(280px, 72vw, 34vh) !important;
     aspect-ratio: 1 / 1 !important;
     border-radius: 24px !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 40px rgba(139, 92, 246, 0.35) !important;
-    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 40px var(--shadow-accent) !important;
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16)) !important;
     overflow: hidden !important;
     position: relative !important;
     margin: 0 auto !important;
@@ -779,7 +779,7 @@
   .fs-artwork-wrapper.playing {
     animation: none !important;
     transform: scale(1.025) !important;
-    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.9), 0 0 55px rgba(168, 85, 247, 0.5) !important;
+    box-shadow: 0 28px 70px rgba(0, 0, 0, 0.9), 0 0 55px var(--shadow-accent) !important;
   }
 
   /* No center spindle dot on portrait artwork */
@@ -862,7 +862,7 @@
 
   .fs-artist {
     font-size: 0.96rem !important;
-    color: rgba(255, 255, 255, 0.65) !important;
+    color: var(--accent-secondary, rgba(255, 255, 255, 0.65)) !important;
     text-align: center !important;
     font-weight: 500 !important;
     margin: 0 !important;
@@ -888,7 +888,7 @@
     height: 48px !important;
     border-radius: 50% !important;
     background: rgba(255, 255, 255, 0.08) !important;
-    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.14)) !important;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
     backdrop-filter: blur(14px) !important;
     color: rgba(255, 255, 255, 0.85) !important;
@@ -901,8 +901,8 @@
 
   .fs-action-circle-btn:active {
     transform: scale(0.92) !important;
-    background: rgba(168, 85, 247, 0.25) !important;
-    border-color: rgba(168, 85, 247, 0.5) !important;
+    background: var(--accent-primary-soft) !important;
+    border-color: var(--border-accent) !important;
   }
 
   .fs-main-controls {
@@ -920,9 +920,9 @@
     width: 66px !important;
     height: 66px !important;
     border-radius: 50% !important;
-    background: linear-gradient(135deg, #10B981 0%, #34D399 100%) !important;
+    background: var(--gradient-brand) !important;
     color: #fff !important;
-    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.6), 0 0 16px rgba(52, 211, 153, 0.45) !important;
+    box-shadow: 0 8px 24px var(--shadow-accent) !important;
     border: none !important;
     display: flex !important;
     align-items: center !important;
@@ -939,8 +939,8 @@
   }
 
   .fs-ctrl-btn.active {
-    color: #C084FC !important;
-    filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.7)) !important;
+    color: var(--accent-secondary, var(--accent-primary)) !important;
+    filter: drop-shadow(0 0 8px var(--shadow-accent)) !important;
   }
 
   .fs-utility-bar {
@@ -956,7 +956,7 @@
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    background: radial-gradient(circle at 50% 10%, rgba(168, 85, 247, 0.25) 0%, transparent 60%), #080911 !important;
+    background: radial-gradient(circle at 50% 10%, var(--accent-primary-soft) 0%, transparent 60%), var(--bg-main, #080911) !important;
   }
 
   .auth-mobile-title {
@@ -967,14 +967,14 @@
   }
 
   .auth-mobile-title span {
-    background: linear-gradient(135deg, #c084fc, #ec4899) !important;
+    background: var(--gradient-brand) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
   }
 
   .auth-mobile-input {
     background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.1)) !important;
     border-radius: 14px !important;
     padding: 14px 18px !important;
     color: #fff !important;
@@ -984,9 +984,9 @@
   }
 
   .auth-mobile-input:focus {
-    border-color: #a855f7 !important;
-    box-shadow: 0 0 15px rgba(168, 85, 247, 0.3) !important;
-    background: rgba(168, 85, 247, 0.06) !important;
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 15px var(--shadow-accent) !important;
+    background: var(--accent-primary-soft) !important;
   }
 
   .auth-mobile-submit {
@@ -997,7 +997,7 @@
     font-weight: 700 !important;
     font-size: 15px !important;
     border: none !important;
-    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.5) !important;
+    box-shadow: 0 8px 24px var(--shadow-accent) !important;
     cursor: pointer !important;
     transition: transform 0.2s ease !important;
   }

@@ -21,6 +21,12 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Mehfil ML Microservice", lifespan=lifespan)
 
+@app.get("/")
+@app.get("/health")
+async def health_check():
+    """Health check endpoint to verify ML microservice status."""
+    return {"status": "ok", "service": "Mehfil ML Microservice"}
+
 
 ALLOWED_ORIGINS = [
     "http://localhost:5173",
@@ -163,8 +169,11 @@ async def rank_search(req: SearchRankRequest):
     Computes relative TF-IDF character 3-gram cosine similarity & fuzzy edit distance
     to rank search candidates relatively rather than requiring exact text matching.
     """
+    def dump_candidate(cand):
+        return cand.model_dump() if hasattr(cand, "model_dump") else cand.dict()
+
     if not req.query or not req.candidates:
-        return {"success": True, "ranked": [c.dict() for c in req.candidates]}
+        return {"success": True, "ranked": [dump_candidate(c) for c in req.candidates]}
 
     query_text = req.query.lower().strip()
     texts = []
@@ -191,13 +200,13 @@ async def rank_search(req: SearchRankRequest):
                 score += 1.0
             elif t.startswith(query_text):
                 score += 0.5
-            scored.append({"item": c.dict(), "score": score})
+            scored.append({"item": dump_candidate(c), "score": score})
 
         scored.sort(key=lambda x: x["score"], reverse=True)
         return {"success": True, "ranked": [s["item"] for s in scored]}
     except Exception as e:
         print("ML rank error:", e)
-        return {"success": True, "ranked": [c.dict() for c in req.candidates]}
+        return {"success": True, "ranked": [dump_candidate(c) for c in req.candidates]}
 
 if __name__ == "__main__":
     import uvicorn
