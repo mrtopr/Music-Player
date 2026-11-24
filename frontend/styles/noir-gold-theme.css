@@ -34,7 +34,7 @@ body::after {
     right: -8%;
     width: 60vw;
     height: 60vh;
-    background: radial-gradient(circle, rgba(79, 70, 229, 0.10) 0%, transparent 65%);
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.10) 0%, transparent 65%);
 }
 
 .screen {
@@ -199,7 +199,7 @@ body::after {
 .song-item.playing,
 .track-item.playing {
     border: 1px solid var(--mehfil-gold-primary);
-    background: rgba(0, 242, 254, 0.08);
+    background: rgba(139, 92, 246, 0.08);
     box-shadow: 0 0 20px var(--mehfil-gold-glow);
 }
 

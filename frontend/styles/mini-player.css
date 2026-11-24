@@ -87,7 +87,7 @@
   border-radius: 50%;
   opacity: 0;
   transition: opacity 0.2s ease;
-  box-shadow: 0 0 8px rgba(255, 165, 59, 0.6);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.7);
 }
 
 .mini-player:hover .progress-bar::after {
@@ -309,13 +309,14 @@
   top: 0;
   bottom: 0;
   border-radius: 9999px;
-  background: var(--album-accent, var(--accent-primary, #8B5CF6));
+  background: linear-gradient(90deg, #8B5CF6 0%, #C084FC 100%);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
   pointer-events: none;
   transition: background 0.2s ease;
 }
 
 .mini-center-timeline:hover .mini-seekbar-filled {
-  background: var(--album-accent, var(--accent-hover, #a78bfa));
+  background: linear-gradient(90deg, #7C3AED 0%, #A855F7 100%);
 }
 
 .mini-center-slider {

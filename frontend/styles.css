@@ -1,19 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Merienda:wght@300..900&family=Tagesschrift&family=Yatra+One&display=swap');
 
 /* ========== COLOR VARIABLES ========== */
-/* Theme: Modern Glassmorphic — clean dark theme with cyan accent */
+/* Theme: Modern Midnight Aurora — clean dark theme with royal purple & violet accents */
 :root {
   /* Backgrounds - Deep Dark */
-  --bg-main: #0a0a0f;
-  --bg-sidebar: #111119;
-  --bg-card: #14141e;
-  --bg-hover: #181822;
+  --bg-main: #09080F;
+  --bg-sidebar: #110F1D;
+  --bg-card: #130F1E;
+  --bg-hover: #1A1429;
 
   /* Legacy background variables (for compatibility) */
-  --primary-bg: #0a0a0f;
-  --secondary-bg: #14141e;
-  --tertiary-bg: #111119;
-  --card-bg: #14141e;
+  --primary-bg: #09080F;
+  --secondary-bg: #130F1E;
+  --tertiary-bg: #110F1D;
+  --card-bg: #130F1E;
 
   /* Primary Accent - Modern Royal Purple */
   --accent-primary: #8B5CF6;
@@ -54,7 +54,7 @@
   --info: #8B5CF6;
 
   /* Gradients - Royal Purple & Violet Gradients */
-  --gradient-primary: linear-gradient(180deg, #0f172a 0%, #0a0a0f 100%);
+  --gradient-primary: linear-gradient(180deg, #130F1E 0%, #09080F 100%);
   --gradient-accent: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(192, 132, 252, 0.05));
   --gradient-text: linear-gradient(90deg, #C084FC 0%, #8B5CF6 50%, #A855F7 100%);
   --gradient-brand: linear-gradient(135deg, #8B5CF6 0%, #C084FC 50%, #7C3AED 100%);
