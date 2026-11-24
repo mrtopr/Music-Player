@@ -9,8 +9,6 @@ import TopBar from './components/layout/TopBar';
 import MiniPlayer from './components/player/MiniPlayer';
 import FullscreenPlayer from './components/player/FullscreenPlayer';
 import YouTubeHiddenPlayer from './components/player/YouTubeHiddenPlayer';
-import EqualizerModal from './components/player/EqualizerModal';
-import SleepTimerModal from './components/player/SleepTimerModal';
 import QueuePanel from './components/player/QueuePanel';
 import MobileTabBar from './components/layout/MobileTabBar';
 import Home from './pages/Home';
@@ -20,12 +18,16 @@ import Artists from './pages/Artists';
 import Settings from './pages/Settings';
 import CollectionDetails from './pages/CollectionDetails';
 import SectionPage from './pages/SectionPage';
-import Legal from './pages/Legal';
-import About from './pages/About';
-import Stats from './pages/Stats';
 import Auth from './pages/Auth';
 import Genres from './pages/Genres';
 import BackgroundAnimation from './components/common/BackgroundAnimation';
+
+// Lazy-loaded secondary pages & modals for optimal bundle distribution & FCP
+const EqualizerModal = React.lazy(() => import('./components/player/EqualizerModal'));
+const SleepTimerModal = React.lazy(() => import('./components/player/SleepTimerModal'));
+const Legal = React.lazy(() => import('./pages/Legal'));
+const About = React.lazy(() => import('./pages/About'));
+const Stats = React.lazy(() => import('./pages/Stats'));
 
 function AppContent() {
     const { user, checkAuth } = useAuthStore();
@@ -123,24 +125,26 @@ function AppContent() {
                         onOpenEq={() => setEqVisible(true)}
                         onOpenSleep={() => setSleepVisible(true)}
                     />
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/genres" element={<Genres />} />
-                        <Route path="/search" element={<SearchPage />} />
-                        <Route path="/library" element={<Library />} />
-                        <Route path="/downloads" element={<Library />} />
-                        <Route path="/playlists" element={<Library />} />
-                        <Route path="/favorites" element={<Library />} />
-                        <Route path="/artists" element={<Artists />} />
-                        <Route path="/artist/:id" element={<CollectionDetails type="artist" />} />
-                        <Route path="/album/:id" element={<CollectionDetails type="album" />} />
-                        <Route path="/playlist/:id" element={<CollectionDetails type="playlist" />} />
-                        <Route path="/settings" element={<Settings />} />
-                        <Route path="/section/:type" element={<SectionPage />} />
-                        <Route path="/legal/:type" element={<Legal />} />
-                        <Route path="/about" element={<About />} />
-                        <Route path="/stats" element={<Stats />} />
-                    </Routes>
+                    <React.Suspense fallback={null}>
+                        <Routes>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/genres" element={<Genres />} />
+                            <Route path="/search" element={<SearchPage />} />
+                            <Route path="/library" element={<Library />} />
+                            <Route path="/downloads" element={<Library />} />
+                            <Route path="/playlists" element={<Library />} />
+                            <Route path="/favorites" element={<Library />} />
+                            <Route path="/artists" element={<Artists />} />
+                            <Route path="/artist/:id" element={<CollectionDetails type="artist" />} />
+                            <Route path="/album/:id" element={<CollectionDetails type="album" />} />
+                            <Route path="/playlist/:id" element={<CollectionDetails type="playlist" />} />
+                            <Route path="/settings" element={<Settings />} />
+                            <Route path="/section/:type" element={<SectionPage />} />
+                            <Route path="/legal/:type" element={<Legal />} />
+                            <Route path="/about" element={<About />} />
+                            <Route path="/stats" element={<Stats />} />
+                        </Routes>
+                    </React.Suspense>
                 </div>
             </div>
 
@@ -155,8 +159,10 @@ function AppContent() {
             <YouTubeHiddenPlayer />
 
             <FullscreenPlayer visible={fsVisible} onClose={handleCloseFs} />
-            <EqualizerModal visible={eqVisible} onClose={handleCloseEq} />
-            <SleepTimerModal visible={sleepVisible} onClose={handleCloseSleep} />
+            <React.Suspense fallback={null}>
+                {eqVisible && <EqualizerModal visible={eqVisible} onClose={handleCloseEq} />}
+                {sleepVisible && <SleepTimerModal visible={sleepVisible} onClose={handleCloseSleep} />}
+            </React.Suspense>
             <QueuePanel visible={queueVisible} onClose={handleCloseQueue} />
             <MobileTabBar />
         </>

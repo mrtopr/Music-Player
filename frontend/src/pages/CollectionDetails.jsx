@@ -139,9 +139,9 @@ export default function CollectionDetails({ type }) {
 
     if (!data) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '80vh', gap: '1rem', color: 'var(--accent-primary, #8B5CF6)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '80vh', gap: '1rem', color: 'var(--accent-primary)' }}>
                 <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)' }}>Failed to load collection details.</p>
-                <button onClick={() => navigate(-1)} style={{ marginTop: '1rem', padding: '0.6rem 1.4rem', borderRadius: '50px', background: 'var(--accent-primary, #8B5CF6)', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Go Back</button>
+                <button onClick={() => navigate(-1)} style={{ marginTop: '1rem', padding: '0.6rem 1.4rem', borderRadius: '50px', background: 'var(--accent-primary)', color: '#000', border: 'none', cursor: 'pointer', fontWeight: 700 }}>Go Back</button>
             </div>
         );
     }

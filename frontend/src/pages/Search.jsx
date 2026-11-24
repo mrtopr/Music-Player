@@ -226,28 +226,8 @@ export default function SearchPage() {
                             {TRENDING_SEARCHES.map(term => (
                                 <button
                                     key={term}
-                                    className="btn btn-outline-primary"
+                                    className="trending-search-pill"
                                     onClick={() => handleQuickSearch(term)}
-                                    style={{
-                                        fontSize: '0.9rem', padding: '0.6rem 1.2rem',
-                                        borderRadius: 'var(--radius-pill)',
-                                        border: '1px solid rgba(255,255,255,0.15)',
-                                        background: 'rgba(255,255,255,0.03)',
-                                        transition: 'all 0.3s ease',
-                                        cursor: 'pointer'
-                                    }}
-                                    onMouseEnter={e => {
-                                        e.currentTarget.style.background = 'var(--accent-primary)';
-                                        e.currentTarget.style.color = '#fff';
-                                        e.currentTarget.style.borderColor = 'var(--accent-primary)';
-                                        e.currentTarget.style.boxShadow = '0 0 15px rgba(255, 165, 0, 0.4)';
-                                    }}
-                                    onMouseLeave={e => {
-                                        e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
-                                        e.currentTarget.style.color = 'var(--text-primary)';
-                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
-                                        e.currentTarget.style.boxShadow = 'none';
-                                    }}
                                 >
                                     {term}
                                 </button>
@@ -344,7 +324,7 @@ export default function SearchPage() {
                                             {decodeEntities(item.subtitle || item.primaryArtists || item.role || (isArtist ? 'Artist' : 'Various'))}
                                         </p>
                                         <div className="card-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: 'auto' }}>
-                                            <button className="play-btn" onClick={(e) => { e.stopPropagation(); handleContextClick(item); }} style={{ boxShadow: '0 4px 12px rgba(255,165,0,0.3)', position: 'relative', bottom: 'auto', right: 'auto', left: 'auto' }}>
+                                            <button className="play-btn" onClick={(e) => { e.stopPropagation(); handleContextClick(item); }} style={{ boxShadow: '0 4px 12px var(--shadow-accent)', position: 'relative', bottom: 'auto', right: 'auto', left: 'auto' }}>
                                                 {isCurrent && isPlaying ? <Pause size={22} fill="var(--mehfil-dark-base)" color="var(--mehfil-dark-base)" /> : <Play size={22} fill="var(--mehfil-dark-base)" color="var(--mehfil-dark-base)" style={{ transform: 'translateX(1px)' }} />}
                                             </button>
                                             {!isArtist && <AddToPlaylist song={item} />}
@@ -374,6 +354,28 @@ export default function SearchPage() {
                 @keyframes spin { 100% { transform: rotate(360deg); } }
                 .spin { animation: spin 1s linear infinite; }
                 .search-tabs-container::-webkit-scrollbar { display: none; }
+                .trending-search-pill {
+                    font-size: 0.9rem;
+                    padding: 0.6rem 1.2rem;
+                    border-radius: 9999px;
+                    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12));
+                    background: rgba(255, 255, 255, 0.04);
+                    color: var(--text-primary, #ffffff);
+                    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+                    cursor: pointer;
+                    user-select: none;
+                }
+                .trending-search-pill:hover {
+                    background: var(--gradient-brand, var(--accent-primary));
+                    color: #000000;
+                    font-weight: 700;
+                    border-color: transparent;
+                    box-shadow: 0 4px 14px var(--shadow-accent);
+                    transform: translateY(-2px);
+                }
+                .trending-search-pill:active {
+                    transform: scale(0.96);
+                }
             `}</style>
         </div>
     );

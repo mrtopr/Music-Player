@@ -42,7 +42,7 @@ function SongRow({ song, index, onPlay, isCurrent, isPlaying }) {
             style={{
                 display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.75rem 1rem',
                 borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s',
-                background: isCurrent ? 'rgba(212,160,83,0.08)' : 'transparent',
+                background: isCurrent ? 'var(--accent-primary-soft)' : 'transparent',
                 borderLeft: isCurrent ? '3px solid var(--accent-primary)' : '3px solid transparent',
             }}
             onMouseEnter={(e) => { if (!isCurrent) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
@@ -64,15 +64,13 @@ function SongRow({ song, index, onPlay, isCurrent, isPlaying }) {
                     {song.subtitle || song.primaryArtists}
                 </div>
             </div>
-            {typeof window !== 'undefined' && (window.innerWidth < 768 || 'ontouchstart' in window) && (
-                <button
-                    onClick={handleDownload}
-                    title={downloaded ? "Saved Offline" : "Download for Offline"}
-                    style={{ background: 'none', border: 'none', color: downloaded ? 'var(--accent-primary)' : 'var(--text-muted)', cursor: downloaded ? 'default' : 'pointer', opacity: downloaded ? 1 : 0.6 }}
-                >
-                    {downloaded ? <CheckCircle size={18} /> : downloading ? <div style={{ fontSize: '0.7rem' }}>...</div> : <Download size={18} />}
-                </button>
-            )}
+            <button
+                onClick={handleDownload}
+                title={downloaded ? "Saved Offline" : "Download for Offline"}
+                style={{ background: 'none', border: 'none', color: downloaded ? 'var(--accent-primary)' : 'var(--text-muted)', cursor: downloaded ? 'default' : 'pointer', opacity: downloaded ? 1 : 0.6 }}
+            >
+                {downloaded ? <CheckCircle size={18} /> : downloading ? <div style={{ fontSize: '0.7rem' }}>...</div> : <Download size={18} />}
+            </button>
             <button onClick={(e) => { e.stopPropagation(); onPlay(song); }} style={{ background: 'none', border: 'none', color: isCurrent ? 'var(--accent-primary)' : 'var(--text-secondary)', cursor: 'pointer' }}>
                 {isCurrent && isPlaying ? <Pause size={18} /> : <Play size={18} />}
             </button>
@@ -109,15 +107,15 @@ function LikedSongsSection() {
         <div>
             {/* Hero banner */}
             <div style={{
-                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.05))',
-                border: '1px solid rgba(16, 185, 129, 0.2)',
+                background: 'var(--gradient-accent, linear-gradient(135deg, var(--accent-primary-soft) 0%, rgba(0, 0, 0, 0.4) 100%))',
+                border: '1px solid var(--border-accent)',
                 padding: 'var(--space-xl, 1.5rem)', borderRadius: '16px',
                 marginBottom: 'var(--space-xl, 1.5rem)', display: 'flex',
                 justifyContent: 'space-between', alignItems: 'center'
             }}>
                 <div>
-                    <h2 style={{ margin: 0, fontSize: '1.5rem' }}>♥ Liked Songs</h2>
-                    <p style={{ margin: '0.3rem 0 0', color: 'rgba(255,255,255,0.7)' }}>{likedSongs.length} songs</p>
+                    <h2 style={{ margin: 0, fontSize: '1.5rem', color: '#fff' }}>♥ Liked Songs</h2>
+                    <p style={{ margin: '0.3rem 0 0', color: 'var(--text-muted, rgba(255,255,255,0.7))' }}>{likedSongs.length} songs</p>
                 </div>
                 <button className="primary-cta-btn" onClick={() => playQueue(likedSongs, 0)} style={{ borderRadius: 'var(--radius-pill, 50px)', padding: '0.7rem 1.5rem' }}>
                     <Play size={18} /> Play All
