@@ -5,6 +5,7 @@ import { ALL_GENRES, GENRE_PROFILES } from '../utils/genreProfiles.js';
 import { usePlayerStore } from '../store/usePlayerStore.js';
 import { useAuthStore } from '../store/useAuthStore';
 import { getAvailableProviders, clearCache as clearLyricsCache } from '../utils/lyricsProvider.js';
+import { THEMES, themeManager } from '../utils/themeManager.js';
 
 // Static list — defined outside component to avoid re-creation on every render
 const PRESET_AVATARS = [
@@ -29,7 +30,20 @@ export default function Settings() {
     const [editAvatar, setEditAvatar] = useState(''); // URL or base64
     const [savingProfile, setSavingProfile] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
+    const [selectedTheme, setSelectedTheme] = useState(() => themeManager.getTheme());
     const fileInputRef = React.useRef(null);
+
+    useEffect(() => {
+        return themeManager.subscribe((id) => setSelectedTheme(id));
+    }, []);
+
+    const handleThemeSelect = (themeId) => {
+        setSelectedTheme(themeId);
+        themeManager.applyTheme(themeId);
+        const name = themeManager.getThemeConfig(themeId)?.name || 'theme';
+        setSuccessMsg(`Switched theme to ${name}`);
+        setTimeout(() => setSuccessMsg(''), 3000);
+    };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -343,26 +357,111 @@ export default function Settings() {
                         )}
                     </section>
 
-                    {/* Brand Identity Card */}
+                    {/* Appearance & Color Themes Card */}
                     <section className="settings-card" style={{ 
-                        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(192, 132, 252, 0.04) 100%)',
-                        borderRadius: '24px', padding: '2rem', border: '1px solid rgba(139, 92, 246, 0.2)'
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        borderRadius: '24px', padding: '2rem', border: '1px solid var(--border-medium, rgba(255,255,255,0.08))'
                     }}>
-                        <h3 style={{ margin: '0 0 1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-primary)', fontSize: '1.2rem' }}>
-                            <Palette size={20} /> Appearance
-                        </h3>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                            <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: '56px', height: '56px', objectFit: 'contain', filter: 'drop-shadow(0 0 12px rgba(139,92,246,0.5))' }} />
-                            <div>
-                                <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#fff', marginBottom: '4px' }}>Modern Glassmorphic Theme</div>
-                                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>A consistent brand experience across the entire app</div>
-                                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                                    <span className="theme-swatch" style={{ background: '#7C3AED', boxShadow: '0 0 12px rgba(124,58,237,0.6)' }} title="Deep Purple"></span>
-                                    <span className="theme-swatch" style={{ background: '#8B5CF6', boxShadow: '0 0 12px rgba(139,92,246,0.6)' }} title="Purple"></span>
-                                    <span className="theme-swatch" style={{ background: '#A78BFA', boxShadow: '0 0 12px rgba(167,139,250,0.6)' }} title="Violet"></span>
-                                    <span className="theme-swatch" style={{ background: '#C084FC', boxShadow: '0 0 12px rgba(192,132,252,0.6)' }} title="Lavender"></span>
-                                </div>
-                            </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem', flexWrap: 'wrap', gap: '10px' }}>
+                            <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--accent-primary)', fontSize: '1.25rem' }}>
+                                <Palette size={22} /> Color Themes
+                            </h3>
+                            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', background: 'rgba(255,255,255,0.05)', padding: '4px 12px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                {THEMES.length} Themes
+                            </span>
+                        </div>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.5 }}>
+                            Select your favorite aesthetic color palette. Your theme choice is saved automatically and applies instantly across the entire interface, player, lyrics, and animations.
+                        </p>
+
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                            gap: '14px'
+                        }}>
+                            {THEMES.map(t => {
+                                const isSelected = selectedTheme === t.id;
+                                return (
+                                    <div
+                                        key={t.id}
+                                        onClick={() => handleThemeSelect(t.id)}
+                                        style={{
+                                            position: 'relative',
+                                            borderRadius: '18px',
+                                            padding: '16px',
+                                            background: isSelected ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.02)',
+                                            border: isSelected ? `2px solid ${t.primary}` : '1px solid rgba(255,255,255,0.08)',
+                                            boxShadow: isSelected ? `0 8px 24px rgba(0,0,0,0.4), 0 0 20px ${t.glow}` : '0 4px 12px rgba(0,0,0,0.2)',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: '12px',
+                                            transform: isSelected ? 'scale(1.02)' : 'none'
+                                        }}
+                                        onMouseEnter={e => {
+                                            if (!isSelected) {
+                                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                                                e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                                            }
+                                        }}
+                                        onMouseLeave={e => {
+                                            if (!isSelected) {
+                                                e.currentTarget.style.transform = 'none';
+                                                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                                                e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+                                            }
+                                        }}
+                                    >
+                                        {/* Top row: Theme Name & Active Badge */}
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ fontWeight: 700, fontSize: '1rem', color: '#fff', letterSpacing: '-0.2px' }}>
+                                                {t.name}
+                                            </div>
+                                            {isSelected && (
+                                                <span style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px',
+                                                    background: t.primary,
+                                                    color: '#000',
+                                                    fontSize: '0.68rem',
+                                                    fontWeight: 800,
+                                                    padding: '2px 8px',
+                                                    borderRadius: '12px',
+                                                    letterSpacing: '0.5px',
+                                                    textTransform: 'uppercase'
+                                                }}>
+                                                    <Check size={11} strokeWidth={3} /> Active
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Color Palette Swatches Preview */}
+                                        <div style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '6px',
+                                            padding: '8px',
+                                            borderRadius: '12px',
+                                            background: t.base,
+                                            border: '1px solid rgba(255,255,255,0.06)'
+                                        }}>
+                                            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: t.primary, boxShadow: `0 0 8px ${t.primary}88` }} title="Primary Accent" />
+                                            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: t.secondary, boxShadow: `0 0 8px ${t.secondary}88` }} title="Secondary Accent" />
+                                            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: t.card, border: '1px solid rgba(255,255,255,0.15)' }} title="Card Surface" />
+                                            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: t.base, border: '1px solid rgba(255,255,255,0.2)' }} title="Deep Base" />
+                                            <div style={{ flex: 1, height: '4px', borderRadius: '999px', background: `linear-gradient(90deg, ${t.primary}, ${t.secondary})`, marginLeft: '4px' }} />
+                                        </div>
+
+                                        {/* Tagline */}
+                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.35 }}>
+                                            {t.tagline}
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </section>
 

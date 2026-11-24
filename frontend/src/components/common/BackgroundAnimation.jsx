@@ -58,11 +58,11 @@ export default function BackgroundAnimation() {
           pointer-events: none;
         }
 
-        .blob-1 { background: rgba(16, 185, 129, 0.32); animation-delay: 0s; }
-        .blob-2 { background: rgba(5, 150, 105, 0.22); animation-delay: -4s; }
-        .blob-3 { background: rgba(52, 211, 153, 0.22); animation-delay: -8s; }
-        .blob-4 { background: rgba(16, 185, 129, 0.24); animation-delay: -2s; }
-        .blob-5 { background: rgba(4, 120, 87, 0.20); animation-delay: -6s; }
+        .blob-1 { background: var(--blob-1, rgba(16, 185, 129, 0.32)); animation-delay: 0s; transition: background 0.8s ease; }
+        .blob-2 { background: var(--blob-2, rgba(5, 150, 105, 0.22)); animation-delay: -4s; transition: background 0.8s ease; }
+        .blob-3 { background: var(--blob-3, rgba(52, 211, 153, 0.22)); animation-delay: -8s; transition: background 0.8s ease; }
+        .blob-4 { background: var(--blob-4, rgba(16, 185, 129, 0.24)); animation-delay: -2s; transition: background 0.8s ease; }
+        .blob-5 { background: var(--blob-5, rgba(4, 120, 87, 0.20)); animation-delay: -6s; transition: background 0.8s ease; }
 
         .bg-grain {
           opacity: 0.04;
