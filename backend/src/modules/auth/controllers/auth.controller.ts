@@ -168,7 +168,7 @@ export class AuthController implements Routes {
       }),
       async (ctx) => {
         const { email, password } = ctx.req.valid('json')
-        const cleanEmail = email.trim()
+        const cleanEmail = email.trim().toLowerCase()
 
         try {
           const user = await prisma.user.findFirst({
@@ -178,14 +178,20 @@ export class AuthController implements Routes {
             return ctx.json({ success: false, message: 'Invalid credentials' }, 401)
           }
 
-          const isMatch = await bcrypt.compare(password, user.passwordHash)
+          let isMatch = false
+          try {
+            isMatch = await bcrypt.compare(password, user.passwordHash)
+          } catch {
+            return ctx.json({ success: false, message: 'Invalid credentials' }, 401)
+          }
+
           if (!isMatch) return ctx.json({ success: false, message: 'Invalid credentials' }, 401)
 
           const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: TOKEN_TTL })
           return ctx.json({ success: true, token, user: publicUser(user) }, 200)
-        } catch (error) {
+        } catch (error: any) {
           console.error('[Auth Error] Login:', error)
-          return ctx.json({ success: false, message: 'Internal server error' }, 500)
+          return ctx.json({ success: false, message: error?.message || 'Database connection error. Please try again.' }, 500)
         }
       },
     )

@@ -485,10 +485,10 @@ function FullscreenArtworkSection({ currentSong, title, prevSong, nextSong, isPl
     const duration = usePlayerStore(state => state.duration);
 
     const [isMobile, setIsMobile] = useState(
-        () => typeof window !== 'undefined' && (window.innerWidth < 768 || 'ontouchstart' in window),
+        () => typeof window !== 'undefined' && window.innerWidth <= 768,
     );
     useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
@@ -727,10 +727,10 @@ export default function FullscreenPlayer({ visible, onClose }) {
     const [isOfflineSaved, setIsOfflineSaved] = useState(false);
     const [showLyrics, setShowLyrics] = useState(false);
     const [mlFeatures, setMlFeatures] = useState(null);
-    const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && (window.innerWidth < 768 || 'ontouchstart' in window));
+    const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 768);
 
     useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
