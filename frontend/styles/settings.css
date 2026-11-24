@@ -1,0 +1,399 @@
+/* ==========================================================================
+   MEHFIL SETTINGS DESIGN SYSTEM & PERFORMANCE STYLES
+   Smooth responsive layouts, theme reactivity, and zero-JS hover states
+   ========================================================================== */
+
+.settings-page-wrapper {
+  display: block;
+  padding-bottom: 160px;
+  animation: settingsFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.settings-container {
+  padding: 2rem 1.25rem;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* ── 1. HEADER ── */
+.settings-header {
+  margin-bottom: 1.8rem;
+}
+
+.settings-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.settings-title .spin-slow {
+  animation: settingsSpinSlow 16s linear infinite;
+}
+
+.settings-subtitle {
+  color: var(--text-muted, #9ca3af);
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+/* ── 2. QUICK CATEGORY NAVIGATION TABS ── */
+.settings-nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 4px 14px 4px;
+  margin-bottom: 1.8rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+}
+
+.settings-nav-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.settings-tab-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.settings-tab-pill:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.settings-tab-pill:active {
+  transform: scale(0.97);
+}
+
+.settings-tab-pill.active {
+  color: #ffffff;
+  background: var(--gradient-brand, linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%));
+  border-color: transparent;
+  box-shadow: 0 4px 14px var(--shadow-accent);
+}
+
+/* ── 3. CARDS & SECTIONS ── */
+.settings-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.settings-card {
+  background: var(--bg-card, rgba(20, 24, 42, 0.65));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 24px;
+  padding: 2rem;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.settings-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-accent, rgba(16, 185, 129, 0.35));
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35), 0 0 16px var(--shadow-accent);
+}
+
+.settings-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.settings-card-title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--accent-primary, #10B981);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.settings-card-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted, #9ca3af);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+}
+
+.settings-card-desc {
+  color: var(--text-muted, #9ca3af);
+  font-size: 0.9rem;
+  margin: 0 0 1.4rem 0;
+  line-height: 1.5;
+}
+
+/* ── 4. BUTTONS ── */
+.settings-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid transparent;
+  outline: none;
+  font-family: inherit;
+  text-decoration: none;
+  user-select: none;
+}
+
+.settings-btn:hover {
+  transform: translateY(-2px);
+}
+
+.settings-btn:active {
+  transform: scale(0.97);
+}
+
+.settings-btn-primary {
+  background: var(--gradient-brand, var(--accent-primary));
+  color: #000000;
+  font-weight: 700;
+  box-shadow: 0 4px 14px var(--shadow-accent);
+}
+
+.settings-btn-primary:hover {
+  box-shadow: 0 6px 20px var(--shadow-accent);
+}
+
+.settings-btn-outline {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12));
+}
+
+.settings-btn-outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.settings-btn-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.settings-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
+}
+
+/* ── 5. THEME CARDS GRID ── */
+.settings-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.settings-theme-card {
+  position: relative;
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-theme-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.settings-theme-card.active {
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid var(--theme-color-primary, var(--accent-primary));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px var(--theme-color-glow, var(--shadow-accent));
+  transform: scale(1.02);
+}
+
+.settings-theme-palette-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── 6. SEGMENTED CONTROLS ── */
+.settings-segmented-group {
+  display: flex;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.settings-segmented-item {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.settings-segmented-item:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.settings-segmented-item.active {
+  background: var(--gradient-brand, var(--accent-primary));
+  color: #000000;
+  font-weight: 700;
+  box-shadow: 0 2px 8px var(--shadow-accent);
+}
+
+/* ── 7. TOGGLE SWITCH ── */
+.settings-switch-label {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.settings-switch-label input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.settings-switch-track {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.15);
+  transition: 0.25s ease;
+  border-radius: 34px;
+}
+
+.settings-switch-label input:checked + .settings-switch-track {
+  background: var(--gradient-brand, var(--accent-primary));
+  box-shadow: 0 0 12px var(--shadow-accent);
+}
+
+.settings-switch-knob {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background: #ffffff;
+  transition: 0.25s ease;
+  border-radius: 50%;
+}
+
+.settings-switch-label input:checked + .settings-switch-track .settings-switch-knob {
+  left: 25px;
+  background: #000000;
+}
+
+/* ── 8. TOAST NOTIFICATION ── */
+.settings-toast {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent-primary, #10B981);
+  color: #000000;
+  padding: 0.8rem 1.6rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  z-index: 10000;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--shadow-accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: settingsSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── 9. KEYFRAME ANIMATIONS ── */
+@keyframes settingsFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes settingsSlideDown {
+  from { opacity: 0; transform: translate(-50%, -20px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@keyframes settingsSpinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ── 10. RESPONSIVE OPTIMIZATIONS ── */
+@media (max-width: 768px) {
+  .settings-container {
+    padding: 1.25rem 0.75rem;
+  }
+  .settings-title {
+    font-size: 1.85rem;
+  }
+  .settings-subtitle {
+    font-size: 0.95rem;
+  }
+  .settings-card {
+    padding: 1.4rem 1.1rem;
+    border-radius: 20px;
+  }
+  .settings-theme-grid {
+    grid-template-columns: 1fr;
+  }
+}
