@@ -380,6 +380,7 @@ export default function Home() {
     const [categoryLoading, setCategoryLoading] = useState(false);
     const [categorySongs, setCategorySongs] = useState([]);
     const [showOnboarding, setShowOnboarding] = useState(false);
+    const [selectedGenres, setSelectedGenres] = useState(['Romantic', 'Dance', 'Pop']);
     const [userProfile, setUserProfile] = useState(null);
 
     const [canInstall, setCanInstall] = useState(!!window.__deferredPrompt);
@@ -495,12 +496,18 @@ export default function Home() {
         };
     }, []);
 
-    const handleOnboardingComplete = async (selectedGenres) => {
+    const handleOnboardingComplete = async (genres = selectedGenres) => {
+        savePreferredGenres(genres || []);
         setShowOnboarding(false);
         setLoading(true);
-        const [sections] = await Promise.all([getPersonalizedSections()]);
-        setPersonalizedSections(sections);
-        setLoading(false);
+        try {
+            const [sections] = await Promise.all([getPersonalizedSections()]);
+            setPersonalizedSections(sections);
+        } catch (e) {
+            console.error('Personalized section refresh failed:', e);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleDismissBanner = () => {
@@ -556,55 +563,73 @@ export default function Home() {
             <BackgroundAnimation />
 
             {showOnboarding && (
-                <div style={{ position: 'fixed', inset: 0, zIndex: 6000, background: 'rgba(5,5,10,0.9)', backdropFilter: 'blur(20px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ background: 'rgba(20, 20, 30, 0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '2.5rem', maxWidth: '560px', width: '100%', boxShadow: '0 40px 80px rgba(0,0,0,0.8)', backdropFilter: 'blur(30px)' }}>
+                <div style={{ position: 'fixed', inset: 0, zIndex: 6000, background: 'rgba(5,5,10,0.92)', backdropFilter: 'blur(20px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+                    <div style={{ position: 'relative', background: 'rgba(20, 20, 30, 0.95)', border: '1px solid var(--border-accent, rgba(255,255,255,0.12))', borderRadius: '24px', padding: '2.5rem', maxWidth: '560px', width: '100%', boxShadow: '0 40px 80px rgba(0,0,0,0.85)', backdropFilter: 'blur(30px)' }}>
+                        <button
+                            onClick={() => handleOnboardingComplete([])}
+                            style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(255,255,255,0.06)', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                            title="Skip for now"
+                            aria-label="Close onboarding"
+                            onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.background = 'rgba(255,255,255,0.15)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
+                        >
+                            <X size={18} />
+                        </button>
                         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                             <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🎵</div>
                             <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '0.5rem', color: '#fff' }}>Pick Your Vibe</h2>
-                            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.95rem' }}>Select the genres you love and we'll personalize your home feed just for you.</p>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>Select the genres you love and we'll personalize your home feed just for you.</p>
                         </div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center', marginBottom: '2rem' }}>
                             {ALL_GENRES.map(genre => {
                                 const profile = GENRE_PROFILES[genre];
+                                const isSelected = selectedGenres.includes(genre);
                                 return (
                                     <button
                                         key={genre}
-                                        onClick={() => {}}
+                                        type="button"
+                                        onClick={() => {
+                                            setSelectedGenres(prev => prev.includes(genre) ? prev.filter(g => g !== genre) : [...prev, genre]);
+                                        }}
                                         style={{
                                             padding: '8px 16px',
                                             borderRadius: '50px',
-                                            border: `2px solid rgba(255,255,255,0.1)`,
-                                            background: 'rgba(255,255,255,0.04)',
-                                            color: 'rgba(255,255,255,0.6)',
+                                            border: isSelected ? '2px solid var(--accent-primary, #10B981)' : '2px solid rgba(255,255,255,0.1)',
+                                            background: isSelected ? 'var(--accent-primary-soft, rgba(16, 185, 129, 0.2))' : 'rgba(255,255,255,0.04)',
+                                            color: isSelected ? 'var(--accent-secondary, #34D399)' : 'rgba(255,255,255,0.7)',
                                             cursor: 'pointer',
                                             fontSize: '0.9rem',
-                                            fontWeight: 600,
+                                            fontWeight: isSelected ? 700 : 500,
                                             display: 'flex',
                                             alignItems: 'center',
                                             gap: '6px',
-                                            transition: 'all 0.2s'
+                                            transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                                            boxShadow: isSelected ? '0 0 16px var(--accent-primary-soft, rgba(16, 185, 129, 0.3))' : 'none'
                                         }}
                                     >
-                                        {profile.emoji} {genre}
+                                        {profile.emoji} {genre} {isSelected ? '✓' : ''}
                                     </button>
                                 );
                             })}
                         </div>
                         <button
+                            type="button"
+                            onClick={() => handleOnboardingComplete(selectedGenres)}
                             style={{
                                 width: '100%',
                                 padding: '14px',
                                 borderRadius: '50px',
-                                background: 'var(--accent-primary, #8B5CF6)',
+                                background: 'linear-gradient(135deg, var(--accent-primary, #10B981) 0%, var(--accent-secondary, #34D399) 100%)',
                                 color: '#000',
                                 border: 'none',
                                 cursor: 'pointer',
                                 fontSize: '1rem',
-                                fontWeight: 700,
-                                transition: 'all 0.3s ease'
+                                fontWeight: 800,
+                                transition: 'all 0.3s ease',
+                                boxShadow: '0 8px 25px var(--accent-primary-soft, rgba(16, 185, 129, 0.4))'
                             }}
                         >
-                            Continue
+                            Continue ({selectedGenres.length} selected)
                         </button>
                     </div>
                 </div>

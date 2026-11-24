@@ -20,6 +20,10 @@ backend/.env
 frontend/dist/
 backend/dist/
 .vite/
+playwright-report/
+test-results/
+frontend/playwright-report/
+frontend/test-results/
 
 # ─────────────────────────────────────────
 # Python
