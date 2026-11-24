@@ -822,8 +822,8 @@ export default function Home() {
                     <h1 style={{ fontSize: 'clamp(2rem, 5vw, 2.6rem)', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
                         {getCleanGreeting()},{' '}
                         <span style={{
-                            color: '#C084FC',
-                            textShadow: '0 0 30px rgba(139, 92, 246, 0.4)'
+                            color: '#34D399',
+                            textShadow: '0 0 30px rgba(16, 185, 129, 0.45)'
                         }}>
                             {userName ? (userName.charAt(0).toUpperCase() + userName.slice(1)) : 'Friend'}
                         </span>
@@ -937,16 +937,16 @@ export default function Home() {
                                 style={{
                                     flex: '0 0 auto',
                                     borderRadius: '50px',
-                                    background: active ? 'rgba(139, 92, 246, 0.18)' : 'rgba(255,255,255,0.04)',
-                                    border: active ? '1px solid #8B5CF6' : '1px solid rgba(255,255,255,0.08)',
-                                    color: active ? '#C084FC' : 'rgba(255,255,255,0.7)',
+                                    background: active ? 'rgba(16, 185, 129, 0.18)' : 'rgba(255,255,255,0.04)',
+                                    border: active ? '1px solid #10B981' : '1px solid rgba(255,255,255,0.08)',
+                                    color: active ? '#34D399' : 'rgba(255,255,255,0.7)',
                                     display: 'flex',
                                     flexDirection: 'row',
                                     alignItems: 'center',
                                     gap: '8px',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s ease',
-                                    boxShadow: active ? '0 0 18px rgba(139, 92, 246, 0.35)' : 'none',
+                                    boxShadow: active ? '0 0 18px rgba(16, 185, 129, 0.35)' : 'none',
                                     padding: '9px 18px',
                                     outline: 'none'
                                 }}
@@ -967,7 +967,7 @@ export default function Home() {
                                     }
                                 }}
                             >
-                                <Icon size={16} style={{ color: active ? '#C084FC' : 'var(--text-secondary)' }} />
+                                <Icon size={16} style={{ color: active ? '#34D399' : 'var(--text-secondary)' }} />
                                 <span style={{ fontSize: '0.85rem', fontWeight: 600, letterSpacing: '-0.1px', whiteSpace: 'nowrap' }}>
                                     {cat.label}
                                 </span>

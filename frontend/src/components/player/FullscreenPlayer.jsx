@@ -120,7 +120,7 @@ function FullscreenLyricsPanel({ isMobile }) {
         return (
             <div style={containerStyle}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px', color: 'rgba(255,255,255,0.7)' }}>
-                    <Loader2 className="spin" size={32} style={{ color: '#C084FC' }} />
+                    <Loader2 className="spin" size={32} style={{ color: 'var(--accent-secondary, #34D399)' }} />
                     <span style={{ fontSize: '0.9rem', fontWeight: 600, opacity: 0.85, letterSpacing: '0.3px' }}>Loading lyrics...</span>
                 </div>
             </div>
@@ -131,15 +131,15 @@ function FullscreenLyricsPanel({ isMobile }) {
         return (
             <div style={containerStyle}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'rgba(255,255,255,0.5)', textAlign: 'center', gap: '12px', padding: '0 20px' }}>
-                    <Mic size={36} style={{ opacity: 0.35, color: '#C084FC' }} />
+                    <Mic size={36} style={{ opacity: 0.35, color: 'var(--accent-secondary, #34D399)' }} />
                     <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600 }}>Lyrics not available</p>
                     {currentSong && (
                         <button
                             onClick={() => fetchLyricsForSong(currentSong, true)}
                             style={{
                                 padding: '6px 18px', borderRadius: '20px',
-                                background: 'rgba(168, 85, 247, 0.15)', border: '1px solid rgba(168, 85, 247, 0.35)',
-                                color: '#E9D5FF', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer',
+                                background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.35)',
+                                color: '#D1FAE5', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer',
                                 transition: 'all 0.2s ease'
                             }}
                         >
@@ -159,7 +159,7 @@ function FullscreenLyricsPanel({ isMobile }) {
                         {[0.4, 0.8, 0.5, 1, 0.6, 0.9, 0.3].map((h, i) => (
                             <div key={i} style={{
                                 width: '3px', height: `${h * 100}%`, borderRadius: '3px',
-                                background: 'linear-gradient(to top, #8B5CF6, #C084FC)',
+                                background: 'linear-gradient(to top, var(--accent-primary, #10B981), var(--accent-secondary, #34D399))',
                                 animation: `pulseBar 1.2s ease-in-out ${i * 0.15}s infinite alternate`
                             }} />
                         ))}
@@ -279,11 +279,11 @@ function FullscreenLyricsPanel({ isMobile }) {
                         bottom: '10px',
                         left: '50%',
                         transform: 'translateX(-50%)',
-                        background: 'rgba(26, 20, 46, 0.92)',
+                        background: 'rgba(10, 24, 18, 0.92)',
                         backdropFilter: 'blur(20px)',
                         WebkitBackdropFilter: 'blur(20px)',
-                        border: '1px solid rgba(192, 132, 252, 0.4)',
-                        color: '#E9D5FF',
+                        border: '1px solid rgba(52, 211, 153, 0.4)',
+                        color: '#D1FAE5',
                         padding: '5px 14px',
                         borderRadius: '999px',
                         fontSize: '0.75rem',
@@ -291,14 +291,14 @@ function FullscreenLyricsPanel({ isMobile }) {
                         letterSpacing: '0.3px',
                         cursor: 'pointer',
                         zIndex: 50,
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.6), 0 0 12px rgba(168,85,247,0.3)',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.6), 0 0 12px rgba(16,185,129,0.3)',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '6px',
                         animation: 'fadeIn 0.2s ease'
                     }}
                 >
-                    <Sparkles size={12} color="#C084FC" />
+                    <Sparkles size={12} color="#34D399" />
                     <span>Sync with song</span>
                 </button>
             )}
@@ -428,9 +428,9 @@ function FullscreenProgressSection({ isMobile }) {
                         style={{
                             width: `${displayProgress}%`,
                             height: '100%',
-                            background: 'linear-gradient(90deg, #8B5CF6 0%, #C084FC 100%)',
+                            background: 'linear-gradient(90deg, #10B981 0%, #34D399 100%)',
                             borderRadius: '999px',
-                            boxShadow: '0 0 10px rgba(168, 85, 247, 0.5)',
+                            boxShadow: '0 0 10px rgba(16, 185, 129, 0.5)',
                             position: 'relative',
                             transition: isSeeking ? 'none' : 'width 0.1s linear'
                         }}
@@ -446,8 +446,8 @@ function FullscreenProgressSection({ isMobile }) {
                                 height: '13px',
                                 borderRadius: '50%',
                                 background: '#ffffff',
-                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.6), 0 0 10px rgba(192, 132, 252, 0.9)',
-                                border: '1.5px solid rgba(139, 92, 246, 0.8)',
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.6), 0 0 10px rgba(52, 211, 153, 0.9)',
+                                border: '1.5px solid rgba(16, 185, 129, 0.8)',
                                 opacity: isSeeking || isMobile || isHovering ? 1 : 0,
                                 transition: isSeeking ? 'none' : 'transform 0.2s ease, opacity 0.2s ease',
                                 pointerEvents: 'none'
@@ -1375,7 +1375,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                     transition: 'background 0.3s'
                                 }}
                             />
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', color: showLyrics ? '#C084FC' : 'rgba(255, 255, 255, 0.65)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', color: showLyrics ? '#34D399' : 'rgba(255, 255, 255, 0.65)' }}>
                                 {showLyrics ? <ChevronDown size={12} /> : <Mic size={11} />}
                                 <span>{showLyrics ? 'Hide Lyrics' : 'Lyrics'}</span>
                             </div>

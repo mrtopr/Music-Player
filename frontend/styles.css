@@ -1,64 +1,64 @@
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Merienda:wght@300..900&family=Tagesschrift&family=Yatra+One&display=swap');
 
 /* ========== COLOR VARIABLES ========== */
-/* Theme: Modern Midnight Aurora — clean dark theme with royal purple & violet accents */
+/* Theme: Emerald Aurora — deep obsidian dark theme with luminous emerald & mint accents */
 :root {
   /* Backgrounds - Deep Dark */
-  --bg-main: #09080F;
-  --bg-sidebar: #110F1D;
-  --bg-card: #130F1E;
-  --bg-hover: #1A1429;
+  --bg-main: #070A08;
+  --bg-sidebar: #0C120E;
+  --bg-card: #0E1712;
+  --bg-hover: #14211A;
 
   /* Legacy background variables (for compatibility) */
-  --primary-bg: #09080F;
-  --secondary-bg: #130F1E;
-  --tertiary-bg: #110F1D;
-  --card-bg: #130F1E;
+  --primary-bg: #070A08;
+  --secondary-bg: #0E1712;
+  --tertiary-bg: #0C120E;
+  --card-bg: #0E1712;
 
-  /* Primary Accent - Modern Royal Purple */
-  --accent-primary: #8B5CF6;
-  --accent-primary-rgb: 139, 92, 246;
-  --accent-primary-soft: rgba(139, 92, 246, 0.15);
-  --accent-hover: #7C3AED;
+  /* Primary Accent - Luminous Emerald */
+  --accent-primary: #10B981;
+  --accent-primary-rgb: 16, 185, 129;
+  --accent-primary-soft: rgba(16, 185, 129, 0.15);
+  --accent-hover: #059669;
 
-  /* Secondary Accent - Soft Violet */
-  --accent-secondary: #C084FC;
-  --accent-secondary-rgb: 192, 132, 252;
-  --accent-secondary-soft: rgba(192, 132, 252, 0.12);
+  /* Secondary Accent - Soft Mint / Neon Jade */
+  --accent-secondary: #34D399;
+  --accent-secondary-rgb: 52, 211, 153;
+  --accent-secondary-soft: rgba(52, 211, 153, 0.12);
 
   /* Text */
   --text-primary: #F8F9FA;
-  --text-secondary: #8892B0;
-  --text-muted: #6B7280;
-  --text-tertiary: #8892B0;
-  --text-disabled: #4B5563;
-  --text-artist: #8892B0;
+  --text-secondary: #8BA89B;
+  --text-muted: #627A6F;
+  --text-tertiary: #8BA89B;
+  --text-disabled: #41544B;
+  --text-artist: #8BA89B;
 
   /* Borders */
-  --border-subtle: rgba(139, 92, 246, 0.08);
-  --border-light: rgba(139, 92, 246, 0.08);
-  --border-medium: rgba(139, 92, 246, 0.15);
-  --border-accent: rgba(139, 92, 246, 0.3);
+  --border-subtle: rgba(16, 185, 129, 0.08);
+  --border-light: rgba(16, 185, 129, 0.10);
+  --border-medium: rgba(16, 185, 129, 0.18);
+  --border-accent: rgba(16, 185, 129, 0.35);
 
-  /* Shadow Colors - Subtle glowing purple */
-  --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --shadow-medium: 0 6px 16px rgba(0, 0, 0, 0.35);
-  --shadow-heavy: 0 8px 24px rgba(0, 0, 0, 0.4);
-  --shadow-accent: rgba(139, 92, 246, 0.15);
-  --shadow-glow: rgba(139, 92, 246, 0.1);
+  /* Shadow Colors - Emerald Glow */
+  --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-medium: 0 6px 16px rgba(0, 0, 0, 0.4);
+  --shadow-heavy: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-accent: rgba(16, 185, 129, 0.2);
+  --shadow-glow: rgba(16, 185, 129, 0.15);
 
   /* Status Colors */
   --success: #10B981;
   --warning: #F59E0B;
   --error: #EF4444;
-  --info: #8B5CF6;
+  --info: #34D399;
 
-  /* Gradients - Royal Purple & Violet Gradients */
-  --gradient-primary: linear-gradient(180deg, #130F1E 0%, #09080F 100%);
-  --gradient-accent: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(192, 132, 252, 0.05));
-  --gradient-text: linear-gradient(90deg, #C084FC 0%, #8B5CF6 50%, #A855F7 100%);
-  --gradient-brand: linear-gradient(135deg, #8B5CF6 0%, #C084FC 50%, #7C3AED 100%);
-  --gradient-brand-hover: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 50%, #C084FC 100%);
+  /* Gradients - Emerald Aurora Gradients */
+  --gradient-primary: linear-gradient(180deg, #0E1712 0%, #070A08 100%);
+  --gradient-accent: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(52, 211, 153, 0.05));
+  --gradient-text: linear-gradient(90deg, #34D399 0%, #10B981 50%, #059669 100%);
+  --gradient-brand: linear-gradient(135deg, #10B981 0%, #34D399 50%, #059669 100%);
+  --gradient-brand-hover: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%);
 
 
   /* Spacing */
@@ -82,16 +82,16 @@
   --transition-cubic: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Fullscreen Player Variables */
-  --fullscreen-bg: linear-gradient(135deg, #0D0B16 0%, #09080F 50%, #130F1E 100%);
+  --fullscreen-bg: linear-gradient(135deg, #0A120E 0%, #060A08 50%, #0E1A14 100%);
   --fullscreen-overlay: rgba(0, 0, 0, 0.85);
-  --fullscreen-accent: #8B5CF6;
-  --fullscreen-accent-secondary: #C084FC;
+  --fullscreen-accent: #10B981;
+  --fullscreen-accent-secondary: #34D399;
   --fullscreen-text: #EDEDED;
   --fullscreen-text-secondary: rgba(237, 237, 237, 0.9);
   --fullscreen-text-muted: rgba(237, 237, 237, 0.7);
-  --fullscreen-border: rgba(139, 92, 246, 0.1);
+  --fullscreen-border: rgba(16, 185, 129, 0.12);
   --fullscreen-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-  --fullscreen-glow: 0 0 25px rgba(139, 92, 246, 0.3);
+  --fullscreen-glow: 0 0 25px rgba(16, 185, 129, 0.35);
 
   /* Player-specific Variables */
   --bg-dark: #0D0B16;

@@ -1,32 +1,32 @@
-/* ===== MEHFIL BRAND IDENTITY - MIDNIGHT AURORA ===== */
+/* ===== MEHFIL BRAND IDENTITY - EMERALD AURORA ===== */
 
 :root {
-    /* === PRIMARY ACCENT - Cyber Violet === */
-    --mehfil-gold-primary: #8B5CF6;
-    --mehfil-gold-soft: #A78BFA;
-    --mehfil-gold-glow: rgba(139, 92, 246, 0.35);
+    /* === PRIMARY ACCENT - Luminous Emerald === */
+    --mehfil-gold-primary: #10B981;
+    --mehfil-gold-soft: #34D399;
+    --mehfil-gold-glow: rgba(16, 185, 129, 0.35);
 
-    /* === DARK BASE - True Charcoal / Midnight Obsidian === */
-    --mehfil-dark-base: #09080F;
-    --mehfil-surface-card: #130F1E;
-    --mehfil-surface-elevated: #1B1530;
+    /* === DARK BASE - True Charcoal / Obsidian Forest === */
+    --mehfil-dark-base: #070A08;
+    --mehfil-surface-card: #0E1712;
+    --mehfil-surface-elevated: #132019;
 
     /* === TEXT HIERARCHY === */
     --mehfil-text-primary: #F4F4F5;
-    --mehfil-text-secondary: #A89CC8;
-    --mehfil-text-muted: #71717A;
-    --mehfil-text-subtle: #52525B;
+    --mehfil-text-secondary: #97B7A9;
+    --mehfil-text-muted: #647B70;
+    --mehfil-text-subtle: #45574F;
 
-    /* === SECONDARY ACCENT - Neon Magenta/Violet === */
-    --mehfil-accent-blue: #C084FC;
-    --mehfil-accent-blue-glow: rgba(192, 132, 252, 0.4);
+    /* === SECONDARY ACCENT - Mint / Neon Jade === */
+    --mehfil-accent-blue: #34D399;
+    --mehfil-accent-blue-glow: rgba(52, 211, 153, 0.4);
 
     /* === BORDERS & STATUS === */
-    --mehfil-border: rgba(139, 92, 246, 0.12);
-    --mehfil-border-strong: rgba(139, 92, 246, 0.25);
+    --mehfil-border: rgba(16, 185, 129, 0.12);
+    --mehfil-border-strong: rgba(16, 185, 129, 0.25);
     --mehfil-danger: #EF4444;
     --mehfil-warning: #F59E0B;
-    --mehfil-info: #8B5CF6;
+    --mehfil-info: #10B981;
 
     /* === MOTION TIMING - Fluid & Dynamic === */
     --mehfil-motion-slow: 600ms;
@@ -53,16 +53,16 @@
     --mehfil-shadow-gold: 0 0 24px var(--mehfil-gold-glow);
 
     /* Compatibility bridge for legacy CSS variables used across files */
-    --accent-primary: #8B5CF6;
-    --accent-hover: #A78BFA;
-    --accent-secondary: #C084FC;
-    --bg-main: #09080F;
-    --bg-dark: #0D0B16;
-    --bg-darker: #07060B;
-    --card-bg: #130F1E;
-    --border-color: rgba(139, 92, 246, 0.12);
+    --accent-primary: #10B981;
+    --accent-hover: #059669;
+    --accent-secondary: #34D399;
+    --bg-main: #070A08;
+    --bg-dark: #0A120E;
+    --bg-darker: #050806;
+    --card-bg: #0E1712;
+    --border-color: rgba(16, 185, 129, 0.12);
     --text-primary: #F4F4F5;
-    --text-secondary: #A89CC8;
+    --text-secondary: #97B7A9;
     --text-muted: #71717A;
 
     /* === TYPOGRAPHY SCALE === */

@@ -24,7 +24,7 @@ export default function BackgroundAnimation() {
         style={{
           position: "absolute",
           inset: 0,
-          background: "linear-gradient(135deg, #0a0a0f 0%, #141420 50%, #0f0a1a 100%)",
+          background: "linear-gradient(135deg, #070A08 0%, #0E1712 50%, #08110B 100%)",
         }}
       />
 
@@ -58,11 +58,11 @@ export default function BackgroundAnimation() {
           pointer-events: none;
         }
 
-        .blob-1 { background: rgba(139, 92, 246, 0.32); animation-delay: 0s; }
-        .blob-2 { background: rgba(124, 58, 237, 0.22); animation-delay: -4s; }
-        .blob-3 { background: rgba(192, 132, 252, 0.22); animation-delay: -8s; }
-        .blob-4 { background: rgba(168, 85, 247, 0.24); animation-delay: -2s; }
-        .blob-5 { background: rgba(109, 40, 217, 0.20); animation-delay: -6s; }
+        .blob-1 { background: rgba(16, 185, 129, 0.32); animation-delay: 0s; }
+        .blob-2 { background: rgba(5, 150, 105, 0.22); animation-delay: -4s; }
+        .blob-3 { background: rgba(52, 211, 153, 0.22); animation-delay: -8s; }
+        .blob-4 { background: rgba(16, 185, 129, 0.24); animation-delay: -2s; }
+        .blob-5 { background: rgba(4, 120, 87, 0.20); animation-delay: -6s; }
 
         .bg-grain {
           opacity: 0.04;

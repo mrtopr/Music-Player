@@ -86,11 +86,11 @@
     font-weight: 700 !important;
     letter-spacing: 0.5px !important;
     text-transform: none !important;
-    color: #a855f7 !important;
-    background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%) !important;
+    color: #10b981 !important;
+    background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
-    filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.65)) !important;
+    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.65)) !important;
   }
 
   /* Hide header clutter tools on mobile (they belong in settings or player) */
@@ -708,15 +708,15 @@
 
   /* ── 9. FULLSCREEN PLAYER MOBILE OVERHAUL (Screenshot 2 Center Phone) ── */
   .fullscreen-player-v3 {
-    background: #080911 !important;
+    background: #060a08 !important;
   }
 
-  /* Deep Cyberpunk Violet Gradient Atmosphere Overlay */
+  /* Deep Emerald Aurora Gradient Atmosphere Overlay */
   .fullscreen-player-v3::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at 50% 25%, rgba(139, 92, 246, 0.28) 0%, rgba(9, 11, 22, 0.94) 65%, #07080f 100%) !important;
+    background: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.28) 0%, rgba(7, 10, 8, 0.94) 65%, #050806 100%) !important;
     z-index: 2;
     pointer-events: none;
   }
@@ -920,9 +920,9 @@
     width: 66px !important;
     height: 66px !important;
     border-radius: 50% !important;
-    background: linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%) !important;
+    background: linear-gradient(135deg, #10B981 0%, #34D399 100%) !important;
     color: #fff !important;
-    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.6), 0 0 16px rgba(192, 132, 252, 0.45) !important;
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.6), 0 0 16px rgba(52, 211, 153, 0.45) !important;
     border: none !important;
     display: flex !important;
     align-items: center !important;
