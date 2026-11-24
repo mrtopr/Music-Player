@@ -54,8 +54,13 @@
 
     /* Compatibility bridge for legacy CSS variables used across files */
     --accent-primary: #10B981;
+    --accent-primary-rgb: 16, 185, 129;
     --accent-hover: #059669;
     --accent-secondary: #34D399;
+    --accent-secondary-rgb: 52, 211, 153;
+    --accent-primary-soft: rgba(16, 185, 129, 0.15);
+    --border-accent: rgba(16, 185, 129, 0.35);
+    --shadow-accent: 0 0 24px rgba(16, 185, 129, 0.35);
     --bg-main: #070A08;
     --bg-dark: #0A120E;
     --bg-darker: #050806;

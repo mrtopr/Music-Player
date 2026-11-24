@@ -227,8 +227,8 @@ function FullscreenLyricsPanel({ isMobile }) {
                                     cursor: 'pointer',
                                     padding: isMobile ? '5px 14px' : '7px 22px',
                                     borderRadius: '16px',
-                                    background: isActive ? 'rgba(168, 85, 247, 0.12)' : 'transparent',
-                                    border: isActive ? '1px solid rgba(192, 132, 252, 0.22)' : '1px solid transparent',
+                                    background: isActive ? 'var(--accent-primary-soft, rgba(16, 185, 129, 0.15))' : 'transparent',
+                                    border: isActive ? '1px solid var(--border-accent, rgba(16, 185, 129, 0.3))' : '1px solid transparent',
                                     maxWidth: '94%',
                                     userSelect: 'none'
                                 }}
@@ -1060,9 +1060,9 @@ export default function FullscreenPlayer({ visible, onClose }) {
                     <button
                         onClick={() => setOptionsOpen(!optionsOpen)}
                         style={{
-                            background: optionsOpen ? 'rgba(168, 85, 247, 0.25)' : 'rgba(255,255,255,0.08)',
-                            border: optionsOpen ? '1px solid #a855f7' : '1px solid rgba(255,255,255,0.1)',
-                            color: optionsOpen ? '#c084fc' : '#fff',
+                            background: optionsOpen ? 'var(--accent-primary-soft, rgba(16, 185, 129, 0.25))' : 'rgba(255,255,255,0.08)',
+                            border: optionsOpen ? '1px solid var(--accent-primary, #10B981)' : '1px solid rgba(255,255,255,0.1)',
+                            color: optionsOpen ? 'var(--accent-secondary, #34D399)' : '#fff',
                             width: '42px', height: '42px', borderRadius: '50%', cursor: 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto',
                             transition: 'all 0.3s ease'
@@ -1366,7 +1366,7 @@ export default function FullscreenPlayer({ visible, onClose }) {
                         <button onClick={(e) => { e.stopPropagation(); prevSong(); }} className="fs-ctrl-btn large" title="Previous Track">
                             <SkipBack size={30} fill="currentColor" />
                         </button>
-                        <button onClick={(e) => { e.stopPropagation(); togglePlay(); }} className="fs-play-btn" title={isPlaying ? "Pause" : "Play"}>
+                        <button onClick={(e) => { e.stopPropagation(); togglePlay(); }} className="fs-play-btn" aria-label={isPlaying ? "Pause" : "Play"}>
                             {isPlaying ? <Pause size={32} fill="currentColor" /> : <Play size={32} fill="currentColor" style={{ marginLeft: '4px' }} />}
                         </button>
                         <button onClick={(e) => { e.stopPropagation(); nextSong(); }} className="fs-ctrl-btn large" title="Next Track">
@@ -1463,9 +1463,9 @@ export default function FullscreenPlayer({ visible, onClose }) {
                                         }}
                                         className="fs-util-btn"
                                         style={{
-                                            color: '#c084fc',
-                                            background: 'rgba(168,85,247,0.15)',
-                                            border: '1px solid rgba(168,85,247,0.3)'
+                                            color: 'var(--accent-secondary, #34D399)',
+                                            background: 'var(--accent-primary-soft, rgba(16, 185, 129, 0.15))',
+                                            border: '1px solid var(--border-accent, rgba(16, 185, 129, 0.3))'
                                         }}
                                         title="Switch to Video Player"
                                     >
