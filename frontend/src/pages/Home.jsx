@@ -803,12 +803,12 @@ export default function Home() {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 textAlign: 'left',
-                padding: '30px 2rem 35px',
+                padding: '24px 2rem 24px',
                 gap: '1.5rem',
                 flexWrap: 'wrap',
                 position: 'relative',
                 width: '100%',
-                minHeight: '260px',
+                minHeight: '210px',
                 overflow: 'hidden',
                 borderRadius: '24px',
                 marginBottom: '10px',
@@ -894,9 +894,9 @@ export default function Home() {
                 </div>
 
                 {recentlyPlayed.length > 0 && (
-                    <div style={{ flex: '1 1 300px', maxWidth: '100%', zIndex: 3, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                        <h3 style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px', marginTop: 0 }}>Jump back in</h3>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px' }}>
+                    <div style={{ flex: '1 1 340px', maxWidth: '100%', zIndex: 3, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <h3 style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px', marginTop: 0 }}>Jump back in</h3>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
                             {recentlyPlayed.slice(0, 4).map((track, i) => (
                                 <div key={i} onClick={() => playSong(track)} style={{
                                     display: 'flex', alignItems: 'center', gap: '12px',
@@ -923,8 +923,8 @@ export default function Home() {
             </section>
             )}
 
-            <div style={{ marginTop: '2.8rem', marginBottom: '2rem', paddingLeft: '0.5rem' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', marginBottom: '1.2rem', letterSpacing: '-0.5px' }}>Browse by Category</h2>
+            <div style={{ marginTop: '1.5rem', marginBottom: '1.5rem', paddingLeft: '0.5rem' }}>
+                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', marginBottom: '1rem', letterSpacing: '-0.5px' }}>Browse by Category</h2>
                 <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingTop: '4px', paddingBottom: '0.5rem', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch', msOverflowStyle: 'none' }}>
                     {CATEGORIES.map((cat, i) => {
                         const Icon = cat.icon || Music;

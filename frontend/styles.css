@@ -2129,7 +2129,7 @@ body {
 
 .cover-card .card-play-btn:hover {
   transform: scale(1.1);
-  background: #22d3ee;
+  background: var(--accent-secondary, #C084FC);
 }
 
 /* Grid of covers — two columns on a phone */
