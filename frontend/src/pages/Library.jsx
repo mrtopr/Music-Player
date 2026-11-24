@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, ListMusic, Plus, Play, Pause, Music, Trash2, Share2, Download, HardDrive, CheckCircle } from '../components/common/LordIcon';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getImageUrl } from '../api/client.js';
+import { getImageUrl, getAudioUrl, API_BASE_URL } from '../api/client.js';
 import { decodeEntities } from '../utils/helpers.js';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { usePlaylistStore } from '../store/usePlaylistStore';
@@ -23,11 +23,10 @@ function SongRow({ song, index, onPlay, isCurrent, isPlaying }) {
         if (downloaded) return;
         setDownloading(true);
         try {
-            const dlUrl = getImageUrl(song.downloadUrl) || song.downloadUrl?.[0]?.url || song.url;
+            const rawUrl = getAudioUrl(song.downloadUrl) || song.downloadUrl?.[0]?.url || song.url;
             const imgUrl = getImageUrl(song.image);
-            await saveTrackOffline(song, dlUrl, imgUrl);
+            await saveTrackOffline(song, rawUrl, imgUrl);
             setDownloaded(true);
-            alert(`"${song.title}" saved for offline listening!`);
         } catch (err) {
             console.error('Offline save failed:', err);
             alert('Failed to save track offline.');

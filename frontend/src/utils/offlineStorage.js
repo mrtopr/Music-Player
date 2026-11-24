@@ -28,15 +28,37 @@ function openDB() {
 
 /**
  * Saves a track, audio blob, and image blob to IndexedDB for offline playback.
+ * Automatically proxies external music CDN URLs (e.g. JioSaavn) to avoid CORS blocks.
  */
 export async function saveTrackOffline(song, downloadUrl, imageUrl) {
     if (!song || !song.id) throw new Error('Invalid song object');
     const db = await openDB();
 
-    // 1. Fetch audio blob
-    const audioRes = await fetch(downloadUrl);
-    if (!audioRes.ok) throw new Error('Audio download failed');
-    const audioBlob = await audioRes.blob();
+    // Determine CORS-safe URL for fetching
+    let fetchUrl = downloadUrl;
+    const isExternalCdn = fetchUrl && (fetchUrl.includes('saavncdn.com') || fetchUrl.includes('jiosaavn.com'));
+    if (isExternalCdn && !fetchUrl.includes('/api/audio/proxy')) {
+        const base = (typeof window !== 'undefined' && window.location.hostname === 'localhost') ? 'http://localhost:3001' : '';
+        fetchUrl = `${base}/api/audio/proxy?url=${encodeURIComponent(fetchUrl)}`;
+    }
+
+    // 1. Fetch audio blob (with fallback to proxy if direct fetch fails)
+    let audioBlob = null;
+    try {
+        const audioRes = await fetch(fetchUrl);
+        if (!audioRes.ok) throw new Error(`Audio download failed: status ${audioRes.status}`);
+        audioBlob = await audioRes.blob();
+    } catch (fetchErr) {
+        if (!fetchUrl.includes('/api/audio/proxy') && downloadUrl) {
+            const base = (typeof window !== 'undefined' && window.location.hostname === 'localhost') ? 'http://localhost:3001' : '';
+            const proxiedUrl = `${base}/api/audio/proxy?url=${encodeURIComponent(downloadUrl)}`;
+            const fallbackRes = await fetch(proxiedUrl);
+            if (!fallbackRes.ok) throw fetchErr;
+            audioBlob = await fallbackRes.blob();
+        } else {
+            throw fetchErr;
+        }
+    }
 
     // 2. Fetch image blob (optional)
     let imageBlob = null;

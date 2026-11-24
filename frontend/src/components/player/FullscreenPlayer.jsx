@@ -772,32 +772,76 @@ export default function FullscreenPlayer({ visible, onClose }) {
         if (!currentSong) return;
         setDownloading(true);
         try {
-            const url = getAudioUrl(currentSong.downloadUrl);
+            const rawAudioUrl = getAudioUrl(currentSong.downloadUrl);
             const imgUrl = getImageUrl(currentSong.image);
 
+            if (!rawAudioUrl) {
+                throw new Error('No audio URL found for this track');
+            }
+
+            // Build proxy URL if it's an external CDN that blocks browser CORS
+            let proxyUrl = rawAudioUrl;
+            if (!rawAudioUrl.includes('/api/audio/proxy') && (rawAudioUrl.includes('saavncdn.com') || rawAudioUrl.includes('jiosaavn.com') || !rawAudioUrl.startsWith(window.location.origin))) {
+                const base = (API_BASE_URL && !API_BASE_URL.includes('vercel.app')) ? API_BASE_URL : 'http://localhost:3001';
+                proxyUrl = `${base}/api/audio/proxy?url=${encodeURIComponent(rawAudioUrl)}`;
+            }
+
             // 1. Save for offline playing in Mehfil IndexedDB
-            await saveTrackOffline(currentSong, url, imgUrl);
+            await saveTrackOffline(currentSong, proxyUrl, imgUrl);
             setIsOfflineSaved(true);
 
-            // 2. Trigger browser download
-            if (url) {
-                const response = await fetch(url);
+            // 2. Trigger browser download with clean filename
+            const songTitle = decodeEntities(currentSong.title || currentSong.name || 'track').replace(/[\\/:*?"<>|]/g, '_');
+            const songArtist = decodeEntities(currentSong.artist || currentSong.primaryArtists || '').replace(/[\\/:*?"<>|]/g, '_');
+            const filename = songArtist ? `${songTitle} - ${songArtist}.mp3` : `${songTitle}.mp3`;
+
+            try {
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error(`Blob fetch status ${response.status}`);
                 const blob = await response.blob();
                 const blobUrl = window.URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = blobUrl;
-                link.download = `${decodeEntities(currentSong.title)}.mp3`;
+                link.download = filename;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                window.URL.revokeObjectURL(blobUrl);
+                setTimeout(() => window.URL.revokeObjectURL(blobUrl), 15000);
+            } catch (blobErr) {
+                console.warn('Direct blob fetch failed, falling back to download anchor:', blobErr);
+                const link = document.createElement('a');
+                link.href = proxyUrl;
+                link.download = filename;
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             }
 
             setOptionsOpen(false);
-            alert(`"${decodeEntities(currentSong.title)}" saved for offline playback!`);
         } catch (err) {
             console.error('Download failed:', err);
-            alert('Download failed. Please try again.');
+            // Fallback: If anything failed, try direct download anchor
+            try {
+                const rawAudioUrl = getAudioUrl(currentSong.downloadUrl);
+                if (rawAudioUrl) {
+                    const base = (API_BASE_URL && !API_BASE_URL.includes('vercel.app')) ? API_BASE_URL : 'http://localhost:3001';
+                    const proxiedUrl = `${base}/api/audio/proxy?url=${encodeURIComponent(rawAudioUrl)}`;
+                    const link = document.createElement('a');
+                    link.href = proxiedUrl;
+                    const songTitle = decodeEntities(currentSong.title || 'track').replace(/[\\/:*?"<>|]/g, '_');
+                    link.download = `${songTitle}.mp3`;
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    setIsOfflineSaved(true);
+                    return;
+                }
+            } catch (fallbackErr) {
+                console.error('Fallback download also failed:', fallbackErr);
+            }
+            alert('Download failed. Please check your connection and try again.');
         } finally {
             setDownloading(false);
         }
