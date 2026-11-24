@@ -916,7 +916,7 @@ export default function Home() {
                                     >
                                         <img src={getImageUrl(track.image) || '/music.png'} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.3)' }} />
                                         <div style={{ overflow: 'hidden', minWidth: 0, flex: 1 }}>
-                                            <div style={{ fontSize: '0.95rem', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginBottom: '2px' }} title={rawTitle}>{cleanTitle}</div>
+                                            <div style={{ fontSize: '0.95rem', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginBottom: '2px' }} title={cleanTitle}>{cleanTitle}</div>
                                             <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }} title={cleanArtist}>{cleanArtist}</div>
                                         </div>
                                     </div>
