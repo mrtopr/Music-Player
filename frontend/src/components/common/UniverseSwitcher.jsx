@@ -30,8 +30,14 @@ export default function UniverseSwitcher({ compact = false }) {
         };
     }, [open]);
 
-    const handleSelect = (id) => {
-        setUniverse(id);
+    const handleSelect = (id, e) => {
+        const rect = e?.currentTarget?.getBoundingClientRect();
+        const origin = (e?.clientX || e?.clientY)
+            ? { x: e.clientX, y: e.clientY }
+            : rect
+                ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+                : undefined;
+        setUniverse(id, origin);
         setOpen(false);
     };
 
@@ -164,7 +170,7 @@ export default function UniverseSwitcher({ compact = false }) {
                                 type="button"
                                 role="menuitem"
                                 data-testid={`universe-option-${u.id}`}
-                                onClick={() => handleSelect(u.id)}
+                                onClick={(e) => handleSelect(u.id, e)}
                                 style={{
                                     display: 'flex',
                                     alignItems: 'center',

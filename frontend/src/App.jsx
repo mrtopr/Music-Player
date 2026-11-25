@@ -22,6 +22,7 @@ import SectionPage from './pages/SectionPage';
 import Auth from './pages/Auth';
 import Genres from './pages/Genres';
 import BackgroundAnimation from './components/common/BackgroundAnimation';
+import ThemeSplashOverlay from './components/common/ThemeSplashOverlay';
 
 // Lazy-loaded secondary pages & modals for optimal bundle distribution & FCP
 const EqualizerModal = React.lazy(() => import('./components/player/EqualizerModal'));
@@ -167,6 +168,7 @@ function AppContent() {
             </React.Suspense>
             <QueuePanel visible={queueVisible} onClose={handleCloseQueue} />
             <MobileTabBar />
+            <ThemeSplashOverlay />
         </>
     );
 }

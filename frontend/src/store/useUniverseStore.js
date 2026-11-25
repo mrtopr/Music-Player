@@ -105,19 +105,61 @@ applyUniverseStyles(initialId);
 export const useUniverseStore = create((set, get) => ({
     activeUniverseId: initialId,
     activeUniverse: getUniverseConfig(initialId),
+    splashEvent: null,
 
-    setUniverse: (id) => {
+    setUniverse: (id, origin) => {
         const universe = getUniverseConfig(id);
         try {
             localStorage.setItem(STORAGE_KEY, universe.id);
         } catch {
             // Ignore storage write errors
         }
-        applyUniverseStyles(universe.id);
-        set({
-            activeUniverseId: universe.id,
-            activeUniverse: universe
-        });
+
+        const x = typeof origin?.x === 'number' ? origin.x : (typeof window !== 'undefined' ? window.innerWidth * 0.82 : 400);
+        const y = typeof origin?.y === 'number' ? origin.y : 36;
+
+        const applyChange = () => {
+            applyUniverseStyles(universe.id);
+            set({
+                activeUniverseId: universe.id,
+                activeUniverse: universe,
+                splashEvent: {
+                    id: Date.now() + Math.random(),
+                    x,
+                    y,
+                    color: universe.theme.accentPrimary,
+                    secondaryColor: universe.theme.accentSecondary
+                }
+            });
+        };
+
+        const prefersReduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        if (typeof document !== 'undefined' && typeof document.startViewTransition === 'function' && !prefersReduced) {
+            const endRadius = Math.hypot(
+                Math.max(x, window.innerWidth - x),
+                Math.max(y, window.innerHeight - y)
+            );
+            const transition = document.startViewTransition(() => {
+                applyChange();
+            });
+            transition.ready.then(() => {
+                document.documentElement.animate(
+                    {
+                        clipPath: [
+                            `circle(0px at ${x}px ${y}px)`,
+                            `circle(${endRadius}px at ${x}px ${y}px)`
+                        ]
+                    },
+                    {
+                        duration: 620,
+                        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+                        pseudoElement: '::view-transition-new(root)'
+                    }
+                );
+            }).catch(() => {});
+        } else {
+            applyChange();
+        }
     },
 
     applyUniverseTheme: () => {
