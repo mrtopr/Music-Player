@@ -19,7 +19,7 @@ export default function ThemeSplashOverlay() {
         setActiveSplash(splashEvent);
         const timer = setTimeout(() => {
             setActiveSplash(prev => (prev?.id === splashEvent.id ? null : prev));
-        }, 780);
+        }, 1720);
 
         return () => clearTimeout(timer);
     }, [splashEvent]);

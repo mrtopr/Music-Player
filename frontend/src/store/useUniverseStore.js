@@ -171,7 +171,7 @@ export const useUniverseStore = create((set, get) => ({
                         clipPath: [startPoly, endPoly]
                     },
                     {
-                        duration: 650,
+                        duration: 1350,
                         easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
                         pseudoElement: '::view-transition-new(root)'
                     }

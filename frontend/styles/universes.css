@@ -147,17 +147,17 @@ body.universe-bhojpuri .universe-badge-pill {
 }
 
 .water-splash-wash {
-    animation: waterSplashWave 680ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: waterSplashWave 1400ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
     will-change: transform, opacity;
 }
 
 .water-ripple-ring {
-    animation: waterRippleRing 660ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: waterRippleRing 1380ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
     will-change: transform, opacity;
 }
 
 .water-ripple-ring-delayed {
-    animation: waterRippleRing 740ms cubic-bezier(0.16, 1, 0.3, 1) 85ms both;
+    animation: waterRippleRing 1500ms cubic-bezier(0.16, 1, 0.3, 1) 160ms both;
 }
 
 /* Mobile responsiveness for UniverseSwitcher & TopBar */
