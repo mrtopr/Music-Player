@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { flushSync } from 'react-dom';
 import { UNIVERSES, DEFAULT_UNIVERSE, getUniverseConfig } from '../config/universes';
 
 const STORAGE_KEY = 'mehfil_active_universe';
@@ -102,31 +103,11 @@ export function applyUniverseStyles(universeId) {
 const initialId = getInitialUniverseId();
 applyUniverseStyles(initialId);
 
-function buildSplashPolygon(cx, cy, baseRadius) {
-    const points = [];
-    const steps = 28;
-    for (let i = 0; i < steps; i++) {
-        const angle = (i / steps) * Math.PI * 2;
-        // Organic irregular multi-lobe splash modulation
-        const modulation =
-            1 +
-            0.22 * Math.sin(angle * 5 + 0.4) +
-            0.14 * Math.cos(angle * 3 - 0.8) +
-            0.08 * Math.sin(angle * 7 + 1.1);
-        const r = baseRadius * modulation;
-        const px = (cx + Math.cos(angle) * r).toFixed(1);
-        const py = (cy + Math.sin(angle) * r).toFixed(1);
-        points.push(`${px}px ${py}px`);
-    }
-    return `polygon(${points.join(', ')})`;
-}
-
 export const useUniverseStore = create((set, get) => ({
     activeUniverseId: initialId,
     activeUniverse: getUniverseConfig(initialId),
-    splashEvent: null,
 
-    setUniverse: (id, origin) => {
+    setUniverse: async (id, origin) => {
         const universe = getUniverseConfig(id);
         try {
             localStorage.setItem(STORAGE_KEY, universe.id);
@@ -134,50 +115,55 @@ export const useUniverseStore = create((set, get) => ({
             // Ignore storage write errors
         }
 
-        const x = typeof origin?.x === 'number' ? origin.x : (typeof window !== 'undefined' ? window.innerWidth * 0.82 : 400);
-        const y = typeof origin?.y === 'number' ? origin.y : 36;
-
         const applyChange = () => {
             applyUniverseStyles(universe.id);
             set({
                 activeUniverseId: universe.id,
-                activeUniverse: universe,
-                splashEvent: {
-                    id: Date.now() + Math.random(),
-                    x,
-                    y,
-                    color: universe.theme.accentPrimary,
-                    secondaryColor: universe.theme.accentSecondary
-                }
+                activeUniverse: universe
             });
         };
 
-        const prefersReduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-        if (typeof document !== 'undefined' && typeof document.startViewTransition === 'function' && !prefersReduced) {
-            const endRadius = Math.hypot(
-                Math.max(x, window.innerWidth - x),
-                Math.max(y, window.innerHeight - y)
-            );
-            const startPoly = buildSplashPolygon(x, y, 2);
-            // Divide by minimum lobe factor (~0.56) so all inward curves still clear screen corners
-            const endPoly = buildSplashPolygon(x, y, endRadius / 0.56);
+        const prefersReduced =
+            typeof window !== 'undefined' &&
+            window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
-            const transition = document.startViewTransition(() => {
-                applyChange();
-            });
-            transition.ready.then(() => {
-                document.documentElement.animate(
-                    {
-                        clipPath: [startPoly, endPoly]
-                    },
-                    {
-                        duration: 1350,
-                        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-                        pseudoElement: '::view-transition-new(root)'
-                    }
-                );
-            }).catch(() => {});
-        } else {
+        if (
+            typeof document === 'undefined' ||
+            typeof document.startViewTransition !== 'function' ||
+            prefersReduced
+        ) {
+            applyChange();
+            return;
+        }
+
+        const x = typeof origin?.x === 'number' ? origin.x : window.innerWidth * 0.82;
+        const y = typeof origin?.y === 'number' ? origin.y : 36;
+        const maxRadius = Math.hypot(
+            Math.max(x, window.innerWidth - x),
+            Math.max(y, window.innerHeight - y)
+        );
+
+        try {
+            await document.startViewTransition(() => {
+                flushSync(() => {
+                    applyChange();
+                });
+            }).ready;
+
+            document.documentElement.animate(
+                {
+                    clipPath: [
+                        `circle(0px at ${x}px ${y}px)`,
+                        `circle(${maxRadius}px at ${x}px ${y}px)`
+                    ]
+                },
+                {
+                    duration: 500,
+                    easing: 'ease-in-out',
+                    pseudoElement: '::view-transition-new(root)'
+                }
+            );
+        } catch {
             applyChange();
         }
     },
