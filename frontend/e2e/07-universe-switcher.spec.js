@@ -10,7 +10,7 @@ test.describe('Multi-Universe Dynamic Persona Switcher', () => {
 
   test('Universe switcher is visible and updates CSS theme, hero copy, and localStorage', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     const switcherBtn = page.getByTestId('universe-switcher-btn');
     await expect(switcherBtn).toBeVisible({ timeout: 10000 });
@@ -47,7 +47,7 @@ test.describe('Multi-Universe Dynamic Persona Switcher', () => {
     await expect(page.locator('text=Golden Tape Rewind')).toBeVisible();
 
     await page.reload();
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     const persisted = await page.evaluate(() => window.localStorage.getItem('mehfil_active_universe'));
     expect(persisted).toBe('nineties');
     await expect(page.locator('text=Golden Tape Rewind')).toBeVisible();
@@ -73,7 +73,7 @@ test.describe('Multi-Universe Dynamic Persona Switcher', () => {
 
   test('Switching universe does not interrupt active playback', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Wait for trending song cards and play the first one
     const firstCard = page.locator('.song-card').first();

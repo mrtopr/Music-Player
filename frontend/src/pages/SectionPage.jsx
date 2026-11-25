@@ -1,56 +1,97 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Play, Pause, Flame, ListMusic, Sparkles, Loader2, PlayCircle } from '../components/common/LordIcon';
+import { ArrowLeft, Play, Pause, Flame, ListMusic, Sparkles, Disc3, PlayCircle } from '../components/common/LordIcon';
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
+import { useUniverseStore } from '../store/useUniverseStore';
 import { getRecommendations } from '../utils/recommendations.js';
 import AddToPlaylist from '../components/common/AddToPlaylist';
+import Card3D from '../components/common/Card3D';
 
-// Section metadata config
+const dedupeById = (items = []) => {
+    const seen = new Set();
+    return items.filter(item => {
+        if (!item || !item.id || seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+    });
+};
+
 const SECTION_CONFIG = {
     trending: {
         title: 'Trending Now',
-        subtitle: 'The hottest songs right now',
+        subtitle: 'The hottest tracks in your active universe',
         icon: Flame,
-        color: '#F97316',
-        fetch: async () => {
-            const [m1, m2] = await Promise.all([
-                apiFetch('/api/search/songs', { query: 'bollywood top hits 2024', language: 'hindi', limit: 30 }),
-                apiFetch('/api/search/songs', { query: 'hindi trending songs 2025', language: 'hindi', limit: 30 }),
-            ]);
-            const combined = [...(m1.results || []), ...(m2.results || [])];
-            const seen = new Set();
-            return combined.filter(s => { if (seen.has(s.id)) return false; seen.add(s.id); return true; });
+        kind: 'songs',
+        fetch: async (universe) => {
+            if (universe.id === 'bollywood') {
+                const modules = await apiFetch('/api/modules', { language: universe.moduleLanguages });
+                const moduleSongs = modules?.trending?.songs || [];
+                if (moduleSongs.length >= 12) return dedupeById(moduleSongs);
+            }
+            const res = await apiFetch('/api/search/songs', {
+                query: universe.trendingQuery,
+                language: universe.language,
+                limit: 30
+            });
+            return dedupeById(res?.results || []);
         }
     },
     newReleases: {
-        title: 'New Releases',
-        subtitle: 'Fresh drops and latest albums',
+        title: 'New Albums',
+        subtitle: 'Fresh albums & curated releases',
+        icon: Disc3,
+        kind: 'albums',
+        fetch: async (universe) => {
+            if (universe.id === 'bollywood') {
+                const modules = await apiFetch('/api/modules', { language: universe.moduleLanguages });
+                const albums = dedupeById([
+                    ...(modules?.newReleases?.albums || []),
+                    ...(modules?.trending?.albums || [])
+                ]);
+                if (albums.length > 0) return albums;
+            }
+            const res = await apiFetch('/api/search/albums', {
+                query: universe.albumQuery,
+                language: universe.language,
+                limit: 24
+            });
+            return dedupeById(res?.results || []);
+        }
+    },
+    playlists: {
+        title: 'Featured Playlists',
+        subtitle: 'Curated playlists for your current vibe',
         icon: ListMusic,
-        color: 'var(--accent-primary)',
-        fetch: async () => {
-            const [m1, m2] = await Promise.all([
-                apiFetch('/api/search/albums', { query: 'new hindi album 2025', language: 'hindi', limit: 20 }),
-                apiFetch('/api/search/songs', { query: 'latest bollywood 2025', language: 'hindi', limit: 40 }),
-            ]);
-            const combined = [...(m1.results || []), ...(m2.results || [])];
-            const seen = new Set();
-            return combined.filter(s => { if (seen.has(s.id)) return false; seen.add(s.id); return true; });
+        kind: 'playlists',
+        fetch: async (universe) => {
+            if (universe.id === 'bollywood') {
+                const modules = await apiFetch('/api/modules', { language: universe.moduleLanguages });
+                const modulePlaylists = dedupeById(modules?.playlists || []);
+                if (modulePlaylists.length > 0) return modulePlaylists;
+            }
+            const res = await apiFetch('/api/search/playlists', {
+                query: universe.playlistQuery,
+                language: universe.language,
+                limit: 24
+            });
+            return dedupeById(res?.results || []);
         }
     },
     recommendations: {
         title: 'Made For You',
         subtitle: 'Personalized picks based on your taste',
         icon: Sparkles,
-        color: '#A78BFA',
-        fetch: async () => {
+        kind: 'songs',
+        fetch: async (universe) => {
             const recs = await getRecommendations(50);
             if (recs.length >= 20) return recs;
-            // Pad with popular songs if not enough personalized
-            const extra = await apiFetch('/api/search/songs', { query: 'bollywood popular songs', language: 'hindi', limit: 40 });
-            const existIds = new Set(recs.map(s => s.id));
-            const extraFiltered = (extra.results || []).filter(s => !existIds.has(s.id));
-            return [...recs, ...extraFiltered].slice(0, 50);
+            const extra = await apiFetch('/api/search/songs', {
+                query: universe.trendingQuery,
+                language: universe.language,
+                limit: 30
+            });
+            return dedupeById([...recs, ...(extra?.results || [])]).slice(0, 50);
         }
     }
 };
@@ -73,11 +114,10 @@ function SongRow({ song, index, onPlay, isCurrentSong, isPlaying }) {
                 background: isCurrentSong
                     ? 'rgba(var(--accent-primary-rgb), 0.12)'
                     : hovered ? 'rgba(255,255,255,0.05)' : 'transparent',
-                border: isCurrentSong ? '1px solid rgba(var(--accent-primary-rgb),0.25)' : '1px solid transparent',
+                border: isCurrentSong ? '1px solid rgba(var(--accent-primary-rgb), 0.25)' : '1px solid transparent',
                 transition: 'all 0.15s ease',
             }}
         >
-            {/* Index / Play Icon */}
             <div style={{ textAlign: 'center', color: isCurrentSong ? 'var(--accent-primary)' : 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>
                 {isCurrentSong && isPlaying
                     ? <Pause size={16} color="var(--accent-primary)" fill="var(--accent-primary)" />
@@ -87,7 +127,6 @@ function SongRow({ song, index, onPlay, isCurrentSong, isPlaying }) {
                 }
             </div>
 
-            {/* Thumbnail */}
             <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', flexShrink: 0 }}>
                 <img
                     src={getImageUrl(song.image) || '/mehfil-logo.png'}
@@ -112,7 +151,6 @@ function SongRow({ song, index, onPlay, isCurrentSong, isPlaying }) {
                 )}
             </div>
 
-            {/* Title + Artist */}
             <div style={{ minWidth: 0 }}>
                 <div style={{
                     fontSize: '0.92rem', fontWeight: 600,
@@ -130,7 +168,6 @@ function SongRow({ song, index, onPlay, isCurrentSong, isPlaying }) {
                 </div>
             </div>
 
-            {/* Actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: hovered || isCurrentSong ? 1 : 0, transition: 'opacity 0.2s' }}>
                 <AddToPlaylist song={song} />
             </div>
@@ -155,8 +192,9 @@ export default function SectionPage() {
     const { type } = useParams();
     const navigate = useNavigate();
     const config = SECTION_CONFIG[type];
+    const activeUniverse = useUniverseStore(s => s.activeUniverse);
 
-    const [songs, setSongs] = useState([]);
+    const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
@@ -168,49 +206,49 @@ export default function SectionPage() {
 
     useEffect(() => {
         if (!config) { navigate('/'); return; }
+        let cancelled = false;
         setLoading(true);
         setError(false);
-        config.fetch()
-            .then(data => setSongs(data))
-            .catch(() => setError(true))
-            .finally(() => setLoading(false));
-    }, [type]);
+        config.fetch(activeUniverse)
+            .then(data => { if (!cancelled) setItems(data || []); })
+            .catch(() => { if (!cancelled) setError(true); })
+            .finally(() => { if (!cancelled) setLoading(false); });
+        return () => { cancelled = true; };
+    }, [type, activeUniverse, config, navigate]);
 
     const handlePlayAll = useCallback(() => {
-        if (songs.length) playQueue(songs, 0);
-    }, [songs, playQueue]);
+        if (items.length && config?.kind === 'songs') playQueue(items, 0);
+    }, [items, playQueue, config]);
 
-    const handlePlaySong = useCallback((song) => {
-        if (song.type === 'album') navigate(`/album/${song.id}`);
-        else if (song.type === 'playlist') navigate(`/playlist/${song.id}`);
-        else playSong(song);
-    }, [playSong, navigate]);
+    const handleItemClick = useCallback((item) => {
+        if (config?.kind === 'albums' || item.type === 'album') navigate(`/album/${item.id}`);
+        else if (config?.kind === 'playlists' || item.type === 'playlist') navigate(`/playlist/${item.id}`);
+        else playSong(item);
+    }, [playSong, navigate, config]);
 
     if (!config) return null;
     const Icon = config.icon;
+    const isCollectionGrid = config.kind === 'albums' || config.kind === 'playlists';
+    const countLabel = config.kind === 'albums' ? 'albums' : config.kind === 'playlists' ? 'playlists' : 'songs';
 
     return (
         <div style={{ paddingBottom: '120px', animation: 'fadeIn 0.4s ease' }}>
-
-            {/* Hero Header */}
             <div style={{
                 position: 'relative',
                 padding: '2rem 1.5rem 2.5rem',
-                marginBottom: '0.5rem',
-                background: `linear-gradient(135deg, rgba(var(--accent-primary-rgb),0.12) 0%, rgba(192,132,252,0.05) 50%, transparent 100%)`,
-                borderBottom: '1px solid rgba(var(--accent-primary-rgb),0.1)',
+                marginBottom: '1rem',
+                background: 'linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.14) 0%, rgba(var(--accent-secondary-rgb), 0.06) 50%, transparent 100%)',
+                borderBottom: '1px solid rgba(var(--accent-primary-rgb), 0.12)',
                 borderRadius: '0 0 24px 24px',
                 overflow: 'hidden',
             }}>
-                {/* Decorative background glow */}
                 <div style={{
                     position: 'absolute', top: '-40px', right: '-40px',
                     width: '200px', height: '200px',
-                    background: `radial-gradient(circle, ${config.color}22 0%, transparent 70%)`,
+                    background: 'radial-gradient(circle, rgba(var(--accent-primary-rgb), 0.18) 0%, transparent 70%)',
                     pointerEvents: 'none'
                 }} />
 
-                {/* Back button */}
                 <button
                     onClick={() => navigate(-1)}
                     title="Go Back"
@@ -223,49 +261,46 @@ export default function SectionPage() {
                         marginBottom: '1.5rem', transition: 'all 0.2s',
                         backdropFilter: 'blur(12px)'
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-primary-soft, rgba(var(--accent-primary-rgb),0.25))'; e.currentTarget.style.borderColor = 'var(--accent-primary, #8B5CF6)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-primary-soft)'; e.currentTarget.style.borderColor = 'var(--accent-primary)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
                 >
                     <ArrowLeft size={18} />
                 </button>
 
-
-                {/* Title row */}
                 <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                         <div style={{
                             width: '60px', height: '60px', borderRadius: '16px',
-                            background: `linear-gradient(135deg, ${config.color}33, ${config.color}11)`,
-                            border: `1px solid ${config.color}44`,
+                            background: 'linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.24), rgba(var(--accent-secondary-rgb), 0.08))',
+                            border: '1px solid var(--border-accent)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            boxShadow: `0 8px 24px ${config.color}22`
+                            boxShadow: '0 8px 24px rgba(var(--accent-primary-rgb), 0.2)'
                         }}>
-                            <Icon size={28} color={config.color} />
+                            <Icon size={28} color="var(--accent-primary)" />
                         </div>
                         <div>
                             <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>
-                                {config.title}
+                                {config.title} · {activeUniverse.shortLabel}
                             </h1>
                             <p style={{ margin: '4px 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                                {loading ? 'Loading...' : `${songs.length} songs · ${config.subtitle}`}
+                                {loading ? 'Loading...' : `${items.length} ${countLabel} · ${config.subtitle}`}
                             </p>
                         </div>
                     </div>
 
-                    {/* Play All button */}
-                    {!loading && songs.length > 0 && (
+                    {!loading && items.length > 0 && !isCollectionGrid && (
                         <button
                             onClick={handlePlayAll}
                             style={{
                                 display: 'flex', alignItems: 'center', gap: '10px',
-                                background: 'var(--gradient-brand, var(--accent-primary))',
-                                color: '#fff', border: 'none', borderRadius: '50px',
+                                background: 'var(--gradient-brand)',
+                                color: 'var(--text-on-accent, #fff)', border: 'none', borderRadius: '50px',
                                 padding: '12px 24px', cursor: 'pointer', fontWeight: 700,
-                                fontSize: '0.95rem', boxShadow: '0 4px 16px var(--shadow-accent, rgba(var(--accent-primary-rgb),0.4))',
+                                fontSize: '0.95rem', boxShadow: '0 4px 16px var(--shadow-accent)',
                                 transition: 'all 0.2s'
                             }}
-                            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px var(--shadow-accent, rgba(var(--accent-primary-rgb),0.5))'; }}
-                            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px var(--shadow-accent, rgba(var(--accent-primary-rgb),0.4))'; }}
+                            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; }}
                         >
                             <PlayCircle size={20} /> Play All
                         </button>
@@ -273,38 +308,59 @@ export default function SectionPage() {
                 </div>
             </div>
 
-            {/* Song List */}
-            <div style={{ padding: '0 0.5rem' }}>
+            <div style={{ padding: '0 1rem' }}>
                 {loading ? (
                     <div>
-                        {[...Array(12)].map((_, i) => <SkeletonRow key={i} />)}
+                        {[...Array(10)].map((_, i) => <SkeletonRow key={i} />)}
                     </div>
                 ) : error ? (
                     <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>😔</div>
-                        <p>Couldn't load songs. Please try again.</p>
+                        <p>Couldn't load {countLabel}. Please try again.</p>
                         <button
                             onClick={() => window.location.reload()}
                             style={{
                                 marginTop: '1rem', padding: '8px 20px', borderRadius: '50px',
-                                background: 'var(--accent-primary)', color: '#fff',
+                                background: 'var(--accent-primary)', color: 'var(--text-on-accent, #fff)',
                                 border: 'none', cursor: 'pointer', fontWeight: 600
                             }}
                         >Retry</button>
                     </div>
-                ) : songs.length === 0 ? (
+                ) : items.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎵</div>
-                        <p>No songs found right now.</p>
+                        <p>No {countLabel} found right now.</p>
+                    </div>
+                ) : isCollectionGrid ? (
+                    <div className="cover-grid">
+                        {items.map((item, i) => (
+                            <Card3D
+                                key={item.id || i}
+                                className={`cover-card ${config.kind === 'albums' ? 'album-card' : 'playlist-card'}`}
+                                onClick={() => handleItemClick(item)}
+                                elevation={2}
+                            >
+                                <div className="cover-art">
+                                    <img src={getImageUrl(item.image) || '/mehfil-logo.png'} alt={item.name || item.title} loading="lazy" />
+                                    <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 100%)', borderRadius: 'inherit' }} />
+                                </div>
+                                <h3 className="cover-title">
+                                    {(item.name || item.title || '').replace(/&quot;/g, '"')}
+                                </h3>
+                                <p className="cover-sub">
+                                    {config.kind === 'albums'
+                                        ? (item.year ? `${item.year} • Album` : 'Album')
+                                        : (item.songCount ? `${item.songCount} songs` : 'Playlist')}
+                                </p>
+                            </Card3D>
+                        ))}
                     </div>
                 ) : (
                     <div>
-                        {songs.map((song, i) => (
+                        {items.map((song, i) => (
                             <SongRow
                                 key={song.id || i}
                                 song={song}
                                 index={i}
-                                onPlay={handlePlaySong}
+                                onPlay={handleItemClick}
                                 isCurrentSong={currentId === song.id}
                                 isPlaying={isPlaying}
                             />

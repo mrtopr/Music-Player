@@ -449,56 +449,81 @@ export default function Home() {
         setCategorySongs([]);
         setLoading(true);
 
-        const modulesPromise = apiFetch('/api/modules', { language: activeUniverse.moduleLanguages })
-            .catch(err => {
-                console.error('Failed to load modules', err);
-                return null;
+        const dedupeById = (items = []) => {
+            const seen = new Set();
+            return items.filter(item => {
+                if (!item || !item.id || seen.has(item.id)) return false;
+                seen.add(item.id);
+                return true;
             });
+        };
 
-        const trendingSearchPromise = activeUniverseId !== 'bollywood'
-            ? apiFetch('/api/search/songs', {
-                query: activeUniverse.trendingQuery,
-                language: activeUniverse.language,
-                limit: 15
-            }).catch(err => {
-                console.error('Failed to load universe trending songs', err);
-                return null;
-            })
-            : Promise.resolve(null);
+        if (activeUniverseId === 'bollywood') {
+            apiFetch('/api/modules', { language: activeUniverse.moduleLanguages })
+                .then(modules => {
+                    if (cancelled) return;
+                    if (modules) {
+                        setTrending(dedupeById(modules.trending?.songs || []));
+                        setNewReleases(dedupeById([
+                            ...(modules.newReleases?.albums || []),
+                            ...(modules.trending?.albums || []),
+                        ]));
+                        setPlaylists(dedupeById(modules.playlists || []));
+                    }
+                    setLoading(false);
+                })
+                .catch(err => {
+                    console.error('Failed to load modules', err);
+                    if (!cancelled) setLoading(false);
+                });
+        } else {
+            Promise.all([
+                apiFetch('/api/search/songs', {
+                    query: activeUniverse.trendingQuery,
+                    language: activeUniverse.language,
+                    limit: 16
+                }).catch(() => ({ results: [] })),
+                apiFetch('/api/search/albums', {
+                    query: activeUniverse.albumQuery,
+                    language: activeUniverse.language,
+                    limit: 12
+                }).catch(() => ({ results: [] })),
+                apiFetch('/api/search/playlists', {
+                    query: activeUniverse.playlistQuery,
+                    language: activeUniverse.language,
+                    limit: 12
+                }).catch(() => ({ results: [] }))
+            ]).then(async ([songsRes, albumsRes, playlistsRes]) => {
+                if (cancelled) return;
+                const foundPlaylists = dedupeById(playlistsRes?.results || []);
+                let foundSongs = dedupeById(songsRes?.results || []);
 
-        Promise.all([modulesPromise, trendingSearchPromise]).then(([modules, universeTrending]) => {
-            if (cancelled) return;
-            const universeSongs = universeTrending?.results || [];
-            if (universeSongs.length > 0) {
-                setTrending(universeSongs);
-            } else if (modules) {
-                setTrending(modules.trending?.songs || []);
-            } else {
-                setTrending([]);
-            }
+                // If song search is sparse, pull curated tracks from the top universe playlist
+                if (foundSongs.length < 8 && foundPlaylists[0]?.id) {
+                    try {
+                        const plData = await apiFetch('/api/playlists', { id: foundPlaylists[0].id, limit: 16 });
+                        const plSongs = plData?.songs || plData?.list || [];
+                        foundSongs = dedupeById([...foundSongs, ...plSongs]);
+                    } catch {
+                        // Keep initial songs if playlist expansion fails
+                    }
+                }
 
-            if (modules) {
-                const albumIds = new Set();
-                setNewReleases([
-                    ...(modules.newReleases?.albums || []),
-                    ...(modules.trending?.albums || []),
-                ].filter(album => {
-                    if (albumIds.has(album.id)) return false;
-                    albumIds.add(album.id);
-                    return true;
-                }));
-                setPlaylists(modules.playlists || []);
-            }
-            setLoading(false);
-        });
+                if (cancelled) return;
+                setTrending(foundSongs);
+                setNewReleases(dedupeById(albumsRes?.results || []));
+                setPlaylists(foundPlaylists);
+                setLoading(false);
+            });
+        }
 
         Promise.all(
             activeUniverse.artists.map(name => apiFetch('/api/search/artists', { query: name, limit: 1 }))
         )
             .then(artistResps => {
                 if (cancelled) return;
-                const popularArtists = artistResps.map(r => r.results?.[0]).filter(Boolean);
-                setArtists(popularArtists || []);
+                const popularArtists = dedupeById(artistResps.map(r => r.results?.[0]).filter(Boolean));
+                setArtists(popularArtists);
             })
             .catch(err => console.error('Failed to load artists', err));
 
@@ -1074,7 +1099,7 @@ export default function Home() {
 
             {playlists.length > 0 && (
                 <div style={{ marginBottom: '1.5rem', paddingLeft: '0.5rem' }}>
-                    <SectionHeader3D title="Featured Playlists" onShowMore={() => navigate('/playlists')} />
+                    <SectionHeader3D title="Featured Playlists" onShowMore={() => navigate('/section/playlists')} />
                     <HorizontalScroll3D
                         songs={playlists}
                         renderItem={playlist => (

@@ -12,7 +12,9 @@ export const UNIVERSES = {
         moduleLanguages: 'hindi,punjabi',
         heroTitle: 'Suno Dil Se',
         heroSubtitle: 'Contemporary Bollywood, soulful melodies & chart-topping hits',
-        trendingQuery: 'bollywood trending 2026 hits',
+        trendingQuery: 'Arijit Singh Pritam hindi hits',
+        albumQuery: 'latest bollywood hindi album',
+        playlistQuery: 'Bollywood Trending Hindi',
         artists: [
             'Arijit Singh', 'Shreya Ghoshal', 'Pritam', 'Atif Aslam',
             'Jubin Nautiyal', 'Sonu Nigam', 'Vishal-Shekhar', 'Darshan Raval'
@@ -72,7 +74,9 @@ export const UNIVERSES = {
         moduleLanguages: 'english',
         heroTitle: 'Global Frequency',
         heroSubtitle: 'Billboard Hot 100, synth-pop, club anthems & worldwide chartbusters',
-        trendingQuery: 'billboard hot 100 english hits',
+        trendingQuery: 'The Weeknd Dua Lipa Taylor Swift hits',
+        albumQuery: 'After Hours The Weeknd',
+        playlistQuery: 'English Pop Hits',
         artists: [
             'The Weeknd', 'Taylor Swift', 'Dua Lipa', 'Drake',
             'Billie Eilish', 'Ed Sheeran', 'Bruno Mars', 'Sabrina Carpenter'
@@ -131,7 +135,9 @@ export const UNIVERSES = {
         moduleLanguages: 'hindi,punjabi',
         heroTitle: 'Gully To Glory',
         heroSubtitle: 'Raw bars, heavy 808s & underground Desi Hip-Hop anthems',
-        trendingQuery: 'desi hip hop rap hits',
+        trendingQuery: 'Seedhe Maut Karan Aujla Raftaar',
+        albumQuery: 'Ek Tha Raja Badshah',
+        playlistQuery: 'Desi Rap Hip Hop',
         artists: [
             'DIVINE', 'Seedhe Maut', 'KR$NA', 'Raftaar',
             'Badshah', 'Hanumankind', 'Karan Aujla', 'MC Stan'
@@ -189,7 +195,9 @@ export const UNIVERSES = {
         moduleLanguages: 'hindi',
         heroTitle: 'Golden Tape Rewind',
         heroSubtitle: 'Timeless 90s Bollywood classics, analog warmth & golden era duets',
-        trendingQuery: '90s bollywood golden hits',
+        trendingQuery: 'Kumar Sanu Alka Yagnik 90s',
+        albumQuery: 'Dilwale Dulhania Le Jayenge Raja Hindustani',
+        playlistQuery: '90s Hindi Hits',
         artists: [
             'Kumar Sanu', 'Alka Yagnik', 'Udit Narayan', 'Lata Mangeshkar',
             'A.R. Rahman', 'Kavita Krishnamurthy', 'Abhijeet', 'S.P. Balasubrahmanyam'
@@ -247,7 +255,9 @@ export const UNIVERSES = {
         moduleLanguages: 'bhojpuri',
         heroTitle: 'Desi Beat Dhamaka',
         heroSubtitle: 'High-energy Bhojpuri bangers, festive folk & regional chart-toppers',
-        trendingQuery: 'bhojpuri top hits',
+        trendingQuery: 'bhojpuri hit songs',
+        albumQuery: 'Pawan Singh Khesari Lal Bhojpuri',
+        playlistQuery: 'Bhojpuri Hits',
         artists: [
             'Pawan Singh', 'Khesari Lal Yadav', 'Shilpi Raj', 'Neelkamal Singh',
             'Ritesh Pandey', 'Arvind Akela Kallu', 'Pramod Premi', 'Akshara Singh'
