@@ -45,7 +45,9 @@ export class App {
     const allowedOrigins = new Set([
       ...(process.env.FRONTEND_URL || '').split(',').map((o) => o.trim()).filter(Boolean),
       'http://localhost:5173',
+      'http://localhost:5175',
       'http://localhost:3000',
+      'https://playmehfil.vercel.app',
     ])
     this.app.use(cors({
       origin: (origin) => {
