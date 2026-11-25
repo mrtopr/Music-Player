@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
-    Settings as SettingsIcon, User, Palette, Volume2, Info, Trash2, LogOut, 
+    Settings as SettingsIcon, User, Volume2, Info, Trash2, LogOut, 
     ShieldAlert, Check, CheckCircle2, Mic, ExternalLink, Sparkles, Download, 
     Smartphone, Upload, SlidersHorizontal, RefreshCw, HardDrive
 } from '../components/common/LordIcon';
@@ -10,7 +10,6 @@ import { usePlayerStore } from '../store/usePlayerStore.js';
 import { useAuthStore } from '../store/useAuthStore';
 import CraftedBySignature from '../components/common/CraftedBySignature';
 import { getAvailableProviders, clearCache as clearLyricsCache } from '../utils/lyricsProvider.js';
-import { THEMES, themeManager } from '../utils/themeManager.js';
 
 // Static list — defined outside component to avoid re-creation on every render
 const PRESET_AVATARS = [
@@ -26,7 +25,6 @@ const PRESET_AVATARS = [
 
 const SETTINGS_CATEGORIES = [
     { id: 'all', label: 'All Settings', icon: SlidersHorizontal },
-    { id: 'appearance', label: 'Themes & Visuals', icon: Palette },
     { id: 'account', label: 'Account Profile', icon: User },
     { id: 'playback', label: 'Playback & Audio', icon: Volume2 },
     { id: 'lyrics', label: 'Lyrics & ID', icon: Mic },
@@ -48,7 +46,6 @@ export default function Settings() {
     const [editAvatar, setEditAvatar] = useState('');
     const [savingProfile, setSavingProfile] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
-    const [selectedTheme, setSelectedTheme] = useState(() => themeManager.getTheme());
     const fileInputRef = useRef(null);
 
     // Audio Quality & Normalizer
@@ -103,7 +100,6 @@ export default function Settings() {
 
     useEffect(() => {
         calculateStorage();
-        return themeManager.subscribe((id) => setSelectedTheme(id));
     }, []);
 
     useEffect(() => {
@@ -123,13 +119,6 @@ export default function Settings() {
     const showNotification = (msg) => {
         setSuccessMsg(msg);
         setTimeout(() => setSuccessMsg(''), 3000);
-    };
-
-    const handleThemeSelect = (themeId) => {
-        setSelectedTheme(themeId);
-        themeManager.applyTheme(themeId);
-        const name = themeManager.getThemeConfig(themeId)?.name || 'theme';
-        showNotification(`Switched theme to ${name}`);
     };
 
     const handleAudioQualityChange = (q) => {
@@ -285,73 +274,6 @@ export default function Settings() {
                 </nav>
 
                 <div className="settings-cards-stack">
-                    {/* ════ 1. APPEARANCE & THEMES ════ */}
-                    {shouldShow('appearance') && (
-                        <section className="settings-card">
-                            <div className="settings-card-header">
-                                <h3 className="settings-card-title">
-                                    <Palette size={22} /> Color Themes & Visuals
-                                </h3>
-                                <span className="settings-card-badge">
-                                    {THEMES.length} Curated Themes
-                                </span>
-                            </div>
-                            <p className="settings-card-desc">
-                                Choose your aesthetic atmosphere. Color themes apply dynamically across the entire app, navigation, glowing audio wave ripples, and fullscreen player.
-                            </p>
-
-                            <div className="settings-theme-grid">
-                                {THEMES.map(t => {
-                                    const isSelected = selectedTheme === t.id;
-                                    return (
-                                        <div
-                                            key={t.id}
-                                            className={`settings-theme-card ${isSelected ? 'active' : ''}`}
-                                            style={{
-                                                '--theme-color-primary': t.primary,
-                                                '--theme-color-glow': t.glow
-                                            }}
-                                            onClick={() => handleThemeSelect(t.id)}
-                                        >
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <div style={{ fontWeight: 700, fontSize: '1rem', color: '#fff', letterSpacing: '-0.2px' }}>
-                                                    {t.name}
-                                                </div>
-                                                {isSelected && (
-                                                    <span style={{
-                                                        display: 'inline-flex',
-                                                        alignItems: 'center',
-                                                        gap: '4px',
-                                                        background: t.primary,
-                                                        color: '#000',
-                                                        fontSize: '0.68rem',
-                                                        fontWeight: 800,
-                                                        padding: '2px 8px',
-                                                        borderRadius: '12px',
-                                                        letterSpacing: '0.5px',
-                                                        textTransform: 'uppercase'
-                                                    }}>
-                                                        <Check size={11} strokeWidth={3} /> Active
-                                                    </span>
-                                                )}
-                                            </div>
-
-                                            <div className="settings-theme-palette-bar" style={{ background: t.base }}>
-                                                <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: t.primary, boxShadow: `0 0 8px ${t.primary}88` }} title="Primary" />
-                                                <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: t.secondary, boxShadow: `0 0 8px ${t.secondary}88` }} title="Secondary" />
-                                                <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: t.card, border: '1px solid rgba(255,255,255,0.15)' }} title="Surface Card" />
-                                                <div style={{ flex: 1, height: '4px', borderRadius: '999px', background: `linear-gradient(90deg, ${t.primary}, ${t.secondary})`, marginLeft: '4px' }} />
-                                            </div>
-
-                                            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: 1.35 }}>
-                                                {t.tagline}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </section>
-                    )}
 
                     {/* ════ 2. USER ACCOUNT & PROFILE ════ */}
                     {shouldShow('account') && (
