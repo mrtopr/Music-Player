@@ -3,8 +3,16 @@
   "buildCommand": "npm run vercel-build",
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/api/index?__vpath=$1"
+      "source": "/",
+      "destination": "/api/index?__vpath="
+    },
+    {
+      "source": "/docs",
+      "destination": "/api/index?__vpath=docs"
+    },
+    {
+      "source": "/swagger",
+      "destination": "/api/index?__vpath=swagger"
     }
   ]
 }
