@@ -1,0 +1,97 @@
+/* ===== MULTI-UNIVERSE DYNAMIC PERSONA SKINS ===== */
+
+@keyframes universeDropIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.universe-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 9999px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: var(--accent-primary-soft, rgba(16, 185, 129, 0.15));
+    border: 1px solid var(--border-accent, rgba(16, 185, 129, 0.35));
+    color: var(--accent-secondary, #34D399);
+    box-shadow: 0 0 16px var(--shadow-accent, rgba(16, 185, 129, 0.25));
+    margin-bottom: 10px;
+}
+
+/* 90s Nostalgia / Cassette Era: warm analog grain & retro cassette badge feel */
+body.universe-nineties .screen::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.045;
+    background-image: radial-gradient(rgba(245, 158, 11, 0.6) 0.75px, transparent 0.75px);
+    background-size: 3px 3px;
+}
+
+body.universe-nineties .mehfil-intro {
+    filter: sepia(0.08) contrast(1.03);
+}
+
+body.universe-nineties .universe-badge-pill {
+    border-style: dashed;
+    letter-spacing: 0.08em;
+}
+
+/* Desi Hip-Hop / Rap: gritty high-contrast street aesthetic */
+body.universe-hiphop .universe-badge-pill {
+    border-radius: 6px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+body.universe-hiphop .cover-card {
+    border-color: rgba(249, 115, 22, 0.16);
+}
+
+/* English / Global Hits: sleek cyberpunk neon glow */
+body.universe-english .universe-badge-pill {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.45), 0 0 8px rgba(6, 182, 212, 0.3) inset;
+}
+
+/* Bhojpuri & Regional Dhamaka: festive celebratory glow */
+body.universe-bhojpuri .universe-badge-pill {
+    background: linear-gradient(135deg, rgba(225, 29, 72, 0.24), rgba(251, 191, 36, 0.18));
+    border-color: rgba(251, 191, 36, 0.45);
+    color: #FBBF24;
+}
+
+/* Mobile responsiveness for UniverseSwitcher in TopBar */
+@media (max-width: 768px) {
+    .top-bar .universe-switcher-pill {
+        height: 34px !important;
+        padding: 0 9px !important;
+        gap: 5px !important;
+        border-radius: 10px !important;
+        font-size: 0.76rem !important;
+    }
+
+    .top-bar .universe-dropdown-panel {
+        right: -36px !important;
+        width: 256px !important;
+    }
+}
+
+@media (max-width: 440px) {
+    .top-bar .universe-pill-label {
+        max-width: 64px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}

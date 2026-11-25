@@ -3,19 +3,16 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Search as SearchIcon, PlayCircle, X, Play, Pause, TrendingUp, Loader2, Music, Disc3, ListMusic, User } from '../components/common/LordIcon';
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
+import { useUniverseStore } from '../store/useUniverseStore';
 import AddToPlaylist from '../components/common/AddToPlaylist';
 import { decodeEntities } from '../utils/helpers.js';
 import { rankByRelativeSimilarity } from '../utils/relativeSearch.js';
-
-const TRENDING_SEARCHES = [
-    'Arijit Singh', 'Kesariya', 'Tum Hi Ho', 'Raataan Lambiyan',
-    'Dil Diyaan Gallan', 'Chaleya', 'Apna Bana Le', 'Phir Aur Kya Chahiye'
-];
 
 
 export default function SearchPage() {
     const location = useLocation();
     const query = new URLSearchParams(location.search).get('q') || '';
+    const activeUniverse = useUniverseStore(s => s.activeUniverse);
 
     const [searchType, setSearchType] = useState('songs'); // 'songs', 'albums', 'playlists', 'artists'
     const [results, setResults] = useState([]);
@@ -53,7 +50,7 @@ export default function SearchPage() {
             if (musicSource === 'auto' || musicSource === 'saavn') {
                 const endpoint = `/api/search/${type}`;
                 promises.push(
-                    apiFetch(endpoint, { query: q, limit: 20, page: p })
+                    apiFetch(endpoint, { query: q, language: activeUniverse.language, limit: 20, page: p })
                         .then(res => (res.results || []).map(item => ({ ...item, source: 'saavn' })))
                         .catch(e => { console.warn('JioSaavn search failed:', e); return []; })
                 );
@@ -90,7 +87,7 @@ export default function SearchPage() {
             setLoadingMore(false);
             fetchingRef.current = false;
         }
-    }, [musicSource]);
+    }, [musicSource, activeUniverse.language]);
 
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
@@ -220,10 +217,10 @@ export default function SearchPage() {
                 {!searched && (
                     <div style={{ marginBottom: 'var(--space-2xl, 2rem)' }}>
                         <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem', color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
-                            <TrendingUp size={20} color="var(--accent-primary)" /> Trending Searches
+                            <TrendingUp size={20} color="var(--accent-primary)" /> Trending in {activeUniverse.label}
                         </h3>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-                            {TRENDING_SEARCHES.map(term => (
+                            {activeUniverse.trendingSearches.map(term => (
                                 <button
                                     key={term}
                                     className="trending-search-pill"

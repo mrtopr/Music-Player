@@ -7,7 +7,7 @@ import {
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { useAuthStore } from '../store/useAuthStore';
-import { themeManager } from '../utils/themeManager.js';
+import { useUniverseStore } from '../store/useUniverseStore';
 import { getRecentlyPlayed } from '../utils/history.js';
 import { getUserProfile, savePreferredGenres } from '../utils/history.js';
 import { getRecommendations, getPersonalizedSections, getDiscoverSongs } from '../utils/recommendations.js';
@@ -17,18 +17,9 @@ import BackgroundAnimation from '../components/common/BackgroundAnimation';
 import Card3D from '../components/common/Card3D';
 import { decodeEntities, cleanTrackTitle } from '../utils/helpers.js';
 
-const CATEGORIES = [
-    { label: 'All Music', query: 'bollywood trending 2026 hits', icon: Music },
-    { label: 'Romantic', query: 'romantic hindi songs 2026', icon: Heart },
-    { label: 'Dance', query: 'bollywood dance party songs 2026', icon: Activity },
-    { label: 'Sad', query: 'sad hindi songs 2026', icon: Frown },
-    { label: 'Party', query: 'bollywood party songs 2026', icon: Sparkles },
-    { label: 'Classical', query: 'indian classical music hits', icon: Award },
-    { label: 'Rock', query: 'hindi rock songs hits', icon: Zap },
-    { label: 'Pop', query: 'hindi pop songs 2026', icon: Star },
-    { label: 'Hip Hop', query: 'desi hip hop rap 2026', icon: Mic },
-    { label: 'Latest 2026', query: 'latest bollywood 2026 new song album releases', icon: Calendar },
-];
+const CATEGORY_ICONS = {
+    Music, Heart, Activity, Frown, Sparkles, Award, Zap, Star, Mic, Calendar, Disc3, Flame
+};
 
 function getCleanGreeting() {
     const h = new Date().getHours();
@@ -366,6 +357,9 @@ function HeroBackdrop({ recentTracks }) {
 export default function Home() {
     const user = useAuthStore(s => s.user);
     const userName = user?.name || '';
+    const activeUniverseId = useUniverseStore(s => s.activeUniverseId);
+    const activeUniverse = useUniverseStore(s => s.activeUniverse);
+    const categories = activeUniverse.categories;
 
     const [trending, setTrending] = useState([]);
     const [newReleases, setNewReleases] = useState([]);
@@ -443,58 +437,80 @@ export default function Home() {
         };
         window.addEventListener('pwa-can-install', handler);
 
-        function fetchHome() {
-            setLoading(true);
-
-            apiFetch('/api/modules', { language: 'hindi,english' })
-                .then(modules => {
-                    if (modules) {
-                        // The backend normalises the browse shelves by type:
-                        // `trending.songs` are playable songs, `trending.albums`
-                        // and `newReleases.albums` are albums, `playlists` are
-                        // playlists.
-                        setTrending(modules.trending?.songs || []);
-                        // The two album shelves overlap upstream — same id in
-                        // both would break React's key uniqueness.
-                        const albumIds = new Set();
-                        setNewReleases([
-                            ...(modules.newReleases?.albums || []),
-                            ...(modules.trending?.albums || []),
-                        ].filter(album => {
-                            if (albumIds.has(album.id)) return false;
-                            albumIds.add(album.id);
-                            return true;
-                        }));
-                        setPlaylists(modules.playlists || []);
-                    }
-                    setLoading(false);
-                })
-                .catch(err => {
-                    console.error('Failed to load modules', err);
-                    setLoading(false);
-                });
-
-            const artistNames = ['Arijit Singh', 'Shreya Ghoshal', 'Badshah', 'Divine', 'Jubin Nautiyal', 'Sonu Nigam', 'Raftaar', 'MC Stan'];
-            Promise.all(artistNames.map(name => apiFetch('/api/search/artists', { query: name, limit: 1 })))
-                .then(artistResps => {
-                    const popularArtists = artistResps.map(r => r.results?.[0]).filter(Boolean);
-                    setArtists(popularArtists || []);
-                })
-                .catch(err => console.error('Failed to load artists', err));
-
-            setRecentlyPlayed(getRecentlyPlayed(10));
-
-            getRecommendations(12).then(setRecommendations).catch(() => {});
-            getPersonalizedSections().then(setPersonalizedSections).catch(() => {});
-            getDiscoverSongs(10).then(setDiscoverSongs).catch(() => {});
-        }
-        fetchHome();
-
         return () => {
             window.removeEventListener('resize', handleResize);
             window.removeEventListener('pwa-can-install', handler);
         };
     }, []);
+
+    useEffect(() => {
+        let cancelled = false;
+        setActiveCategory(0);
+        setCategorySongs([]);
+        setLoading(true);
+
+        const modulesPromise = apiFetch('/api/modules', { language: activeUniverse.moduleLanguages })
+            .catch(err => {
+                console.error('Failed to load modules', err);
+                return null;
+            });
+
+        const trendingSearchPromise = activeUniverseId !== 'bollywood'
+            ? apiFetch('/api/search/songs', {
+                query: activeUniverse.trendingQuery,
+                language: activeUniverse.language,
+                limit: 15
+            }).catch(err => {
+                console.error('Failed to load universe trending songs', err);
+                return null;
+            })
+            : Promise.resolve(null);
+
+        Promise.all([modulesPromise, trendingSearchPromise]).then(([modules, universeTrending]) => {
+            if (cancelled) return;
+            const universeSongs = universeTrending?.results || [];
+            if (universeSongs.length > 0) {
+                setTrending(universeSongs);
+            } else if (modules) {
+                setTrending(modules.trending?.songs || []);
+            } else {
+                setTrending([]);
+            }
+
+            if (modules) {
+                const albumIds = new Set();
+                setNewReleases([
+                    ...(modules.newReleases?.albums || []),
+                    ...(modules.trending?.albums || []),
+                ].filter(album => {
+                    if (albumIds.has(album.id)) return false;
+                    albumIds.add(album.id);
+                    return true;
+                }));
+                setPlaylists(modules.playlists || []);
+            }
+            setLoading(false);
+        });
+
+        Promise.all(
+            activeUniverse.artists.map(name => apiFetch('/api/search/artists', { query: name, limit: 1 }))
+        )
+            .then(artistResps => {
+                if (cancelled) return;
+                const popularArtists = artistResps.map(r => r.results?.[0]).filter(Boolean);
+                setArtists(popularArtists || []);
+            })
+            .catch(err => console.error('Failed to load artists', err));
+
+        setRecentlyPlayed(getRecentlyPlayed(10));
+        getRecommendations(12).then(res => { if (!cancelled) setRecommendations(res); }).catch(() => {});
+        getPersonalizedSections().then(res => { if (!cancelled) setPersonalizedSections(res); }).catch(() => {});
+        getDiscoverSongs(10).then(res => { if (!cancelled) setDiscoverSongs(res); }).catch(() => {});
+
+        return () => {
+            cancelled = true;
+        };
+    }, [activeUniverseId, activeUniverse]);
 
     const handleOnboardingComplete = async (genres = selectedGenres) => {
         savePreferredGenres(genres || []);
@@ -536,15 +552,19 @@ export default function Home() {
     };
 
     const handleCategory = useCallback(async (index) => {
-        const category = CATEGORIES[index];
+        const category = categories[index];
+        if (!category) return;
         setActiveCategory(index);
-        themeManager.applyTheme(category.label);
-        // "All Music" is the trending list that is already loaded — no need
+        // "All Music" / first category is the trending list that is already loaded — no need
         // for a second request, and it keeps the page from being empty.
         if (index === 0) { setCategorySongs([]); return; }
         setCategoryLoading(true);
         try {
-            const res = await apiFetch('/api/search/songs', { query: category.query, language: 'hindi', limit: 15 });
+            const res = await apiFetch('/api/search/songs', {
+                query: category.query,
+                language: activeUniverse.language,
+                limit: 15
+            });
             setCategorySongs(res.results || []);
         } catch (err) {
             console.error('Category fetch failed:', err);
@@ -552,7 +572,7 @@ export default function Home() {
         } finally {
             setCategoryLoading(false);
         }
-    }, []);
+    }, [categories, activeUniverse.language]);
 
     const handlePlayAll = (songs) => {
         if (songs.length) playQueue(songs, 0);
@@ -779,19 +799,19 @@ export default function Home() {
                     borderRadius: '24px',
                     padding: '2rem',
                     margin: '0 1rem 1rem',
-                    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%)',
+                    background: 'var(--hero-gradient, linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(7, 10, 8, 0.9) 100%))',
                     overflow: 'hidden',
-                    border: '1px solid rgba(255,255,255,0.05)'
+                    border: '1px solid var(--border-accent, rgba(255,255,255,0.08))'
                 }}>
-                    <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Sparkles size={12} /> Upcoming Events
+                    <div className="universe-badge-pill">
+                        {activeUniverse.badge}
                     </div>
                     <div>
                         <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>
-                            Listen to the <span style={{ color: 'var(--accent-secondary, #C084FC)' }}>Best Music</span>, Everyday
+                            {activeUniverse.heroTitle} · <span style={{ color: 'var(--accent-secondary, #34D399)' }}>{activeUniverse.shortLabel}</span>
                         </h2>
                         <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', lineHeight: 1.4, margin: 0, maxWidth: '280px' }}>
-                            New year celebration & trending tracks curated for you
+                            {activeUniverse.heroSubtitle}
                         </p>
                     </div>
                     <button
@@ -838,13 +858,16 @@ export default function Home() {
                 overflow: 'hidden',
                 borderRadius: '24px',
                 marginBottom: '10px',
-                background: 'rgba(255,255,255,0.02)',
-                border: '1px solid rgba(255,255,255,0.04)',
+                background: 'var(--hero-gradient, rgba(255,255,255,0.02))',
+                border: '1px solid var(--border-accent, rgba(255,255,255,0.06))',
                 backdropFilter: 'blur(10px)'
             }}>
                 <HeroBackdrop recentTracks={recentlyPlayed} />
 
                 <div className="intro-text" style={{ flex: '1 1 300px', maxWidth: '100%', zIndex: 3, position: 'relative' }}>
+                    <div className="universe-badge-pill" data-testid="hero-universe-badge">
+                        {activeUniverse.badge}
+                    </div>
                     <h1 style={{ fontSize: 'clamp(2rem, 5vw, 2.6rem)', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
                         {getCleanGreeting()},{' '}
                         <span style={{
@@ -854,16 +877,9 @@ export default function Home() {
                             {userName ? (userName.charAt(0).toUpperCase() + userName.slice(1)) : 'Friend'}
                         </span>
                     </h1>
-                    <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.4, margin: '0 0 1.2rem 0', textShadow: '0 1px 5px rgba(0,0,0,0.5)', maxWidth: '450px' }}>
-                        {(() => {
-                            const combinedGenres = [...(userProfile?.preferredGenres || []), ...(userProfile?.topGenres || [])];
-                            const genreParts = [...new Set(combinedGenres)]
-                                .filter(g => g && !['song', 'album', 'playlist', 'radio'].includes(g.toLowerCase()))
-                                .slice(0, 3);
-                            return genreParts.length > 0
-                                ? `Your mix of ${genreParts.join(' · ')} is ready`
-                                : 'Experience the magic of music! From soulful melodies to energetic beats, Suno Dil se';
-                        })()}
+                    <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.4, margin: '0 0 1.2rem 0', textShadow: '0 1px 5px rgba(0,0,0,0.5)', maxWidth: '480px' }}>
+                        <strong style={{ color: 'var(--accent-secondary, var(--accent-primary))' }}>{activeUniverse.heroTitle}:</strong>{' '}
+                        {activeUniverse.heroSubtitle}
                     </p>
                     <div className="hero-cta" style={{ display: 'flex', gap: '0.8rem' }}>
                         <button onClick={() => {
@@ -956,8 +972,8 @@ export default function Home() {
             <div style={{ marginTop: '1.5rem', marginBottom: '1.5rem', paddingLeft: '0.5rem' }}>
                 <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', marginBottom: '1rem', letterSpacing: '-0.5px' }}>Browse by Category</h2>
                 <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingTop: '4px', paddingBottom: '0.5rem', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch', msOverflowStyle: 'none' }}>
-                    {CATEGORIES.map((cat, i) => {
-                        const Icon = cat.icon || Music;
+                    {categories.map((cat, i) => {
+                        const Icon = CATEGORY_ICONS[cat.iconName] || Music;
                         const active = activeCategory === i;
                         return (
                             <button
@@ -1007,11 +1023,11 @@ export default function Home() {
                 </div>
             </div>
 
-            {activeCategory >= 0 && (
+            {activeCategory >= 0 && categories[activeCategory] && (
                 <div style={{ marginBottom: '1.5rem', paddingLeft: '0.5rem' }}>
                     <SectionHeader3D
-                        title={activeCategory === 0 ? 'Trending Now' : CATEGORIES[activeCategory].label}
-                        onShowMore={activeCategory === 0 ? undefined : () => navigate(`/search?q=${encodeURIComponent(CATEGORIES[activeCategory].query)}`)}
+                        title={activeCategory === 0 ? `Trending in ${activeUniverse.shortLabel}` : categories[activeCategory].label}
+                        onShowMore={activeCategory === 0 ? undefined : () => navigate(`/search?q=${encodeURIComponent(categories[activeCategory].query)}`)}
                     />
                     {activeCategory === 0 ? (
                         trending.length > 0 ? (

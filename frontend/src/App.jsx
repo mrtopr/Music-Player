@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { usePlayerStore } from './store/usePlayerStore';
 import { usePlaylistStore } from './store/usePlaylistStore';
 import { useAuthStore } from './store/useAuthStore';
+import { useUniverseStore } from './store/useUniverseStore';
 import { themeManager } from './utils/themeManager';
 import Sidebar from './components/layout/Sidebar';
 import TopBar from './components/layout/TopBar';
@@ -96,8 +97,9 @@ function AppContent() {
     }, [colors]);
 
     useEffect(() => {
-        // Initialize Theme Manager
+        // Initialize Theme Manager, then apply active Universe skin on top
         themeManager.init();
+        useUniverseStore.getState().applyUniverseTheme();
     }, []);
 
     const handleCloseFs = React.useCallback(() => setFsVisible(false), [setFsVisible]);

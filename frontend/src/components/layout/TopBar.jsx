@@ -4,6 +4,7 @@ import { usePlayerStore } from '../../store/usePlayerStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { apiFetch, API_BASE_URL } from '../../api/client.js';
+import UniverseSwitcher from '../common/UniverseSwitcher';
 
 
 
@@ -472,6 +473,9 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
             </div>
 
             <div className="nav-right-controls" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                {/* Multi-Universe Persona Switcher */}
+                <UniverseSwitcher />
+
                 {/* Music Source Switcher Dropdown */}
                 <div className="music-source-switcher" ref={dropdownRef} style={{ position: 'relative', flexShrink: 0 }}>
                     <button
