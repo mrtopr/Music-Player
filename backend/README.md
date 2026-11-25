@@ -1,84 +1,26 @@
-# Mehfil Backend (Fresh Build)
+# Mehfil Backend
 
-Freshly rebuilt music streaming backend for Mehfil, with the same JioSaavn-backed logic as the original deployed backend, plus BitChord-inspired features.
+High-fidelity music streaming, multi-universe discovery, authentication, and ML recommendation proxy backend for **Mehfil** — crafted by **Sachin (`@mrtopr`)**.
 
-## Features
-
-### Ported from existing backend (same logic)
-- **Songs**: Get by IDs, by link, suggestions/station
-- **Search**: Global search + scoped (songs, albums, artists, playlists)
-- **Albums**: By ID or link
-- **Artists**: By ID or link, songs, albums
-- **Playlists**: JioSaavn playlists by ID or link
-- **YouTube**: Search + stream resolution (Piped → JioSaavn → Invidious fallback)
-- **Telemetry**: Playback events + listening stats
-- **Recognition**: AudD audio fingerprinting
-- **Modules/Trending**: Browse modules and trending content
-
-### New BitChord-inspired features
-- **Addons**: Pluggable music sources (`/api/addons/manifest`, `/api/addons/search`, `/api/addons/stream/{id}`)
-- **Scrobble**: Last.fm / ListenBrainz scrobbling (`/api/scrobble`)
-- **Favorites**: Like/unlike tracks (`/api/favorites`)
-- **ML recommendations**: Proxy to FastAPI microservice (`/api/ml/recommendations/{trackId}`)
-
-### Not included (by design)
-- **Auth**: Disabled for now — all endpoints are public
-- **Spotify**: Not integrated
-
-## Stack
-- Node.js / Bun / Cloudflare Workers (Hono)
-- TypeScript
-- Prisma + PostgreSQL
-- Zod validation
-- OpenAPI 3.1 + Scalar docs
+## Core Endpoints
+- **Health**: `GET /api/health` (verifies PostgreSQL connectivity and keeps serverless DB warm)
+- **Discovery**: `GET /api/modules`, `GET /api/search/{songs|albums|artists|playlists}`
+- **Catalog**: `GET /api/songs`, `GET /api/albums`, `GET /api/artists`, `GET /api/playlists`
+- **Auth**: `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`
+- **Audio & Sync**: `GET /api/audio/*`, `GET /api/youtube/*`, `GET /api/lyrics/*`
+- **ML & Telemetry**: `POST /api/telemetry`, `GET /api/ml/recommendations/{trackId}`
 
 ## Local Development
-
 ```bash
 cd backend
-
-# Install dependencies
 npm install
-
-# Copy env config
 cp .env.example .env
-# Edit .env with your DATABASE_URL
-
-# Generate Prisma client
 npm run prisma:generate
-
-# Push database schema
-npm run prisma:push
-
-# Start dev server
 npm run dev
 ```
 
-The API will run on `http://localhost:3001` (or `PORT` env var).
-API docs available at `http://localhost:3001/docs`.
+API runs on `http://localhost:3001` with interactive docs at `http://localhost:3001/docs`.
 
-## Deployment
-
-### Node.js (VPS / Railway / Render / Docker)
-```bash
-npm run build
-npm start
-```
-
-### Cloudflare Workers
-```bash
-npm run build
-npx wrangler deploy
-```
-
-### Vercel
-```bash
-vercel deploy
-```
-
-## Important Notes
-
-- This is a **separate, fresh backend** — it does not modify the existing deployed `backend/` directory.
-- Test locally first before pointing your frontend to this backend.
-- JioSaavn integration is unofficial and may break if JioSaavn changes their API.
-- YouTube stream resolution depends on community Piped/Invidious instances which may go offline.
+## Vercel Deployment
+`vercel.json` runs `npm run vercel-build` (`prisma generate && esbuild src/server.ts --bundle ...`) and serves through `api/index.ts`.
+Set `DATABASE_URL`, `JWT_SECRET`, and `FRONTEND_URL` in Vercel Environment Variables.

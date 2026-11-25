@@ -30,9 +30,10 @@ async def health_check():
 
 ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "http://localhost:5175",
     "http://localhost:3000",
-    "https://mehfil-music.vercel.app",
-    "https://mehfil.vercel.app",
+    "https://playmehfil.vercel.app",
+    "https://musicbackend-blush.vercel.app",
 ]
 # Allow additional origins from environment variable (comma-separated)
 extra = os.environ.get("ALLOWED_ORIGINS", "")

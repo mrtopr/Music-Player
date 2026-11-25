@@ -81,11 +81,11 @@ export class App {
         darkMode: true,
         metaData: {
           applicationName: 'Mehfil API',
-          author: 'Mehfil',
-          creator: 'Mehfil',
+          author: 'Sachin (@mrtopr)',
+          creator: 'Sachin (@mrtopr)',
           publisher: 'Mehfil',
           robots: 'index, follow',
-          description: 'Mehfil music streaming backend API.',
+          description: 'Mehfil music streaming backend API crafted by Sachin.',
         },
         url: '/swagger',
       })
