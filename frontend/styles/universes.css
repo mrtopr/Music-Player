@@ -98,8 +98,37 @@ body.universe-bhojpuri .universe-badge-pill {
     color: var(--accent-secondary);
 }
 
-/* Mobile responsiveness for UniverseSwitcher in TopBar */
+/* Mobile responsiveness for UniverseSwitcher & TopBar */
+.universe-pill-short-label {
+    display: none;
+}
+
 @media (max-width: 768px) {
+    .universe-pill-label {
+        display: none;
+    }
+
+    .universe-pill-short-label {
+        display: inline;
+        max-width: 72px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .top-bar .mobile-brand img {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    .top-bar .mobile-brand span {
+        font-size: 1.2rem !important;
+    }
+
+    .top-bar .search {
+        min-width: 0 !important;
+        max-width: 150px !important;
+    }
+
     .top-bar .universe-switcher-pill {
         height: 34px !important;
         padding: 0 9px !important;
@@ -109,15 +138,30 @@ body.universe-bhojpuri .universe-badge-pill {
     }
 
     .top-bar .universe-dropdown-panel {
-        right: -36px !important;
-        width: 256px !important;
+        right: -42px !important;
+        width: min(268px, calc(100vw - 24px)) !important;
     }
 }
 
-@media (max-width: 440px) {
-    .top-bar .universe-pill-label {
-        max-width: 64px;
-        overflow: hidden;
-        text-overflow: ellipsis;
+@media (max-width: 420px) {
+    .top-bar {
+        padding: 10px 10px 8px 10px !important;
+        gap: 6px !important;
+    }
+
+    .top-bar .mobile-brand span {
+        font-size: 1.05rem !important;
+    }
+
+    .top-bar .search {
+        max-width: 115px !important;
+    }
+
+    .top-bar .universe-pill-short-label {
+        max-width: 54px;
+    }
+
+    .top-bar .universe-live-dot {
+        display: none;
     }
 }

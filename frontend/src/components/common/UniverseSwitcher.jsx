@@ -77,6 +77,9 @@ export default function UniverseSwitcher({ compact = false }) {
                 <span className="universe-pill-label">
                     {compact ? activeUniverse.shortLabel : activeUniverse.label}
                 </span>
+                <span className="universe-pill-short-label">
+                    {activeUniverse.shortLabel}
+                </span>
                 <span
                     className="universe-live-dot"
                     style={{

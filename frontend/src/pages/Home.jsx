@@ -797,35 +797,35 @@ export default function Home() {
                 <div className="mobile-hero-banner" style={{
                     position: 'relative',
                     borderRadius: '24px',
-                    padding: '2rem',
-                    margin: '0 1rem 1rem',
-                    background: 'var(--hero-gradient, linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(7, 10, 8, 0.9) 100%))',
+                    padding: '1.5rem',
+                    margin: '0 0.85rem 1rem',
+                    background: 'var(--hero-gradient)',
                     overflow: 'hidden',
-                    border: '1px solid var(--border-accent, rgba(255,255,255,0.08))'
+                    border: '1px solid var(--border-accent)'
                 }}>
                     <div className="universe-badge-pill">
                         {activeUniverse.badge}
                     </div>
                     <div>
-                        <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>
-                            {activeUniverse.heroTitle} · <span style={{ color: 'var(--accent-secondary, #34D399)' }}>{activeUniverse.shortLabel}</span>
+                        <h2 style={{ fontSize: 'clamp(1.4rem, 5vw, 1.9rem)', fontWeight: 'var(--heading-weight, 800)', color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>
+                            {activeUniverse.heroTitle} · <span style={{ color: 'var(--accent-secondary)' }}>{activeUniverse.shortLabel}</span>
                         </h2>
-                        <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.8)', lineHeight: 1.4, margin: 0, maxWidth: '280px' }}>
+                        <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.82)', lineHeight: 1.45, margin: 0, maxWidth: '300px' }}>
                             {activeUniverse.heroSubtitle}
                         </p>
                     </div>
                     <button
                         style={{
-                            marginTop: '1.25rem',
-                            background: 'var(--accent-primary, #8B5CF6)',
+                            marginTop: '1.15rem',
+                            background: 'var(--gradient-brand, var(--accent-primary))',
                             border: 'none',
-                            color: '#000',
+                            color: 'var(--text-on-accent, #fff)',
                             borderRadius: '14px',
-                            padding: '12px 24px',
-                            fontSize: '0.95rem',
+                            padding: '11px 22px',
+                            fontSize: '0.92rem',
                             fontWeight: 700,
                             cursor: 'pointer',
-                            display: 'flex',
+                            display: 'inline-flex',
                             alignItems: 'center',
                             gap: '8px',
                             boxShadow: '0 4px 18px rgba(var(--accent-primary-rgb), 0.45)',
@@ -837,7 +837,7 @@ export default function Home() {
                             if (trending && trending.length > 0) playQueue(trending, 0);
                         }}
                     >
-                        <Play size={14} fill="#fff" /> Listen Now
+                        <Play size={14} fill="currentColor" /> Listen Now
                     </button>
                 </div>
             )}
