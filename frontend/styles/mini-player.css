@@ -35,8 +35,8 @@
 
 
 .mini-player.playing {
-  box-shadow: 0 -8px 32px rgba(255, 165, 59, 0.2);
-  border-top: 1px solid rgba(255, 165, 59, 0.3);
+  box-shadow: 0 -8px 32px rgba(var(--accent-primary-rgb), 0.2);
+  border-top: 1px solid rgba(var(--accent-primary-rgb), 0.3);
 }
 
 /* Progress Container */
@@ -548,12 +548,12 @@
   0%,
   100% {
     opacity: 1;
-    text-shadow: 0 0 3px rgba(255, 165, 59, 0.5);
+    text-shadow: 0 0 3px rgba(var(--accent-primary-rgb), 0.5);
   }
 
   50% {
     opacity: 0.8;
-    text-shadow: 0 0 8px rgba(255, 165, 59, 0.8);
+    text-shadow: 0 0 8px rgba(var(--accent-primary-rgb), 0.8);
   }
 }
 
@@ -562,7 +562,7 @@
   font-size: 10px;
   font-weight: 600;
   color: var(--accent-primary);
-  text-shadow: 0 0 3px rgba(255, 165, 59, 0.5);
+  text-shadow: 0 0 3px rgba(var(--accent-primary-rgb), 0.5);
   line-height: 1;
   margin-bottom: 1px;
   white-space: nowrap;
@@ -877,7 +877,7 @@
 }
 
 .mini-player.playing:hover {
-  box-shadow: 0 -12px 40px rgba(255, 165, 59, 0.3);
+  box-shadow: 0 -12px 40px rgba(var(--accent-primary-rgb), 0.3);
 }
 
 /* Floating Action Buttons */
@@ -893,7 +893,7 @@
   color: white;
   font-size: 16px;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(255, 165, 59, 0.4);
+  box-shadow: 0 4px 15px rgba(var(--accent-primary-rgb), 0.4);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;
   transform: translateY(10px) scale(0.8);
@@ -908,7 +908,7 @@
 .mini-player-fab:hover {
   background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
   transform: translateY(-2px) scale(1.1);
-  box-shadow: 0 6px 20px rgba(255, 165, 59, 0.6);
+  box-shadow: 0 6px 20px rgba(var(--accent-primary-rgb), 0.6);
 }
 
 /* Lyrics Display */
@@ -1030,7 +1030,7 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: rgba(255, 165, 59, 0.2);
+  background: rgba(var(--accent-primary-rgb), 0.2);
   display: flex;
   align-items: center;
   justify-content: center;

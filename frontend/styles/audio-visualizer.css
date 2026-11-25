@@ -35,7 +35,7 @@
   border-right-color: var(--accent-primary);
   transform: rotate(var(--progress-angle, 0deg));
   transition: transform 0.1s linear;
-  filter: drop-shadow(0 0 10px rgba(255, 165, 59, 0.8));
+  filter: drop-shadow(0 0 10px rgba(var(--accent-primary-rgb), 0.8));
 }
 
 /* Animated Audio Bars Container */
@@ -170,7 +170,7 @@
   overflow: hidden;
   z-index: 3;
   box-shadow: 
-    0 0 30px rgba(255, 165, 59, 0.4),
+    0 0 30px rgba(var(--accent-primary-rgb), 0.4),
     0 0 60px rgba(230, 184, 115, 0.25),
     inset 0 0 30px rgba(0, 0, 0, 0.3);
   border: 3px solid rgba(255, 255, 255, 0.2);
@@ -180,13 +180,13 @@
 @keyframes glowPulse {
   0%, 100% {
     box-shadow: 
-      0 0 40px rgba(255, 165, 59, 0.4),
+      0 0 40px rgba(var(--accent-primary-rgb), 0.4),
       0 0 80px rgba(230, 184, 115, 0.25),
       inset 0 0 40px rgba(0, 0, 0, 0.3);
   }
   50% {
     box-shadow: 
-      0 0 60px rgba(255, 165, 59, 0.6),
+      0 0 60px rgba(var(--accent-primary-rgb), 0.6),
       0 0 120px rgba(230, 184, 115, 0.35),
       inset 0 0 40px rgba(0, 0, 0, 0.3);
   }
@@ -237,7 +237,7 @@
   color: white;
   font-variant-numeric: tabular-nums;
   letter-spacing: 1px;
-  text-shadow: 0 0 15px rgba(255, 165, 59, 0.8);
+  text-shadow: 0 0 15px rgba(var(--accent-primary-rgb), 0.8);
   font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
@@ -254,7 +254,7 @@
   position: absolute;
   width: 3px;
   height: 3px;
-  background: radial-gradient(circle, rgba(255, 165, 59, 0.8), transparent);
+  background: radial-gradient(circle, rgba(var(--accent-primary-rgb), 0.8), transparent);
   border-radius: 50%;
   animation: floatParticle 4s ease-in-out infinite;
 }
@@ -406,10 +406,10 @@
 
 @keyframes progressGlow {
   0%, 100% {
-    filter: drop-shadow(0 0 10px rgba(255, 165, 59, 0.8));
+    filter: drop-shadow(0 0 10px rgba(var(--accent-primary-rgb), 0.8));
   }
   50% {
-    filter: drop-shadow(0 0 25px rgba(255, 165, 59, 1));
+    filter: drop-shadow(0 0 25px rgba(var(--accent-primary-rgb), 1));
   }
 }
 
@@ -427,13 +427,13 @@
 @keyframes glowPulseSlow {
   0%, 100% {
     box-shadow: 
-      0 0 20px rgba(255, 165, 59, 0.2),
+      0 0 20px rgba(var(--accent-primary-rgb), 0.2),
       0 0 40px rgba(123, 47, 247, 0.2),
       inset 0 0 40px rgba(0, 0, 0, 0.3);
   }
   50% {
     box-shadow: 
-      0 0 30px rgba(255, 165, 59, 0.3),
+      0 0 30px rgba(var(--accent-primary-rgb), 0.3),
       0 0 60px rgba(123, 47, 247, 0.3),
       inset 0 0 40px rgba(0, 0, 0, 0.3);
   }

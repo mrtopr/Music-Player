@@ -284,8 +284,8 @@ export default function SearchPage() {
                                                             padding: '1px 5px',
                                                             borderRadius: '4px',
                                                             flexShrink: 0,
-                                                            background: item.source === 'youtube' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(212, 160, 83, 0.15)',
-                                                            color: item.source === 'youtube' ? '#ef4444' : 'var(--accent-primary, #d4a053)',
+                                                            background: item.source === 'youtube' ? 'rgba(239, 68, 68, 0.15)' : 'var(--accent-primary-soft)',
+                                                            color: item.source === 'youtube' ? '#ef4444' : 'var(--accent-primary)',
                                                             fontWeight: 700,
                                                             textTransform: 'uppercase',
                                                             letterSpacing: '0.5px'

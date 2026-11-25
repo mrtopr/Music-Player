@@ -281,12 +281,12 @@ body {
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background: rgba(139, 124, 255, 0.5);
+  background: rgba(var(--accent-primary-rgb), 0.5);
   border-radius: 3px;
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 124, 255, 0.7);
+  background: rgba(var(--accent-primary-rgb), 0.7);
 }
 
 .mlogo {
@@ -782,7 +782,7 @@ img[src*="mehfil-logo"] {
 .hero-orb-2 {
   width: 280px;
   height: 280px;
-  background: radial-gradient(circle, rgba(192, 132, 252, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--accent-secondary-rgb), 0.12) 0%, transparent 70%);
   bottom: 20px;
   left: 10%;
   transform: translate3d(0, 0, 0);
@@ -824,7 +824,7 @@ img[src*="mehfil-logo"] {
   }
 
   50% {
-    filter: drop-shadow(0 0 28px rgba(192, 132, 252, 0.7));
+    filter: drop-shadow(0 0 28px rgba(var(--accent-secondary-rgb), 0.7));
     transform: scale(1.04);
   }
 }
@@ -1752,13 +1752,13 @@ img[src*="mehfil-logo"] {
 .btn-primary {
   background: var(--accent-primary);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(139, 124, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.2);
 }
 
 .btn-primary:hover {
   background: var(--accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(139, 124, 255, 0.3);
+  box-shadow: 0 6px 16px rgba(var(--accent-primary-rgb), 0.3);
 }
 
 .btn-secondary {
@@ -1788,13 +1788,13 @@ img[src*="mehfil-logo"] {
   gap: 8px;
   min-width: 160px;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(139, 124, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.2);
 }
 
 .login-btn:hover {
   background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-primary) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(139, 124, 255, 0.3);
+  box-shadow: 0 6px 16px rgba(var(--accent-primary-rgb), 0.3);
 }
 
 .login-btn:disabled {
@@ -5016,9 +5016,9 @@ div.featured-playlists h2 {
 }
 
 .artist-category-badge.rappers {
-  background: rgba(108, 92, 231, 0.2);
+  background: rgba(var(--accent-primary-rgb), 0.2);
   color: #6c5ce7;
-  border: 1px solid rgba(108, 92, 231, 0.3);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.3);
 }
 
 .artist-category-badge i {
@@ -5102,17 +5102,17 @@ div.featured-playlists h2 {
 
 /* Enhanced artist category badges */
 .artist-category-badge.popular {
-  background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.2), rgba(192, 132, 252, 0.2));
+  background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.2), rgba(var(--accent-secondary-rgb), 0.2));
   color: var(--accent-primary);
   border: 1px solid rgba(var(--accent-primary-rgb), 0.4);
   box-shadow: 0 2px 8px rgba(var(--accent-primary-rgb), 0.1);
 }
 
 .artist-category-badge.rappers {
-  background: linear-gradient(135deg, rgba(108, 92, 231, 0.2), rgba(162, 155, 254, 0.2));
+  background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.2), rgba(162, 155, 254, 0.2));
   color: #6c5ce7;
-  border: 1px solid rgba(108, 92, 231, 0.4);
-  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.1);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.4);
+  box-shadow: 0 2px 8px rgba(var(--accent-primary-rgb), 0.1);
 }
 
 /* Hover effects for circular artist cards */
@@ -5122,7 +5122,7 @@ div.featured-playlists h2 {
 }
 
 .artist-card-circular:hover .artist-category-badge.rappers {
-  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+  box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.3);
 }
 
 /* Loading animation for circular images */
@@ -5150,7 +5150,7 @@ div.featured-playlists h2 {
 
 .artist-card-circular:hover .artist-category-badge.rappers~.circular-artist-container .circular-artist-image {
   border-color: #6c5ce7;
-  box-shadow: 0 0 20px rgba(108, 92, 231, 0.4);
+  box-shadow: 0 0 20px rgba(var(--accent-primary-rgb), 0.4);
 }
 
 /* ========== ENHANCED CIRCULAR ARTIST ANIMATIONS ========== */
@@ -5490,7 +5490,7 @@ div.featured-playlists h2 {
   height: 100%;
   background: linear-gradient(90deg,
       transparent,
-      rgba(139, 124, 255, 0.1),
+      rgba(var(--accent-primary-rgb), 0.1),
       transparent);
   animation: shimmer 1.5s infinite;
 }
@@ -5522,7 +5522,7 @@ div.featured-playlists h2 {
   height: 100%;
   background: linear-gradient(90deg,
       transparent,
-      rgba(139, 124, 255, 0.1),
+      rgba(var(--accent-primary-rgb), 0.1),
       transparent);
   animation: shimmer 1.5s infinite;
 }

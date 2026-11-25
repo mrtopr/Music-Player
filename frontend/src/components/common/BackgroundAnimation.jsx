@@ -24,7 +24,7 @@ export default function BackgroundAnimation() {
         style={{
           position: "absolute",
           inset: 0,
-          background: "linear-gradient(135deg, #070A08 0%, #0E1712 50%, #08110B 100%)",
+          background: "linear-gradient(135deg, var(--bg-main) 0%, var(--bg-card) 50%, var(--bg-sidebar) 100%)",
         }}
       />
 
