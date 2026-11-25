@@ -1,9 +1,10 @@
-name = "mehfil-backend"
+name = "mehfil-api"
 main = "src/server.ts"
 compatibility_date = "2026-01-01"
+compatibility_flags = ["nodejs_compat"]
 
 [vars]
-FRONTEND_URL = "http://localhost:5173"
+FRONTEND_URL = "http://localhost:5173,https://playmehfil.vercel.app"
 
 [observability]
 enabled = true
