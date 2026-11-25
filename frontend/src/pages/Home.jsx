@@ -183,7 +183,7 @@ function HorizontalScroll3D({ songs, onPlay, currentId, isPlaying, sectionClass,
             </div>
             <div style={{
                 position: 'absolute', right: 0, top: 0, bottom: '2rem', width: '70px',
-                background: 'linear-gradient(to left, #05050a 0%, transparent)',
+                background: 'linear-gradient(to left, var(--bg-main) 0%, transparent)',
                 pointerEvents: 'none', zIndex: 2, borderRadius: '0 16px 16px 0',
                 opacity: canScrollRight ? 1 : 0, transition: 'opacity 0.3s'
             }} />
@@ -268,7 +268,7 @@ function ArtistHorizontalScroll3D({ artists, onPlay }) {
             </div>
             <div style={{
                 position: 'absolute', right: 0, top: 0, bottom: '2rem', width: '70px',
-                background: 'linear-gradient(to left, #05050a 0%, transparent)',
+                background: 'linear-gradient(to left, var(--bg-main) 0%, transparent)',
                 pointerEvents: 'none', zIndex: 2, borderRadius: '0 16px 16px 0',
                 opacity: canScrollRight ? 1 : 0, transition: 'opacity 0.3s'
             }} />
@@ -311,9 +311,9 @@ function HeroBackdrop({ recentTracks }) {
                 style={{
                     position: 'absolute', inset: 0, zIndex: 0,
                     background: `
-                radial-gradient(ellipse 800px 500px at 20% 20%, rgba(124, 58, 237, 0.15), transparent 60%),
-                radial-gradient(ellipse 600px 400px at 80% 60%, rgba(167, 139, 250, 0.08), transparent 60%),
-                #0F0A1A
+                radial-gradient(ellipse 800px 500px at 20% 20%, rgba(var(--accent-primary-rgb), 0.18), transparent 60%),
+                radial-gradient(ellipse 600px 400px at 80% 60%, rgba(var(--accent-secondary-rgb), 0.10), transparent 60%),
+                var(--bg-main)
               `
                 }}
             />
@@ -344,11 +344,11 @@ function HeroBackdrop({ recentTracks }) {
             </div>
             <div style={{
                 position: 'absolute', inset: 0,
-                background: 'linear-gradient(to right, #0A0A0B 0%, rgba(10,10,11,0.6) 40%, transparent 100%)'
+                background: 'linear-gradient(to right, var(--bg-main) 0%, color-mix(in srgb, var(--bg-main) 60%, transparent) 40%, transparent 100%)'
             }} />
             <div style={{
                 position: 'absolute', inset: 0,
-                background: 'linear-gradient(to top, #0A0A0B 0%, transparent 40%, rgba(10,10,11,0.6) 100%)'
+                background: 'linear-gradient(to top, var(--bg-main) 0%, transparent 40%, color-mix(in srgb, var(--bg-main) 60%, transparent) 100%)'
             }} />
         </div>
     );

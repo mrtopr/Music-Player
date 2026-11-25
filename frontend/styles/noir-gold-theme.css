@@ -26,7 +26,7 @@ body::before {
     left: -8%;
     width: 55vw;
     height: 55vh;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.14) 0%, transparent 65%);
+    background: radial-gradient(circle, rgba(var(--accent-primary-rgb), 0.14) 0%, transparent 65%);
 }
 
 body::after {
@@ -34,11 +34,11 @@ body::after {
     right: -8%;
     width: 60vw;
     height: 60vh;
-    background: radial-gradient(circle, rgba(52, 211, 153, 0.10) 0%, transparent 65%);
+    background: radial-gradient(circle, rgba(var(--accent-secondary-rgb), 0.10) 0%, transparent 65%);
 }
 
 .screen {
-    background: var(--mehfil-dark-base, #0A0A0B) !important;
+    background: var(--bg-main) !important;
     min-height: 100vh;
     width: 100%;
 }
@@ -199,7 +199,7 @@ body::after {
 .song-item.playing,
 .track-item.playing {
     border: 1px solid var(--mehfil-gold-primary);
-    background: rgba(16, 185, 129, 0.08);
+    background: rgba(var(--accent-primary-rgb), 0.08);
     box-shadow: 0 0 20px var(--mehfil-gold-glow);
 }
 

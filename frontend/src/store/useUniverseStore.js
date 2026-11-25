@@ -73,6 +73,14 @@ export function applyUniverseStyles(universeId) {
     root.style.setProperty('--fullscreen-accent-secondary', theme.accentSecondary);
     root.style.setProperty('--fullscreen-glow', `0 0 25px rgba(${theme.accentPrimaryRGB}, 0.35)`);
 
+    // Logo & Typography tokens
+    root.style.setProperty('--logo-filter', theme.logoFilter || 'none');
+    root.style.setProperty('--font-display', theme.fontDisplay || "'Plus Jakarta Sans', 'Outfit', sans-serif");
+    root.style.setProperty('--font-body', theme.fontBody || "'Plus Jakarta Sans', 'Outfit', sans-serif");
+    root.style.setProperty('--heading-tracking', theme.headingTracking || '-0.02em');
+    root.style.setProperty('--heading-weight', theme.headingWeight || '800');
+    root.style.setProperty('--text-on-accent', theme.textOnAccent || '#FFFFFF');
+
     // Ambient Mesh Blobs
     if (theme.blobs && theme.blobs.length >= 5) {
         root.style.setProperty('--blob-1', theme.blobs[0]);

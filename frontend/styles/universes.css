@@ -11,6 +11,32 @@
     }
 }
 
+/* Global Logo & Typography Tokens driven by active universe */
+body {
+    font-family: var(--font-body, var(--font-sans));
+}
+
+h1, h2, h3, .mehfil-heading {
+    font-family: var(--font-display, var(--font-sans));
+    letter-spacing: var(--heading-tracking, -0.02em);
+    font-weight: var(--heading-weight, 800);
+}
+
+.mlogo img,
+.mobile-brand img,
+.auth-brand-logo {
+    filter: var(--logo-filter, none);
+    transition: filter 0.35s var(--mehfil-ease-smooth, ease);
+}
+
+.mlogo span,
+.mobile-brand span {
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
 .universe-badge-pill {
     display: inline-flex;
     align-items: center;
@@ -21,10 +47,10 @@
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    background: var(--accent-primary-soft, rgba(16, 185, 129, 0.15));
-    border: 1px solid var(--border-accent, rgba(16, 185, 129, 0.35));
-    color: var(--accent-secondary, #34D399);
-    box-shadow: 0 0 16px var(--shadow-accent, rgba(16, 185, 129, 0.25));
+    background: var(--accent-primary-soft);
+    border: 1px solid var(--border-accent);
+    color: var(--accent-secondary);
+    box-shadow: 0 0 16px var(--shadow-accent);
     margin-bottom: 10px;
 }
 
@@ -36,7 +62,7 @@ body.universe-nineties .screen::after {
     pointer-events: none;
     z-index: 2;
     opacity: 0.045;
-    background-image: radial-gradient(rgba(245, 158, 11, 0.6) 0.75px, transparent 0.75px);
+    background-image: radial-gradient(rgba(var(--accent-primary-rgb), 0.6) 0.75px, transparent 0.75px);
     background-size: 3px 3px;
 }
 
@@ -57,19 +83,19 @@ body.universe-hiphop .universe-badge-pill {
 }
 
 body.universe-hiphop .cover-card {
-    border-color: rgba(249, 115, 22, 0.16);
+    border-color: rgba(var(--accent-primary-rgb), 0.18);
 }
 
 /* English / Global Hits: sleek cyberpunk neon glow */
 body.universe-english .universe-badge-pill {
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.45), 0 0 8px rgba(6, 182, 212, 0.3) inset;
+    box-shadow: 0 0 20px rgba(var(--accent-primary-rgb), 0.45), 0 0 8px rgba(var(--accent-secondary-rgb), 0.3) inset;
 }
 
 /* Bhojpuri & Regional Dhamaka: festive celebratory glow */
 body.universe-bhojpuri .universe-badge-pill {
-    background: linear-gradient(135deg, rgba(225, 29, 72, 0.24), rgba(251, 191, 36, 0.18));
-    border-color: rgba(251, 191, 36, 0.45);
-    color: #FBBF24;
+    background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.24), rgba(var(--accent-secondary-rgb), 0.18));
+    border-color: rgba(var(--accent-secondary-rgb), 0.45);
+    color: var(--accent-secondary);
 }
 
 /* Mobile responsiveness for UniverseSwitcher in TopBar */

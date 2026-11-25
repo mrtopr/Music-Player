@@ -53,19 +53,19 @@ export default function UniverseSwitcher({ compact = false }) {
                     padding: compact ? '0 10px' : '0 14px',
                     borderRadius: '12px',
                     background: open
-                        ? 'var(--accent-primary-soft, rgba(16, 185, 129, 0.16))'
+                        ? 'var(--accent-primary-soft)'
                         : 'rgba(255, 255, 255, 0.05)',
                     backdropFilter: 'blur(16px)',
                     WebkitBackdropFilter: 'blur(16px)',
                     border: open
-                        ? '1px solid var(--accent-primary, #10B981)'
-                        : '1px solid var(--border-accent, rgba(16, 185, 129, 0.35))',
+                        ? '1px solid var(--accent-primary)'
+                        : '1px solid var(--border-accent)',
                     color: '#fff',
                     cursor: 'pointer',
                     fontSize: compact ? '0.78rem' : '0.85rem',
                     fontWeight: 700,
                     boxShadow: open
-                        ? '0 0 20px var(--shadow-accent, rgba(16, 185, 129, 0.35))'
+                        ? '0 0 20px var(--shadow-accent)'
                         : '0 2px 12px rgba(0, 0, 0, 0.25)',
                     transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                     whiteSpace: 'nowrap'
@@ -118,13 +118,13 @@ export default function UniverseSwitcher({ compact = false }) {
                         top: 'calc(100% + 10px)',
                         right: 0,
                         width: '272px',
-                        background: 'rgba(12, 12, 18, 0.96)',
+                        background: 'var(--bg-card)',
                         backdropFilter: 'blur(24px)',
                         WebkitBackdropFilter: 'blur(24px)',
-                        border: '1px solid var(--border-accent, rgba(255, 255, 255, 0.12))',
+                        border: '1px solid var(--border-accent)',
                         borderRadius: '18px',
                         padding: '10px',
-                        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.75), 0 0 30px var(--shadow-accent, rgba(16, 185, 129, 0.2))',
+                        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.75), 0 0 30px var(--shadow-accent)',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '6px',

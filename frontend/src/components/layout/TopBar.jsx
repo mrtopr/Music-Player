@@ -39,9 +39,9 @@ function ListenTogetherPanel({ sessionCode, sessionRole, createSession, joinSess
             right: '0px',
             width: '280px',
             zIndex: 1000,
-            background: 'rgba(15, 12, 28, 0.96)',
+            background: 'var(--bg-card)',
             backdropFilter: 'blur(25px)',
-            border: '1px solid rgba(var(--accent-secondary-rgb), 0.25)',
+            border: '1px solid var(--border-accent)',
             borderRadius: '20px',
             padding: '20px',
             boxShadow: '0 20px 50px rgba(0,0,0,0.7)',
@@ -53,7 +53,7 @@ function ListenTogetherPanel({ sessionCode, sessionRole, createSession, joinSess
         }}>
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, background: 'linear-gradient(90deg, #c084fc, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, background: 'var(--gradient-text)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Radio size={18} color="var(--accent-secondary)" /> Listen Together
                 </h3>
                 <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '1.2rem', padding: '4px' }}>&times;</button>
@@ -413,8 +413,8 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
 
             {/* Mobile Brand Logo */}
             <div className="mobile-brand" onClick={() => navigate('/')} style={{ display: 'none', alignItems: 'center', gap: '8px', cursor: 'pointer', flexShrink: 0 }}>
-                <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover' }} />
-                <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, var(--accent-primary, #8B5CF6), #fff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mehfil</span>
+                <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover', filter: 'var(--logo-filter, none)' }} />
+                <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'var(--gradient-text)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mehfil</span>
             </div>
 
             <div className="search" style={{ display: 'flex', alignItems: 'center', flex: 1, maxWidth: '480px' }}>
