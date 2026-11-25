@@ -18,6 +18,8 @@
   "dependencies": {
     "@hono/node-server": "^1.14.0",
     "@hono/zod-openapi": "^0.19.2",
+    "@neondatabase/serverless": "^1.2.1",
+    "@prisma/adapter-neon": "^6.19.3",
     "@prisma/client": "^6.0.0",
     "@scalar/hono-api-reference": "^0.7.4",
     "bcryptjs": "^3.0.3",

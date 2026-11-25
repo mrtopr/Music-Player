@@ -30,6 +30,16 @@ export class App {
   }
 
   private initializeGlobalMiddlewares() {
+    this.app.use('*', async (c, next) => {
+      if (c.env && typeof process !== 'undefined' && process.env) {
+        for (const [k, v] of Object.entries(c.env)) {
+          if (typeof v === 'string' && !process.env[k]) {
+            process.env[k] = v
+          }
+        }
+      }
+      await next()
+    })
     this.app.use(logger())
     this.app.use(prettyJSON())
     const allowedOrigins = new Set([
