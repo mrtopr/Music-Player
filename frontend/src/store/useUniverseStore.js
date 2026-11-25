@@ -102,6 +102,25 @@ export function applyUniverseStyles(universeId) {
 const initialId = getInitialUniverseId();
 applyUniverseStyles(initialId);
 
+function buildSplashPolygon(cx, cy, baseRadius) {
+    const points = [];
+    const steps = 28;
+    for (let i = 0; i < steps; i++) {
+        const angle = (i / steps) * Math.PI * 2;
+        // Organic irregular multi-lobe splash modulation
+        const modulation =
+            1 +
+            0.22 * Math.sin(angle * 5 + 0.4) +
+            0.14 * Math.cos(angle * 3 - 0.8) +
+            0.08 * Math.sin(angle * 7 + 1.1);
+        const r = baseRadius * modulation;
+        const px = (cx + Math.cos(angle) * r).toFixed(1);
+        const py = (cy + Math.sin(angle) * r).toFixed(1);
+        points.push(`${px}px ${py}px`);
+    }
+    return `polygon(${points.join(', ')})`;
+}
+
 export const useUniverseStore = create((set, get) => ({
     activeUniverseId: initialId,
     activeUniverse: getUniverseConfig(initialId),
@@ -139,19 +158,20 @@ export const useUniverseStore = create((set, get) => ({
                 Math.max(x, window.innerWidth - x),
                 Math.max(y, window.innerHeight - y)
             );
+            const startPoly = buildSplashPolygon(x, y, 2);
+            // Divide by minimum lobe factor (~0.56) so all inward curves still clear screen corners
+            const endPoly = buildSplashPolygon(x, y, endRadius / 0.56);
+
             const transition = document.startViewTransition(() => {
                 applyChange();
             });
             transition.ready.then(() => {
                 document.documentElement.animate(
                     {
-                        clipPath: [
-                            `circle(0px at ${x}px ${y}px)`,
-                            `circle(${endRadius}px at ${x}px ${y}px)`
-                        ]
+                        clipPath: [startPoly, endPoly]
                     },
                     {
-                        duration: 620,
+                        duration: 650,
                         easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
                         pseudoElement: '::view-transition-new(root)'
                     }
