@@ -185,20 +185,20 @@
 }
 
 .settings-btn-primary {
-  background: var(--gradient-brand, var(--accent-primary));
-  color: #000000;
+  background: var(--accent-primary, #10B981);
+  color: var(--text-on-accent, #04120b);
   font-weight: 700;
-  box-shadow: 0 4px 14px var(--shadow-accent);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .settings-btn-primary:hover {
-  box-shadow: 0 6px 20px var(--shadow-accent);
+  opacity: 0.92;
 }
 
 .settings-btn-outline {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.07);
   color: #ffffff;
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12));
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .settings-btn-outline:hover {
@@ -272,9 +272,9 @@
 }
 
 .settings-segmented-item {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  border: none;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 8px;
   padding: 6px 14px;
   font-size: 0.82rem;
@@ -286,14 +286,16 @@
 
 .settings-segmented-item:hover {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.20);
 }
 
 .settings-segmented-item.active {
-  background: var(--gradient-brand, var(--accent-primary));
-  color: #000000;
+  background: var(--accent-primary, #10B981);
+  color: var(--text-on-accent, #04120b);
+  border-color: var(--accent-primary, #10B981);
   font-weight: 700;
-  box-shadow: 0 2px 8px var(--shadow-accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 /* ── 7. TOGGLE SWITCH ── */
@@ -315,14 +317,15 @@
   position: absolute;
   cursor: pointer;
   inset: 0;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   transition: 0.25s ease;
   border-radius: 34px;
 }
 
 .settings-switch-label input:checked + .settings-switch-track {
-  background: var(--gradient-brand, var(--accent-primary));
-  box-shadow: 0 0 12px var(--shadow-accent);
+  background: var(--accent-primary, #10B981);
+  border-color: var(--accent-primary, #10B981);
 }
 
 .settings-switch-knob {
@@ -330,16 +333,17 @@
   content: "";
   height: 20px;
   width: 20px;
-  left: 3px;
-  bottom: 3px;
-  background: #ffffff;
+  left: 2px;
+  top: 2px;
+  background: #f4f4f5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
   transition: 0.25s ease;
   border-radius: 50%;
 }
 
 .settings-switch-label input:checked + .settings-switch-track .settings-switch-knob {
-  left: 25px;
-  background: #000000;
+  transform: translateX(22px);
+  background: #ffffff;
 }
 
 /* ── 8. TOAST NOTIFICATION ── */
