@@ -6,6 +6,7 @@ import {
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
 import { usePlaylistStore } from '../../store/usePlaylistStore';
+import CraftedBySignature from '../common/CraftedBySignature';
 
 export default function Sidebar() {
     const location = useLocation();
@@ -246,6 +247,8 @@ export default function Sidebar() {
                     </button>
                 </div>
             )}
+
+            <CraftedBySignature compact />
         </div>
     );
 }

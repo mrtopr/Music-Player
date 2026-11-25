@@ -1,5 +1,6 @@
 import React from 'react';
 import { Users, Sparkles, Mic2, SlidersHorizontal, Heart, Music, ListMusic, History } from '../components/common/LordIcon';
+import CraftedBySignature from '../components/common/CraftedBySignature';
 
 export default function About() {
     return (
@@ -58,9 +59,10 @@ export default function About() {
                 <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto 2rem' }}>
                     Every pixel, every animation, and every feature has been carefully designed to give you the most premium music listening experience on the web.
                 </p>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', padding: '12px 24px', borderRadius: '50px', fontSize: '1.1rem', fontWeight: 600, color: '#fff' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', padding: '12px 24px', borderRadius: '50px', fontSize: '1.1rem', fontWeight: 600, color: '#fff', marginBottom: '2rem' }}>
                     <Heart size={20} color="var(--accent-primary)" fill="var(--accent-primary)" /> by @mrtopr
                 </div>
+                <CraftedBySignature />
             </div>
         </div>
     );

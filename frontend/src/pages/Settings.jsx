@@ -8,6 +8,7 @@ import { getPreferredGenres, savePreferredGenres, getGenreCounts } from '../util
 import { ALL_GENRES, GENRE_PROFILES } from '../utils/genreProfiles.js';
 import { usePlayerStore } from '../store/usePlayerStore.js';
 import { useAuthStore } from '../store/useAuthStore';
+import CraftedBySignature from '../components/common/CraftedBySignature';
 import { getAvailableProviders, clearCache as clearLyricsCache } from '../utils/lyricsProvider.js';
 import { THEMES, themeManager } from '../utils/themeManager.js';
 
@@ -909,8 +910,11 @@ export default function Settings() {
                     )}
                 </div>
 
-                <footer style={{ textAlign: 'center', marginTop: '3.5rem', opacity: 0.45, fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                    &copy; 2026 Mehfil Music &bull; Designed with Passion
+                <footer style={{ textAlign: 'center', marginTop: '2.5rem', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                    <CraftedBySignature />
+                    <div style={{ opacity: 0.5, marginTop: '6px' }}>
+                        &copy; 2026 Mehfil Music &bull; Designed with Passion
+                    </div>
                 </footer>
             </div>
         </div>
