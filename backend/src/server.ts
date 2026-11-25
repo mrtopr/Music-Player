@@ -16,6 +16,7 @@ import {
   LyricsController,
   AudioController,
   AuthController,
+  HealthController,
 } from './modules/index'
 import { App } from './app'
 
@@ -36,6 +37,7 @@ export const app = new App([
   new LyricsController(),
   new AudioController(),
   new AuthController(),
+  new HealthController(),
 ]).getApp()
 
 const port = Number(process.env.PORT) || 3001

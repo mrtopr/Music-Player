@@ -5,6 +5,7 @@ import { usePlaylistStore } from './store/usePlaylistStore';
 import { useAuthStore } from './store/useAuthStore';
 import { useUniverseStore } from './store/useUniverseStore';
 import { themeManager } from './utils/themeManager';
+import { API_BASE_URL } from './api/client';
 import Sidebar from './components/layout/Sidebar';
 import TopBar from './components/layout/TopBar';
 import MiniPlayer from './components/player/MiniPlayer';
@@ -101,6 +102,17 @@ function AppContent() {
         // Initialize Theme Manager, then apply active Universe skin on top
         themeManager.init();
         useUniverseStore.getState().applyUniverseTheme();
+    }, []);
+
+    // Keep backend & serverless Postgres warm while app tab is active
+    useEffect(() => {
+        const pingHealth = () => {
+            if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
+            fetch(`${API_BASE_URL}/api/health`, { method: 'GET' }).catch(() => {});
+        };
+        pingHealth();
+        const interval = setInterval(pingHealth, 4 * 60 * 1000);
+        return () => clearInterval(interval);
     }, []);
 
     const handleCloseFs = React.useCallback(() => setFsVisible(false), [setFsVisible]);

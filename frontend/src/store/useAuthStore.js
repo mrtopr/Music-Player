@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { apiFetch } from '../api/client';
+import { API_BASE_URL } from '../api/client';
 
 export const useAuthStore = create(
   persist(
@@ -9,24 +9,36 @@ export const useAuthStore = create(
       token: null,
       isAuthenticated: false,
 
-      // Initialize auth by verifying token
-      checkAuth: async () => {
+      // Initialize auth by verifying token; retries once if backend/DB is waking up
+      checkAuth: async (retried = false) => {
         const { token } = get();
         if (!token) return;
 
         try {
-          // Use empty string fallback → relative path → Vite proxy handles it in dev.
-          // In production, VITE_API_URL should be set to the deployed backend URL.
-          const API_URL = import.meta.env.VITE_API_URL || '';
-          const res = await fetch(`${API_URL}/api/auth/me`, {
+          const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
             headers: { Authorization: `Bearer ${token}` }
           });
-          const data = await res.json();
 
+          // Transient 5xx (DB cold-start / waking up) -> retry once before giving up
+          if (res.status >= 500 && !retried) {
+            await new Promise(r => setTimeout(r, 1500));
+            return get().checkAuth(true);
+          }
+
+          if (res.status === 401 || res.status === 403) {
+            set({ user: null, token: null, isAuthenticated: false });
+            return;
+          }
+
+          if (!res.ok) {
+            // Keep existing session on non-auth transient errors
+            return;
+          }
+
+          const data = await res.json();
           if (data.success) {
             set({ user: data.user, isAuthenticated: true });
           } else {
-            // Server explicitly rejected the token (expired/invalid) — log out
             set({ user: null, token: null, isAuthenticated: false });
           }
         } catch (error) {
