@@ -37,6 +37,12 @@ h1, h2, h3, .mehfil-heading {
     -webkit-text-fill-color: transparent;
 }
 
+.sachin-signature-container:hover .sachin-signature-name,
+.sachin-signature-name:hover {
+    color: var(--accent-primary) !important;
+    text-shadow: 0 0 14px rgba(var(--accent-primary-rgb), 0.45);
+}
+
 .universe-badge-pill {
     display: inline-flex;
     align-items: center;
