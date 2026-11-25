@@ -896,8 +896,7 @@ export default function Home() {
                     <h1 style={{ fontSize: 'clamp(2rem, 5vw, 2.6rem)', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
                         {getCleanGreeting()},{' '}
                         <span style={{
-                            color: 'var(--accent-secondary, var(--accent-primary))',
-                            textShadow: '0 0 30px var(--shadow-accent, rgba(16, 185, 129, 0.45))'
+                            color: 'var(--accent-secondary, var(--accent-primary))'
                         }}>
                             {userName ? (userName.charAt(0).toUpperCase() + userName.slice(1)) : 'Friend'}
                         </span>
@@ -929,7 +928,7 @@ export default function Home() {
                             display: 'flex',
                             alignItems: 'center',
                             gap: '8px',
-                            boxShadow: '0 4px 18px var(--shadow-accent, rgba(16, 185, 129, 0.45))',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.28)',
                             cursor: 'pointer'
                         }}>
                             <PlayCircle size={18} />
@@ -1017,7 +1016,7 @@ export default function Home() {
                                     gap: '8px',
                                     cursor: 'pointer',
                                     transition: 'all 0.2s ease',
-                                    boxShadow: active ? '0 0 18px var(--shadow-accent, rgba(16, 185, 129, 0.35))' : 'none',
+                                    boxShadow: 'none',
                                     padding: '9px 18px',
                                     outline: 'none'
                                 }}

@@ -65,8 +65,8 @@ export default function UniverseSwitcher({ compact = false }) {
                     fontSize: compact ? '0.78rem' : '0.85rem',
                     fontWeight: 700,
                     boxShadow: open
-                        ? '0 0 20px var(--shadow-accent)'
-                        : '0 2px 12px rgba(0, 0, 0, 0.25)',
+                        ? '0 4px 14px rgba(0, 0, 0, 0.35)'
+                        : '0 2px 8px rgba(0, 0, 0, 0.2)',
                     transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                     whiteSpace: 'nowrap'
                 }}
@@ -127,7 +127,7 @@ export default function UniverseSwitcher({ compact = false }) {
                         border: '1px solid var(--border-accent)',
                         borderRadius: '18px',
                         padding: '10px',
-                        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.75), 0 0 30px var(--shadow-accent)',
+                        boxShadow: '0 16px 36px rgba(0, 0, 0, 0.65)',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '6px',
@@ -176,7 +176,7 @@ export default function UniverseSwitcher({ compact = false }) {
                                     cursor: 'pointer',
                                     textAlign: 'left',
                                     transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                                    boxShadow: isActive ? `0 0 16px ${u.theme.accentSoft}` : 'none'
+                                    boxShadow: 'none'
                                 }}
                                 onMouseEnter={(e) => {
                                     if (!isActive) {
@@ -227,12 +227,11 @@ export default function UniverseSwitcher({ compact = false }) {
                                     </div>
                                 </div>
                                 <div style={{
-                                    width: '10px',
-                                    height: '10px',
+                                    width: '8px',
+                                    height: '8px',
                                     borderRadius: '50%',
                                     background: u.theme.accentPrimary,
-                                    boxShadow: isActive ? `0 0 10px ${u.theme.accentPrimary}` : 'none',
-                                    opacity: isActive ? 1 : 0.55,
+                                    opacity: isActive ? 1 : 0.45,
                                     flexShrink: 0
                                 }} />
                             </button>

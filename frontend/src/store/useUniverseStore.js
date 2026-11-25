@@ -39,7 +39,7 @@ export function applyUniverseStyles(universeId) {
 
     root.style.setProperty('--border-accent', theme.borderAccent);
     root.style.setProperty('--shadow-accent', theme.shadowAccent);
-    root.style.setProperty('--shadow-glow', `rgba(${theme.accentPrimaryRGB}, 0.18)`);
+    root.style.setProperty('--shadow-glow', `rgba(${theme.accentPrimaryRGB}, 0.08)`);
 
     // Brand compatibility variables
     root.style.setProperty('--mehfil-gold-primary', theme.accentPrimary);
@@ -71,7 +71,7 @@ export function applyUniverseStyles(universeId) {
     root.style.setProperty('--fullscreen-border', `rgba(${theme.accentPrimaryRGB}, 0.16)`);
     root.style.setProperty('--fullscreen-accent', theme.accentPrimary);
     root.style.setProperty('--fullscreen-accent-secondary', theme.accentSecondary);
-    root.style.setProperty('--fullscreen-glow', `0 0 25px rgba(${theme.accentPrimaryRGB}, 0.35)`);
+    root.style.setProperty('--fullscreen-glow', `0 4px 16px rgba(${theme.accentPrimaryRGB}, 0.14)`);
 
     // Logo & Typography tokens
     root.style.setProperty('--logo-filter', theme.logoFilter || 'none');

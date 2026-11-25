@@ -47,16 +47,15 @@ h1, h2, h3, .mehfil-heading {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 12px;
+    padding: 4px 11px;
     border-radius: 9999px;
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     background: var(--accent-primary-soft);
     border: 1px solid var(--border-accent);
     color: var(--accent-secondary);
-    box-shadow: 0 0 16px var(--shadow-accent);
     margin-bottom: 10px;
 }
 
@@ -92,9 +91,9 @@ body.universe-hiphop .cover-card {
     border-color: rgba(var(--accent-primary-rgb), 0.18);
 }
 
-/* English / Global Hits: sleek cyberpunk neon glow */
+/* English / Global Hits: clean accent border */
 body.universe-english .universe-badge-pill {
-    box-shadow: 0 0 20px rgba(var(--accent-primary-rgb), 0.45), 0 0 8px rgba(var(--accent-secondary-rgb), 0.3) inset;
+    border-color: rgba(var(--accent-primary-rgb), 0.28);
 }
 
 /* Bhojpuri & Regional Dhamaka: festive celebratory glow */

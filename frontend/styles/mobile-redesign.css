@@ -75,8 +75,8 @@
     width: 32px !important;
     height: 32px !important;
     border-radius: 50% !important;
-    box-shadow: 0 0 14px var(--shadow-accent) !important;
-    border: 1.5px solid var(--border-accent) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid var(--border-accent) !important;
     filter: var(--logo-filter, none) !important;
   }
 
@@ -91,7 +91,6 @@
     background: var(--gradient-brand) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
-    filter: drop-shadow(0 0 10px var(--shadow-accent)) !important;
   }
 
   /* Hide header clutter tools on mobile (they belong in settings or player) */
@@ -153,10 +152,10 @@
 
   .top-bar .profile {
     padding: 2px !important;
-    border: 2px solid var(--border-accent) !important;
+    border: 1.5px solid var(--border-accent) !important;
     border-radius: 50% !important;
     background: transparent !important;
-    box-shadow: 0 0 12px var(--shadow-accent) !important;
+    box-shadow: none !important;
     width: 36px !important;
     height: 36px !important;
     display: flex !important;

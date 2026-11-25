@@ -40,9 +40,9 @@ export const UNIVERSES = {
             accentSecondary: '#34D399',
             accentSecondaryRGB: '52, 211, 153',
             accentHover: '#059669',
-            accentSoft: 'rgba(16, 185, 129, 0.15)',
-            borderAccent: 'rgba(16, 185, 129, 0.35)',
-            shadowAccent: 'rgba(16, 185, 129, 0.35)',
+            accentSoft: 'rgba(16, 185, 129, 0.10)',
+            borderAccent: 'rgba(16, 185, 129, 0.22)',
+            shadowAccent: 'rgba(16, 185, 129, 0.12)',
             bgMain: '#070A08',
             bgCard: '#0E1712',
             bgSidebar: '#0C120E',
@@ -52,13 +52,13 @@ export const UNIVERSES = {
             headingTracking: '-0.025em',
             headingWeight: '800',
             textOnAccent: '#04120B',
-            heroGradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(52, 211, 153, 0.08) 50%, rgba(7, 10, 8, 0.92) 100%)',
+            heroGradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.11) 0%, rgba(52, 211, 153, 0.04) 50%, rgba(7, 10, 8, 0.94) 100%)',
             blobs: [
-                'rgba(16, 185, 129, 0.32)',
-                'rgba(5, 150, 105, 0.22)',
-                'rgba(52, 211, 153, 0.22)',
-                'rgba(16, 185, 129, 0.24)',
-                'rgba(4, 120, 87, 0.20)'
+                'rgba(16, 185, 129, 0.12)',
+                'rgba(5, 150, 105, 0.08)',
+                'rgba(52, 211, 153, 0.08)',
+                'rgba(16, 185, 129, 0.09)',
+                'rgba(4, 120, 87, 0.07)'
             ]
         }
     },
@@ -101,9 +101,9 @@ export const UNIVERSES = {
             accentSecondary: '#06B6D4',
             accentSecondaryRGB: '6, 182, 212',
             accentHover: '#7C3AED',
-            accentSoft: 'rgba(139, 92, 246, 0.16)',
-            borderAccent: 'rgba(139, 92, 246, 0.4)',
-            shadowAccent: 'rgba(139, 92, 246, 0.38)',
+            accentSoft: 'rgba(139, 92, 246, 0.10)',
+            borderAccent: 'rgba(139, 92, 246, 0.24)',
+            shadowAccent: 'rgba(139, 92, 246, 0.14)',
             bgMain: '#08070F',
             bgCard: '#110E1F',
             bgSidebar: '#0D0B18',
@@ -113,13 +113,13 @@ export const UNIVERSES = {
             headingTracking: '-0.03em',
             headingWeight: '800',
             textOnAccent: '#FFFFFF',
-            heroGradient: 'linear-gradient(135deg, rgba(139, 92, 246, 0.28) 0%, rgba(6, 182, 212, 0.16) 50%, rgba(8, 7, 15, 0.92) 100%)',
+            heroGradient: 'linear-gradient(135deg, rgba(139, 92, 246, 0.13) 0%, rgba(6, 182, 212, 0.06) 50%, rgba(8, 7, 15, 0.94) 100%)',
             blobs: [
-                'rgba(139, 92, 246, 0.34)',
-                'rgba(6, 182, 212, 0.24)',
-                'rgba(167, 139, 250, 0.22)',
-                'rgba(124, 58, 237, 0.24)',
-                'rgba(8, 145, 178, 0.20)'
+                'rgba(139, 92, 246, 0.12)',
+                'rgba(6, 182, 212, 0.08)',
+                'rgba(167, 139, 250, 0.08)',
+                'rgba(124, 58, 237, 0.09)',
+                'rgba(8, 145, 178, 0.07)'
             ]
         }
     },
@@ -161,9 +161,9 @@ export const UNIVERSES = {
             accentSecondary: '#EF4444',
             accentSecondaryRGB: '239, 68, 68',
             accentHover: '#EA580C',
-            accentSoft: 'rgba(249, 115, 22, 0.16)',
-            borderAccent: 'rgba(249, 115, 22, 0.4)',
-            shadowAccent: 'rgba(249, 115, 22, 0.38)',
+            accentSoft: 'rgba(249, 115, 22, 0.10)',
+            borderAccent: 'rgba(249, 115, 22, 0.24)',
+            shadowAccent: 'rgba(249, 115, 22, 0.14)',
             bgMain: '#0A0908',
             bgCard: '#161210',
             bgSidebar: '#110E0C',
@@ -173,13 +173,13 @@ export const UNIVERSES = {
             headingTracking: '-0.04em',
             headingWeight: '900',
             textOnAccent: '#0A0908',
-            heroGradient: 'linear-gradient(135deg, rgba(249, 115, 22, 0.28) 0%, rgba(239, 68, 68, 0.14) 50%, rgba(10, 9, 8, 0.94) 100%)',
+            heroGradient: 'linear-gradient(135deg, rgba(249, 115, 22, 0.12) 0%, rgba(239, 68, 68, 0.05) 50%, rgba(10, 9, 8, 0.95) 100%)',
             blobs: [
-                'rgba(249, 115, 22, 0.32)',
-                'rgba(239, 68, 68, 0.24)',
-                'rgba(251, 146, 60, 0.22)',
-                'rgba(234, 88, 12, 0.24)',
-                'rgba(185, 28, 28, 0.20)'
+                'rgba(249, 115, 22, 0.11)',
+                'rgba(239, 68, 68, 0.08)',
+                'rgba(251, 146, 60, 0.08)',
+                'rgba(234, 88, 12, 0.09)',
+                'rgba(185, 28, 28, 0.07)'
             ]
         }
     },
@@ -221,9 +221,9 @@ export const UNIVERSES = {
             accentSecondary: '#D97706',
             accentSecondaryRGB: '217, 119, 6',
             accentHover: '#B45309',
-            accentSoft: 'rgba(245, 158, 11, 0.16)',
-            borderAccent: 'rgba(245, 158, 11, 0.4)',
-            shadowAccent: 'rgba(245, 158, 11, 0.36)',
+            accentSoft: 'rgba(245, 158, 11, 0.10)',
+            borderAccent: 'rgba(245, 158, 11, 0.24)',
+            shadowAccent: 'rgba(245, 158, 11, 0.13)',
             bgMain: '#0B0905',
             bgCard: '#17130A',
             bgSidebar: '#120F07',
@@ -233,13 +233,13 @@ export const UNIVERSES = {
             headingTracking: '0.005em',
             headingWeight: '700',
             textOnAccent: '#0B0905',
-            heroGradient: 'linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.14) 50%, rgba(11, 9, 5, 0.94) 100%)',
+            heroGradient: 'linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(217, 119, 6, 0.05) 50%, rgba(11, 9, 5, 0.95) 100%)',
             blobs: [
-                'rgba(245, 158, 11, 0.30)',
-                'rgba(217, 119, 6, 0.22)',
-                'rgba(251, 191, 36, 0.20)',
-                'rgba(180, 83, 9, 0.22)',
-                'rgba(146, 64, 14, 0.18)'
+                'rgba(245, 158, 11, 0.11)',
+                'rgba(217, 119, 6, 0.08)',
+                'rgba(251, 191, 36, 0.07)',
+                'rgba(180, 83, 9, 0.08)',
+                'rgba(146, 64, 14, 0.06)'
             ]
         }
     },
@@ -281,9 +281,9 @@ export const UNIVERSES = {
             accentSecondary: '#FBBF24',
             accentSecondaryRGB: '251, 191, 36',
             accentHover: '#BE123C',
-            accentSoft: 'rgba(225, 29, 72, 0.16)',
-            borderAccent: 'rgba(225, 29, 72, 0.42)',
-            shadowAccent: 'rgba(225, 29, 72, 0.38)',
+            accentSoft: 'rgba(225, 29, 72, 0.10)',
+            borderAccent: 'rgba(225, 29, 72, 0.24)',
+            shadowAccent: 'rgba(225, 29, 72, 0.14)',
             bgMain: '#0D0608',
             bgCard: '#1A0C10',
             bgSidebar: '#14090C',
@@ -293,13 +293,13 @@ export const UNIVERSES = {
             headingTracking: '-0.02em',
             headingWeight: '800',
             textOnAccent: '#FFFFFF',
-            heroGradient: 'linear-gradient(135deg, rgba(225, 29, 72, 0.28) 0%, rgba(251, 191, 36, 0.15) 50%, rgba(13, 6, 8, 0.94) 100%)',
+            heroGradient: 'linear-gradient(135deg, rgba(225, 29, 72, 0.13) 0%, rgba(251, 191, 36, 0.06) 50%, rgba(13, 6, 8, 0.95) 100%)',
             blobs: [
-                'rgba(225, 29, 72, 0.32)',
-                'rgba(251, 191, 36, 0.22)',
-                'rgba(244, 63, 94, 0.22)',
-                'rgba(190, 18, 60, 0.24)',
-                'rgba(217, 119, 6, 0.18)'
+                'rgba(225, 29, 72, 0.12)',
+                'rgba(251, 191, 36, 0.08)',
+                'rgba(244, 63, 94, 0.08)',
+                'rgba(190, 18, 60, 0.09)',
+                'rgba(217, 119, 6, 0.07)'
             ]
         }
     }
