@@ -10,7 +10,7 @@
      forces full-page GPU compositing on every frame — major jank source.
      A semi-opaque solid is visually identical and costs nothing. */
   background: rgba(14, 12, 20, 0.97);
-  border-top: 1px solid rgba(139, 92, 246, 0.15);
+  border-top: 1px solid rgba(var(--accent-primary-rgb), 0.15);
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
   z-index: 9999;
   /* GPU layer promotion — isolated from main thread */
@@ -87,7 +87,7 @@
   border-radius: 50%;
   opacity: 0;
   transition: opacity 0.2s ease;
-  box-shadow: 0 0 8px rgba(168, 85, 247, 0.7);
+  box-shadow: 0 0 8px rgba(var(--accent-secondary-rgb), 0.7);
 }
 
 .mini-player:hover .progress-bar::after {
@@ -175,7 +175,7 @@
 }
 
 .mini-player.playing #miniPlayerImage {
-  border-color: var(--album-accent, rgba(139, 92, 246, 0.5));
+  border-color: var(--album-accent, rgba(var(--accent-primary-rgb), 0.5));
 }
 
 .mini-player-titles {
@@ -346,9 +346,9 @@
 }
 
 .video-toggle-btn {
-  background: rgba(168, 85, 247, 0.2);
-  border: 1px solid rgba(168, 85, 247, 0.4);
-  color: #c084fc;
+  background: rgba(var(--accent-secondary-rgb), 0.2);
+  border: 1px solid rgba(var(--accent-secondary-rgb), 0.4);
+  color: var(--accent-secondary);
   border-radius: 6px;
   padding: 4px 8px;
   display: flex;
@@ -362,7 +362,7 @@
 }
 
 .video-toggle-btn:hover {
-  background: rgba(168, 85, 247, 0.35);
+  background: rgba(var(--accent-secondary-rgb), 0.35);
   transform: scale(1.08) translateY(-1px);
 }
 
@@ -479,7 +479,7 @@
   border-radius: 50%;
   background: #ffffff;
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(var(--accent-primary-rgb), 0.2);
   opacity: 0;
   transform: scale(0.6);
   transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
@@ -490,7 +490,7 @@
 #miniVolumeSlider:active::-webkit-slider-thumb {
   opacity: 1;
   transform: scale(1);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 8px var(--album-accent, rgba(139, 92, 246, 0.5));
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 0 8px var(--album-accent, rgba(var(--accent-primary-rgb), 0.5));
 }
 
 #miniVolumeSlider::-moz-range-thumb {

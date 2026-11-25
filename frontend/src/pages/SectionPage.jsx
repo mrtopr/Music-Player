@@ -27,7 +27,7 @@ const SECTION_CONFIG = {
         title: 'New Releases',
         subtitle: 'Fresh drops and latest albums',
         icon: ListMusic,
-        color: '#8B5CF6',
+        color: 'var(--accent-primary)',
         fetch: async () => {
             const [m1, m2] = await Promise.all([
                 apiFetch('/api/search/albums', { query: 'new hindi album 2025', language: 'hindi', limit: 20 }),
@@ -71,9 +71,9 @@ function SongRow({ song, index, onPlay, isCurrentSong, isPlaying }) {
                 borderRadius: '12px',
                 cursor: 'pointer',
                 background: isCurrentSong
-                    ? 'rgba(139, 92, 246, 0.12)'
+                    ? 'rgba(var(--accent-primary-rgb), 0.12)'
                     : hovered ? 'rgba(255,255,255,0.05)' : 'transparent',
-                border: isCurrentSong ? '1px solid rgba(139,92,246,0.25)' : '1px solid transparent',
+                border: isCurrentSong ? '1px solid rgba(var(--accent-primary-rgb),0.25)' : '1px solid transparent',
                 transition: 'all 0.15s ease',
             }}
         >
@@ -197,8 +197,8 @@ export default function SectionPage() {
                 position: 'relative',
                 padding: '2rem 1.5rem 2.5rem',
                 marginBottom: '0.5rem',
-                background: `linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(192,132,252,0.05) 50%, transparent 100%)`,
-                borderBottom: '1px solid rgba(139,92,246,0.1)',
+                background: `linear-gradient(135deg, rgba(var(--accent-primary-rgb),0.12) 0%, rgba(192,132,252,0.05) 50%, transparent 100%)`,
+                borderBottom: '1px solid rgba(var(--accent-primary-rgb),0.1)',
                 borderRadius: '0 0 24px 24px',
                 overflow: 'hidden',
             }}>
@@ -223,7 +223,7 @@ export default function SectionPage() {
                         marginBottom: '1.5rem', transition: 'all 0.2s',
                         backdropFilter: 'blur(12px)'
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-primary-soft, rgba(139,92,246,0.25))'; e.currentTarget.style.borderColor = 'var(--accent-primary, #8B5CF6)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent-primary-soft, rgba(var(--accent-primary-rgb),0.25))'; e.currentTarget.style.borderColor = 'var(--accent-primary, #8B5CF6)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
                 >
                     <ArrowLeft size={18} />
@@ -261,11 +261,11 @@ export default function SectionPage() {
                                 background: 'var(--gradient-brand, var(--accent-primary))',
                                 color: '#fff', border: 'none', borderRadius: '50px',
                                 padding: '12px 24px', cursor: 'pointer', fontWeight: 700,
-                                fontSize: '0.95rem', boxShadow: '0 4px 16px var(--shadow-accent, rgba(139,92,246,0.4))',
+                                fontSize: '0.95rem', boxShadow: '0 4px 16px var(--shadow-accent, rgba(var(--accent-primary-rgb),0.4))',
                                 transition: 'all 0.2s'
                             }}
-                            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px var(--shadow-accent, rgba(139,92,246,0.5))'; }}
-                            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px var(--shadow-accent, rgba(139,92,246,0.4))'; }}
+                            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px var(--shadow-accent, rgba(var(--accent-primary-rgb),0.5))'; }}
+                            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 16px var(--shadow-accent, rgba(var(--accent-primary-rgb),0.4))'; }}
                         >
                             <PlayCircle size={20} /> Play All
                         </button>

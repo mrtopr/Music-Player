@@ -11,7 +11,7 @@ const GENRES_DATA = [
         name: 'POP',
         count: '20,831 Music',
         bg: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&auto=format&fit=crop&q=80',
-        color: '#c084fc',
+        color: 'var(--accent-secondary)',
         tags: [
             { id: 'happy', label: 'Happy' },
             { id: 'sad', label: 'Sad' },
@@ -42,7 +42,7 @@ const GENRES_DATA = [
         name: 'Metal',
         count: '6,485 Music',
         bg: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80',
-        color: '#8b5cf6',
+        color: 'var(--accent-primary)',
         tags: [
             { id: 'heavy-metal', label: 'Heavy Metal' },
             { id: 'thrash', label: 'Thrash' },
@@ -55,7 +55,7 @@ const GENRES_DATA = [
         name: 'Jazz',
         count: '8,451 Music',
         bg: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80',
-        color: '#8b5cf6',
+        color: 'var(--accent-primary)',
         tags: [
             { id: 'smooth-jazz', label: 'Smooth Jazz' },
             { id: 'blues', label: 'Blues' },
@@ -225,7 +225,7 @@ export default function Genres() {
                     height: 42px;
                     border-radius: 50%;
                     object-fit: cover;
-                    border: 2px solid rgba(168, 85, 247, 0.6);
+                    border: 2px solid rgba(var(--accent-secondary-rgb), 0.6);
                     box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
                     display: block;
                 }
@@ -389,7 +389,7 @@ export default function Genres() {
             {/* Mobile Header */}
             <div className="genres-mobile-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => navigate('/')}>
-                    <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: '30px', height: '30px', borderRadius: '50%', border: '1.5px solid rgba(139, 92, 246, 0.5)', boxShadow: '0 0 12px rgba(139, 92, 246, 0.4)' }} />
+                    <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: '30px', height: '30px', borderRadius: '50%', border: '1.5px solid rgba(var(--accent-primary-rgb), 0.5)', boxShadow: '0 0 12px rgba(var(--accent-primary-rgb), 0.4)' }} />
                     <span style={{ fontFamily: "'Merienda', cursive", fontSize: '1.35rem', fontWeight: 700, background: 'linear-gradient(135deg, #c084fc 0%, #8b5cf6 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Mehfil</span>
                 </div>
 

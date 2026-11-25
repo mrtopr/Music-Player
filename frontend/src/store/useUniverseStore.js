@@ -47,18 +47,28 @@ export function applyUniverseStyles(universeId) {
     root.style.setProperty('--mehfil-gold-glow', theme.shadowAccent);
     root.style.setProperty('--mehfil-accent-blue', theme.accentSecondary);
 
-    // Surfaces
+    // Surfaces & Borders
     root.style.setProperty('--bg-main', theme.bgMain);
+    root.style.setProperty('--bg-dark', theme.bgMain);
     root.style.setProperty('--bg-card', theme.bgCard);
     root.style.setProperty('--bg-sidebar', theme.bgSidebar);
     root.style.setProperty('--card-bg', theme.bgCard);
+    root.style.setProperty('--card-hover', `rgba(${theme.accentPrimaryRGB}, 0.08)`);
+    root.style.setProperty('--border-color', `rgba(${theme.accentPrimaryRGB}, 0.14)`);
+    root.style.setProperty('--border-subtle', `rgba(${theme.accentPrimaryRGB}, 0.08)`);
+    root.style.setProperty('--border-light', `rgba(${theme.accentPrimaryRGB}, 0.12)`);
+    root.style.setProperty('--border-medium', `rgba(${theme.accentPrimaryRGB}, 0.20)`);
     root.style.setProperty('--mehfil-dark-base', theme.bgMain);
     root.style.setProperty('--mehfil-surface-card', theme.bgCard);
 
     // Gradients & Hero
     root.style.setProperty('--hero-gradient', theme.heroGradient);
+    root.style.setProperty('--gradient-accent', `linear-gradient(135deg, rgba(${theme.accentPrimaryRGB}, 0.15), rgba(${theme.accentSecondaryRGB}, 0.06))`);
     root.style.setProperty('--gradient-brand', `linear-gradient(135deg, ${theme.accentPrimary} 0%, ${theme.accentSecondary} 55%, ${theme.accentHover} 100%)`);
+    root.style.setProperty('--gradient-brand-hover', `linear-gradient(135deg, ${theme.accentHover} 0%, ${theme.accentPrimary} 55%, ${theme.accentSecondary} 100%)`);
     root.style.setProperty('--gradient-text', `linear-gradient(90deg, ${theme.accentSecondary} 0%, ${theme.accentPrimary} 55%, ${theme.accentHover} 100%)`);
+    root.style.setProperty('--fullscreen-bg', `linear-gradient(135deg, ${theme.bgCard} 0%, ${theme.bgMain} 55%, ${theme.bgSidebar} 100%)`);
+    root.style.setProperty('--fullscreen-border', `rgba(${theme.accentPrimaryRGB}, 0.16)`);
     root.style.setProperty('--fullscreen-accent', theme.accentPrimary);
     root.style.setProperty('--fullscreen-accent-secondary', theme.accentSecondary);
     root.style.setProperty('--fullscreen-glow', `0 0 25px rgba(${theme.accentPrimaryRGB}, 0.35)`);

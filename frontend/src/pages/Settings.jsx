@@ -636,9 +636,9 @@ export default function Settings() {
                                                 return (
                                                     <span key={g} style={{
                                                         padding: '6px 14px', borderRadius: '50px',
-                                                        background: `${p.color || '#8B5CF6'}22`,
-                                                        border: `1.5px solid ${p.color || '#8B5CF6'}`,
-                                                        color: p.color || '#8B5CF6', fontSize: '0.85rem', fontWeight: 600
+                                                        background: `${p.color || 'var(--accent-primary)'}22`,
+                                                        border: `1.5px solid ${p.color || 'var(--accent-primary)'}`,
+                                                        color: p.color || 'var(--accent-primary)', fontSize: '0.85rem', fontWeight: 600
                                                     }}>
                                                         {p.emoji} {g}
                                                     </span>

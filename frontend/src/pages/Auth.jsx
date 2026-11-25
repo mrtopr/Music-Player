@@ -56,9 +56,9 @@ const INPUT_BASE = {
 };
 
 function focusOn(e) {
-  e.target.style.borderColor = 'rgba(168,85,247,0.7)';
-  e.target.style.background  = 'rgba(168,85,247,0.07)';
-  e.target.style.boxShadow   = '0 0 0 3px rgba(168,85,247,0.13)';
+  e.target.style.borderColor = 'rgba(var(--accent-secondary-rgb),0.7)';
+  e.target.style.background  = 'rgba(var(--accent-secondary-rgb),0.07)';
+  e.target.style.boxShadow   = '0 0 0 3px rgba(var(--accent-secondary-rgb),0.13)';
 }
 function focusOff(e) {
   e.target.style.borderColor = 'rgba(255,255,255,0.09)';
@@ -111,9 +111,9 @@ function SubmitBtn({ label, loading }) {
   return (
     <button
       type="submit" disabled={loading}
-      style={{ width: '100%', padding: '15px', borderRadius: '12px', border: 'none', fontWeight: 700, fontSize: '0.97rem', color: '#fff', cursor: loading ? 'not-allowed' : 'pointer', background: 'linear-gradient(135deg,#a855f7,#6366f1)', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, opacity: loading ? 0.65 : 1, boxShadow: loading ? 'none' : '0 6px 20px rgba(168,85,247,0.4)', transition: 'all 0.2s', marginTop: 4 }}
-      onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(168,85,247,0.55)'; }}}
-      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = loading ? 'none' : '0 6px 20px rgba(168,85,247,0.4)'; }}
+      style={{ width: '100%', padding: '15px', borderRadius: '12px', border: 'none', fontWeight: 700, fontSize: '0.97rem', color: '#fff', cursor: loading ? 'not-allowed' : 'pointer', background: 'linear-gradient(135deg,#a855f7,#6366f1)', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10, opacity: loading ? 0.65 : 1, boxShadow: loading ? 'none' : '0 6px 20px rgba(var(--accent-secondary-rgb),0.4)', transition: 'all 0.2s', marginTop: 4 }}
+      onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(var(--accent-secondary-rgb),0.55)'; }}}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = loading ? 'none' : '0 6px 20px rgba(var(--accent-secondary-rgb),0.4)'; }}
     >
       {loading ? <Loader2 size={20} style={{ animation: 'a-spin 0.8s linear infinite' }} /> : label}
     </button>
@@ -124,7 +124,7 @@ function TextLink({ onClick, children }) {
   return (
     <button
       type="button" onClick={onClick}
-      style={{ background: 'none', border: 'none', color: '#c084fc', fontWeight: 600, cursor: 'pointer', fontSize: '0.88rem', padding: 0, transition: 'opacity 0.15s' }}
+      style={{ background: 'none', border: 'none', color: 'var(--accent-secondary)', fontWeight: 600, cursor: 'pointer', fontSize: '0.88rem', padding: 0, transition: 'opacity 0.15s' }}
       onMouseEnter={e => { e.currentTarget.style.opacity = '0.7'; }}
       onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
     >{children}</button>
@@ -146,8 +146,8 @@ function BackBtn({ onBack }) {
 
 function IconBadge({ icon: Icon }) {
   return (
-    <div style={{ width: 48, height: 48, borderRadius: 13, background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-      <Icon size={22} color="#c084fc" />
+    <div style={{ width: 48, height: 48, borderRadius: 13, background: 'rgba(var(--accent-secondary-rgb),0.12)', border: '1px solid rgba(var(--accent-secondary-rgb),0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+      <Icon size={22} color="var(--accent-secondary)" />
     </div>
   );
 }
@@ -385,8 +385,8 @@ export default function Auth() {
           }
 
           .auth-pill-input-wrap:focus-within {
-            border-color: #a855f7;
-            box-shadow: 0 0 16px rgba(168, 85, 247, 0.35);
+            border-color: var(--accent-secondary);
+            box-shadow: 0 0 16px rgba(var(--accent-secondary-rgb), 0.35);
           }
 
           .auth-pill-input-wrap input {
@@ -461,9 +461,9 @@ export default function Auth() {
           }
 
           .auth-remember-radio.checked {
-            background: #a855f7;
-            border-color: #a855f7;
-            box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+            background: var(--accent-secondary);
+            border-color: var(--accent-secondary);
+            box-shadow: 0 0 10px rgba(var(--accent-secondary-rgb), 0.6);
           }
 
           /* Solid Purple Pill Button */
@@ -695,12 +695,12 @@ export default function Auth() {
             {/* LEFT — brand */}
             <div className="a-left" style={{ flex: '0 0 46%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '3rem 3.5rem', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: '3rem' }}>
-                <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: 40, height: 40, filter: 'drop-shadow(0 0 10px rgba(168,85,247,0.7))' }} />
+                <img src="/mehfil-logo.png" alt="Mehfil" style={{ width: 40, height: 40, filter: 'drop-shadow(0 0 10px rgba(var(--accent-secondary-rgb),0.7))' }} />
                 <span style={{ fontFamily: "'Merienda',cursive", fontSize: '1.65rem', color: '#fff', letterSpacing: '-0.2px' }}>Mehfil</span>
               </div>
 
               <div style={{ position: 'relative', width: 170, height: 170, marginBottom: '2.75rem', flexShrink: 0 }}>
-                <div style={{ position: 'absolute', inset: '-22px', background: 'radial-gradient(circle,rgba(168,85,247,0.4) 0%,transparent 70%)', borderRadius: '50%', filter: 'blur(18px)' }} />
+                <div style={{ position: 'absolute', inset: '-22px', background: 'radial-gradient(circle,rgba(var(--accent-secondary-rgb),0.4) 0%,transparent 70%)', borderRadius: '50%', filter: 'blur(18px)' }} />
                 <div style={{ width: 170, height: 170, borderRadius: '50%', background: 'conic-gradient(from 0deg,#1a1a2e,#16213e,#0f3460,#1a1a2e,#16213e,#1a1a2e)', border: '3px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.75)', animation: 'a-vinyl 14s linear infinite' }}>
                   {[14, 28, 42].map(i => <div key={i} style={{ position: 'absolute', inset: i, border: '1px solid rgba(255,255,255,0.05)', borderRadius: '50%' }} />)}
                   <div style={{ width: 54, height: 54, borderRadius: '50%', background: 'linear-gradient(135deg,#a855f7,#ec4899)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 22px rgba(236,72,153,0.65)', position: 'relative', zIndex: 1 }}>
@@ -726,7 +726,7 @@ export default function Auth() {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
                 {FEATURES.map(({ icon: Icon, label }) => (
                   <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '7px 14px', borderRadius: 40, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', fontSize: '0.8rem', color: 'rgba(255,255,255,0.55)', fontWeight: 500 }}>
-                    <Icon size={13} color="#c084fc" />{label}
+                    <Icon size={13} color="var(--accent-secondary)" />{label}
                   </div>
                 ))}
               </div>
@@ -748,7 +748,7 @@ export default function Auth() {
                   {/* LOGIN */}
                   {view === 'login' && (
                     <>
-                      <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase', color: 'rgba(168,85,247,0.85)', marginBottom: 8 }}>Welcome back</p>
+                      <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase', color: 'rgba(var(--accent-secondary-rgb),0.85)', marginBottom: 8 }}>Welcome back</p>
                       <h2 style={{ fontSize: '1.7rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.4px', marginBottom: 6 }}>Sign in to Mehfil</h2>
                       <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: '0.88rem', marginBottom: '1.75rem' }}>Access your library, stats, and sessions.</p>
                       <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -767,7 +767,7 @@ export default function Auth() {
                   {/* REGISTER */}
                   {view === 'register' && (
                     <>
-                      <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase', color: 'rgba(168,85,247,0.85)', marginBottom: 8 }}>Get started</p>
+                      <p style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '1.4px', textTransform: 'uppercase', color: 'rgba(var(--accent-secondary-rgb),0.85)', marginBottom: 8 }}>Get started</p>
                       <h2 style={{ fontSize: '1.7rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.4px', marginBottom: 6 }}>Create your account</h2>
                       <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: '0.88rem', marginBottom: '1.75rem' }}>Build your ultimate music identity.</p>
                       <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -800,8 +800,8 @@ export default function Auth() {
                   {/* FORGOT SENT */}
                   {view === 'forgot-sent' && (
                     <div style={{ textAlign: 'center', padding: '1rem 0' }}>
-                      <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', boxShadow: '0 0 40px rgba(168,85,247,0.2)' }}>
-                        <Mail size={28} color="#c084fc" />
+                      <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(var(--accent-secondary-rgb),0.12)', border: '1px solid rgba(var(--accent-secondary-rgb),0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', boxShadow: '0 0 40px rgba(var(--accent-secondary-rgb),0.2)' }}>
+                        <Mail size={28} color="var(--accent-secondary)" />
                       </div>
                       <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', marginBottom: 10 }}>Check the terminal</h2>
                       <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.88rem', lineHeight: 1.7, marginBottom: '2rem' }}>
@@ -834,7 +834,7 @@ export default function Auth() {
                       <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff', marginBottom: 10 }}>Password updated!</h2>
                       <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.88rem', lineHeight: 1.7, marginBottom: '2rem' }}>Your password was changed. Sign in with your new credentials.</p>
                       <button type="button" onClick={() => go('login')}
-                        style={{ padding: '13px 28px', borderRadius: 12, border: 'none', fontWeight: 700, fontSize: '0.95rem', color: '#fff', cursor: 'pointer', background: 'linear-gradient(135deg,#a855f7,#6366f1)', boxShadow: '0 6px 20px rgba(168,85,247,0.4)' }}>
+                        style={{ padding: '13px 28px', borderRadius: 12, border: 'none', fontWeight: 700, fontSize: '0.95rem', color: '#fff', cursor: 'pointer', background: 'linear-gradient(135deg,#a855f7,#6366f1)', boxShadow: '0 6px 20px rgba(var(--accent-secondary-rgb),0.4)' }}>
                         Sign In now
                       </button>
                     </div>

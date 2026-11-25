@@ -658,16 +658,16 @@ export default function Home() {
             {!isMobile && showBanner && (
                 <div style={{
                     margin: '1rem',
-                    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(192, 132, 252, 0.1) 100%)',
+                    background: 'linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.25) 0%, rgba(192, 132, 252, 0.1) 100%)',
                     backdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(139, 92, 246, 0.3)',
+                    border: '1px solid rgba(var(--accent-primary-rgb), 0.3)',
                     borderRadius: '20px',
                     padding: '1.2rem',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '12px',
                     position: 'relative',
-                    boxShadow: '0 8px 32px 0 rgba(139, 92, 246, 0.15)',
+                    boxShadow: '0 8px 32px 0 rgba(var(--accent-primary-rgb), 0.15)',
                     animation: 'fadeIn 0.5s ease',
                     zIndex: 10
                 }}>
@@ -688,7 +688,7 @@ export default function Home() {
                     </button>
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                         <div style={{
-                            background: 'var(--accent-primary-soft, rgba(139, 92, 246, 0.2))',
+                            background: 'var(--accent-primary-soft, rgba(var(--accent-primary-rgb), 0.2))',
                             color: 'var(--accent-primary, #8B5CF6)',
                             width: '40px',
                             height: '40px',
@@ -697,7 +697,7 @@ export default function Home() {
                             alignItems: 'center',
                             justifyContent: 'center',
                             flexShrink: 0,
-                            boxShadow: '0 0 15px rgba(139, 92, 246, 0.2)'
+                            boxShadow: '0 0 15px rgba(var(--accent-primary-rgb), 0.2)'
                         }}>
                             <Smartphone size={20} />
                         </div>
@@ -724,7 +724,7 @@ export default function Home() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '6px',
-                                    boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
+                                    boxShadow: '0 4px 12px rgba(var(--accent-primary-rgb), 0.3)',
                                     transition: 'transform 0.2s'
                                 }}
                             >
@@ -828,7 +828,7 @@ export default function Home() {
                             display: 'flex',
                             alignItems: 'center',
                             gap: '8px',
-                            boxShadow: '0 4px 18px rgba(139, 92, 246, 0.45)',
+                            boxShadow: '0 4px 18px rgba(var(--accent-primary-rgb), 0.45)',
                             transition: 'transform 0.2s'
                         }}
                         onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}

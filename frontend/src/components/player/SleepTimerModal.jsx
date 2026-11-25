@@ -50,7 +50,7 @@ export default function SleepTimerModal({ visible, onClose }) {
                 </div>
 
                 {activeTimer && (
-                    <div style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: '15px', padding: '1rem', marginBottom: '1.5rem', textAlign: 'center', color: '#A78BFA' }}>
+                    <div style={{ background: 'rgba(var(--accent-primary-rgb),0.1)', border: '1px solid rgba(var(--accent-primary-rgb),0.25)', borderRadius: '15px', padding: '1rem', marginBottom: '1.5rem', textAlign: 'center', color: '#A78BFA' }}>
                         <Clock size={16} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} />
                         <span style={{ fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
                             {formatRemaining(remaining)} remaining

@@ -41,7 +41,7 @@ function ListenTogetherPanel({ sessionCode, sessionRole, createSession, joinSess
             zIndex: 1000,
             background: 'rgba(15, 12, 28, 0.96)',
             backdropFilter: 'blur(25px)',
-            border: '1px solid rgba(168, 85, 247, 0.25)',
+            border: '1px solid rgba(var(--accent-secondary-rgb), 0.25)',
             borderRadius: '20px',
             padding: '20px',
             boxShadow: '0 20px 50px rgba(0,0,0,0.7)',
@@ -54,7 +54,7 @@ function ListenTogetherPanel({ sessionCode, sessionRole, createSession, joinSess
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, background: 'linear-gradient(90deg, #c084fc, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Radio size={18} color="#c084fc" /> Listen Together
+                    <Radio size={18} color="var(--accent-secondary)" /> Listen Together
                 </h3>
                 <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '1.2rem', padding: '4px' }}>&times;</button>
             </div>
@@ -62,11 +62,11 @@ function ListenTogetherPanel({ sessionCode, sessionRole, createSession, joinSess
             {sessionCode ? (
                 // Active Session State
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <div style={{ background: 'rgba(168, 85, 247, 0.08)', border: '1px solid rgba(168, 85, 247, 0.15)', borderRadius: '12px', padding: '12px', textAlign: 'center' }}>
+                    <div style={{ background: 'rgba(var(--accent-secondary-rgb), 0.08)', border: '1px solid rgba(var(--accent-secondary-rgb), 0.15)', borderRadius: '12px', padding: '12px', textAlign: 'center' }}>
                         <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '1px' }}>
                             {sessionRole === 'host' ? 'Hosting Room' : 'Joined Room'}
                         </span>
-                        <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#c084fc', margin: '6px 0', fontFamily: 'monospace', letterSpacing: '2px' }}>
+                        <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--accent-secondary)', margin: '6px 0', fontFamily: 'monospace', letterSpacing: '2px' }}>
                             {sessionCode}
                         </div>
                         <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>
@@ -534,7 +534,7 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '8px',
-                                        background: musicSource === src.id ? 'rgba(139, 92, 246, 0.2)' : 'transparent',
+                                        background: musicSource === src.id ? 'rgba(var(--accent-primary-rgb), 0.2)' : 'transparent',
                                         color: musicSource === src.id ? '#fff' : 'rgba(255,255,255,0.7)',
                                         border: 'none',
                                         borderRadius: '8px',
@@ -636,8 +636,8 @@ export default function TopBar({ user, onOpenEq, onOpenSleep }) {
                       onClick={() => setSyncPanelOpen(!syncPanelOpen)}
                       title="Listen Together"
                       style={{
-                          background: sessionCode ? 'rgba(139, 92, 246, 0.15)' : 'rgba(255,255,255,0.04)',
-                          border: sessionCode ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid rgba(255,255,255,0.08)',
+                          background: sessionCode ? 'rgba(var(--accent-primary-rgb), 0.15)' : 'rgba(255,255,255,0.04)',
+                          border: sessionCode ? '1px solid rgba(var(--accent-primary-rgb), 0.4)' : '1px solid rgba(255,255,255,0.08)',
                           color: sessionCode ? 'var(--accent-primary, #8B5CF6)' : 'var(--text-secondary)',
                           transition: 'all 0.3s ease',
                           display: 'flex',

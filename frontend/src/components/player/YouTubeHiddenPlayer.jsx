@@ -228,7 +228,7 @@ export default function YouTubeHiddenPlayer() {
                               zIndex: 100001,
                               borderRadius: isMobile ? '12px' : '20px',
                               overflow: 'hidden',
-                              boxShadow: '0 30px 90px rgba(0,0,0,0.95), 0 0 60px rgba(168,85,247,0.4)',
+                              boxShadow: '0 30px 90px rgba(0,0,0,0.95), 0 0 60px rgba(var(--accent-secondary-rgb),0.4)',
                               background: '#000',
                               border: '1px solid rgba(255,255,255,0.18)'
                           }
@@ -284,19 +284,19 @@ export default function YouTubeHiddenPlayer() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                background: 'rgba(168,85,247,0.2)',
-                                border: '1px solid rgba(168,85,247,0.45)',
-                                color: '#c084fc',
+                                background: 'rgba(var(--accent-secondary-rgb),0.2)',
+                                border: '1px solid rgba(var(--accent-secondary-rgb),0.45)',
+                                color: 'var(--accent-secondary)',
                                 padding: isMobile ? '8px 12px' : '9px 20px',
                                 borderRadius: '30px',
                                 cursor: 'pointer',
                                 fontSize: isMobile ? '0.75rem' : '0.88rem',
                                 fontWeight: 600,
                                 transition: 'all 0.2s',
-                                boxShadow: '0 4px 20px rgba(168,85,247,0.25)'
+                                boxShadow: '0 4px 20px rgba(var(--accent-secondary-rgb),0.25)'
                             }}
-                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(168,85,247,0.38)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(168,85,247,0.2)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(var(--accent-secondary-rgb),0.38)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(var(--accent-secondary-rgb),0.2)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                         >
                             <ArrowLeft size={16} /> Switch to Audio Mode
                         </button>

@@ -96,8 +96,8 @@
   /* Player-specific Variables */
   --bg-dark: #0D0B16;
   --bg-darker: #06050C;
-  --card-hover: rgba(139, 92, 246, 0.08);
-  --border-color: rgba(139, 92, 246, 0.08);
+  --card-hover: rgba(var(--accent-primary-rgb), 0.08);
+  --border-color: rgba(var(--accent-primary-rgb), 0.08);
 }
 
 /* ========== RESET & BASE STYLES ========== */
@@ -773,7 +773,7 @@ img[src*="mehfil-logo"] {
 .hero-orb-1 {
   width: 420px;
   height: 420px;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.18) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--accent-primary-rgb), 0.18) 0%, transparent 70%);
   top: -120px;
   left: 50%;
   transform: translate3d(-50%, 0, 0);
@@ -811,7 +811,7 @@ img[src*="mehfil-logo"] {
   width: 90px;
   height: 90px;
   object-fit: contain;
-  filter: drop-shadow(0 0 18px rgba(139, 92, 246, 0.55));
+  filter: drop-shadow(0 0 18px rgba(var(--accent-primary-rgb), 0.55));
   animation: heroPulse 3s ease-in-out infinite;
 }
 
@@ -819,7 +819,7 @@ img[src*="mehfil-logo"] {
 
   0%,
   100% {
-    filter: drop-shadow(0 0 16px rgba(139, 92, 246, 0.5));
+    filter: drop-shadow(0 0 16px rgba(var(--accent-primary-rgb), 0.5));
     transform: scale(1);
   }
 
@@ -833,7 +833,7 @@ img[src*="mehfil-logo"] {
   position: absolute;
   inset: -20px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(var(--accent-primary-rgb), 0.2) 0%, transparent 65%);
   pointer-events: none;
 }
 
@@ -907,10 +907,10 @@ img[src*="mehfil-logo"] {
 }
 
 .category-scroll button.active {
-  background: #8B5CF6;
+  background: var(--accent-primary);
   color: #fff;
-  border-color: #8B5CF6;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+  border-color: var(--accent-primary);
+  box-shadow: 0 4px 15px rgba(var(--accent-primary-rgb), 0.3);
 }
 
 
@@ -978,7 +978,7 @@ img[src*="mehfil-logo"] {
 .artist-card:hover,
 .playlist-card:hover {
   background: rgba(29, 30, 48, 0.6) !important;
-  border-color: rgba(139, 92, 246, 0.3) !important;
+  border-color: rgba(var(--accent-primary-rgb), 0.3) !important;
   transform: translateY(-4px) scale(1.02);
   box-shadow: var(--shadow-heavy), var(--shadow-glow);
 }
@@ -1559,7 +1559,7 @@ img[src*="mehfil-logo"] {
   gap: 8px;
   font-size: 0.9rem;
   transition: all 0.2s;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35);
+  box-shadow: 0 4px 15px rgba(var(--accent-primary-rgb), 0.35);
   cursor: pointer;
 }
 
@@ -1567,7 +1567,7 @@ img[src*="mehfil-logo"] {
 .primary-cta-btn:hover {
   transform: scale(1.05);
   background: linear-gradient(135deg, #7C3AED, #8B5CF6);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 6px 20px rgba(var(--accent-primary-rgb), 0.5);
 }
 
 .secondary-cta-btn {
@@ -1685,7 +1685,7 @@ img[src*="mehfil-logo"] {
   font-family: "Merienda", cursive;
   font-size: 32px;
   margin-bottom: 8px;
-  text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+  text-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.3);
 }
 
 .login-header p {
@@ -1725,7 +1725,7 @@ img[src*="mehfil-logo"] {
 
 .form-group input[type="text"]:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.3);
   background: rgba(255, 255, 255, 0.15);
 }
 
@@ -1798,7 +1798,7 @@ img[src*="mehfil-logo"] {
 }
 
 .login-btn:disabled {
-  background: rgba(139, 92, 246, 0.5);
+  background: rgba(var(--accent-primary-rgb), 0.5);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -2189,7 +2189,7 @@ img[src*="mehfil-logo"] {
 }
 
 .list-row.playing {
-  background: rgba(139, 92, 246, 0.12);
+  background: rgba(var(--accent-primary-rgb), 0.12);
 }
 
 .list-art {
@@ -2480,7 +2480,7 @@ img[src*="mehfil-logo"] {
 
 .load-more-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 6px 20px rgba(var(--accent-primary-rgb), 0.4);
   background: linear-gradient(135deg, #C084FC 0%, var(--accent-primary) 100%);
 }
 
@@ -2810,7 +2810,7 @@ img[src^="https://"] {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 15px rgba(var(--accent-primary-rgb), 0.3);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -2820,7 +2820,7 @@ img[src^="https://"] {
 
 .pagination-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 6px 20px rgba(var(--accent-primary-rgb), 0.4);
   background: linear-gradient(135deg, #C084FC 0%, var(--accent-primary) 100%);
 }
 
@@ -2843,7 +2843,7 @@ img[src^="https://"] {
   border-radius: 20px;
   font-size: 14px;
   font-weight: 600;
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.3);
   min-width: 80px;
   text-align: center;
 }
@@ -3050,7 +3050,7 @@ img[src^="https://"] {
   font-size: 10px;
   font-weight: 600;
   color: var(--accent-primary);
-  text-shadow: 0 0 3px rgba(139, 92, 246, 0.5);
+  text-shadow: 0 0 3px rgba(var(--accent-primary-rgb), 0.5);
   line-height: 1;
   margin-bottom: 1px;
   white-space: nowrap;
@@ -3106,7 +3106,7 @@ img[src^="https://"] {
   width: 24px;
   height: 24px;
   object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+  filter: drop-shadow(0 0 8px rgba(var(--accent-primary-rgb), 0.6));
   animation: brandIconPulse 3s ease-in-out infinite;
 }
 
@@ -3115,12 +3115,12 @@ img[src^="https://"] {
   0%,
   100% {
     transform: scale(1);
-    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+    filter: drop-shadow(0 0 8px rgba(var(--accent-primary-rgb), 0.6));
   }
 
   50% {
     transform: scale(1.1);
-    filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.8));
+    filter: drop-shadow(0 0 12px rgba(var(--accent-primary-rgb), 0.8));
   }
 }
 
@@ -3129,7 +3129,7 @@ img[src^="https://"] {
   font-size: 20px;
   font-weight: 700;
   color: var(--accent-primary);
-  text-shadow: 0 0 10px rgba(139, 92, 246, 0.8);
+  text-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.8);
   letter-spacing: 1px;
 }
 
@@ -3264,7 +3264,7 @@ img[src^="https://"] {
 }
 
 .fullscreen-branding:hover .brand-name {
-  text-shadow: 0 0 15px rgba(139, 92, 246, 1);
+  text-shadow: 0 0 15px rgba(var(--accent-primary-rgb), 1);
 }
 
 /* ========== ENHANCED VOLUME CONTROLLER ========== */
@@ -3288,7 +3288,7 @@ img[src^="https://"] {
       var(--accent-primary) 80%,
       rgba(255, 255, 255, 0.2) 80%,
       rgba(255, 255, 255, 0.2) 100%);
-  box-shadow: 0 0 5px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 5px rgba(var(--accent-primary-rgb), 0.3);
 }
 
 .mini-volume-control input[type="range"]:hover {
@@ -3297,26 +3297,26 @@ img[src^="https://"] {
       var(--accent-secondary) 80%,
       rgba(255, 255, 255, 0.3) 80%,
       rgba(255, 255, 255, 0.3) 100%);
-  box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 8px rgba(var(--accent-primary-rgb), 0.5);
 }
 
 /* Enhanced Mini Volume Thumb */
 .mini-volume-control input[type="range"]::-webkit-slider-thumb {
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 8px rgba(var(--accent-primary-rgb), 0.6);
   transform: scale(1);
   transition: all var(--transition-normal);
 }
 
 .mini-volume-control input[type="range"]:hover::-webkit-slider-thumb {
   background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.8);
+  box-shadow: 0 0 12px rgba(var(--accent-primary-rgb), 0.8);
   transform: scale(1.3);
 }
 
 .mini-volume-control input[type="range"]::-moz-range-thumb {
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 8px rgba(var(--accent-primary-rgb), 0.6);
 }
 
 /* Enhanced Fullscreen Volume Slider */
@@ -3326,7 +3326,7 @@ img[src^="https://"] {
       var(--accent-primary) 80%,
       rgba(255, 255, 255, 0.2) 80%,
       rgba(255, 255, 255, 0.2) 100%);
-  box-shadow: 0 0 5px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 5px rgba(var(--accent-primary-rgb), 0.3);
   height: 6px;
 }
 
@@ -3336,13 +3336,13 @@ img[src^="https://"] {
       var(--accent-secondary) 80%,
       rgba(255, 255, 255, 0.3) 80%,
       rgba(255, 255, 255, 0.3) 100%);
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.5);
 }
 
 /* Enhanced Fullscreen Volume Thumb */
 .volume-control input[type="range"]::-webkit-slider-thumb {
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.6);
   width: 16px;
   height: 16px;
   transform: scale(1);
@@ -3351,13 +3351,13 @@ img[src^="https://"] {
 
 .volume-control input[type="range"]:hover::-webkit-slider-thumb {
   background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.8);
+  box-shadow: 0 0 15px rgba(var(--accent-primary-rgb), 0.8);
   transform: scale(1.4);
 }
 
 .volume-control input[type="range"]::-moz-range-thumb {
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.6);
   width: 16px;
   height: 16px;
 }
@@ -3373,8 +3373,8 @@ img[src^="https://"] {
 
 .mini-volume-control input[type="range"][data-volume="medium"] {
   background: linear-gradient(to right,
-      #8B5CF6 0%,
-      #8B5CF6 var(--volume-percent, 60%),
+      var(--accent-primary) 0%,
+      var(--accent-primary) var(--volume-percent, 60%),
       rgba(255, 255, 255, 0.2) var(--volume-percent, 60%),
       rgba(255, 255, 255, 0.2) 100%);
 }
@@ -3426,7 +3426,7 @@ img[src^="https://"] {
 
 .volume-bar.active {
   background: var(--accent-primary);
-  box-shadow: 0 0 4px rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 4px rgba(var(--accent-primary-rgb), 0.6);
 }
 
 .volume-bar:nth-child(1) {
@@ -3476,7 +3476,7 @@ img[src^="https://"] {
         var(--accent-primary) 80%,
         rgba(255, 255, 255, 0.2) 80%,
         rgba(255, 255, 255, 0.2) 100%);
-    box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 8px rgba(var(--accent-primary-rgb), 0.5);
   }
 }
 
@@ -4021,7 +4021,7 @@ div.featured-playlists h2 {
 }
 
 .about-info strong {
-  color: #8B5CF6 !important;
+  color: var(--accent-primary) !important;
 }
 
 /* Hero CTA Buttons */
@@ -4053,13 +4053,13 @@ div.featured-playlists h2 {
 .primary-cta-btn {
   background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 4px 15px rgba(var(--accent-primary-rgb), 0.4);
 }
 
 .primary-cta-btn:hover {
   background: linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-primary) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+  box-shadow: 0 6px 20px rgba(var(--accent-primary-rgb), 0.6);
 }
 
 .secondary-cta-btn {
@@ -4074,7 +4074,7 @@ div.featured-playlists h2 {
   border-color: var(--accent-primary);
   color: var(--accent-primary);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 4px 15px rgba(var(--accent-primary-rgb), 0.2);
 }
 
 .primary-cta-btn i,
@@ -4104,8 +4104,8 @@ div.featured-playlists h2 {
   align-items: center;
   margin: 15px 0;
   padding: 12px 16px;
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  background: rgba(var(--accent-primary-rgb), 0.1);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.2);
   border-radius: 8px;
   color: var(--text-primary);
   font-size: 14px;
@@ -4150,7 +4150,7 @@ div.featured-playlists h2 {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(var(--accent-primary-rgb), 0.3), transparent);
   transition: left 0.6s ease;
 }
 
@@ -4159,11 +4159,11 @@ div.featured-playlists h2 {
 }
 
 .category-scroll .btn:hover {
-  background-color: rgba(139, 92, 246, 0.15);
+  background-color: rgba(var(--accent-primary-rgb), 0.15);
   border-color: var(--accent-primary);
   color: var(--accent-primary);
   transform: scale(1.05) translateY(-2px);
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 15px rgba(var(--accent-primary-rgb), 0.3);
 }
 
 .category-scroll .btn.active {
@@ -4171,7 +4171,7 @@ div.featured-playlists h2 {
   border-color: var(--accent-primary);
   color: white;
   font-weight: 600;
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 6px 20px rgba(var(--accent-primary-rgb), 0.5);
   transform: scale(1.08) translateY(-3px);
   position: relative;
 }
@@ -4366,7 +4366,7 @@ div.featured-playlists h2 {
   font-size: 1.2em;
   margin-right: 8px;
   display: inline-block;
-  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+  filter: drop-shadow(0 0 8px rgba(var(--accent-primary-rgb), 0.6));
   animation: iconGlow 3s ease-in-out infinite;
 }
 
@@ -4374,12 +4374,12 @@ div.featured-playlists h2 {
 
   0%,
   100% {
-    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+    filter: drop-shadow(0 0 8px rgba(var(--accent-primary-rgb), 0.6));
     transform: scale(1);
   }
 
   50% {
-    filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.8));
+    filter: drop-shadow(0 0 12px rgba(var(--accent-primary-rgb), 0.8));
     transform: scale(1.05);
   }
 }
@@ -4402,15 +4402,15 @@ div.featured-playlists h2 {
 /* ========== PLAYLIST BUTTON ACTIVE STATE ========== */
 
 #fullscreenPlaylist.active {
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(var(--accent-primary-rgb), 0.2);
   color: var(--accent-primary);
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 20px rgba(var(--accent-primary-rgb), 0.4);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.3);
 }
 
 #fullscreenPlaylist.active:hover {
-  background: rgba(139, 92, 246, 0.3);
-  box-shadow: 0 0 25px rgba(139, 92, 246, 0.6);
+  background: rgba(var(--accent-primary-rgb), 0.3);
+  box-shadow: 0 0 25px rgba(var(--accent-primary-rgb), 0.6);
   transform: scale(1.08);
 }
 
@@ -4497,7 +4497,7 @@ div.featured-playlists h2 {
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(139, 92, 246, 0.2);
+  border: 3px solid rgba(var(--accent-primary-rgb), 0.2);
   border-top: 3px solid var(--accent-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -4601,7 +4601,7 @@ div.featured-playlists h2 {
 }
 
 .pagination-info {
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(var(--accent-primary-rgb), 0.1);
   border: 1px solid var(--border-accent);
   color: var(--text-primary);
   padding: 10px 20px;
@@ -4838,7 +4838,7 @@ div.featured-playlists h2 {
 }
 
 .artist-category-badge.rappers {
-  background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(139, 92, 246, 0.2));
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(var(--accent-primary-rgb), 0.2));
   color: #ff6b6b;
   border: 1px solid rgba(255, 107, 107, 0.3);
 }
@@ -5010,9 +5010,9 @@ div.featured-playlists h2 {
 }
 
 .artist-category-badge.popular {
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(var(--accent-primary-rgb), 0.2);
   color: var(--accent-primary);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.3);
 }
 
 .artist-category-badge.rappers {
@@ -5102,10 +5102,10 @@ div.featured-playlists h2 {
 
 /* Enhanced artist category badges */
 .artist-category-badge.popular {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(192, 132, 252, 0.2));
+  background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.2), rgba(192, 132, 252, 0.2));
   color: var(--accent-primary);
-  border: 1px solid rgba(139, 92, 246, 0.4);
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(var(--accent-primary-rgb), 0.4);
+  box-shadow: 0 2px 8px rgba(var(--accent-primary-rgb), 0.1);
 }
 
 .artist-category-badge.rappers {
@@ -5118,7 +5118,7 @@ div.featured-playlists h2 {
 /* Hover effects for circular artist cards */
 .artist-card-circular:hover .artist-category-badge {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.3);
 }
 
 .artist-card-circular:hover .artist-category-badge.rappers {
@@ -5145,7 +5145,7 @@ div.featured-playlists h2 {
 /* Enhanced circular border animation */
 .artist-card-circular:hover .circular-artist-image {
   border-color: var(--accent-secondary);
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 20px rgba(var(--accent-primary-rgb), 0.4);
 }
 
 .artist-card-circular:hover .artist-category-badge.rappers~.circular-artist-container .circular-artist-image {
@@ -5256,7 +5256,7 @@ div.featured-playlists h2 {
 
 .artist-card-circular:hover .circular-artist-name {
   color: var(--accent-primary);
-  text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+  text-shadow: 0 0 10px rgba(var(--accent-primary-rgb), 0.3);
 }
 
 /* ========== ARTIST LOADING STATES ========== */
@@ -5297,7 +5297,7 @@ div.featured-playlists h2 {
 .skeleton-badge {
   width: 60%;
   height: 12px;
-  background: linear-gradient(90deg, rgba(139, 92, 246, 0.1) 25%, rgba(139, 92, 246, 0.2) 50%, rgba(139, 92, 246, 0.1) 75%);
+  background: linear-gradient(90deg, rgba(var(--accent-primary-rgb), 0.1) 25%, rgba(var(--accent-primary-rgb), 0.2) 50%, rgba(var(--accent-primary-rgb), 0.1) 75%);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
   border-radius: 8px;
@@ -5326,7 +5326,7 @@ div.featured-playlists h2 {
 /* Priority artist highlighting */
 .artist-card-circular.priority-artist {
   border: 2px solid var(--accent-primary);
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 15px rgba(var(--accent-primary-rgb), 0.3);
 }
 
 .artist-card-circular.priority-artist .circular-artist-name {
@@ -5343,7 +5343,7 @@ div.featured-playlists h2 {
 
 /* ========== BACK TO TRENDING BUTTON ========== */
 .back-to-trending-btn {
-  background: rgba(139, 92, 246, 0.2) !important;
+  background: rgba(var(--accent-primary-rgb), 0.2) !important;
   border: 1px solid var(--accent-primary) !important;
   color: var(--accent-primary) !important;
   padding: 8px 16px !important;
@@ -5362,7 +5362,7 @@ div.featured-playlists h2 {
   background: var(--accent-primary) !important;
   color: white !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.3) !important;
 }
 
 .back-to-trending-btn i {

@@ -336,9 +336,9 @@
 }
 
 .fs-source-badge {
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    color: #34D399;
+    background: rgba(var(--accent-primary-rgb, 16, 185, 129), 0.12);
+    border: 1px solid rgba(var(--accent-primary-rgb, 16, 185, 129), 0.3);
+    color: var(--accent-secondary, #34D399);
     padding: 6px 14px;
     border-radius: 50px;
     display: inline-flex;

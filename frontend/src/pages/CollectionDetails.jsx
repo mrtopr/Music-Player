@@ -245,7 +245,7 @@ export default function CollectionDetails({ type }) {
                             <div style={{ 
                                 display: 'inline-flex', alignItems: 'center', gap: '6px', 
                                 padding: '4px 12px', borderRadius: '50px', 
-                                background: 'rgba(139, 92, 246, 0.12)', border: '1px solid rgba(139, 92, 246, 0.3)',
+                                background: 'rgba(var(--accent-primary-rgb), 0.12)', border: '1px solid rgba(var(--accent-primary-rgb), 0.3)',
                                 color: 'var(--accent-primary, #8B5CF6)', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.8rem' 
                             }}>
                                 <CheckCircle2 size={14} /> Verified Artist
@@ -288,7 +288,7 @@ export default function CollectionDetails({ type }) {
                         width: '56px', height: '56px', borderRadius: '50%',
                         background: 'var(--gradient-brand, var(--accent-primary))', border: 'none',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        cursor: 'pointer', boxShadow: '0 8px 25px var(--shadow-accent, rgba(139, 92, 246, 0.45))',
+                        cursor: 'pointer', boxShadow: '0 8px 25px var(--shadow-accent, rgba(var(--accent-primary-rgb), 0.45))',
                         transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
                     }} 
                     onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'} 
@@ -360,7 +360,7 @@ export default function CollectionDetails({ type }) {
                             opacity: isStartingMix ? 0.75 : 1,
                             transition: 'all 0.2s',
                         }}
-                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-accent, rgba(139,92,246,0.5))'; e.currentTarget.style.color = 'var(--accent-secondary, #C4B5FD)'; }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--border-accent, rgba(var(--accent-primary-rgb),0.5))'; e.currentTarget.style.color = 'var(--accent-secondary, #C4B5FD)'; }}
                         onMouseLeave={e => { e.currentTarget.style.borderColor = mixEnabled ? 'var(--border-accent, rgba(16,185,129,0.55))' : 'rgba(255,255,255,0.08)'; e.currentTarget.style.color = mixEnabled ? 'var(--accent-secondary, #34D399)' : 'var(--text-secondary)'; }}
                         title="Mix — play this playlist with seamless transitions between every track"
                     >
@@ -407,7 +407,7 @@ export default function CollectionDetails({ type }) {
                                     onClick={() => playSong(track)} 
                                     className="track-row"
                                     style={{
-                                        background: isCurrent ? 'var(--accent-primary-soft, rgba(139, 92, 246, 0.12))' : 'transparent',
+                                        background: isCurrent ? 'var(--accent-primary-soft, rgba(var(--accent-primary-rgb), 0.12))' : 'transparent',
                                         borderLeft: isCurrent ? '3px solid var(--accent-primary, #8B5CF6)' : '3px solid transparent'
                                     }} 
                                     onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }} 

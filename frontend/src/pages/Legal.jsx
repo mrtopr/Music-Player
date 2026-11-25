@@ -13,21 +13,21 @@ export default function Legal() {
                         Last updated: {new Date().toLocaleDateString()}
                     </p>
                     <section style={{ marginBottom: '2rem' }}>
-                        <h2 style={{ fontSize: '1.5rem', color: '#c084fc', marginBottom: '1rem' }}>1. Acceptance of Terms</h2>
+                        <h2 style={{ fontSize: '1.5rem', color: 'var(--accent-secondary)', marginBottom: '1rem' }}>1. Acceptance of Terms</h2>
                         <p style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
                             By accessing and using Mehfil Music by @mrtopr, you accept and agree to be bound by the terms and provision of this agreement.
                             Mehfil is an educational, non-commercial project designed to showcase modern web development capabilities.
                         </p>
                     </section>
                     <section style={{ marginBottom: '2rem' }}>
-                        <h2 style={{ fontSize: '1.5rem', color: '#c084fc', marginBottom: '1rem' }}>2. Content Disclaimer</h2>
+                        <h2 style={{ fontSize: '1.5rem', color: 'var(--accent-secondary)', marginBottom: '1rem' }}>2. Content Disclaimer</h2>
                         <p style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
                             All audio content, album arts, and metadata are fetched in real-time from third-party public APIs. 
                             Mehfil Music by @mrtopr does not host, upload, or store any copyrighted media files on its servers. We act solely as a client-side interface.
                         </p>
                     </section>
                     <section style={{ marginBottom: '2rem' }}>
-                        <h2 style={{ fontSize: '1.5rem', color: '#c084fc', marginBottom: '1rem' }}>3. User Conduct</h2>
+                        <h2 style={{ fontSize: '1.5rem', color: 'var(--accent-secondary)', marginBottom: '1rem' }}>3. User Conduct</h2>
                         <p style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>
                             Users agree to use the collaborative features (like Listen Together) responsibly. 
                             Any abuse of the real-time syncing mechanisms or attempting to disrupt the service for others is prohibited.

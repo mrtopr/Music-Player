@@ -307,8 +307,8 @@ function OfflineSongsSection() {
         <div style={{ marginTop: '2rem' }}>
             {/* Hero banner */}
             <div style={{
-                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(99, 102, 241, 0.08))',
-                border: '1px solid rgba(139, 92, 246, 0.25)',
+                background: 'linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.18), rgba(99, 102, 241, 0.08))',
+                border: '1px solid rgba(var(--accent-primary-rgb), 0.25)',
                 padding: 'var(--space-xl, 1.5rem)', borderRadius: '16px',
                 marginBottom: 'var(--space-xl, 1.5rem)', display: 'flex',
                 justifyContent: 'space-between', alignItems: 'center'
@@ -316,7 +316,7 @@ function OfflineSongsSection() {
                 <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <h2 style={{ margin: 0, fontSize: '1.4rem' }}>⬇️ Offline Downloads</h2>
-                        <span style={{ fontSize: '0.72rem', fontWeight: 800, background: 'rgba(139, 92, 246, 0.2)', color: '#c4b5fd', padding: '2px 8px', borderRadius: '10px' }}>
+                        <span style={{ fontSize: '0.72rem', fontWeight: 800, background: 'rgba(var(--accent-primary-rgb), 0.2)', color: '#c4b5fd', padding: '2px 8px', borderRadius: '10px' }}>
                             {stats.totalMb} MB Used
                         </span>
                     </div>

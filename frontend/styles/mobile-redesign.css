@@ -279,7 +279,7 @@
     background: var(--bg-card, rgba(18, 22, 38, 0.94)) !important;
     backdrop-filter: blur(24px) !important;
     -webkit-backdrop-filter: blur(24px) !important;
-    border: 1px solid var(--border-accent, rgba(168, 85, 247, 0.25)) !important;
+    border: 1px solid var(--border-accent, rgba(var(--accent-secondary-rgb), 0.25)) !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 16px var(--shadow-accent) !important;
     z-index: 995 !important;
     overflow: hidden !important;
