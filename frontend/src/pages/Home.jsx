@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
     PlayCircle, Flame, ChevronRight, ChevronLeft, ChevronUp, ChevronDown, ListMusic, Mic2, Play, Pause, Music,
-    History, Sparkles, Heart, Compass, Check, Users, SlidersHorizontal, Download, X, Smartphone, Activity, Frown, Award, Zap, Star, Mic, Calendar, Disc3
+    History, Sparkles, Heart, Compass, Check, Users, SlidersHorizontal, Download, X, Smartphone, Activity, Frown, Award, Zap, Star, Mic, Calendar, Disc3, Radio
 } from '../components/common/LordIcon';
 import { apiFetch, getImageUrl } from '../api/client.js';
 import { usePlayerStore } from '../store/usePlayerStore';
@@ -18,7 +18,7 @@ import Card3D from '../components/common/Card3D';
 import { decodeEntities, cleanTrackTitle } from '../utils/helpers.js';
 
 const CATEGORY_ICONS = {
-    Music, Heart, Activity, Frown, Sparkles, Award, Zap, Star, Mic, Calendar, Disc3, Flame
+    Music, Heart, Activity, Frown, Sparkles, Award, Zap, Star, Mic, Calendar, Disc3, Flame, Compass, Radio
 };
 
 function getCleanGreeting() {
@@ -829,7 +829,8 @@ export default function Home() {
                     border: '1px solid var(--border-accent)'
                 }}>
                     <div className="universe-badge-pill">
-                        {activeUniverse.badge}
+                        {React.createElement(CATEGORY_ICONS[activeUniverse.iconName] || Sparkles, { size: 13 })}
+                        <span>{activeUniverse.badge}</span>
                     </div>
                     <div>
                         <h2 style={{ fontSize: 'clamp(1.4rem, 5vw, 1.9rem)', fontWeight: 'var(--heading-weight, 800)', color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.2 }}>
@@ -891,7 +892,8 @@ export default function Home() {
 
                 <div className="intro-text" style={{ flex: '1 1 300px', maxWidth: '100%', zIndex: 3, position: 'relative' }}>
                     <div className="universe-badge-pill" data-testid="hero-universe-badge">
-                        {activeUniverse.badge}
+                        {React.createElement(CATEGORY_ICONS[activeUniverse.iconName] || Sparkles, { size: 13 })}
+                        <span>{activeUniverse.badge}</span>
                     </div>
                     <h1 style={{ fontSize: 'clamp(2rem, 5vw, 2.6rem)', fontWeight: 800, color: '#fff', margin: '0 0 0.5rem 0', lineHeight: 1.15, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
                         {getCleanGreeting()},{' '}

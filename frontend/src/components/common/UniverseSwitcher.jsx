@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Sparkles, Compass, Mic, Radio, Flame } from './LordIcon';
 import { UNIVERSE_LIST } from '../../config/universes';
 import { useUniverseStore } from '../../store/useUniverseStore';
+
+const UNIVERSE_ICONS = { Sparkles, Compass, Mic, Radio, Flame };
 
 export default function UniverseSwitcher({ compact = false }) {
     const [open, setOpen] = useState(false);
@@ -31,6 +34,8 @@ export default function UniverseSwitcher({ compact = false }) {
         setUniverse(id);
         setOpen(false);
     };
+
+    const ActiveIcon = UNIVERSE_ICONS[activeUniverse.iconName] || Sparkles;
 
     return (
         <div
@@ -71,8 +76,8 @@ export default function UniverseSwitcher({ compact = false }) {
                     whiteSpace: 'nowrap'
                 }}
             >
-                <span style={{ fontSize: compact ? '0.95rem' : '1.05rem', lineHeight: 1 }} aria-hidden="true">
-                    {activeUniverse.emoji}
+                <span style={{ display: 'inline-flex', alignItems: 'center', lineHeight: 1 }} aria-hidden="true">
+                    <ActiveIcon size={compact ? 15 : 16} color={activeUniverse.theme.accentSecondary} />
                 </span>
                 <span className="universe-pill-label">
                     {compact ? activeUniverse.shortLabel : activeUniverse.label}
@@ -152,6 +157,7 @@ export default function UniverseSwitcher({ compact = false }) {
 
                     {UNIVERSE_LIST.map((u) => {
                         const isActive = u.id === activeUniverseId;
+                        const OptionIcon = UNIVERSE_ICONS[u.iconName] || Sparkles;
                         return (
                             <button
                                 key={u.id}
@@ -203,7 +209,7 @@ export default function UniverseSwitcher({ compact = false }) {
                                     fontSize: '1.15rem',
                                     flexShrink: 0
                                 }}>
-                                    {u.emoji}
+                                    <OptionIcon size={18} color={u.theme.accentPrimary} />
                                 </div>
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{
