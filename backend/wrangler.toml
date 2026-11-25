@@ -5,6 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 FRONTEND_URL = "http://localhost:5173,https://playmehfil.vercel.app"
+ML_SERVICE_URL = "https://mehfil-ml-service.onrender.com"
 
 [observability]
 enabled = true
